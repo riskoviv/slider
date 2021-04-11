@@ -1,0 +1,21 @@
+body {
+  background-color: #888;
+}
+
+.heading-1 {
+  font-size: 3em;
+  text-decoration: underline;
+  text-transform: none;
+}
+
+.text-block {
+  font-size: 1.5em;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+
+  &__caption {
+    
+    &_highlighted {
+      background-color: rgb(127, 171, 197);
+    }
+  }
+}
