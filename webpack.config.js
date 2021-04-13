@@ -5,7 +5,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const chokidar = require('chokidar');
 
 const isDev = process.env.NODE_ENV === 'development';
-const isProd = !isDev;
 
 module.exports = {
   mode: 'development',
@@ -59,7 +58,7 @@ module.exports = {
     before(app, server) {
       chokidar.watch([
         './src/index.html',
-      ]).on('all', function() {
+      ]).on('all', () => {
         server.sockWrite(server.sockets, 'content-changed');
       });
     },
