@@ -7,11 +7,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 
+const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[fullhash:7].${ext}`);
+
 module.exports = {
   mode: 'development',
   entry: './src/index.ts',
   output: {
-    filename: 'main.js',
+    filename: filename('js'),
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
