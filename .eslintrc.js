@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     'airbnb-base',
   ],
+  ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
@@ -15,6 +16,17 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
-    'no-undef': 'off',
+    'import/extensions': ['error', {
+      ts: 'never',
+    }],
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: [
+          '.ts',
+        ],
+      },
+    },
   },
 };
