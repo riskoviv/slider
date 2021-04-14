@@ -1,11 +1,11 @@
+/* eslint-disable no-undef */
+import SliderModel from './model/sliderModel';
+import SliderView from './views/sliderView';
+import SliderPresenter from './presenter/sliderPresenter';
 import './styles/styles.scss';
 
-$(() => {
-  const $h1: JQuery<HTMLHeadingElement> = $('.heading-1');
-  $h1.html('hello TypeScript using Webpack!');
-
-  const $span: JQuery<HTMLSpanElement> = $('.text-block__caption');
-  $span.on('click', function clickOnSpan(): void {
-    $(this).toggleClass('text-block__caption_highlighted');
-  });
-});
+(($) => {
+  const model = new SliderModel();
+  const view = new SliderView();
+  const presenter = new SliderPresenter(model, view);
+})(jQuery);
