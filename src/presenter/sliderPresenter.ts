@@ -1,6 +1,6 @@
-import EventEmitter from '../eventEmitter';
-import SliderModel from '../model/sliderModel';
-import SliderView from '../views/sliderView';
+import EventEmitter from '../EventEmitter';
+import SliderModel from '../model/SliderModel';
+import SliderView from '../views/SliderView';
 
 class SliderPresenter extends EventEmitter {
   private model: SliderModel;

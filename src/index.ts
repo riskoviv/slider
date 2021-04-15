@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-import SliderModel from './model/sliderModel';
-import SliderView from './views/sliderView';
-import SliderPresenter from './presenter/sliderPresenter';
+import SliderModel from './model/SliderModel';
+import SliderView from './views/SliderView';
+import SliderPresenter from './presenter/SliderPresenter';
 import './styles/styles.scss';
 
 (($) => {
