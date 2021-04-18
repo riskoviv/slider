@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const chokidar = require('chokidar');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -61,12 +60,5 @@ module.exports = {
     hot: true,
     openPage: 'index.html',
     stats: 'minimal',
-    before(app, server) {
-      chokidar.watch([
-        './src/index.html',
-      ]).on('all', () => {
-        server.sockWrite(server.sockets, 'content-changed');
-      });
-    },
   },
 };
