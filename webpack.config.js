@@ -55,10 +55,9 @@ module.exports = {
     }),
   ],
   devServer: {
-    contentBase: './dist',
-    port: 4200,
     hot: true,
-    openPage: 'index.html',
+    overlay: true,
+    port: 4200,
     stats: 'minimal',
   },
 };
