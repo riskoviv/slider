@@ -35,7 +35,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  devtool: isDev ? 'inline-source-map' : false,
+  devtool: isDev ? 'eval-source-map' : false,
   plugins: [
     new HtmlWebpackPlugin({
       title: 'slider test',
