@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'plugin:fsd/all',
   ],
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
@@ -14,6 +15,7 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
+    'fsd',
   ],
   rules: {
     'import/extensions': ['error', {
