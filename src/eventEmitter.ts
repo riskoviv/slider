@@ -1,6 +1,6 @@
 type ObjectOfArraysOfFunctions = {
-  [key: string]: Array<Function>;
-}
+  [key: string]: Function[];
+};
 
 class EventEmitter {
   private events: ObjectOfArraysOfFunctions = {};
