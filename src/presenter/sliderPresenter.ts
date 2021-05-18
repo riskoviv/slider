@@ -3,14 +3,13 @@ import SliderModel from '../model/SliderModel';
 import SliderView from '../views/SliderView';
 
 class SliderPresenter extends EventEmitter {
-  private model: SliderModel;
-
-  private view: SliderView;
-
-  constructor(model: SliderModel, view: SliderView) {
+  constructor(
+    private model: SliderModel,
+    private view: SliderView,
+    private thisElem: JQuery<HTMLElement>,
+  ) {
     super();
-    this.model = model;
-    this.view = view;
+    // view.setWidth(view.elements.thisElement, model.getWidth());
   }
 }
 
