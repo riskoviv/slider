@@ -41,8 +41,8 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'slider test',
-      template: './src/index.html',
-      filename: 'index.html',
+      template: './src/demo/index.html',
+      filename: 'demo/index.html',
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
@@ -57,6 +57,7 @@ module.exports = {
     }),
   ],
   devServer: {
+    openPage: 'demo/index.html',
     hot: true,
     overlay: true,
     port: 4200,
