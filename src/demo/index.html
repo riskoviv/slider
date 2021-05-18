@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slider plugin test</title>
+  <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+</head>
+<body>
+  <div class="slider" id="slider"></div>
+  <div class="slider" id="slider2"></div>
+  <div class="slider" id="slider3"></div>
+
+  <script>
+    $(() => {
+      $.fn.sliderPlugin.options.styles.width = 100;
+      $('#slider').sliderPlugin({ styles: { 'background-color': 'red' , width: 200 } });
+      $('#slider2').sliderPlugin({ styles: { width: 500 } });
+      $('#slider3').sliderPlugin({ styles: { 'background-color': 'blue' , width: 300 } });
+      $('.slider').css('height', '100px');
+    });
+  </script>
+</body>
+</html>
