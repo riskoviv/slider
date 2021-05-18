@@ -1,9 +1,9 @@
-type ObjectOfArraysOfFunctions = {
+type EventsStorage = {
   [key: string]: Function[];
 };
 
 class EventEmitter {
-  private events: ObjectOfArraysOfFunctions = {};
+  private events: EventsStorage = {};
 
   protected on(evt: string, listener: Function): EventEmitter {
     (this.events[evt] ? this.events[evt] : this.events[evt] = []).push(listener);
