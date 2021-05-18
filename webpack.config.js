@@ -56,6 +56,9 @@ module.exports = {
       filename: filename('css'),
     }),
   ],
+  externals: {
+    jquery: 'jQuery',
+  },
   devServer: {
     openPage: 'demo/index.html',
     hot: true,
