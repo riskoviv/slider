@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-unused-vars */
 interface ISliderPluginOptions {
   pluginSelector: string;
 }
