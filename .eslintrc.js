@@ -7,6 +7,13 @@ module.exports = {
     'airbnb-base',
     'plugin:fsd/all',
   ],
+  globals: {
+    JQuery: 'readonly',
+    ISliderPluginOptions: 'readonly',
+    ISliderPluginGlobalOptions: 'readonly',
+    ISliderPluginFunction: 'readonly',
+    ISliderPlugin: 'readonly',
+  },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
