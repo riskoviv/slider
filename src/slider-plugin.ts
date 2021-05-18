@@ -6,8 +6,22 @@ import SliderPresenter from './presenter/SliderPresenter';
 import './styles/styles.scss';
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderInit (this: JQuery, options: ISliderPluginOptions): JQuery {
-    options = $.extend({}, $.fn.sliderPlugin.options, options);
+  function sliderPlugin(this: JQuery, options: ISliderPluginOptions): JQuery {
+    const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
+    const pluginStyles = $.extend({}, $.fn.sliderPlugin.options.styles, options.styles);
+    const model = new SliderModel(pluginOptions);
+    const view = new SliderView({ thisElement: this });
+    const presenter = new SliderPresenter(model, view, this);
+
+    function applyStyles(this: JQuery<HTMLElement>) {
+      Object.keys(pluginStyles).forEach((style) => {
+        this.css(style, pluginStyles[style]);
+      });
+    }
+
+    applyStyles.call(this);
+
+    return this;
   },
   {
     options: {
