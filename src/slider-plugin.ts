@@ -11,7 +11,9 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   },
   {
     options: {
-      pluginSelector: '',
+      styles: {
+        'background-color': 'black',
+      },
     },
   },
 );

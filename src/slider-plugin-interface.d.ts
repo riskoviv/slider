@@ -1,7 +1,12 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
 interface ISliderPluginOptions {
-  pluginSelector: string;
+  styles: {
+    width?: number | string;
+    'background-color'?: string;
+
+    [prop: string]: string | number;
+  }
 }
 
 interface ISliderPluginGlobalOptions {
