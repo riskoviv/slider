@@ -10,7 +10,9 @@ const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[fullhash:7].${ext}
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts',
+  entry: {
+    'slider-plugin': './src/slider-plugin.ts',
+  },
   output: {
     filename: filename('js'),
     path: path.resolve(__dirname, 'dist'),
