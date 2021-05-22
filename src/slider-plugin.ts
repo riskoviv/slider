@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 import $ from 'jquery';
-import SliderModel from './model/SliderModel';
-import SliderView from './views/SliderView';
-import SliderPresenter from './presenter/SliderPresenter';
+import SliderModel from './SliderModel';
+import SliderView from './SliderView';
+import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(

@@ -1,4 +1,4 @@
-import EventEmitter from '../EventEmitter';
+import EventEmitter from './EventEmitter';
 
 class SliderModel extends EventEmitter {
   constructor(private options: ISliderPluginOptions) {

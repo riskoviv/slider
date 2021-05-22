@@ -1,6 +1,6 @@
-import EventEmitter from '../EventEmitter';
-import SliderModel from '../model/SliderModel';
-import SliderView from '../views/SliderView';
+import EventEmitter from './EventEmitter';
+import SliderModel from './SliderModel';
+import SliderView from './SliderView';
 
 class SliderPresenter extends EventEmitter {
   constructor(
