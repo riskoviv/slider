@@ -1,3 +1,25 @@
 body {
   background-color: #888;
 }
+
+.slider-component {
+  background-color: transparent;
+  width: 100px;
+  height: 100px;
+  border: 1px solid;
+
+  &_color {
+
+    &_yellow {
+      background-color: yellow;
+    }
+
+    &_red {
+      background-color: red;
+    }
+
+    &_blue {
+      background-color: blue;
+    }
+  }
+}

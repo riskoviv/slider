@@ -6,6 +6,11 @@ class SliderPresenter {
     private model: SliderModel,
     private view: SliderView,
   ) {
+    view.on('firstSliderClicked', this.changeSliderColor);
+  }
+
+  changeSliderColor = (target: HTMLDivElement) => {
+    SliderView.changeSliderColor(target);
   }
 }
 
