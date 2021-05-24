@@ -12,9 +12,8 @@
 
   <script>
     $(() => {
-      // $.fn.sliderPlugin.options.styles['.slider-component'].width = 100;
-      
-      $('#slider').sliderPlugin();
+      const plugin = $('#slider').sliderPlugin();
+      plugin.setStepSize(25);
     });
   </script>
 </body>
