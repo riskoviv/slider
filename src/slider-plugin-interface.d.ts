@@ -1,7 +1,9 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
 interface ISliderPluginOptions {
-
+  stepSize?: number,
+  isVertical?: boolean,
+  isInterval?: boolean
 }
 
 interface ISliderPluginGlobalOptions {
@@ -9,7 +11,7 @@ interface ISliderPluginGlobalOptions {
 }
 
 interface ISliderPluginFunction {
-  (options: ISliderPluginOptions): JQuery;
+  (options: ISliderPluginOptions): Object;
 }
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
