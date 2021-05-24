@@ -28,6 +28,9 @@ module.exports = {
     'import/extensions': ['error', {
       ts: 'never',
     }],
+    'linebreak-style': ['error', 'windows'],
+    'eol-last': 'warn',
+    'no-unused-vars': 'warn',
   },
   settings: {
     'import/resolver': {
