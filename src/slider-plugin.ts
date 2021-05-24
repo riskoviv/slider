@@ -16,6 +16,10 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
     return model.publicMethods;
   },
   {
-    options: {},
+    options: {
+      isInterval: false,
+      isVertical: false,
+      stepSize: 10,
+    },
   },
 );
