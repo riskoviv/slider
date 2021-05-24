@@ -6,7 +6,7 @@ class EventEmitter {
   private events: EventsStorage = {};
 
   on(evt: string, listener: Function): this {
-    if (!this.events[evt]) {
+    if (this.events[evt] === undefined) {
       this.events[evt] = [];
     }
     this.events[evt].push(listener);
