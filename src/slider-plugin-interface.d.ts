@@ -3,7 +3,10 @@
 interface ISliderPluginOptions {
   stepSize?: number,
   isVertical?: boolean,
-  isInterval?: boolean
+  isInterval?: boolean,
+  showValueHint?: boolean,
+  showScale?: boolean,
+  showProgressBar?: boolean,
 }
 
 interface ISliderPluginGlobalOptions {

@@ -12,9 +12,12 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   },
   {
     options: {
-      isInterval: false,
-      isVertical: false,
       stepSize: 10,
+      isVertical: false,
+      isInterval: false,
+      showValueHint: false,
+      showScale: false,
+      showProgressBar: false,
     },
   },
 );
