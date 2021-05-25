@@ -6,24 +6,26 @@ import EventEmitter from './EventEmitter';
 // };
 
 class SliderView extends EventEmitter {
-  constructor() {
+  pluginOptions: {};
+
+  constructor(private pluginRootElem: JQuery<HTMLElement>) {
     super();
-    $('#slider').html(SliderView.createInnerElements());
-    $('.js-slider-component').on('click', this.emitSliderClicked);
+    this.emit('viewInit');
+    this.pluginRootElem.html(this.createInnerElements());
+    $('.js-slider-component', this.pluginRootElem)
+      .on('click', this.emitSliderClicked);
   }
 
-  private static createInnerElements(): string {
-    return `
-      <div class="slider-component js-slider-component" id="component-1"></div>
-      <div class="slider-component js-slider-component" id="component-2"></div>
-      <div class="slider-component js-slider-component" id="component-3"></div>`;
-  }
+  private createInnerElements = () => `
+      <div class="slider-component js-slider-component"></div>
+      <div class="slider-component js-slider-component"></div>
+      <div class="slider-component js-slider-component"></div>`;
 
   private emitSliderClicked = (event: JQuery.ClickEvent) => {
-    this.emit('firstSliderClicked', event.target as HTMLDivElement);
+    this.emit('sliderElementClicked', event.target as HTMLDivElement);
   }
 
-  static changeSliderColor(target: HTMLDivElement) {
+  changeSliderColor = (target: HTMLDivElement) => {
     $(target).toggleClass('slider-component_color_yellow');
   }
 }
