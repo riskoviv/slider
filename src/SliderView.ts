@@ -10,7 +10,6 @@ class SliderView extends EventEmitter {
 
   constructor(private pluginRootElem: JQuery<HTMLElement>) {
     super();
-    this.emit('viewInit');
     this.pluginRootElem.html(this.innerElements);
     $('.js-slider-component', this.pluginRootElem)
       .on('click', this.emitSliderClicked);

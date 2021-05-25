@@ -17,7 +17,6 @@ class SliderPresenter {
 
     this.publicMethods = this.model.publicMethods;
 
-    this.view.on('viewInit', this.getOptionsFromModel);
     this.view.on('sliderElementClicked', this.changeSliderColor);
   }
 
