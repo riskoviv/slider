@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 import $ from 'jquery';
-import SliderModel from './SliderModel';
-import SliderView from './SliderView';
 import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
