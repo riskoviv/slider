@@ -20,10 +20,6 @@ class SliderPresenter {
     this.view.on('sliderElementClicked', this.changeSliderColor);
   }
 
-  getOptionsFromModel() {
-    this.view.pluginOptions = this.model.getOptions();
-  }
-
   changeSliderColor = (target: HTMLDivElement) => {
     this.view.changeSliderColor(target);
     console.log(this.model.getOptions());
