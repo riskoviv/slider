@@ -13,8 +13,12 @@ class EventEmitter {
     return this;
   }
 
-  protected emit(evt: string, arg: unknown): void {
-    (this.events[evt] || []).slice().forEach((lsn) => lsn(arg));
+  protected emit(evt: string, arg?: unknown): void {
+    if (this.events[evt] === undefined) {
+      console.error(`${evt} event not registered`);
+      return;
+    }
+    this.events[evt].slice().forEach((lsn) => lsn(arg));
   }
 }
 
