@@ -6,9 +6,9 @@ import EventEmitter from './EventEmitter';
 // };
 
 class SliderView extends EventEmitter {
-  pluginOptions: {};
-
-  constructor(private pluginRootElem: JQuery<HTMLElement>) {
+  constructor(
+    private pluginRootElem: JQuery<HTMLElement>,
+  ) {
     super();
     this.pluginRootElem.html(this.innerElements);
     $('.js-slider-component', this.pluginRootElem)
