@@ -3,7 +3,6 @@ import EventEmitter from './EventEmitter';
 class SliderModel extends EventEmitter {
   constructor(private options: ISliderPluginOptions) {
     super();
-    console.log(options);
   }
 
   getOptions(): ISliderPluginOptions {
@@ -13,7 +12,6 @@ class SliderModel extends EventEmitter {
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
     console.log(`stepSize was changed to ${stepSize}`);
-    console.log(this.getOptions());
   }
 
   publicMethods: Object = {
