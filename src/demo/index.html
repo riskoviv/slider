@@ -9,11 +9,18 @@
 </head>
 <body>
   <div class="slider" id="slider"></div>
+  <div class="slider" id="slider2"></div>
 
   <script>
     $(() => {
-      const plugin = $('#slider').sliderPlugin();
-      plugin.setStepSize(25);
+      $.fn.sliderPlugin.options.isVertical = true;
+      const plugin1 = $('#slider').sliderPlugin();
+      plugin1.setStepSize(25);
+      console.log('plugin1.options:', plugin1.getOptions());
+      $.fn.sliderPlugin.options.isInterval = true;
+      console.log('plugin1.options:', plugin1.getOptions());
+      const plugin2 = $('#slider2').sliderPlugin({ stepSize: 42 });
+      console.log('plugin2.options:', plugin2.getOptions());
     });
   </script>
 </body>
