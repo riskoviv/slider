@@ -30,7 +30,7 @@ module.exports = {
     }],
     'linebreak-style': ['error', 'windows'],
     'eol-last': 'warn',
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 'off',
   },
   settings: {
     'import/resolver': {
