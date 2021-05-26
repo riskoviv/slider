@@ -2,6 +2,8 @@
 /* eslint-disable no-unused-vars */
 interface ISliderPluginOptions {
   stepSize?: number,
+  minValue?: number,
+  maxValue?: number,
   isVertical?: boolean,
   isInterval?: boolean,
   showValueHint?: boolean,
