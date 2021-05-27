@@ -17,10 +17,13 @@ class SliderPresenter {
 
     this.publicMethods = this.model.publicMethods;
 
+    this.view.render();
 
     this.model.on('stepSizeChanged', this.changeStepSize);
   }
 
+  changeStepSize = (stepSize: number) => {
+    // this.view.changeStepSize(stepSize);
   }
 }
 
