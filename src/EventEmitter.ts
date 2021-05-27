@@ -1,5 +1,5 @@
 type EventsStorage = {
-  [key in EventName]?: Function[];
+  [event in EventName]?: Function[];
 };
 
 class EventEmitter {
