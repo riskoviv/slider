@@ -4,6 +4,7 @@ import SliderBaseView from './subviews/SliderBaseView';
 import SliderHandleView from './subviews/SliderHandleView';
 
 class SliderView extends EventEmitter {
+  private HTML = $('<div class="slider"></div>');
 
   private subViews: {
     [subViewName: string]: ISliderSubView;
@@ -22,6 +23,8 @@ class SliderView extends EventEmitter {
     });
   }
 
+  render() {
+    this.pluginRootElem.append(this.HTML);
   }
 }
 
