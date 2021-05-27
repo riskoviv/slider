@@ -1,11 +1,11 @@
 type EventsStorage = {
-  [key: string]: Function[];
+  [key in EventName]?: Function[];
 };
 
 class EventEmitter {
   private events: EventsStorage = {};
 
-  on(evt: string, listener: Function): this {
+  on(evt: EventName, listener: Function): this {
     if (this.events[evt] === undefined) {
       this.events[evt] = [];
     }
@@ -13,7 +13,7 @@ class EventEmitter {
     return this;
   }
 
-  protected emit(evt: string, arg?: unknown): void {
+  protected emit(evt: EventName, arg?: unknown): void {
     if (this.events[evt] === undefined) {
       console.error(`${evt} event not registered`);
       return;

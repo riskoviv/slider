@@ -28,3 +28,7 @@ interface JQuery {
 interface ISliderModel {
   getOptions(): ISliderPluginOptions
 }
+
+type EventName =
+  'stepSizeChanged' |
+  'sliderElementClicked';
