@@ -18,11 +18,17 @@ class SliderPresenter {
     this.publicMethods = this.model.publicMethods;
 
     this.view.on('sliderElementClicked', this.changeSliderColor);
+
+    this.model.on('stepSizeChanged', this.changeStepSize);
   }
 
   changeSliderColor = (target: HTMLDivElement) => {
     this.view.changeSliderColor(target);
     console.log(this.model.getOptions());
+  }
+
+  changeStepSize = () => {
+
   }
 }
 
