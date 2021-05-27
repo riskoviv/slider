@@ -15,6 +15,7 @@ module.exports = {
     ISliderPlugin: 'readonly',
     ISliderModel: 'readonly',
     EventName: 'readonly',
+    ISliderSubView: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',

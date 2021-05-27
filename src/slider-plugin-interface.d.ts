@@ -32,3 +32,7 @@ interface ISliderModel {
 type EventName =
   'stepSizeChanged' |
   'sliderElementClicked';
+
+interface ISliderSubView {
+  HTML: string;
+}
