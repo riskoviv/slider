@@ -4,6 +4,8 @@ interface ISliderPluginOptions {
   stepSize?: number,
   minValue?: number,
   maxValue?: number,
+  value1: number,
+  value2: number,
   isVertical?: boolean,
   isInterval?: boolean,
   showValueHint?: boolean,

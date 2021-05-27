@@ -15,6 +15,8 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
       stepSize: 10,
       minValue: 0,
       maxValue: 10,
+      value1: 4,
+      value2: 6,
       isVertical: false,
       isInterval: false,
       showValueHint: false,
