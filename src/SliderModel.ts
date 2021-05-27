@@ -1,6 +1,6 @@
 import EventEmitter from './EventEmitter';
 
-class SliderModel extends EventEmitter {
+class SliderModel extends EventEmitter implements ISliderModel {
   constructor(private options: ISliderPluginOptions) {
     super();
   }

@@ -24,3 +24,7 @@ interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunctio
 interface JQuery {
   sliderPlugin: ISliderPlugin;
 }
+
+interface ISliderModel {
+  getOptions(): ISliderPluginOptions
+}
