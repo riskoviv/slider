@@ -13,6 +13,8 @@ module.exports = {
     ISliderPluginGlobalOptions: 'readonly',
     ISliderPluginFunction: 'readonly',
     ISliderPlugin: 'readonly',
+    ISliderModel: 'readonly',
+    EventName: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
