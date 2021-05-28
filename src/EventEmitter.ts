@@ -14,11 +14,16 @@ class EventEmitter {
   }
 
   protected emit(evt: EventName, arg?: unknown): void {
-    if (this.events[evt] === undefined) {
-      console.error(`${evt} event not registered`);
-      return;
+    try {
+      if (this.events[evt] === undefined) {
+        const emitError = new Error(`${evt} event is not registered`);
+        emitError.name = 'EmitError';
+        throw emitError;
+      }
+      this.events[evt].slice().forEach((lsn) => lsn(arg));
+    } catch (e) {
+      console.error(e);
     }
-    this.events[evt].slice().forEach((lsn) => lsn(arg));
   }
 }
 
