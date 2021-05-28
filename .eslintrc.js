@@ -8,6 +8,7 @@ module.exports = {
     'plugin:fsd/all',
   ],
   globals: {
+    $: 'readonly',
     JQuery: 'readonly',
     ISliderPluginOptions: 'readonly',
     ISliderPluginGlobalOptions: 'readonly',

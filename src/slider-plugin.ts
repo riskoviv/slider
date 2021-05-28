@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-import $ from 'jquery';
 import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 

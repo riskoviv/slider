@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import EventEmitter from './EventEmitter';
 import SliderBaseView from './subviews/SliderBaseView';
 import SliderHandleView from './subviews/SliderHandleView';
