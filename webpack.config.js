@@ -19,6 +19,11 @@ module.exports = {
     filename: (pathdata) => filepath(pathdata, 'js'),
     path: path.resolve(__dirname, 'dist'),
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
   module: {
     rules: [
       {
