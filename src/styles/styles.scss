@@ -1,1 +1,19 @@
+.slider {
+  position: relative;
+  height: 50px;
+  background-color: #666;
+
+  &__base {
+    height: 50%;
+    background-color: #444;
+  }
+
+  &__handle {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: rgb(74, 235, 25);
+    top: 0;
+    left: 0;
+  }
 }
