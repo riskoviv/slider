@@ -61,7 +61,7 @@ module.exports = {
   },
   devServer: {
     openPage: 'demo/index.html',
-    hot: true,
+    hot: false,
     overlay: true,
     port: 4200,
     stats: 'minimal',
