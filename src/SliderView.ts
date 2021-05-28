@@ -5,7 +5,7 @@ import SliderHandleView from './subviews/SliderHandleView';
 class SliderView extends EventEmitter {
   private HTML = $('<div class="slider"></div>');
 
-  private subViews: {
+  subViews: {
     [subViewName: string]: ISliderSubView;
   }
 
