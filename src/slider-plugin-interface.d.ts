@@ -36,5 +36,5 @@ type EventName =
   'sliderElementClicked';
 
 interface ISliderSubView {
-  HTML: string;
+  HTML: JQuery<HTMLElement>;
 }
