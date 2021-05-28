@@ -42,7 +42,7 @@ module.exports = {
   devtool: isDev ? 'eval-source-map' : false,
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'slider test',
+      title: 'Slider plugin test',
       template: './src/demo/demo-page.html',
       filename: 'demo/demo-page.html',
     }),
