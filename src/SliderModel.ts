@@ -3,6 +3,7 @@ import EventEmitter from './EventEmitter';
 class SliderModel extends EventEmitter implements ISliderModel {
   constructor(private options: ISliderPluginOptions) {
     super();
+    setTimeout(() => this.setStepSize(12), 1000);
   }
 
   getOptions(): ISliderPluginOptions {

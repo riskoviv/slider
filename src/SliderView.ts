@@ -20,6 +20,8 @@ class SliderView extends EventEmitter {
     Object.keys(this.subViews).forEach((subView) => {
       this.HTML.append(this.subViews[subView].HTML);
     });
+
+    this.subViews.sliderBase.HTML.addClass('some_class');
   }
 
   render() {
