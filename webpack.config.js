@@ -41,8 +41,8 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'slider test',
-      template: './src/demo/index.html',
-      filename: 'demo/index.html',
+      template: './src/demo/demo-page.html',
+      filename: 'demo/demo-page.html',
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
@@ -60,7 +60,7 @@ module.exports = {
     jquery: 'jQuery',
   },
   devServer: {
-    openPage: 'demo/index.html',
+    openPage: 'demo/demo-page.html',
     hot: false,
     overlay: true,
     port: 4200,
