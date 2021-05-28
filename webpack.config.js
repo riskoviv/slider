@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const isDev = process.env.NODE_ENV === 'development';
 
 const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[fullhash:7].${ext}`);
+const filepath = (pathdata, ext) => (pathdata.chunk.name === 'demo-page' ? `demo/${filename(ext)}` : filename(ext));
 
 module.exports = {
   mode: 'development',
@@ -14,7 +15,7 @@ module.exports = {
     'slider-plugin': './src/slider-plugin.ts',
   },
   output: {
-    filename: filename('js'),
+    filename: (pathdata) => filepath(pathdata, 'js'),
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
@@ -53,7 +54,7 @@ module.exports = {
       'window.jQuery': 'jquery',
     }),
     new MiniCssExtractPlugin({
-      filename: filename('css'),
+      filename: (pathdata) => filepath(pathdata, 'css'),
     }),
   ],
   externals: {
