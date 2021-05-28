@@ -13,6 +13,7 @@ module.exports = {
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
+    'demo-page': './src/demo/demo-page.js',
   },
   output: {
     filename: (pathdata) => filepath(pathdata, 'js'),
