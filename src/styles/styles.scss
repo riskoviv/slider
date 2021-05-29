@@ -1,19 +1,32 @@
 .slider {
+  --slider-height: 30px;
   position: relative;
-  height: 50px;
-  background-color: #666;
+  height: var(--slider-height);
+  overflow: visible;
+  border: 3px solid brown;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  * {
+    box-sizing: border-box;
+  }
 
   &__base {
-    height: 50%;
+    --base-width: calc(100% - var(--slider-height));
+    height: 15px;
+    width: var(--base-width);
     background-color: #444;
   }
 
   &__handle {
     position: absolute;
-    width: 50px;
-    height: 50px;
+    width: var(--slider-height);
+    height: var(--slider-height);
     background-color: rgb(74, 235, 25);
     top: 0;
     left: 0;
+    border-radius: 50%;
+    border: 3px solid white;
   }
 }
