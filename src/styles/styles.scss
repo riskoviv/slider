@@ -1,9 +1,9 @@
 .slider {
-  --slider-height: 30px;
+  --slider-height: 20px;
   position: relative;
   height: var(--slider-height);
   overflow: visible;
-  border: 3px solid brown;
+  // border: 3px solid brown;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,19 +14,21 @@
 
   &__base {
     --base-width: calc(100% - var(--slider-height));
-    height: 15px;
+    --base-height: calc(var(--slider-height) / 2);
+    height: var(--base-height);
     width: var(--base-width);
     background-color: #444;
+    border-radius: calc(var(--base-height) / 2);
   }
 
   &__handle {
     position: absolute;
     width: var(--slider-height);
     height: var(--slider-height);
-    background-color: rgb(74, 235, 25);
+    background-color: rgba(74, 235, 25, 0.5);
     top: 0;
     left: 0;
     border-radius: 50%;
-    border: 3px solid white;
+    border: calc(var(--slider-height) / 10) solid white;
   }
 }
