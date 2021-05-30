@@ -23,6 +23,7 @@ class SliderPresenter {
   }
 
   changeStepSize = (stepSize: number) => {
+    console.log(`stepSize was changed to ${stepSize}`);
     // this.view.changeStepSize(stepSize);
   }
 }
