@@ -17,7 +17,10 @@ class SliderPresenter {
 
     this.publicMethods = this.model.publicMethods;
 
-    this.view.render();
+    this.view.render()
+      .subViews.sliderHandle1.on('handle1MouseDown', this.handle1MouseDown)
+      .on('handle1MouseMove', this.handle1MouseMove)
+      .on('handle1MouseUp', this.handle1MouseUp);
 
     this.model.on('stepSizeChanged', this.changeStepSize);
   }
@@ -26,6 +29,20 @@ class SliderPresenter {
     console.log(`stepSize was changed to ${stepSize}`);
     // this.view.changeStepSize(stepSize);
   }
+
+  handle1MouseDown = () => {
+    // this.model.
+    console.log('down');
+  }
+
+  handle1MouseMove = () => {
+    console.log('move');
+  }
+
+  handle1MouseUp = () => {
+    console.log('up');
+  }
+
 }
 
 export default SliderPresenter;
