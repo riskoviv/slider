@@ -16,11 +16,16 @@ class SliderView extends EventEmitter {
       sliderHandle1: new SliderHandleView(),
     };
 
-    Object.keys(this.subViews).forEach((subView) => {
-      this.HTML.append(this.subViews[subView].HTML);
-    });
+    this.insertSubViewsIntoContainer();
+
 
     // this.subViews.sliderBase.HTML.addClass('some_class');
+  }
+
+  insertSubViewsIntoContainer = () => {
+    Object.keys(this.subViews).forEach((subView) => {
+      this.controlContainer.append(this.subViews[subView].HTML);
+    });
   }
 
   render() {
