@@ -5,6 +5,8 @@ import SliderHandleView from './subviews/SliderHandleView';
 class SliderView extends EventEmitter {
   HTML = $('<div class="slider"></div>');
 
+  controlContainer = $('<div class="slider__control-container js-slider__control-container"></div>');
+
   subViews: {
     [subViewName: string]: ISliderSubView;
   }
@@ -18,6 +20,7 @@ class SliderView extends EventEmitter {
 
     this.insertSubViewsIntoContainer();
 
+    this.HTML.append(this.controlContainer);
 
     // this.subViews.sliderBase.HTML.addClass('some_class');
   }
@@ -30,6 +33,7 @@ class SliderView extends EventEmitter {
 
   render() {
     this.pluginRootElem.append(this.HTML);
+    return this;
   }
 }
 
