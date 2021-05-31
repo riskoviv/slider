@@ -9,11 +9,12 @@ body {
 }
 
 .overscroll-container {
-  height: 1000px;
+  height: 150%;
+  width: 200%;
   padding-left: 100px;
 }
 
 .slider-container {
   margin-top: 100px;
-  max-width: 400px;
+  width: 400px;
 }
