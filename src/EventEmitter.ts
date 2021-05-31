@@ -1,9 +1,5 @@
-type EventsStorage = {
-  [event in EventName]?: Function[];
-};
-
-class EventEmitter {
-  private events: EventsStorage = {};
+class EventEmitter implements IEventEmitter {
+  events: EventsStorage = {};
 
   on(evt: EventName, listener: Function): this {
     if (this.events[evt] === undefined) {
@@ -13,7 +9,7 @@ class EventEmitter {
     return this;
   }
 
-  protected emit(evt: EventName, arg?: unknown): void {
+  emit(evt: EventName, arg?: unknown): void {
     try {
       if (this.events[evt] === undefined) {
         const emitError = new Error(`${evt} event is not registered`);
