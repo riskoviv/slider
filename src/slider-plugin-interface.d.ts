@@ -27,20 +27,24 @@ interface JQuery {
   sliderPlugin: ISliderPlugin;
 }
 
-interface ISliderModel {
-  getOptions(): ISliderPluginOptions
-}
 type EventsStorage = {
   [event in EventName]?: Function[];
 };
 
 type EventName =
   'stepSizeChanged' |
-  'sliderElementClicked';
+  'handle1MouseDown' |
+  'handle1MouseMove' |
+  'handle1MouseUp';
+
 interface IEventEmitter {
   private events: EventsStorage;
   on(evt: EventName, listener: Function): this;
   protected emit(evt: EventName, arg?: unknown): void;
+}
+
+interface ISliderModel {
+  getOptions(): ISliderPluginOptions
 }
 
 interface ISliderSubView extends IEventEmitter {
