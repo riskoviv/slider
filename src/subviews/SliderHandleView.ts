@@ -16,7 +16,6 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
       return;
     }
     e.preventDefault();
-    this.emit('handle1MouseDown', this);
   }
 
   emitHandle1MouseMove = (e: JQuery.MouseMoveEvent) => {
@@ -24,7 +23,6 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
   }
 
   emitHandle1MouseUp = (e: JQuery.MouseUpEvent) => {
-    this.emit('handle1MouseUp', this);
   }
 }
 
