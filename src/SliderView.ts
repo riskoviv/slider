@@ -17,7 +17,7 @@ class SliderView extends EventEmitter {
     super();
     this.subViews = {
       sliderBase: new SliderBaseView(),
-      sliderHandle1: new SliderHandleView(),
+      sliderHandle1: new SliderHandleView(this.controlContainer.get()[0]),
     };
 
     this.insertSubViewsIntoContainer();

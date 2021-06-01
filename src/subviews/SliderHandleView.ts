@@ -3,7 +3,7 @@ import EventEmitter from '../EventEmitter';
 class SliderHandleView extends EventEmitter implements ISliderSubView {
   $thisElem = $('<div class="slider__handle"></div>');
 
-  constructor() {
+  constructor(private sliderDirectContainer: HTMLElement) {
     super();
 
       .on('mouseup', this.emitHandle1MouseUp)
