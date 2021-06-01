@@ -8,6 +8,7 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
 
       .on('mousemove', this.emitHandle1MouseMove);
     this.$thisElem.on('mousedown', this.handle1MouseDown)
+      .on('contextmenu', this.handle1PreventContextMenu);
   }
 
   handle1MouseDown = (e: JQuery.MouseDownEvent) => {
@@ -23,6 +24,8 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
 
   handle1MouseUp = (e: JQuery.MouseUpEvent) => {
   }
+
+  handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
 }
 
 export default SliderHandleView;
