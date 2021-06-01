@@ -33,11 +33,6 @@ class SliderPresenter {
   handle1MouseMove = () => {
     console.log('move');
   }
-
-  handle1MouseUp = () => {
-    console.log('up');
-  }
-
 }
 
 export default SliderPresenter;
