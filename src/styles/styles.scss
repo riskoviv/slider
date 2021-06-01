@@ -36,4 +36,9 @@
     left: 0%;
     transform: translateX(-50%);
   }
+
+  &__tip {
+    height: 50px;
+    background-color: #666;
+  }
 }

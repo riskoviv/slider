@@ -7,6 +7,8 @@ class SliderView extends EventEmitter {
 
   controlContainer = $('<div class="slider__control-container js-slider__control-container"></div>');
 
+  tip = $('<div class="slider__tip js-slider__tip"></div>');
+
   subViews: {
     [subViewName: string]: ISliderSubView;
   }
@@ -20,7 +22,10 @@ class SliderView extends EventEmitter {
 
     this.insertSubViewsIntoContainer();
 
-    this.HTML.append(this.controlContainer);
+    this.$thisElem.append(
+      this.tip,
+      this.controlContainer,
+    );
 
     // this.subViews.sliderBase.HTML.addClass('some_class');
   }
