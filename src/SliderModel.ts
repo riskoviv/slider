@@ -14,6 +14,11 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('stepSizeChanged', this.options.stepSize);
   }
 
+  changeValue1(value1: number): void {
+    this.options.value1 = value1;
+    this.emit('value1Changed', value1);
+  }
+
   publicMethods: Object = {
     getOptions: this.getOptions.bind(this),
     setStepSize: this.setStepSize.bind(this),

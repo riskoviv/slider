@@ -20,7 +20,8 @@ class SliderPresenter {
     this.view.render()
       .subViews.sliderHandle1.on('handle1MouseMove', this.handle1MouseMove);
 
-    this.model.on('stepSizeChanged', this.changeStepSize);
+    this.model.on('stepSizeChanged', this.changeStepSize)
+      .on('value1Changed', this.value1Changed);
   }
 
   changeStepSize = (stepSize: number) => {
@@ -32,6 +33,9 @@ class SliderPresenter {
     this.model.changeValue1(handleOffsetLeft);
   }
 
+  value1Changed = (value1: number) => {
+    const $test = $('.js-slider__tip');
+    $test.text(value1);
   }
 }
 
