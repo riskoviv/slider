@@ -28,10 +28,10 @@ class SliderPresenter {
     // this.view.changeStepSize(stepSize);
   }
 
+  handle1MouseMove = (handleOffsetLeft: number) => {
+    this.model.changeValue1(handleOffsetLeft);
   }
 
-  handle1MouseMove = () => {
-    console.log('move');
   }
 }
 
