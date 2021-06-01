@@ -3,7 +3,7 @@ import SliderBaseView from './subviews/SliderBaseView';
 import SliderHandleView from './subviews/SliderHandleView';
 
 class SliderView extends EventEmitter {
-  HTML = $('<div class="slider"></div>');
+  $thisElem = $('<div class="slider"></div>');
 
   controlContainer = $('<div class="slider__control-container js-slider__control-container"></div>');
 
@@ -27,12 +27,12 @@ class SliderView extends EventEmitter {
 
   insertSubViewsIntoContainer = () => {
     Object.keys(this.subViews).forEach((subView) => {
-      this.controlContainer.append(this.subViews[subView].HTML);
+      this.controlContainer.append(this.subViews[subView].$thisElem);
     });
   }
 
   render() {
-    this.pluginRootElem.append(this.HTML);
+    this.pluginRootElem.append(this.$thisElem);
     return this;
   }
 }

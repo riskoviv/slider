@@ -47,5 +47,5 @@ interface ISliderModel {
 }
 
 interface ISliderSubView extends IEventEmitter {
-  HTML: JQuery<HTMLElement>;
+  $thisElem: JQuery<HTMLElement>;
 }
