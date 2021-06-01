@@ -1,9 +1,10 @@
-body {
-  background-color: #888;
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
-.main-container {
-  height: 500px;
+body {
+  background-color: #888;
   overflow: auto;
   padding: 10px;
 }
