@@ -1,21 +1,25 @@
-/* eslint-disable no-undef */
-import $ from 'jquery';
-import SliderModel from './SliderModel';
-import SliderView from './SliderView';
 import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: ISliderPluginOptions): JQuery {
+  function sliderPlugin(this: JQuery, options: ISliderPluginOptions): Object {
     const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
-    const model = new SliderModel(pluginOptions);
-    const view = new SliderView();
-    // eslint-disable-next-line no-unused-vars
-    const presenter = new SliderPresenter(model, view);
+    const presenter = new SliderPresenter(this, pluginOptions);
 
-    return this;
+    return presenter.publicMethods;
   },
   {
-    options: {},
+    options: {
+      stepSize: 10,
+      minValue: 0,
+      maxValue: 10,
+      value1: 4,
+      value2: 6,
+      isVertical: false,
+      isInterval: false,
+      showValueHint: false,
+      showScale: false,
+      showProgressBar: false,
+    },
   },
 );

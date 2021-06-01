@@ -7,15 +7,22 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const isDev = process.env.NODE_ENV === 'development';
 
 const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[fullhash:7].${ext}`);
+const filepath = (pathdata, ext) => (pathdata.chunk.name === 'demo-page' ? `demo/${filename(ext)}` : filename(ext));
 
 module.exports = {
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
+    'demo-page': './src/demo/demo-page.js',
   },
   output: {
-    filename: filename('js'),
+    filename: (pathdata) => filepath(pathdata, 'js'),
     path: path.resolve(__dirname, 'dist'),
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
   },
   module: {
     rules: [
@@ -37,12 +44,12 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  devtool: isDev ? 'eval-source-map' : false,
+  devtool: isDev ? 'eval-cheap-module-source-map' : false,
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'slider test',
-      template: './src/demo/index.html',
-      filename: 'demo/index.html',
+      title: 'Slider plugin test',
+      template: './src/demo/demo-page.html',
+      filename: 'demo/demo-page.html',
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
@@ -50,18 +57,17 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      'window.jQuery': 'jquery',
     }),
     new MiniCssExtractPlugin({
-      filename: filename('css'),
+      filename: (pathdata) => filepath(pathdata, 'css'),
     }),
   ],
   externals: {
     jquery: 'jQuery',
   },
   devServer: {
-    openPage: 'demo/index.html',
-    hot: true,
+    openPage: 'demo/demo-page.html',
+    hot: false,
     overlay: true,
     port: 4200,
     stats: 'minimal',

@@ -8,11 +8,17 @@ module.exports = {
     'plugin:fsd/all',
   ],
   globals: {
+    $: 'readonly',
     JQuery: 'readonly',
     ISliderPluginOptions: 'readonly',
     ISliderPluginGlobalOptions: 'readonly',
     ISliderPluginFunction: 'readonly',
     ISliderPlugin: 'readonly',
+    ISliderModel: 'readonly',
+    EventName: 'readonly',
+    ISliderSubView: 'readonly',
+    IEventEmitter: 'readonly',
+    EventsStorage: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
@@ -30,7 +36,7 @@ module.exports = {
     }],
     'linebreak-style': ['error', 'windows'],
     'eol-last': 'warn',
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 'off',
   },
   settings: {
     'import/resolver': {

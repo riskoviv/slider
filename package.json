@@ -1,8 +1,8 @@
 {
   "name": "slider",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "slider jQuery plugin written in TypeScript using MVP architecture",
-  "main": "index.js",
+  "main": "slider-plugin.ts",
   "private": true,
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve --open",

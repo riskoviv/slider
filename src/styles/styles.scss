@@ -1,3 +1,44 @@
-body {
-  background-color: #888;
+.slider {
+  --slider-height: 30px;
+  min-height: var(--slider-height);
+  // border: 3px solid brown;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  &__control-container {
+    position: relative;
+    height: var(--slider-height);
+    margin: 0 calc(var(--slider-height) / 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__base {
+    // --base-width: calc(100% - var(--slider-height));
+    --base-height: calc(var(--slider-height) / 2);
+    height: var(--base-height);
+    width: 100%;
+    background-color: #444;
+    border-radius: calc(var(--base-height) / 2);
+  }
+
+  &__handle {
+    position: absolute;
+    width: var(--slider-height);
+    height: var(--slider-height);
+    background-color: rgba(74, 235, 25, 0.5);
+    border-radius: 50%;
+    border: calc(var(--slider-height) / 10) solid white;
+    top: 0;
+    left: 0%;
+    transform: translateX(-50%);
+  }
+
+  &__tip {
+    height: 50px;
+    background-color: #666;
+  }
 }
