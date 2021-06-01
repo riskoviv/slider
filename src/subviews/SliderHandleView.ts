@@ -16,6 +16,7 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
       return;
     }
     e.preventDefault();
+      .on('mouseup', this.handle1MouseUp);
   }
 
     this.emit('handle1MouseMove', this);
@@ -23,6 +24,11 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
   }
 
   handle1MouseUp = (e: JQuery.MouseUpEvent) => {
+    if (e.originalEvent.button !== 0) {
+      e.preventDefault();
+    }
+    $(document).off('mousemove', this.handle1MouseMove)
+      .off('mouseup', this.handle1MouseUp);
   }
 
   handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
