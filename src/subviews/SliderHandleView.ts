@@ -39,13 +39,18 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .on('mouseup', this.handle1MouseUp);
   }
 
+  keepHandleInBounds(leftValue: number) {
+    if (leftValue < 0) return 0;
+    if (leftValue > this.sliderRightBound) return this.sliderRightBound;
+    return leftValue;
+  }
+
   handle1MouseMove = (e: JQuery.MouseMoveEvent) => {
     let newLeft = e.pageX
       - this.sliderDirectContainer.offsetLeft
       - this.shiftX;
-    // newLeft = Math.floor(newLeft / 50) * 50;
-    if (newLeft < 0) newLeft = 0; // ограничение с левой стороны
-    if (newLeft > sliderRightBound) newLeft = sliderRightBound; // ограничение справа
+
+    newLeft = this.keepHandleInBounds(newLeft);
 
     this.setHandlePosition(newLeft);
 
