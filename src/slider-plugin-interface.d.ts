@@ -33,8 +33,8 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  'handle1MouseMove' |
   'value1Changed';
+  'handleMoved' |
 
 interface IEventEmitter {
   private events: EventsStorage;

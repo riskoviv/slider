@@ -56,7 +56,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     const leftInPercents = newLeft / this.sliderRightBound;
 
-    this.emit('handle1MouseMove', leftInPercents);
+    this.emit('handleMoved', leftInPercents);
   }
 
   handle1MouseUp = (e: JQuery.MouseUpEvent) => {

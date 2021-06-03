@@ -22,7 +22,7 @@ class SliderPresenter {
 
     const { value1, minValue, maxValue } = this.model.getOptions();
 
-    this.view.subViews.sliderHandle1.on('handle1MouseMove', this.handle1MouseMove);
+    this.view.subViews.sliderHandle1.on('handleMoved', this.handle1MouseMove);
 
     this.view.render(value1, minValue, maxValue);
   }
