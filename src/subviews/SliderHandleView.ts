@@ -14,6 +14,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .on('contextmenu', this.handle1PreventContextMenu);
 
     [this.thisElem] = this.$elem.get();
+  setHandlePosition(left: number) {
+    this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
   }
 
   handle1MouseDown = (e: JQuery.MouseDownEvent) => {
@@ -40,7 +42,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     const sliderRightBound = this.sliderDirectContainer.offsetWidth; // правая граница
     if (newLeft > sliderRightBound) newLeft = sliderRightBound; // ограничение справа
 
-    this.$elem.css('left', `${newLeft}px`);
+    this.setHandlePosition(newLeft);
 
     const leftInPercents = newLeft / sliderRightBound;
 
