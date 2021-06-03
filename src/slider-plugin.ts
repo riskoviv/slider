@@ -4,9 +4,18 @@ import './styles/styles.scss';
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
   function sliderPlugin(this: JQuery, options: ISliderPluginOptions): Object {
     const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
-    const presenter = new SliderPresenter(this, pluginOptions);
-
-    return presenter.publicMethods;
+    try {
+      if (pluginOptions.minValue > pluginOptions.maxValue) {
+        const minMaxError = new Error('minValue must be less that maxValue!');
+        minMaxError.name = 'MinMaxError';
+        throw minMaxError;
+      }
+      const presenter = new SliderPresenter(this, pluginOptions);
+      return presenter.publicMethods;
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
   },
   {
     options: {
