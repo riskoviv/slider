@@ -33,7 +33,7 @@ class SliderPresenter {
   }
 
   value1Changed = (value1: number) => {
-    this.view.subViews.sliderTip.$elem.text(value1);
+    this.view.subViews.sliderTip.setValue(value1);
   }
 }
 
