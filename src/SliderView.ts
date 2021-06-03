@@ -34,11 +34,23 @@ class SliderView extends EventEmitter {
     Object.keys(this.subViews).forEach((subView) => {
       this.controlContainer.append(this.subViews[subView].$elem);
     });
+  translateRealToCSSValue = (realValue: number, minValue: number, maxValue: number) => {
+    const percentValue = (realValue - minValue) / (maxValue - minValue);
+    const CSSValue = this.controlContainer.get()[0].offsetWidth * percentValue;
+    return CSSValue;
   }
 
-  render() {
-    this.pluginRootElem.append(this.$elem);
-    return this;
+  fixValue = (value: number, minValue: number, maxValue: number) => {
+    if (value < minValue) return minValue;
+    if (value > maxValue) return maxValue;
+    return value;
+  }
+
+  render(value1: number, minValue: number, maxValue: number) {
+    const fixedValue1 = this.fixValue(value1, minValue, maxValue);
+    const CSSValue = this.translateRealToCSSValue(fixedValue1, minValue, maxValue);
+    this.subViews.sliderHandle1.setHandlePosition(CSSValue);
+    this.subViews.sliderTip.setValue(fixedValue1);
   }
 }
 
