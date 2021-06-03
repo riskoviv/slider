@@ -12,7 +12,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   constructor(private sliderDirectContainer: HTMLElement) {
     super();
 
-    this.$elem.on('mousedown', this.handle1MouseDown)
+    this.$elem.on('mousedown', this.handleMouseDown)
       .on('contextmenu', this.handle1PreventContextMenu);
 
     [this.thisElem] = this.$elem.get();
@@ -24,7 +24,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
   }
 
-  handle1MouseDown = (e: JQuery.MouseDownEvent) => {
+  handleMouseDown = (e: JQuery.MouseDownEvent) => {
     if (e.originalEvent.button !== 0) {
       return;
     }
@@ -35,8 +35,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       - this.thisElem.getBoundingClientRect().left
       - this.thisElem.offsetWidth / 2;
 
-    $(document).on('mousemove', this.handle1MouseMove)
-      .on('mouseup', this.handle1MouseUp);
+    $(document).on('mousemove', this.handleMouseMove)
+      .on('mouseup', this.handleMouseUp);
   }
 
   keepHandleInBounds(leftValue: number) {
@@ -45,7 +45,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     return leftValue;
   }
 
-  handle1MouseMove = (e: JQuery.MouseMoveEvent) => {
+  handleMouseMove = (e: JQuery.MouseMoveEvent) => {
     let newLeft = e.pageX
       - this.sliderDirectContainer.offsetLeft
       - this.shiftX;
@@ -59,12 +59,12 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.emit('handleMoved', leftInPercents);
   }
 
-  handle1MouseUp = (e: JQuery.MouseUpEvent) => {
+  handleMouseUp = (e: JQuery.MouseUpEvent) => {
     if (e.originalEvent.button !== 0) {
       e.preventDefault();
     }
-    $(document).off('mousemove', this.handle1MouseMove)
-      .off('mouseup', this.handle1MouseUp);
+    $(document).off('mousemove', this.handleMouseMove)
+      .off('mouseup', this.handleMouseUp);
   }
 
   handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
