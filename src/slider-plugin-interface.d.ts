@@ -46,6 +46,16 @@ interface ISliderModel {
   getOptions(): ISliderPluginOptions
 }
 
-interface ISliderSubView extends IEventEmitter {
+interface ISliderHandleView {
+  setHandlePosition?(left: number): void;
+}
+
+interface ISliderBaseView {}
+
+interface ISliderTipView {
+  setValue?(value: number): void;
+}
+
+interface ISliderSubView extends IEventEmitter, ISliderHandleView, ISliderBaseView, ISliderTipView {
   $elem: JQuery<HTMLElement>;
 }

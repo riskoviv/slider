@@ -1,6 +1,6 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderTipView extends EventEmitter implements ISliderSubView {
+class SliderTipView extends EventEmitter implements ISliderTipView {
   $elem = $('<div class="slider__tip js-slider__tip"></div>');
 }
 

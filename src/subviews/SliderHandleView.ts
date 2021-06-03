@@ -1,6 +1,6 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderHandleView extends EventEmitter implements ISliderSubView {
+class SliderHandleView extends EventEmitter implements ISliderHandleView {
   $elem = $('<div class="slider__handle"></div>');
 
   private thisElem: HTMLElement;
