@@ -14,26 +14,33 @@ class SliderView extends EventEmitter {
 
   constructor(private pluginRootElem: JQuery<HTMLElement>) {
     super();
+
+    this.$elem.append(this.controlContainer);
+    this.insertSliderToPluginRootElem();
+    this.createSubViews();
+    this.insertSubViewsIntoContainer();
+    this.$elem.prepend(this.subViews.sliderTip.$elem);
+  }
+
+  createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
       sliderHandle1: new SliderHandleView(this.controlContainer.get()[0]),
       sliderTip: new SliderTipView(),
     };
-
-    this.insertSubViewsIntoContainer();
-
-    this.$elem.append(
-      this.subViews.sliderTip.$elem,
-      this.controlContainer,
-    );
-
-    // this.subViews.sliderBase.HTML.addClass('some_class');
   }
 
   insertSubViewsIntoContainer = () => {
-    Object.keys(this.subViews).forEach((subView) => {
-      this.controlContainer.append(this.subViews[subView].$elem);
-    });
+    this.controlContainer.append(
+      this.subViews.sliderBase.$elem,
+      this.subViews.sliderHandle1.$elem,
+    );
+  }
+
+  insertSliderToPluginRootElem() {
+    this.pluginRootElem.append(this.$elem);
+  }
+
   translateRealToCSSValue = (realValue: number, minValue: number, maxValue: number) => {
     const percentValue = (realValue - minValue) / (maxValue - minValue);
     const CSSValue = this.controlContainer.get()[0].offsetWidth * percentValue;
