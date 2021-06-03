@@ -18,7 +18,7 @@ interface ISliderPluginGlobalOptions {
 }
 
 interface ISliderPluginFunction {
-  (options: ISliderPluginOptions): Object;
+  (options: ISliderPluginOptions): Object | null;
 }
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }

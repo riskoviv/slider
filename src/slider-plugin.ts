@@ -2,7 +2,7 @@ import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: ISliderPluginOptions): Object {
+  function sliderPlugin(this: JQuery, options: ISliderPluginOptions): Object | null {
     const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
     try {
       if (pluginOptions.minValue > pluginOptions.maxValue) {
