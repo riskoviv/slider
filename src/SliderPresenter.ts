@@ -34,8 +34,7 @@ class SliderPresenter {
   }
 
   value1Changed = (value1: number) => {
-    const $test = $('.js-slider__tip');
-    $test.text(value1);
+    this.view.subViews.sliderTip.$elem.text(value1);
   }
 }
 
