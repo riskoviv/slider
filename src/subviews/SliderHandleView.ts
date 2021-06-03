@@ -7,6 +7,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private shiftX: number;
 
+  private sliderRightBound: number;
+
   constructor(private sliderDirectContainer: HTMLElement) {
     super();
 
@@ -14,6 +16,10 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .on('contextmenu', this.handle1PreventContextMenu);
 
     [this.thisElem] = this.$elem.get();
+
+    this.sliderRightBound = this.sliderDirectContainer.offsetWidth;
+  }
+
   setHandlePosition(left: number) {
     this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
   }
@@ -39,12 +45,11 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       - this.shiftX;
     // newLeft = Math.floor(newLeft / 50) * 50;
     if (newLeft < 0) newLeft = 0; // ограничение с левой стороны
-    const sliderRightBound = this.sliderDirectContainer.offsetWidth; // правая граница
     if (newLeft > sliderRightBound) newLeft = sliderRightBound; // ограничение справа
 
     this.setHandlePosition(newLeft);
 
-    const leftInPercents = newLeft / sliderRightBound;
+    const leftInPercents = newLeft / this.sliderRightBound;
 
     this.emit('handle1MouseMove', leftInPercents);
   }
