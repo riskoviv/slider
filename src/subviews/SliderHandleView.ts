@@ -1,7 +1,7 @@
 import EventEmitter from '../EventEmitter';
 
 class SliderHandleView extends EventEmitter implements ISliderSubView {
-  $thisElem = $('<div class="slider__handle"></div>');
+  $elem = $('<div class="slider__handle"></div>');
 
   private thisElem: HTMLElement;
 
@@ -10,10 +10,10 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
   constructor(private sliderDirectContainer: HTMLElement) {
     super();
 
-    this.$thisElem.on('mousedown', this.handle1MouseDown)
+    this.$elem.on('mousedown', this.handle1MouseDown)
       .on('contextmenu', this.handle1PreventContextMenu);
 
-    [this.thisElem] = this.$thisElem.get();
+    [this.thisElem] = this.$elem.get();
   }
 
   handle1MouseDown = (e: JQuery.MouseDownEvent) => {
@@ -40,7 +40,7 @@ class SliderHandleView extends EventEmitter implements ISliderSubView {
     const sliderRightBound = this.sliderDirectContainer.offsetWidth; // правая граница
     if (newLeft > sliderRightBound) newLeft = sliderRightBound; // ограничение справа
 
-    this.$thisElem.css('left', `${newLeft}px`);
+    this.$elem.css('left', `${newLeft}px`);
 
     this.emit('handle1MouseMove', newLeft);
   }
