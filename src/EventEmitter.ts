@@ -1,11 +1,7 @@
-type EventsStorage = {
-  [key: string]: Function[];
-};
+class EventEmitter implements IEventEmitter {
+  events: EventsStorage = {};
 
-class EventEmitter {
-  private events: EventsStorage = {};
-
-  on(evt: string, listener: Function): this {
+  on(evt: EventName, listener: Function): this {
     if (this.events[evt] === undefined) {
       this.events[evt] = [];
     }
@@ -13,12 +9,17 @@ class EventEmitter {
     return this;
   }
 
-  protected emit(evt: string, arg?: unknown): void {
-    if (this.events[evt] === undefined) {
-      console.error(`${evt} event not registered`);
-      return;
+  emit(evt: EventName, arg?: unknown): void {
+    try {
+      if (this.events[evt] === undefined) {
+        const emitError = new Error(`${evt} event is not registered`);
+        emitError.name = 'EmitError';
+        throw emitError;
+      }
+      this.events[evt].slice().forEach((lsn) => lsn(arg));
+    } catch (e) {
+      console.error(e);
     }
-    this.events[evt].slice().forEach((lsn) => lsn(arg));
   }
 }
 
