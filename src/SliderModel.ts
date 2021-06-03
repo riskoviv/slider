@@ -14,8 +14,6 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('stepSizeChanged', this.options.stepSize);
   }
 
-    this.options.value1 = value1;
-    this.emit('value1Changed', value1);
   translateToRealValue(percentValue: number): number {
     const min = this.options.minValue;
     const max = this.options.maxValue;
@@ -25,6 +23,8 @@ class SliderModel extends EventEmitter implements ISliderModel {
   }
 
   setValue1(handle1percent: number): void {
+    this.options.value1 = this.translateToRealValue(handle1percent);
+    this.emit('value1Changed', this.options.value1);
   }
 
   publicMethods: Object = {
