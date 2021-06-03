@@ -17,11 +17,14 @@ class SliderPresenter {
 
     this.publicMethods = this.model.publicMethods;
 
-    this.view.render()
-      .subViews.sliderHandle1.on('handle1MouseMove', this.handle1MouseMove);
-
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
+
+    const { value1, minValue, maxValue } = this.model.getOptions();
+
+    this.view.subViews.sliderHandle1.on('handle1MouseMove', this.handle1MouseMove);
+
+    this.view.render(value1, minValue, maxValue);
   }
 
   changeStepSize = (stepSize: number) => {
