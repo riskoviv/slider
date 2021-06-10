@@ -13,11 +13,19 @@ class SliderPresenter {
     private pluginOptions: ISliderPluginOptions,
   ) {
     this.model = new SliderModel(this.pluginOptions);
-    this.view = new SliderView(this.pluginRootElem);
 
     const {
       value1, minValue, maxValue, stepSize,
     } = this.pluginOptions;
+
+    this.view = new SliderView(
+      this.pluginRootElem,
+      {
+        minValue,
+        maxValue,
+        stepSize,
+      },
+    );
 
     this.publicMethods = this.model.publicMethods;
 

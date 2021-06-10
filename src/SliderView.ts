@@ -12,7 +12,7 @@ class SliderView extends EventEmitter {
     [subViewName: string]: ISliderSubView;
   }
 
-  constructor(private pluginRootElem: JQuery<HTMLElement>) {
+  constructor(private pluginRootElem: JQuery<HTMLElement>, private bounds: HandleBounds) {
     super();
 
     this.$elem.append(this.controlContainer);
