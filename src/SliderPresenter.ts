@@ -32,8 +32,8 @@ class SliderPresenter {
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
 
-
-    this.view.subViews.sliderHandle1.on('handleMoved', this.handle1MouseMove);
+    this.view.subViews.sliderHandle1.on('handleMoved', this.handle1MouseMove)
+      .on('handleMouseUp', this.handle1MouseUp);
 
     this.view.render(value1, minValue, maxValue);
   }
@@ -48,6 +48,15 @@ class SliderPresenter {
 
   value1Changed = (value1: number) => {
     this.view.subViews.sliderTip.setValue(value1);
+  }
+
+  handle1MouseUp = () => {
+    const { minValue, maxValue } = this.model.getOptions();
+    this.view.subViews.sliderHandle1.setHandlePosition(this.view.translateRealToCSSValue(
+      this.model.getOptions().value1,
+      minValue,
+      maxValue,
+    ));
   }
 }
 
