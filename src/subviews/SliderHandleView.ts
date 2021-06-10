@@ -9,6 +9,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private sliderRightBound: number;
 
+  private allowedValues: number[];
+
   constructor(private sliderDirectContainer: HTMLElement, private bounds: HandleBounds) {
     super();
 
@@ -18,6 +20,21 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     [this.thisElem] = this.$elem.get();
 
     this.sliderRightBound = this.sliderDirectContainer.offsetWidth;
+
+    this.createAllowedValuesArr();
+  }
+
+  private createAllowedValuesArr() {
+    const totalSliderRange = Math.abs(this.bounds.maxValue) + Math.abs(this.bounds.minValue);
+    const stepSizeInPercents = (this.bounds.stepSize / totalSliderRange) * 100;
+    this.allowedValues = [];
+
+    for (let i = 0; i <= 100; i += stepSizeInPercents) {
+      this.allowedValues.push(Math.round(this.sliderRightBound * (i / 100)));
+    }
+    if (this.allowedValues[this.allowedValues.length - 1] !== this.sliderRightBound) {
+      this.allowedValues.push(this.sliderRightBound);
+    }
   }
 
   setHandlePosition(left: number) {
