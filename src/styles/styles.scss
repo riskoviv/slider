@@ -38,7 +38,13 @@
   }
 
   &__tip {
-    height: 50px;
-    background-color: #666;
+    &-container {
+      height: 50px;
+      background-color: #666;
+    }
+
+    &-body {
+      position: absolute;
+    }
   }
 }

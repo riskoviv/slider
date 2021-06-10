@@ -1,14 +1,21 @@
 import EventEmitter from '../EventEmitter';
 
 class SliderTipView extends EventEmitter implements ISliderTipView {
-  $elem = $('<div class="slider__tip"></div>');
+  $elem = $('<div class="slider__tip-container"></div>');
+
+  $body = $('<div class="slider__tip-body"></div>');
+
+  constructor() {
+    super();
+    this.$elem.append(this.$body);
+  }
 
   setValue(value: number) {
-    this.$elem.text(value);
+    this.$body.text(value);
   }
 
   setPosition(left: number) {
-    this.$elem.css('left', `${left}px`);
+    this.$body.css('left', `${left}px`);
   }
 }
 
