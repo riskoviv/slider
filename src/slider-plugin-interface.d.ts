@@ -34,7 +34,8 @@ type EventsStorage = {
 type EventName =
   'stepSizeChanged' |
   'handleMoved' |
-  'value1Changed';
+  'value1Changed' |
+  'handleMouseUp';
 
 interface IEventEmitter {
   private events: EventsStorage;
@@ -59,3 +60,9 @@ interface ISliderTipView {
 interface ISliderSubView extends IEventEmitter, ISliderHandleView, ISliderBaseView, ISliderTipView {
   $elem: JQuery<HTMLElement>;
 }
+
+type HandleBounds = {
+  minValue: number,
+  maxValue: number,
+  stepSize: number,
+};
