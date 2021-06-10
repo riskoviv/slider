@@ -32,7 +32,7 @@ class SliderPresenter {
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
 
-    this.view.subViews.sliderHandle1.on('handleMoved', this.handle1MouseMove)
+    this.view.subViews.sliderHandle1.on('handleStopped', this.handle1Stopped)
       .on('handleMouseUp', this.handle1MouseUp);
 
     this.view.render(value1, minValue, maxValue);
@@ -42,7 +42,7 @@ class SliderPresenter {
     // this.view.changeStepSize(stepSize);
   }
 
-  handle1MouseMove = (handle1Left: number) => {
+  handle1Stopped = (handle1Left: number) => {
     this.model.setValue1(handle1Left);
   }
 

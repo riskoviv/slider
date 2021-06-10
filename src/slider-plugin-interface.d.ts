@@ -33,7 +33,7 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  'handleMoved' |
+  'handleStopped' |
   'value1Changed' |
   'handleMouseUp';
 
