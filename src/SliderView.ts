@@ -43,7 +43,7 @@ class SliderView extends EventEmitter {
 
   translateRealToCSSValue = (realValue: number, minValue: number, maxValue: number) => {
     const percentValue = (realValue - minValue) / (maxValue - minValue);
-    const CSSValue = this.controlContainer.get()[0].offsetWidth * percentValue;
+    const CSSValue = Math.round(this.controlContainer.get()[0].offsetWidth * percentValue);
     return CSSValue;
   }
 
