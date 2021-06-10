@@ -6,6 +6,10 @@ class SliderTipView extends EventEmitter implements ISliderTipView {
   setValue(value: number) {
     this.$elem.text(value);
   }
+
+  setPosition(left: number) {
+    this.$elem.css('left', `${left}px`);
+  }
 }
 
 export default SliderTipView;
