@@ -15,12 +15,15 @@ class SliderPresenter {
     this.model = new SliderModel(this.pluginOptions);
     this.view = new SliderView(this.pluginRootElem);
 
+    const {
+      value1, minValue, maxValue, stepSize,
+    } = this.pluginOptions;
+
     this.publicMethods = this.model.publicMethods;
 
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
 
-    const { value1, minValue, maxValue } = this.model.getOptions();
 
     this.view.subViews.sliderHandle1.on('handleMoved', this.handle1MouseMove);
 
