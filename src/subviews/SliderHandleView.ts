@@ -24,7 +24,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
   }
 
-  handleMouseDown = (e: JQuery.MouseDownEvent) => {
+  private handleMouseDown = (e: JQuery.MouseDownEvent) => {
     if (e.originalEvent.button !== 0) {
       return;
     }
@@ -39,13 +39,13 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .on('mouseup', this.handleMouseUp);
   }
 
-  keepHandleInBounds(leftValue: number) {
+  private keepHandleInBounds(leftValue: number) {
     if (leftValue < 0) return 0;
     if (leftValue > this.sliderRightBound) return this.sliderRightBound;
     return leftValue;
   }
 
-  handleMouseMove = (e: JQuery.MouseMoveEvent) => {
+  private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
     let newLeft = e.pageX
       - this.sliderDirectContainer.offsetLeft
       - this.shiftX;
@@ -59,7 +59,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.emit('handleMoved', leftInPercents);
   }
 
-  handleMouseUp = (e: JQuery.MouseUpEvent) => {
+  private handleMouseUp = (e: JQuery.MouseUpEvent) => {
     if (e.originalEvent.button !== 0) {
       e.preventDefault();
     }
@@ -70,7 +70,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .off('mouseup', this.handleMouseUp);
   }
 
-  handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
+  private handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
 }
 
 export default SliderHandleView;
