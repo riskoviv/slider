@@ -9,7 +9,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private sliderRightBound: number;
 
-  constructor(private sliderDirectContainer: HTMLElement) {
+  constructor(private sliderDirectContainer: HTMLElement, private bounds: HandleBounds) {
     super();
 
     this.$elem.on('mousedown', this.handleMouseDown)
