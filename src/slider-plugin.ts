@@ -22,7 +22,7 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
       stepSize: 10,
       minValue: -100,
       maxValue: 100,
-      value1: 4,
+      value1: 0,
       value2: 6,
       isVertical: false,
       isInterval: false,
