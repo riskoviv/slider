@@ -37,8 +37,12 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     }
   }
 
-  setHandlePosition(left: number) {
+  setHandlePosition(left: number): boolean {
     this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
+    if (this.allowedValues.includes(left)) {
+      return true;
+    }
+    return false;
   }
 
   private handleMouseDown = (e: JQuery.MouseDownEvent) => {
@@ -69,11 +73,12 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     newLeft = this.keepHandleInBounds(newLeft);
 
-    this.setHandlePosition(newLeft);
+    const isValueSet = this.setHandlePosition(newLeft);
 
-    const leftInPercents = newLeft / this.sliderRightBound;
-
-    this.emit('handleMoved', leftInPercents);
+    if (isValueSet) {
+      const leftInPercents = newLeft / this.sliderRightBound;
+      this.emit('handleMoved', leftInPercents);
+    }
   }
 
   private handleMouseUp = (e: JQuery.MouseUpEvent) => {
