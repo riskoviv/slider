@@ -56,6 +56,7 @@ interface ISliderBaseView {}
 
 interface ISliderTipView {
   setValue?(value: number): void;
+  setPosition?(left: number): void;
 }
 
 interface ISliderSubView extends IEventEmitter, ISliderHandleView, ISliderBaseView, ISliderTipView {
