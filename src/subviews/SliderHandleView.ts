@@ -86,7 +86,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       e.preventDefault();
     }
 
-    this.emit('handleMouseUp');
+    this.emit('handleStopped');
 
     $(document).off('mousemove', this.handleMouseMove)
       .off('mouseup', this.handleMouseUp);

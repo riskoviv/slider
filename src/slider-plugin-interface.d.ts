@@ -35,7 +35,7 @@ type EventName =
   'stepSizeChanged' |
   'handleValueSet' |
   'value1Changed' |
-  'handleMouseUp';
+  'handleStopped' |
 
 interface IEventEmitter {
   private events: EventsStorage;
