@@ -6,7 +6,7 @@ import SliderTipView from './subviews/SliderTipView';
 class SliderView extends EventEmitter {
   $elem = $('<div class="slider"></div>');
 
-  controlContainer = $('<div class="slider__control-container js-slider__control-container"></div>');
+  controlContainer = $('<div class="slider__control-container"></div>');
 
   subViews: {
     [subViewName: string]: ISliderSubView;
