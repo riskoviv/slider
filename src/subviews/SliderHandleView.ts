@@ -77,7 +77,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     if (isValueSet) {
       const leftInPercents = newLeft / this.sliderRightBound;
-      this.emit('handleStopped', leftInPercents);
+      this.emit('handleValueSet', leftInPercents);
     }
   }
 

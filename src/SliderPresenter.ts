@@ -32,8 +32,8 @@ class SliderPresenter {
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
 
-    this.view.subViews.sliderHandle1.on('handleStopped', this.handle1Stopped)
       .on('handleMouseUp', this.handle1MouseUp);
+    this.view.subViews.sliderHandle1.on('handleValueSet', this.handle1Stopped)
 
     this.view.render(value1, minValue, maxValue);
   }
