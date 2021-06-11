@@ -67,11 +67,10 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
-    let newLeft = e.pageX
+    const newLeft = e.pageX
       - this.sliderDirectContainer.offsetLeft
       - this.shiftX;
 
-    newLeft = this.keepHandleInBounds(newLeft);
     const isValueSet = this.setPosition(newLeft);
 
     this.emit('handleMoved', this.keepHandleInBounds(newLeft) + 15);
