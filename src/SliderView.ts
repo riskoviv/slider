@@ -56,7 +56,7 @@ class SliderView extends EventEmitter {
   render(value1: number, minValue: number, maxValue: number) {
     const fixedValue1 = this.fixValue(value1, minValue, maxValue);
     const CSSValue = this.translateRealToCSSValue(fixedValue1, minValue, maxValue);
-    this.subViews.sliderHandle1.setHandlePosition(CSSValue);
+    this.subViews.sliderHandle1.setPosition(CSSValue);
     this.subViews.sliderTip.setValue(fixedValue1);
   }
 }

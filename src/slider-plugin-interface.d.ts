@@ -48,7 +48,7 @@ interface ISliderModel {
 }
 
 interface ISliderHandleView {
-  setHandlePosition?(left: number): void;
+  setPosition?(left: number): void;
 }
 
 interface ISliderBaseView {}

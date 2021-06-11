@@ -37,7 +37,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     }
   }
 
-  setHandlePosition(left: number): boolean {
+  setPosition(left: number): boolean {
     this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
     if (this.allowedValues.includes(left)) {
       return true;
@@ -72,8 +72,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       - this.shiftX;
 
     newLeft = this.keepHandleInBounds(newLeft);
+    const isValueSet = this.setPosition(newLeft);
 
-    const isValueSet = this.setHandlePosition(newLeft);
 
     if (isValueSet) {
       const leftInPercents = newLeft / this.sliderRightBound;

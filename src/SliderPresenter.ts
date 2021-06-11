@@ -52,11 +52,11 @@ class SliderPresenter {
 
   handle1MouseUp = () => {
     const { minValue, maxValue } = this.model.getOptions();
-    this.view.subViews.sliderHandle1.setHandlePosition(this.view.translateRealToCSSValue(
       this.model.getOptions().value1,
       minValue,
       maxValue,
     ));
+    this.view.subViews.sliderHandle1.setPosition(fallbackLeft);
   }
 }
 
