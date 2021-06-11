@@ -36,6 +36,7 @@ type EventName =
   'handleValueSet' |
   'value1Changed' |
   'handleStopped' |
+  'handleMoved';
 
 interface IEventEmitter {
   private events: EventsStorage;

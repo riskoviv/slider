@@ -34,12 +34,17 @@ class SliderPresenter {
 
     this.view.subViews.sliderHandle1.on('handleValueSet', this.handle1Stopped)
       .on('handleStopped', this.handle1MouseUp)
+      .on('handleMoved', this.handleMoved);
 
     this.view.render(value1, minValue, maxValue);
   }
 
   changeStepSize = (stepSize: number) => {
     // this.view.changeStepSize(stepSize);
+  }
+
+  handleMoved = (left: number) => {
+    this.view.subViews.sliderTip.setPosition(left);
   }
 
   handle1Stopped = (handle1Left: number) => {
