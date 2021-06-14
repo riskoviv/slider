@@ -18,7 +18,7 @@ interface ISliderPluginGlobalOptions {
 }
 
 interface ISliderPluginFunction {
-  (options: ISliderPluginOptions): Object;
+  (options: ISliderPluginOptions): Object | null;
 }
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
@@ -33,7 +33,7 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  'handle1MouseMove' |
+  'handle1ValueChange' |
   'value1Changed';
 
 interface IEventEmitter {
@@ -46,6 +46,23 @@ interface ISliderModel {
   getOptions(): ISliderPluginOptions
 }
 
-interface ISliderSubView extends IEventEmitter {
-  $thisElem: JQuery<HTMLElement>;
+interface ISliderHandleView {
+  setPositionAndCurrentValue?(allowedLeft: number): void;
 }
+
+interface ISliderBaseView {}
+
+interface ISliderTipView {
+  setValue?(value: number): void;
+  setPosition?(left: number): void;
+}
+
+interface ISliderSubView extends IEventEmitter, ISliderHandleView, ISliderBaseView, ISliderTipView {
+  $elem: JQuery<HTMLElement>;
+}
+
+type HandleBounds = {
+  minValue: number,
+  maxValue: number,
+  stepSize: number,
+};

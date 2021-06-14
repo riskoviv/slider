@@ -1,59 +1,109 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderHandleView extends EventEmitter implements ISliderSubView {
-  $thisElem = $('<div class="slider__handle"></div>');
+class SliderHandleView extends EventEmitter implements ISliderHandleView {
+  $elem = $('<div class="slider__handle"></div>');
 
-  private thisElem: HTMLElement;
+  private allowedValues: number[];
 
-  private shiftX: number;
+  private newLeft: number;
 
-  constructor(private sliderDirectContainer: HTMLElement) {
+  private totalSliderRange: number;
+
+  private stepSizeInPercents: number;
+
+  private halfStep: number;
+
+  private currentValue: number;
+
+  constructor(private sliderDirectContainer: HTMLElement, private bounds: HandleBounds) {
     super();
 
-    this.$thisElem.on('mousedown', this.handle1MouseDown)
+    this.$elem.on('mousedown', this.handleMouseDown)
       .on('contextmenu', this.handle1PreventContextMenu);
 
-    [this.thisElem] = this.$thisElem.get();
+    this.createAllowedValuesArr();
   }
 
-  handle1MouseDown = (e: JQuery.MouseDownEvent) => {
+  setPositionAndCurrentValue(allowedLeft: number) {
+    this.changeCurrentValue(allowedLeft);
+    this.$elem.css('left', `${this.currentValue}%`);
+    this.emit('handle1ValueChange', this.currentValue);
+  }
+
+  private createAllowedValuesArr() {
+    this.totalSliderRange = this.bounds.maxValue - this.bounds.minValue;
+    this.stepSizeInPercents = (this.bounds.stepSize / this.totalSliderRange) * 100;
+    this.halfStep = this.stepSizeInPercents / 2;
+    this.allowedValues = [];
+
+    for (let i = 0; i <= 100; i += this.stepSizeInPercents) {
+      this.allowedValues.push(i);
+    }
+    if (this.allowedValues[this.allowedValues.length - 1] !== 100) {
+      this.allowedValues.push(100);
+    }
+  }
+
+  private isCursorMovedEnough(left: number): boolean {
+    const isCursorMovedHalfStep = (left > (this.currentValue + this.halfStep))
+    || (left < (this.currentValue - this.halfStep));
+    const isCursorOnEdge = (left <= 0) || (left >= 100);
+
+    if (isCursorMovedHalfStep || isCursorOnEdge) {
+      return true;
+    }
+    return false;
+  }
+
+  private changeCurrentValue(allowedLeft: number) {
+    this.currentValue = this.findClosestAllowedValue(allowedLeft);
+  }
+
+  private findClosestAllowedValue(left: number) {
+    return this.allowedValues.reduce((lastMinValue, currentValue) => {
+      if (Math.abs(left - currentValue) < Math.abs(left - lastMinValue)) {
+        return currentValue;
+      }
+      return lastMinValue;
+    });
+  }
+
+  private handleMouseDown = (e: JQuery.MouseDownEvent) => {
     if (e.originalEvent.button !== 0) {
       return;
     }
 
     e.preventDefault();
 
-    this.shiftX = e.clientX
-      - this.thisElem.getBoundingClientRect().left
-      - this.thisElem.offsetWidth / 2;
-
-    $(document).on('mousemove', this.handle1MouseMove)
-      .on('mouseup', this.handle1MouseUp);
+    $(document).on('mousemove', this.handleMouseMove)
+      .on('mouseup', this.handleMouseUp);
   }
 
-  handle1MouseMove = (e: JQuery.MouseMoveEvent) => {
-    let newLeft = e.pageX
-      - this.sliderDirectContainer.offsetLeft
-      - this.shiftX;
-    // newLeft = Math.floor(newLeft / 50) * 50;
-    if (newLeft < 0) newLeft = 0; // ограничение с левой стороны
-    const sliderRightBound = this.sliderDirectContainer.offsetWidth; // правая граница
-    if (newLeft > sliderRightBound) newLeft = sliderRightBound; // ограничение справа
-
-    this.$thisElem.css('left', `${newLeft}px`);
-
-    this.emit('handle1MouseMove', newLeft);
+  private pixelsToPercentsOfBaseWidth(pixels: number) {
+    return Number(((pixels / this.sliderDirectContainer.offsetWidth) * 100).toFixed(1));
   }
 
-  handle1MouseUp = (e: JQuery.MouseUpEvent) => {
+  private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
+    this.newLeft = this.pixelsToPercentsOfBaseWidth(e.pageX
+      - this.sliderDirectContainer.offsetLeft);
+
+    const isValueChangeNeeded = this.isCursorMovedEnough(this.newLeft);
+
+    if (isValueChangeNeeded) {
+      this.setPositionAndCurrentValue(this.newLeft);
+    }
+  }
+
+  private handleMouseUp = (e: JQuery.MouseUpEvent) => {
     if (e.originalEvent.button !== 0) {
       e.preventDefault();
     }
-    $(document).off('mousemove', this.handle1MouseMove)
-      .off('mouseup', this.handle1MouseUp);
+
+    $(document).off('mousemove', this.handleMouseMove)
+      .off('mouseup', this.handleMouseUp);
   }
 
-  handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
+  private handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
 }
 
 export default SliderHandleView;
