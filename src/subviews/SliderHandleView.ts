@@ -47,9 +47,9 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   private isCursorMovedEnough(left: number): boolean {
     const isCursorMovedHalfStep = (left > (this.currentValue + this.halfStep))
     || (left < (this.currentValue - this.halfStep));
-    const isCursorOnEdge = (left <= 0) || (left >= 100);
+    const isCursorOnAllowedValue = this.allowedValues.includes(left);
 
-    if (isCursorMovedHalfStep || isCursorOnEdge) {
+    if (isCursorMovedHalfStep || isCursorOnAllowedValue) {
       return true;
     }
     return false;
