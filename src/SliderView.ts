@@ -19,22 +19,20 @@ class SliderView extends EventEmitter {
     this.insertSliderToPluginRootElem();
     this.createSubViews();
     this.insertSubViewsIntoContainer();
-    this.$elem.prepend(this.subViews.sliderTip.$elem);
   }
 
   createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
       sliderHandle1: new SliderHandleView(this.controlContainer.get()[0], this.bounds),
-      sliderTip: new SliderTipView(),
+      sliderTip1: new SliderTipView(),
     };
   }
 
   insertSubViewsIntoContainer = () => {
-    this.controlContainer.append(
-      this.subViews.sliderBase.$elem,
-      this.subViews.sliderHandle1.$elem,
-    );
+    Object.values(this.subViews).forEach((subView) => {
+      this.controlContainer.append(subView.$elem);
+    });
   }
 
   insertSliderToPluginRootElem() {
@@ -42,9 +40,8 @@ class SliderView extends EventEmitter {
   }
 
   translateRealToCSSValue = (realValue: number, minValue: number, maxValue: number) => {
-    const percentValue = (realValue - minValue) / (maxValue - minValue);
-    const CSSValue = Math.round(this.controlContainer.get()[0].offsetWidth * percentValue);
-    return CSSValue;
+    const percentValue = ((realValue - minValue) / (maxValue - minValue)) * 100;
+    return percentValue;
   }
 
   fixValue = (value: number, minValue: number, maxValue: number) => {
@@ -56,9 +53,7 @@ class SliderView extends EventEmitter {
   render(value1: number, minValue: number, maxValue: number) {
     const fixedValue1 = this.fixValue(value1, minValue, maxValue);
     const CSSValue = this.translateRealToCSSValue(fixedValue1, minValue, maxValue);
-    this.subViews.sliderHandle1.setPosition(CSSValue);
-    this.subViews.sliderTip.setValue(fixedValue1);
-    this.subViews.sliderTip.setPosition(CSSValue + 15);
+    this.subViews.sliderHandle1.setPositionAndCurrentValue(CSSValue);
   }
 }
 

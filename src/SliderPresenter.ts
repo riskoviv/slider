@@ -32,9 +32,7 @@ class SliderPresenter {
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
 
-    this.view.subViews.sliderHandle1.on('handleValueSet', this.handle1Stopped)
-      .on('handleStopped', this.handle1MouseUp)
-      .on('handleMoved', this.handleMoved);
+    this.view.subViews.sliderHandle1.on('handle1ValueChange', this.handle1ValueChange);
 
     this.view.render(value1, minValue, maxValue);
   }
@@ -43,28 +41,13 @@ class SliderPresenter {
     // this.view.changeStepSize(stepSize);
   }
 
-  handleMoved = (left: number) => {
-    this.view.subViews.sliderTip.setPosition(left);
+  private handle1ValueChange = (left: number) => {
+    this.view.subViews.sliderTip1.setPosition(left);
+    this.model.setValue1(left);
   }
 
-  handle1Stopped = (handle1Left: number) => {
-    this.model.setValue1(handle1Left);
-  }
-
-  value1Changed = (value1: number) => {
-    this.view.subViews.sliderTip.setValue(value1);
-  }
-
-  handle1MouseUp = () => {
-    const { minValue, maxValue } = this.model.getOptions();
-    const fallbackLeft = this.view.translateRealToCSSValue(
-      this.model.getOptions().value1,
-      minValue,
-      maxValue,
-    );
-
-    this.view.subViews.sliderHandle1.setPosition(fallbackLeft);
-    this.view.subViews.sliderTip.setPosition(fallbackLeft + 15);
+  private value1Changed = (value1: number) => {
+    this.view.subViews.sliderTip1.setValue(value1);
   }
 }
 

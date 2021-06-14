@@ -33,10 +33,8 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  'handleValueSet' |
-  'value1Changed' |
-  'handleStopped' |
-  'handleMoved';
+  'handle1ValueChange' |
+  'value1Changed';
 
 interface IEventEmitter {
   private events: EventsStorage;
@@ -49,7 +47,7 @@ interface ISliderModel {
 }
 
 interface ISliderHandleView {
-  setPosition?(left: number): void;
+  setPositionAndCurrentValue?(allowedLeft: number): void;
 }
 
 interface ISliderBaseView {}

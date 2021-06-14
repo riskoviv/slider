@@ -3,15 +3,17 @@ import EventEmitter from '../EventEmitter';
 class SliderHandleView extends EventEmitter implements ISliderHandleView {
   $elem = $('<div class="slider__handle"></div>');
 
-  private thisElem: HTMLElement;
-
-  private shiftX: number;
-
-  private sliderRightBound: number;
-
   private allowedValues: number[];
 
   private newLeft: number;
+
+  private totalSliderRange: number;
+
+  private stepSizeInPercents: number;
+
+  private halfStep: number;
+
+  private currentValue: number;
 
   constructor(private sliderDirectContainer: HTMLElement, private bounds: HandleBounds) {
     super();
@@ -19,32 +21,51 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.$elem.on('mousedown', this.handleMouseDown)
       .on('contextmenu', this.handle1PreventContextMenu);
 
-    [this.thisElem] = this.$elem.get();
-
-    this.sliderRightBound = this.sliderDirectContainer.offsetWidth;
-
     this.createAllowedValuesArr();
   }
 
+  setPositionAndCurrentValue(allowedLeft: number) {
+    this.changeCurrentValue(allowedLeft);
+    this.$elem.css('left', `${this.currentValue}%`);
+    this.emit('handle1ValueChange', this.currentValue);
+  }
+
   private createAllowedValuesArr() {
-    const totalSliderRange = Math.abs(this.bounds.maxValue) + Math.abs(this.bounds.minValue);
-    const stepSizeInPercents = (this.bounds.stepSize / totalSliderRange) * 100;
+    this.totalSliderRange = this.bounds.maxValue - this.bounds.minValue;
+    this.stepSizeInPercents = (this.bounds.stepSize / this.totalSliderRange) * 100;
+    this.halfStep = this.stepSizeInPercents / 2;
     this.allowedValues = [];
 
-    for (let i = 0; i <= 100; i += stepSizeInPercents) {
-      this.allowedValues.push(Math.round(this.sliderRightBound * (i / 100)));
+    for (let i = 0; i <= 100; i += this.stepSizeInPercents) {
+      this.allowedValues.push(i);
     }
-    if (this.allowedValues[this.allowedValues.length - 1] !== this.sliderRightBound) {
-      this.allowedValues.push(this.sliderRightBound);
+    if (this.allowedValues[this.allowedValues.length - 1] !== 100) {
+      this.allowedValues.push(100);
     }
   }
 
-  setPosition(left: number): boolean {
-    if (this.allowedValues.includes(left)) {
-      this.$elem.css('left', `${this.keepHandleInBounds(left)}px`);
+  private isCursorMovedEnough(left: number): boolean {
+    const isCursorMovedHalfStep = (left > (this.currentValue + this.halfStep))
+    || (left < (this.currentValue - this.halfStep));
+    const isCursorOnEdge = (left <= 0) || (left >= 100);
+
+    if (isCursorMovedHalfStep || isCursorOnEdge) {
       return true;
     }
     return false;
+  }
+
+  private changeCurrentValue(allowedLeft: number) {
+    this.currentValue = this.findClosestAllowedValue(allowedLeft);
+  }
+
+  private findClosestAllowedValue(left: number) {
+    return this.allowedValues.reduce((lastMinValue, currentValue) => {
+      if (Math.abs(left - currentValue) < Math.abs(left - lastMinValue)) {
+        return currentValue;
+      }
+      return lastMinValue;
+    });
   }
 
   private handleMouseDown = (e: JQuery.MouseDownEvent) => {
@@ -54,31 +75,22 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     e.preventDefault();
 
-    this.shiftX = e.clientX
-      - this.thisElem.getBoundingClientRect().left
-      - this.thisElem.offsetWidth / 2;
-
     $(document).on('mousemove', this.handleMouseMove)
       .on('mouseup', this.handleMouseUp);
   }
 
-  private keepHandleInBounds(leftValue: number) {
-    if (leftValue < 0) return 0;
-    if (leftValue > this.sliderRightBound) return this.sliderRightBound;
-    return leftValue;
+  private pixelsToPercentsOfBaseWidth(pixels: number) {
+    return Number(((pixels / this.sliderDirectContainer.offsetWidth) * 100).toFixed(1));
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
-    this.newLeft = e.pageX
-      - this.sliderDirectContainer.offsetLeft
-      - this.shiftX;
+    this.newLeft = this.pixelsToPercentsOfBaseWidth(e.pageX
+      - this.sliderDirectContainer.offsetLeft);
 
-    const isValueSet = this.setPosition(this.newLeft);
+    const isValueChangeNeeded = this.isCursorMovedEnough(this.newLeft);
 
-    if (isValueSet) {
-      this.emit('handleMoved', this.keepHandleInBounds(this.newLeft) + 15);
-      const leftInPercents = this.newLeft / this.sliderRightBound;
-      this.emit('handleValueSet', leftInPercents);
+    if (isValueChangeNeeded) {
+      this.setPositionAndCurrentValue(this.newLeft);
     }
   }
 
@@ -86,8 +98,6 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     if (e.originalEvent.button !== 0) {
       e.preventDefault();
     }
-
-    this.emit('handleStopped');
 
     $(document).off('mousemove', this.handleMouseMove)
       .off('mouseup', this.handleMouseUp);
