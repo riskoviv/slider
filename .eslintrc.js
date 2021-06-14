@@ -23,6 +23,7 @@ module.exports = {
     ISliderBaseView: 'readonly',
     ISliderTipView: 'readonly',
     HandleBounds: 'readonly',
+    ISliderScaleView: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',

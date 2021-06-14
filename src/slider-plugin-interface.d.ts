@@ -34,7 +34,8 @@ type EventsStorage = {
 type EventName =
   'stepSizeChanged' |
   'handle1ValueChange' |
-  'value1Changed';
+  'value1Changed' |
+  'scaleValueSelect';
 
 interface IEventEmitter {
   private events: EventsStorage;
@@ -48,6 +49,7 @@ interface ISliderModel {
 
 interface ISliderHandleView {
   setPositionAndCurrentValue?(allowedLeft: number): void;
+  allowedValues?: number[];
 }
 
 interface ISliderBaseView {}
@@ -57,7 +59,10 @@ interface ISliderTipView {
   setPosition?(left: number): void;
 }
 
-interface ISliderSubView extends IEventEmitter, ISliderHandleView, ISliderBaseView, ISliderTipView {
+interface ISliderScaleView {}
+
+interface ISliderSubView extends IEventEmitter,
+ISliderHandleView, ISliderBaseView, ISliderTipView, ISliderScaleView {
   $elem: JQuery<HTMLElement>;
 }
 

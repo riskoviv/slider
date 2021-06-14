@@ -3,7 +3,7 @@ import EventEmitter from '../EventEmitter';
 class SliderHandleView extends EventEmitter implements ISliderHandleView {
   $elem = $('<div class="slider__handle"></div>');
 
-  private allowedValues: number[];
+  allowedValues: number[];
 
   private newLeft: number;
 
@@ -46,7 +46,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private isCursorMovedEnough(left: number): boolean {
     const isCursorMovedHalfStep = (left > (this.currentValue + this.halfStep))
-    || (left < (this.currentValue - this.halfStep));
+      || (left < (this.currentValue - this.halfStep));
     const isCursorOnAllowedValue = this.allowedValues.includes(left);
 
     if (isCursorMovedHalfStep || isCursorOnAllowedValue) {

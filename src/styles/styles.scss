@@ -27,14 +27,15 @@
 
   &__handle {
     position: absolute;
-    width: var(--slider-height);
+    width: calc(var(--slider-height) / 2);
     height: var(--slider-height);
-    background-color: rgba(74, 235, 25, 0.5);
-    border-radius: 50%;
+    background-color: rgb(47, 163, 12);
+    border-radius: var(--slider-height);
     border: calc(var(--slider-height) / 10) solid white;
     top: 0;
     left: 0%;
     transform: translateX(-50%);
+    cursor: pointer;
   }
 
   &__tip {
@@ -60,6 +61,30 @@
       border-right: 4px solid transparent;
       border-top: 5px solid white;
       border-bottom-width: 0px;
+    }
+  }
+
+  &__scale {
+    height: 30px;
+    margin: var(--slider-margin);
+    position: relative;
+
+    &-value {
+      position: absolute;
+      bottom: 0;
+      transform: translateX(-50%);
+      cursor: pointer;
+
+      &::before {
+        display: block;
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        content: '';
+        background-color: black;
+        width: 1px;
+        height: 10px;
+      }
     }
   }
 }

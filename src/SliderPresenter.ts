@@ -34,6 +34,8 @@ class SliderPresenter {
 
     this.view.subViews.sliderHandle1.on('handle1ValueChange', this.handle1ValueChange);
 
+    this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
+
     this.view.render(value1, minValue, maxValue);
   }
 
@@ -48,6 +50,10 @@ class SliderPresenter {
 
   private value1Changed = (value1: number) => {
     this.view.subViews.sliderTip1.setValue(value1);
+  }
+
+  private scaleValueSelect = (value1Idx: number) => {
+    this.view.subViews.sliderHandle1.setPositionAndCurrentValue(value1Idx);
   }
 }
 

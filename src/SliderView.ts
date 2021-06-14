@@ -1,6 +1,7 @@
 import EventEmitter from './EventEmitter';
 import SliderBaseView from './subviews/SliderBaseView';
 import SliderHandleView from './subviews/SliderHandleView';
+import SliderScaleView from './subviews/SliderScaleView';
 import SliderTipView from './subviews/SliderTipView';
 
 class SliderView extends EventEmitter {
@@ -12,6 +13,8 @@ class SliderView extends EventEmitter {
     [subViewName: string]: ISliderSubView;
   }
 
+  sliderScale: ISliderSubView;
+
   constructor(private pluginRootElem: JQuery<HTMLElement>, private bounds: HandleBounds) {
     super();
 
@@ -19,6 +22,7 @@ class SliderView extends EventEmitter {
     this.insertSliderToPluginRootElem();
     this.createSubViews();
     this.insertSubViewsIntoContainer();
+    this.$elem.append(this.sliderScale.$elem);
   }
 
   createSubViews() {
@@ -27,6 +31,10 @@ class SliderView extends EventEmitter {
       sliderHandle1: new SliderHandleView(this.controlContainer.get()[0], this.bounds),
       sliderTip1: new SliderTipView(),
     };
+    this.sliderScale = new SliderScaleView(
+      this.subViews.sliderHandle1.allowedValues,
+      this.bounds,
+    );
   }
 
   insertSubViewsIntoContainer = () => {
