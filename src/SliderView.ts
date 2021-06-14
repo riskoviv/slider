@@ -1,44 +1,59 @@
 import EventEmitter from './EventEmitter';
 import SliderBaseView from './subviews/SliderBaseView';
 import SliderHandleView from './subviews/SliderHandleView';
+import SliderTipView from './subviews/SliderTipView';
 
 class SliderView extends EventEmitter {
-  $thisElem = $('<div class="slider"></div>');
+  $elem = $('<div class="slider"></div>');
 
-  controlContainer = $('<div class="slider__control-container js-slider__control-container"></div>');
-
-  tip = $('<div class="slider__tip js-slider__tip"></div>');
+  controlContainer = $('<div class="slider__control-container"></div>');
 
   subViews: {
     [subViewName: string]: ISliderSubView;
   }
 
-  constructor(private pluginRootElem: JQuery<HTMLElement>) {
+  constructor(private pluginRootElem: JQuery<HTMLElement>, private bounds: HandleBounds) {
     super();
+
+    this.$elem.append(this.controlContainer);
+    this.insertSliderToPluginRootElem();
+    this.createSubViews();
+    this.insertSubViewsIntoContainer();
+  }
+
+  createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
-      sliderHandle1: new SliderHandleView(this.controlContainer.get()[0]),
+      sliderHandle1: new SliderHandleView(this.controlContainer.get()[0], this.bounds),
+      sliderTip1: new SliderTipView(),
     };
-
-    this.insertSubViewsIntoContainer();
-
-    this.$thisElem.append(
-      this.tip,
-      this.controlContainer,
-    );
-
-    // this.subViews.sliderBase.HTML.addClass('some_class');
   }
 
   insertSubViewsIntoContainer = () => {
-    Object.keys(this.subViews).forEach((subView) => {
-      this.controlContainer.append(this.subViews[subView].$thisElem);
+    Object.values(this.subViews).forEach((subView) => {
+      this.controlContainer.append(subView.$elem);
     });
   }
 
-  render() {
-    this.pluginRootElem.append(this.$thisElem);
-    return this;
+  insertSliderToPluginRootElem() {
+    this.pluginRootElem.append(this.$elem);
+  }
+
+  translateRealToCSSValue = (realValue: number, minValue: number, maxValue: number) => {
+    const percentValue = ((realValue - minValue) / (maxValue - minValue)) * 100;
+    return percentValue;
+  }
+
+  fixValue = (value: number, minValue: number, maxValue: number) => {
+    if (value < minValue) return minValue;
+    if (value > maxValue) return maxValue;
+    return value;
+  }
+
+  render(value1: number, minValue: number, maxValue: number) {
+    const fixedValue1 = this.fixValue(value1, minValue, maxValue);
+    const CSSValue = this.translateRealToCSSValue(fixedValue1, minValue, maxValue);
+    this.subViews.sliderHandle1.setPositionAndCurrentValue(CSSValue);
   }
 }
 

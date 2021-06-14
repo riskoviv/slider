@@ -13,29 +13,41 @@ class SliderPresenter {
     private pluginOptions: ISliderPluginOptions,
   ) {
     this.model = new SliderModel(this.pluginOptions);
-    this.view = new SliderView(this.pluginRootElem);
+
+    const {
+      value1, minValue, maxValue, stepSize,
+    } = this.pluginOptions;
+
+    this.view = new SliderView(
+      this.pluginRootElem,
+      {
+        minValue,
+        maxValue,
+        stepSize,
+      },
+    );
 
     this.publicMethods = this.model.publicMethods;
 
-    this.view.render()
-      .subViews.sliderHandle1.on('handle1MouseMove', this.handle1MouseMove);
-
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('value1Changed', this.value1Changed);
+
+    this.view.subViews.sliderHandle1.on('handle1ValueChange', this.handle1ValueChange);
+
+    this.view.render(value1, minValue, maxValue);
   }
 
   changeStepSize = (stepSize: number) => {
-    console.log(`stepSize was changed to ${stepSize}`);
     // this.view.changeStepSize(stepSize);
   }
 
-  handle1MouseMove = (handleOffsetLeft: number) => {
-    this.model.changeValue1(handleOffsetLeft);
+  private handle1ValueChange = (left: number) => {
+    this.view.subViews.sliderTip1.setPosition(left);
+    this.model.setValue1(left);
   }
 
-  value1Changed = (value1: number) => {
-    const $test = $('.js-slider__tip');
-    $test.text(value1);
+  private value1Changed = (value1: number) => {
+    this.view.subViews.sliderTip1.setValue(value1);
   }
 }
 

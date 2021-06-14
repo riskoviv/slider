@@ -1,7 +1,8 @@
 .slider {
   --slider-height: 30px;
+  --slider-margin: 0 calc(var(--slider-height) / 2);
+
   min-height: var(--slider-height);
-  // border: 3px solid brown;
 
   * {
     box-sizing: border-box;
@@ -10,14 +11,13 @@
   &__control-container {
     position: relative;
     height: var(--slider-height);
-    margin: 0 calc(var(--slider-height) / 2);
+    margin: var(--slider-margin);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   &__base {
-    // --base-width: calc(100% - var(--slider-height));
     --base-height: calc(var(--slider-height) / 2);
     height: var(--base-height);
     width: 100%;
@@ -38,7 +38,28 @@
   }
 
   &__tip {
-    height: 50px;
-    background-color: #666;
+    position: absolute;
+    background-color: #aaa;
+    border: 1px solid white;
+    padding: 2px;
+    border-radius: 2px;
+    bottom: calc(100% + 5px);
+    transform: translateX(-50%);
+
+    &::after {
+      position: absolute;
+      display: block;
+      content: '';
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0px;
+      height: 0px;
+      background-color: transparent;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid white;
+      border-bottom-width: 0px;
+    }
   }
 }
