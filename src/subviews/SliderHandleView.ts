@@ -7,8 +7,6 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private newLeft: number;
 
-  private totalSliderRange: number;
-
   private stepSizeInPercents: number;
 
   private halfStep: number;
@@ -31,8 +29,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private createAllowedValuesArr() {
-    this.totalSliderRange = this.bounds.maxValue - this.bounds.minValue;
-    this.stepSizeInPercents = (this.bounds.stepSize / this.totalSliderRange) * 100;
+    const totalSliderRange = this.bounds.maxValue - this.bounds.minValue;
+    this.stepSizeInPercents = (this.bounds.stepSize / totalSliderRange) * 100;
     this.halfStep = this.stepSizeInPercents / 2;
     this.allowedValues = [];
 
