@@ -5,7 +5,7 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   function sliderPlugin(this: JQuery, options: ISliderPluginOptions): Object | null {
     const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
     try {
-      if (pluginOptions.minValue > pluginOptions.maxValue) {
+      if (pluginOptions.minValue >= pluginOptions.maxValue) {
         const minMaxError = new Error('minValue must be less that maxValue!');
         minMaxError.name = 'MinMaxError';
         throw minMaxError;
