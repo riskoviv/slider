@@ -61,8 +61,12 @@ interface ISliderTipView {
 
 interface ISliderScaleView {}
 
-interface ISliderSubView extends IEventEmitter,
-ISliderHandleView, ISliderBaseView, ISliderTipView, ISliderScaleView {
+interface ISliderSubView extends
+  IEventEmitter,
+  ISliderHandleView,
+  ISliderBaseView,
+  ISliderTipView,
+  ISliderScaleView {
   $elem: JQuery<HTMLElement>;
 }
 
