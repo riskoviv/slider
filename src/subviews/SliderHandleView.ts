@@ -25,7 +25,10 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   setPositionAndCurrentValue(allowedLeft: number) {
     this.changeCurrentValue(allowedLeft);
     this.$elem.css('left', `${this.currentValue}%`);
-    this.emit('handle1ValueChange', this.currentValue);
+    this.emit('handle1ValueChange', {
+      left: this.currentValue,
+      index: this.allowedValues.indexOf(this.currentValue),
+    });
   }
 
   private createAllowedValuesArr() {
@@ -82,8 +85,9 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
-    this.newLeft = this.pixelsToPercentsOfBaseWidth(e.pageX
-      - this.sliderDirectContainer.offsetLeft);
+    this.newLeft = this.pixelsToPercentsOfBaseWidth(
+      e.pageX - this.sliderDirectContainer.offsetLeft,
+    );
 
     const isValueChangeNeeded = this.isCursorMovedEnough(this.newLeft);
 

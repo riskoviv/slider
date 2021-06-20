@@ -25,6 +25,7 @@ class SliderPresenter {
         maxValue,
         stepSize,
       },
+      this.model.allowedRealValues,
     );
 
     this.publicMethods = this.model.publicMethods;
@@ -43,9 +44,9 @@ class SliderPresenter {
     // this.view.changeStepSize(stepSize);
   }
 
-  private handle1ValueChange = (left: number) => {
-    this.view.subViews.sliderTip1.setPosition(left);
-    this.model.setValue1(left);
+  private handle1ValueChange = (values: { left: number, index: number }) => {
+    this.view.subViews.sliderTip1.setPosition(values.left);
+    this.model.setValue1(values.index);
   }
 
   private value1Changed = (value1: number) => {

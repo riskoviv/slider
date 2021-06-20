@@ -15,7 +15,11 @@ class SliderView extends EventEmitter {
 
   sliderScale: ISliderSubView;
 
-  constructor(private pluginRootElem: JQuery<HTMLElement>, private bounds: HandleBounds) {
+  constructor(
+    private pluginRootElem: JQuery<HTMLElement>,
+    private bounds: HandleBounds,
+    private allowedRealValues: number[],
+  ) {
     super();
 
     this.$elem.append(this.controlContainer);
@@ -33,7 +37,7 @@ class SliderView extends EventEmitter {
     };
     this.sliderScale = new SliderScaleView(
       this.subViews.sliderHandle1.allowedValues,
-      this.bounds,
+      this.allowedRealValues,
     );
   }
 

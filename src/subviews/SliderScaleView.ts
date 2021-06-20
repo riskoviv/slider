@@ -3,13 +3,13 @@ import EventEmitter from '../EventEmitter';
 class SliderScaleView extends EventEmitter implements ISliderSubView {
   $elem = $('<div class="slider__scale"></div>');
 
-  constructor(public allowedValues: number[], private bounds: HandleBounds) {
+  constructor(public allowedValues: number[], private allowedRealValues: number[]) {
     super();
 
     this.allowedValues.forEach((value, index) => {
       this.$elem.append($(`
         <span class="slider__scale-value" data-index="${index}" style="left: ${value}%">
-          ${index < this.allowedValues.length - 1 ? this.bounds.minValue + this.bounds.stepSize * index : this.bounds.maxValue}
+          ${this.allowedRealValues[index]}
         </span>
       `));
     });
