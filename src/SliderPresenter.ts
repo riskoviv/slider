@@ -16,7 +16,7 @@ class SliderPresenter {
 
     const {
       value1, minValue, maxValue, stepSize,
-    } = this.pluginOptions;
+    } = this.model.getOptions();
 
     this.view = new SliderView(
       this.pluginRootElem,
@@ -37,7 +37,7 @@ class SliderPresenter {
 
     this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
 
-    this.view.render(value1, minValue, maxValue);
+    this.view.render(this.model.allowedRealValues.indexOf(value1));
   }
 
   changeStepSize = (stepSize: number) => {

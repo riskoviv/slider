@@ -32,7 +32,7 @@ class SliderView extends EventEmitter {
   createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
-      sliderHandle1: new SliderHandleView(this.controlContainer.get()[0], this.bounds),
+      sliderHandle1: new SliderHandleView(this.bounds),
       sliderTip1: new SliderTipView(),
     };
     this.sliderScale = new SliderScaleView(
@@ -51,21 +51,9 @@ class SliderView extends EventEmitter {
     this.pluginRootElem.append(this.$elem);
   }
 
-  translateRealToCSSValue = (realValue: number, minValue: number, maxValue: number) => {
-    const percentValue = ((realValue - minValue) / (maxValue - minValue)) * 100;
-    return percentValue;
-  }
-
-  fixValue = (value: number, minValue: number, maxValue: number) => {
-    if (value < minValue) return minValue;
-    if (value > maxValue) return maxValue;
-    return value;
-  }
-
-  render(value1: number, minValue: number, maxValue: number) {
-    const fixedValue1 = this.fixValue(value1, minValue, maxValue);
-    const CSSValue = this.translateRealToCSSValue(fixedValue1, minValue, maxValue);
-    this.subViews.sliderHandle1.setPositionAndCurrentValue(CSSValue);
+  render(index1: number) {
+    const handle1LeftValue = this.subViews.sliderHandle1.allowedValues[index1];
+    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1LeftValue);
   }
 }
 

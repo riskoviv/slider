@@ -27,10 +27,10 @@
 
   &__handle {
     position: absolute;
-    width: calc(var(--slider-height) / 2);
+    width: var(--slider-height);
     height: var(--slider-height);
     background-color: rgb(47, 163, 12);
-    border-radius: var(--slider-height);
+    border-radius: 10px;
     border: calc(var(--slider-height) / 10) solid white;
     top: 0;
     left: 0%;

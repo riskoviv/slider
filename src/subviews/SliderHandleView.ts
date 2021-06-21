@@ -13,7 +13,9 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private currentValue: number;
 
-  constructor(private sliderDirectContainer: HTMLElement, private bounds: HandleBounds) {
+  private handleDirectContainer: HTMLElement;
+
+  constructor(private bounds: HandleBounds) {
     super();
 
     this.$elem.on('mousedown', this.handleMouseDown)
@@ -38,7 +40,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.allowedValues = [];
 
     for (let i = 0; i <= 100; i += this.stepSizeInPercents) {
-      this.allowedValues.push(i);
+      this.allowedValues.push(Number(i.toFixed(3)));
     }
     if (this.allowedValues[this.allowedValues.length - 1] !== 100) {
       this.allowedValues.push(100);
@@ -76,17 +78,21 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     e.preventDefault();
 
+    if (this.handleDirectContainer === undefined) {
+      [this.handleDirectContainer] = this.$elem.parent().get();
+    }
+
     $(document).on('mousemove', this.handleMouseMove)
       .on('mouseup', this.handleMouseUp);
   }
 
   private pixelsToPercentsOfBaseWidth(pixels: number) {
-    return Number(((pixels / this.sliderDirectContainer.offsetWidth) * 100).toFixed(1));
+    return Number(((pixels / this.handleDirectContainer.offsetWidth) * 100).toFixed(1));
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
     this.newLeft = this.pixelsToPercentsOfBaseWidth(
-      e.pageX - this.sliderDirectContainer.offsetLeft,
+      e.pageX - this.handleDirectContainer.offsetLeft,
     );
 
     const isValueChangeNeeded = this.isCursorMovedEnough(this.newLeft);

@@ -6,6 +6,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
   constructor(private options: ISliderPluginOptions) {
     super();
     this.createAllowedRealValuesArr();
+    this.options.value1 = this.fixValue(this.options.value1);
   }
 
   getOptions(): ISliderPluginOptions {
@@ -17,13 +18,44 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('stepSizeChanged', this.options.stepSize);
   }
 
-  identifyStepSizeFractionalPrecision(): number {
+  setValue1(valueIndex: number): void {
+    this.options.value1 = this.allowedRealValues[valueIndex];
+    this.emit('value1Changed', this.options.value1);
+  }
+
+  publicMethods: Object = {
+    getOptions: this.getOptions.bind(this),
+    setStepSize: this.setStepSize.bind(this),
+  }
+
+  private fixValue(value: number) {
+    const { minValue, maxValue } = this.options;
+    if (value < minValue) return minValue;
+    if (value > maxValue) return maxValue;
+
+    if (!this.allowedRealValues.includes(value)) {
+      return this.findClosestAllowedRealValue(value);
+    }
+
+    return value;
+  }
+
+  private findClosestAllowedRealValue(left: number) {
+    return this.allowedRealValues.reduce((lastMinValue, currentValue) => {
+      if (Math.abs(left - currentValue) < Math.abs(left - lastMinValue)) {
+        return currentValue;
+      }
+      return lastMinValue;
+    });
+  }
+
+  private identifyStepSizeFractionalPrecision(): number {
     const stepAsString = this.options.stepSize.toString();
-    if (stepAsString.indexOf('.') === -1) return 0;
+    if (!stepAsString.includes('.')) return 0;
     return (stepAsString.length - 1) - stepAsString.indexOf('.');
   }
 
-  createAllowedRealValuesArr(): void {
+  private createAllowedRealValuesArr(): void {
     this.allowedRealValues = [];
     const stepPrecision = this.identifyStepSizeFractionalPrecision();
 
@@ -46,16 +78,6 @@ class SliderModel extends EventEmitter implements ISliderModel {
     if (allowedRealValuesLastValue < this.options.maxValue) {
       this.allowedRealValues.push(this.options.maxValue);
     }
-  }
-
-  setValue1(valueIndex: number): void {
-    this.options.value1 = this.allowedRealValues[valueIndex];
-    this.emit('value1Changed', this.options.value1);
-  }
-
-  publicMethods: Object = {
-    getOptions: this.getOptions.bind(this),
-    setStepSize: this.setStepSize.bind(this),
   }
 }
 
