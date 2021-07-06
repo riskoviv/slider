@@ -20,57 +20,31 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
 
     setTimeout(() => {
       this.optimizeValuesCount();
-    }, 1000);
+    }, 0);
 
-    setTimeout(() => {
+    new ResizeObserver(() => {
       this.optimizeValuesCount();
-    }, 2000);
-
-    // const scaleResizeObserver = new ResizeObserver((entries) => {
-    //   setTimeout(() => {
-    //     this.optimizeValuesCount();
-    //   }, 2000);
-    // }).observe(this.$elem.get()[0]);
+    }).observe(this.$elem.get()[0]);
 
     this.$elem.on('click', this.scaleValueClick);
   }
 
   private optimizeValuesCount() {
-    // while (this.hasOverlappingValues()) {
-    let $lastOversteppedEl: JQuery<HTMLSpanElement>;
-
-    this.valueElements.slice(1).forEach(($valueEl, i, valueElements) => {
-      const currentElRightBound = $valueEl.position().left + $valueEl.width();
-      const $nextEl = valueElements[i + 1]; // find next el w/o 'hidden' here
-      const isLastEl = i === valueElements.length - 1;
-      const hasNext = $nextEl !== undefined && !$nextEl.data('hidden');
-      const nextElPosition = hasNext ? $nextEl.position().left : null;
-      const notOversteppedAndHasNext = ($valueEl !== $lastOversteppedEl && hasNext);
-      const overlapsNext = nextElPosition > 0 && currentElRightBound >= nextElPosition;
-
-      if (notOversteppedAndHasNext && overlapsNext) {
-        console.log(currentElRightBound, nextElPosition);
-        $lastOversteppedEl = $nextEl;
-        $valueEl.hide().data('hidden', 'true');
-      } /* else if (!overlapsNext) {
-        $valueEl.show().data('hidden', 'false');
-      } */
-    });
-    // }
-  }
-
-  private hasOverlappingValues(): boolean {
-    this.valueElements
-      .forEach(($valueEl, i) => {
-        if (
-          this.valueElements[i + 1] !== undefined
-          && ($valueEl.position().left + $valueEl.width()) >= this.valueElements[i + 1].position()?.left
-        ) {
-          return true;
+    const $lastElem = this.valueElements[this.valueElements.length - 1];
+    let $currentElem = this.valueElements[0];
+    this.valueElements.slice(1).forEach(($elem) => {
+      const curElemRightBound = $currentElem.position().left + $currentElem.width();
+      if ($elem.position().left - 5 <= curElemRightBound) {
+        if ($elem === $lastElem && $currentElem !== this.valueElements[0]) {
+          $currentElem.addClass('slider__scale-value_invisible');
+        } else if ($elem !== $lastElem) {
+          $elem.addClass('slider__scale-value_invisible');
         }
-        return false;
-      });
-    return false;
+      } else {
+        $currentElem = $elem;
+        $elem.removeClass('slider__scale-value_invisible');
+      }
+    });
   }
 
   private scaleValueClick = (e: JQuery.ClickEvent) => {
