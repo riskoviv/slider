@@ -69,7 +69,7 @@
     margin: var(--slider-margin);
     position: relative;
 
-    &-value {
+    &-block {
       position: absolute;
       bottom: 0;
       transform: translateX(-50%);
@@ -84,12 +84,20 @@
         left: 50%;
         content: '';
         background-color: black;
-        width: 1px;
+        width: 2px;
         height: 10px;
       }
 
       &_invisible {
-        visibility: hidden;
+        z-index: -1;
+
+        &::before {
+          width: 1px;
+        }
+
+        span {
+          visibility: hidden;
+        }
       }
     }
   }
