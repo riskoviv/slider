@@ -85,6 +85,10 @@
         width: 1px;
         height: 10px;
       }
+
+      &_invisible {
+        visibility: hidden;
+      }
     }
   }
 }
