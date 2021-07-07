@@ -5,6 +5,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   allowedValues: number[];
 
+  otherHandlePosition: number;
+
   private newLeft: number;
 
   private stepSizeInPercents: number;
@@ -15,7 +17,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private handleDirectContainer: HTMLElement;
 
-  constructor(private bounds: HandleBounds) {
+  constructor(private bounds: HandleBounds, private handleNumber: 1 | 2) {
     super();
 
     this.$elem.on('mousedown', this.handleMouseDown)
@@ -27,7 +29,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   setPositionAndCurrentValue(allowedLeft: number) {
     this.changeCurrentValue(allowedLeft);
     this.$elem.css('left', `${this.currentValue}%`);
-    this.emit('handle1ValueChange', {
+    this.emit(this.handleNumber === 1 ? 'handle1ValueChange' : 'handle2ValueChange', {
       left: this.currentValue,
       index: this.allowedValues.indexOf(this.currentValue),
     });
@@ -84,6 +86,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     $(document).on('mousemove', this.handleMouseMove)
       .on('mouseup', this.handleMouseUp);
+
+    this.emit('getOtherHandlePosition');
   }
 
   private pixelsToPercentsOfBaseWidth(pixels: number) {
@@ -97,7 +101,15 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     const isValueChangeNeeded = this.isCursorMovedEnough(this.newLeft);
 
-    if (isValueChangeNeeded) {
+    let isHandleKeepsBounds;
+
+    if (this.handleNumber === 1) {
+      isHandleKeepsBounds = this.newLeft <= this.otherHandlePosition - this.stepSizeInPercents;
+    } else if (this.handleNumber === 2) {
+      isHandleKeepsBounds = this.newLeft >= this.otherHandlePosition + this.stepSizeInPercents;
+    }
+
+    if (isValueChangeNeeded && isHandleKeepsBounds) {
       this.setPositionAndCurrentValue(this.newLeft);
     }
   }

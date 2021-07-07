@@ -32,8 +32,10 @@ class SliderView extends EventEmitter {
   createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
-      sliderHandle1: new SliderHandleView(this.bounds),
+      sliderHandle1: new SliderHandleView(this.bounds, 1),
       sliderTip1: new SliderTipView(),
+      sliderHandle2: new SliderHandleView(this.bounds, 2),
+      sliderTip2: new SliderTipView(),
     };
     this.sliderScale = new SliderScaleView(
       this.subViews.sliderHandle1.allowedValues,
@@ -51,9 +53,11 @@ class SliderView extends EventEmitter {
     this.pluginRootElem.append(this.$elem);
   }
 
-  render(index1: number) {
+  render(index1: number, index2: number) {
     const handle1LeftValue = this.subViews.sliderHandle1.allowedValues[index1];
     this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1LeftValue);
+    const handle2LeftValue = this.subViews.sliderHandle2.allowedValues[index2];
+    this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2LeftValue);
   }
 }
 

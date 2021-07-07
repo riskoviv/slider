@@ -6,6 +6,8 @@ interface ISliderPluginOptions {
   maxValue?: number,
   value1: number,
   value2: number,
+  handle1Pos?: number,
+  handle2Pos?: number,
   isVertical?: boolean,
   isInterval?: boolean,
   showValueHint?: boolean,
@@ -33,9 +35,10 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  'handle1ValueChange' |
-  'value1Changed' |
-  'scaleValueSelect';
+  `handle${1 | 2}ValueChange` |
+  `value${1 | 2}Changed` |
+  'scaleValueSelect' |
+  'getOtherHandlePosition';
 
 interface IEventEmitter {
   private events: EventsStorage;
@@ -50,6 +53,7 @@ interface ISliderModel {
 interface ISliderHandleView {
   setPositionAndCurrentValue?(allowedLeft: number): void;
   allowedValues?: number[];
+  otherHandlePosition?: number;
 }
 
 interface ISliderBaseView {}
