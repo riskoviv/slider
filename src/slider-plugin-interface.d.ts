@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
 interface ISliderPluginOptions {
+  [option: string],
   stepSize?: number,
   minValue?: number,
   maxValue?: number,
@@ -35,8 +36,8 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  `handle${1 | 2}ValueChange` |
-  `value${1 | 2}Changed` |
+  'handleValueChange' |
+  'valueChanged' |
   'scaleValueSelect' |
   'getOtherHandlePosition';
 

@@ -29,7 +29,14 @@ class SliderView extends EventEmitter {
     this.$elem.append(this.sliderScale.$elem);
   }
 
-  createSubViews() {
+  render(index1: number, index2: number) {
+    const handle1LeftValue = this.subViews.sliderHandle1.allowedValues[index1];
+    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1LeftValue);
+    const handle2LeftValue = this.subViews.sliderHandle2.allowedValues[index2];
+    this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2LeftValue);
+  }
+
+  private createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
       sliderHandle1: new SliderHandleView(this.bounds, 1),
@@ -43,21 +50,14 @@ class SliderView extends EventEmitter {
     );
   }
 
-  insertSubViewsIntoContainer = () => {
+  private insertSubViewsIntoContainer = () => {
     Object.values(this.subViews).forEach((subView) => {
       this.controlContainer.append(subView.$elem);
     });
   }
 
-  insertSliderToPluginRootElem() {
+  private insertSliderToPluginRootElem() {
     this.pluginRootElem.append(this.$elem);
-  }
-
-  render(index1: number, index2: number) {
-    const handle1LeftValue = this.subViews.sliderHandle1.allowedValues[index1];
-    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1LeftValue);
-    const handle2LeftValue = this.subViews.sliderHandle2.allowedValues[index2];
-    this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2LeftValue);
   }
 }
 

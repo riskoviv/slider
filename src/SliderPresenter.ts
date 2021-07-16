@@ -31,14 +31,12 @@ class SliderPresenter {
     this.publicMethods = this.model.publicMethods;
 
     this.model.on('stepSizeChanged', this.changeStepSize)
-      .on('value1Changed', this.value1Changed)
-      .on('value2Changed', this.value2Changed);
+      .on('valueChanged', this.valueChanged);
 
-    this.view.subViews.sliderHandle1.on('handle1ValueChange', this.handle1ValueChange)
-      .on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePositionToHandle1);
-
-    this.view.subViews.sliderHandle2.on('handle2ValueChange', this.handle2ValueChange)
-      .on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePositionToHandle2);
+    [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2].forEach((sliderHandle) => {
+      sliderHandle.on('handleValueChange', this.handleValueChange)
+        .on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePosition);
+    });
 
     this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
 
@@ -52,36 +50,22 @@ class SliderPresenter {
     // this.view.changeStepSize(stepSize);
   }
 
-  private handle1ValueChange = (values: { left: number, index: number }) => {
-    this.view.subViews.sliderTip1.setPosition(values.left);
-    this.model.setHandle1Pos(values.left);
-    this.model.setValue1(values.index);
+  private handleValueChange = (values: { handleNumber: 1 | 2, left: number, index: number }) => {
+    this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.left);
+    this.model.setHandlePos(values.handleNumber, values.left);
+    this.model.setValue(values.handleNumber, values.index);
   }
 
-  private handle2ValueChange = (values: { left: number, index: number }) => {
-    this.view.subViews.sliderTip2.setPosition(values.left);
-    this.model.setHandle2Pos(values.left);
-    this.model.setValue2(values.index);
-  }
-
-  private value1Changed = (value1: number) => {
-    this.view.subViews.sliderTip1.setValue(value1);
-  }
-
-  private value2Changed = (value2: number) => {
-    this.view.subViews.sliderTip2.setValue(value2);
+  private valueChanged = (values: {number: 1 | 2, value: number}) => {
+    this.view.subViews[`sliderTip${values.number}`].setValue(values.value);
   }
 
   private scaleValueSelect = (value1Idx: number) => {
     this.view.subViews.sliderHandle1.setPositionAndCurrentValue(value1Idx);
   }
 
-  private receiveAndSubmitOtherHandlePositionToHandle1 = () => {
-    this.view.subViews.sliderHandle1.otherHandlePosition = this.model.getOptions().handle2Pos;
-  }
-
-  private receiveAndSubmitOtherHandlePositionToHandle2 = () => {
-    this.view.subViews.sliderHandle2.otherHandlePosition = this.model.getOptions().handle1Pos;
+  private receiveAndSubmitOtherHandlePosition = (handleNumber: 1 | 2) => {
+    this.view.subViews[`sliderHandle${handleNumber}`].otherHandlePosition = this.model.getOptions()[`handle${handleNumber === 1 ? 2 : 1}Pos`];
   }
 }
 

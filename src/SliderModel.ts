@@ -19,22 +19,13 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('stepSizeChanged', this.options.stepSize);
   }
 
-  setHandle1Pos(left: number) {
-    this.options.handle1Pos = left;
+  setHandlePos(handleNumber: 1 | 2, left: number) {
+    this.options[`handle${handleNumber}Pos`] = left;
   }
 
-  setHandle2Pos(left: number) {
-    this.options.handle2Pos = left;
-  }
-
-  setValue1(valueIndex: number): void {
-    this.options.value1 = this.allowedRealValues[valueIndex];
-    this.emit('value1Changed', this.options.value1);
-  }
-
-  setValue2(valueIndex: number): void {
-    this.options.value2 = this.allowedRealValues[valueIndex];
-    this.emit('value2Changed', this.options.value2);
+  setValue(handleNumber: 1 | 2, valueIndex: number): void {
+    this.options[`value${handleNumber}`] = this.allowedRealValues[valueIndex];
+    this.emit('valueChanged', { number: handleNumber, value: this.options[`value${handleNumber}`] });
   }
 
   publicMethods: Object = {

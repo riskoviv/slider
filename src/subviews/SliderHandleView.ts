@@ -21,7 +21,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     super();
 
     this.$elem.on('mousedown', this.handleMouseDown)
-      .on('contextmenu', this.handle1PreventContextMenu);
+      .on('contextmenu', this.handlePreventContextMenu);
 
     this.createAllowedValuesArr();
   }
@@ -29,7 +29,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   setPositionAndCurrentValue(allowedLeft: number) {
     this.changeCurrentValue(allowedLeft);
     this.$elem.css('left', `${this.currentValue}%`);
-    this.emit(this.handleNumber === 1 ? 'handle1ValueChange' : 'handle2ValueChange', {
+    this.emit('handleValueChange', {
+      handleNumber: this.handleNumber,
       left: this.currentValue,
       index: this.allowedValues.indexOf(this.currentValue),
     });
@@ -87,7 +88,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     $(document).on('mousemove', this.handleMouseMove)
       .on('mouseup', this.handleMouseUp);
 
-    this.emit('getOtherHandlePosition');
+    this.emit('getOtherHandlePosition', this.handleNumber);
   }
 
   private pixelsToPercentsOfBaseWidth(pixels: number) {
@@ -123,7 +124,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .off('mouseup', this.handleMouseUp);
   }
 
-  private handle1PreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
+  private handlePreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
 }
 
 export default SliderHandleView;
