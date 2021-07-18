@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
-interface ISliderPluginOptions {
-  [option: string],
+interface ISliderPluginValueOptions {
   stepSize?: number,
   minValue?: number,
   maxValue?: number,
@@ -9,11 +8,18 @@ interface ISliderPluginOptions {
   value2: number,
   handle1Pos?: number,
   handle2Pos?: number,
+}
+
+interface ISliderPluginStateOptions {
   isVertical?: boolean,
   isInterval?: boolean,
-  showValueHint?: boolean,
+  showTip?: boolean,
   showScale?: boolean,
   showProgressBar?: boolean,
+}
+
+interface ISliderPluginOptions extends ISliderPluginValueOptions, ISliderPluginStateOptions {
+  [option: string],
 }
 
 interface ISliderPluginGlobalOptions {
@@ -79,4 +85,11 @@ type HandleBounds = {
   minValue: number,
   maxValue: number,
   stepSize: number,
+};
+
+type HandleParams = {
+  stepSizeInPercents?: number,
+  halfStep?: number,
+  allowedValues?: number[],
+  isInterval?: boolean,
 };

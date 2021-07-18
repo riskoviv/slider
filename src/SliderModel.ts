@@ -14,6 +14,17 @@ class SliderModel extends EventEmitter implements ISliderModel {
     return this.options;
   }
 
+  getStateOptions(): ISliderPluginStateOptions {
+    const stateOptions = {
+      isInterval: this.options.isInterval,
+      isVertical: this.options.isVertical,
+      showTip: this.options.showTip,
+      showScale: this.options.showScale,
+      showProgressBar: this.options.showProgressBar,
+    };
+    return stateOptions;
+  }
+
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
     this.emit('stepSizeChanged', this.options.stepSize);
@@ -25,7 +36,10 @@ class SliderModel extends EventEmitter implements ISliderModel {
 
   setValue(handleNumber: 1 | 2, valueIndex: number): void {
     this.options[`value${handleNumber}`] = this.allowedRealValues[valueIndex];
-    this.emit('valueChanged', { number: handleNumber, value: this.options[`value${handleNumber}`] });
+
+    if (this.options.showTip) {
+      this.emit('valueChanged', { number: handleNumber, value: this.options[`value${handleNumber}`] });
+    }
   }
 
   publicMethods: Object = {

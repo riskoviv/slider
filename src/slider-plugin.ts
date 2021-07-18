@@ -19,15 +19,15 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   },
   {
     options: {
-      stepSize: 3,
+      stepSize: 15,
       minValue: 10,
       maxValue: 100,
       value1: 20,
       value2: 60,
       isVertical: false,
       isInterval: false,
-      showValueHint: false,
-      showScale: false,
+      showTip: true,
+      showScale: true,
       showProgressBar: false,
     },
   },

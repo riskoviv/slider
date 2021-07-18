@@ -8,6 +8,8 @@ class SliderPresenter {
 
   publicMethods: Object;
 
+  pluginStateOptions: ISliderPluginStateOptions;
+
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
     private pluginOptions: ISliderPluginOptions,
@@ -18,6 +20,8 @@ class SliderPresenter {
       value1, value2, minValue, maxValue, stepSize,
     } = this.model.getOptions();
 
+    this.retrieveStateOptions();
+
     this.view = new SliderView(
       this.pluginRootElem,
       {
@@ -26,32 +30,46 @@ class SliderPresenter {
         stepSize,
       },
       this.model.allowedRealValues,
+      this.pluginStateOptions,
     );
 
     this.publicMethods = this.model.publicMethods;
 
-    this.model.on('stepSizeChanged', this.changeStepSize)
-      .on('valueChanged', this.valueChanged);
+    this.model.on('stepSizeChanged', this.changeStepSize);
+
+    if (this.pluginStateOptions.showTip) {
+      this.model.on('valueChanged', this.valueChanged);
+    }
 
     [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2].forEach((sliderHandle) => {
-      sliderHandle.on('handleValueChange', this.handleValueChange)
-        .on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePosition);
+      sliderHandle?.on('handleValueChange', this.handleValueChange);
+      if (this.pluginStateOptions.isInterval) {
+        sliderHandle?.on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePosition);
+      }
     });
-
-    this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
 
     this.view.render(
       this.model.allowedRealValues.indexOf(value1),
       this.model.allowedRealValues.indexOf(value2),
     );
+
+    if (this.pluginStateOptions.showScale) {
+      this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
+    }
   }
 
   changeStepSize = (stepSize: number) => {
     // this.view.changeStepSize(stepSize);
   }
 
+  private retrieveStateOptions = () => {
+    this.pluginStateOptions = this.model.getStateOptions();
+  }
+
   private handleValueChange = (values: { handleNumber: 1 | 2, left: number, index: number }) => {
-    this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.left);
+    if (this.pluginStateOptions.showTip) {
+      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.left);
+    }
     this.model.setHandlePos(values.handleNumber, values.left);
     this.model.setValue(values.handleNumber, values.index);
   }
