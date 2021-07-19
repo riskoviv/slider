@@ -101,4 +101,51 @@
       }
     }
   }
+
+  /**********************
+    SLIDER VERTICAL VIEW
+    *********************/
+  &_vertical {
+    .slider {
+      &__control-container {
+
+      }
+
+      &__base {
+
+      }
+
+      &__handle {
+
+      }
+
+      &__tip {
+
+        &::after {
+
+        }
+      }
+
+      &__scale {
+
+        &-block {
+
+          &::before {
+
+          }
+
+          &_invisible {
+
+            &::before {
+
+            }
+
+            span {
+
+            }
+          }
+        }
+      }
+    }
+  }
 }
