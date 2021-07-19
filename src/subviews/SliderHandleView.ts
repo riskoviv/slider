@@ -5,7 +5,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   otherHandlePosition: number;
 
-  private newLeft: number;
+  private newPosition: number;
 
   private currentValue: number;
 
@@ -19,20 +19,20 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .on('contextmenu', this.handlePreventContextMenu);
   }
 
-  setPositionAndCurrentValue(allowedLeft: number) {
-    this.changeCurrentValue(allowedLeft);
+  setPositionAndCurrentValue(allowedPosition: number) {
+    this.changeCurrentValue(allowedPosition);
     this.$elem.css('left', `${this.currentValue}%`);
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
-      left: this.currentValue,
+      position: this.currentValue,
       index: this.params.allowedValues.indexOf(this.currentValue),
     });
   }
 
-  private isCursorMovedEnough(left: number): boolean {
-    const isCursorMovedHalfStep = (left > (this.currentValue + this.params.halfStep))
-      || (left < (this.currentValue - this.params.halfStep));
-    const isCursorOnAllowedValue = this.params.allowedValues.includes(left);
+  private isCursorMovedEnough(position: number): boolean {
+    const isCursorMovedHalfStep = (position > (this.currentValue + this.params.halfStep))
+      || (position < (this.currentValue - this.params.halfStep));
+    const isCursorOnAllowedValue = this.params.allowedValues.includes(position);
 
     if (isCursorMovedHalfStep || isCursorOnAllowedValue) {
       return true;
@@ -40,13 +40,13 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     return false;
   }
 
-  private changeCurrentValue(allowedLeft: number) {
-    this.currentValue = this.findClosestAllowedValue(allowedLeft);
+  private changeCurrentValue(allowedPosition: number) {
+    this.currentValue = this.findClosestAllowedValue(allowedPosition);
   }
 
-  private findClosestAllowedValue(left: number) {
+  private findClosestAllowedValue(position: number) {
     return this.params.allowedValues.reduce((lastMinValue, currentValue) => {
-      if (Math.abs(left - currentValue) < Math.abs(left - lastMinValue)) {
+      if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
         return currentValue;
       }
       return lastMinValue;
@@ -72,16 +72,16 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     }
   }
 
-  private pixelsToPercentsOfBaseWidth(pixels: number) {
+  private pixelsToPercentsOfBaseLength(pixels: number) {
     return Number(((pixels / this.handleDirectContainer.offsetWidth) * 100).toFixed(1));
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
-    this.newLeft = this.pixelsToPercentsOfBaseWidth(
+    this.newPosition = this.pixelsToPercentsOfBaseLength(
       e.pageX - this.handleDirectContainer.offsetLeft,
     );
 
-    const isValueChangeNeeded = this.isCursorMovedEnough(this.newLeft);
+    const isValueChangeNeeded = this.isCursorMovedEnough(this.newPosition);
 
     if (this.params.isInterval) {
       this.isHandleKeepsBounds = this.checkHandleBounds();
@@ -90,16 +90,16 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     }
 
     if (isValueChangeNeeded && this.isHandleKeepsBounds) {
-      this.setPositionAndCurrentValue(this.newLeft);
+      this.setPositionAndCurrentValue(this.newPosition);
     }
   }
 
   private checkHandleBounds = (): boolean => {
     if (this.handleNumber === 1) {
-      return this.newLeft <= this.otherHandlePosition - this.params.stepSizeInPercents;
+      return this.newPosition <= this.otherHandlePosition - this.params.stepSizeInPercents;
     }
 
-    return this.newLeft >= this.otherHandlePosition + this.params.stepSizeInPercents;
+    return this.newPosition >= this.otherHandlePosition + this.params.stepSizeInPercents;
   }
 
   private handleMouseUp = (e: JQuery.MouseUpEvent) => {

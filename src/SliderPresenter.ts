@@ -66,15 +66,21 @@ class SliderPresenter {
     this.pluginStateOptions = this.model.getStateOptions();
   }
 
-  private handleValueChange = (values: { handleNumber: 1 | 2, left: number, index: number }) => {
+  private handleValueChange = (
+    values: {
+      handleNumber: 1 | 2,
+      position: number,
+      index: number
+    },
+  ) => {
     if (this.pluginStateOptions.showTip) {
-      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.left);
+      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.position);
     }
-    this.model.setHandlePos(values.handleNumber, values.left);
+    this.model.setHandlePos(values.handleNumber, values.position);
     this.model.setValue(values.handleNumber, values.index);
   }
 
-  private valueChanged = (values: {number: 1 | 2, value: number}) => {
+  private valueChanged = (values: { number: 1 | 2, value: number }) => {
     this.view.subViews[`sliderTip${values.number}`].setValue(values.value);
   }
 

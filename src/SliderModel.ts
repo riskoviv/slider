@@ -30,8 +30,8 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('stepSizeChanged', this.options.stepSize);
   }
 
-  setHandlePos(handleNumber: 1 | 2, left: number) {
-    this.options[`handle${handleNumber}Pos`] = left;
+  setHandlePos(handleNumber: 1 | 2, position: number) {
+    this.options[`handle${handleNumber}Pos`] = position;
   }
 
   setValue(handleNumber: 1 | 2, valueIndex: number): void {
@@ -59,9 +59,9 @@ class SliderModel extends EventEmitter implements ISliderModel {
     return value;
   }
 
-  private findClosestAllowedRealValue(left: number) {
+  private findClosestAllowedRealValue(position: number) {
     return this.allowedRealValues.reduce((lastMinValue, currentValue) => {
-      if (Math.abs(left - currentValue) < Math.abs(left - lastMinValue)) {
+      if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
         return currentValue;
       }
       return lastMinValue;

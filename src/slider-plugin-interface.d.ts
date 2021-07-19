@@ -58,7 +58,7 @@ interface ISliderModel {
 }
 
 interface ISliderHandleView {
-  setPositionAndCurrentValue?(allowedLeft: number): void;
+  setPositionAndCurrentValue?(allowedPosition: number): void;
   allowedValues?: number[];
   otherHandlePosition?: number;
 }
@@ -67,7 +67,7 @@ interface ISliderBaseView {}
 
 interface ISliderTipView {
   setValue?(value: number): void;
-  setPosition?(left: number): void;
+  setPosition?(position: number): void;
 }
 
 interface ISliderScaleView {}
