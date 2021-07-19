@@ -10,6 +10,13 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
         minMaxError.name = 'MinMaxError';
         throw minMaxError;
       }
+
+      const totalSliderRange = pluginOptions.maxValue - pluginOptions.minValue;
+
+      if (pluginOptions.stepSize > totalSliderRange) {
+        pluginOptions.stepSize = totalSliderRange;
+      }
+
       const presenter = new SliderPresenter(this, pluginOptions);
       return presenter.publicMethods;
     } catch (e) {
