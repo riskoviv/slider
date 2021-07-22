@@ -88,7 +88,7 @@
         height: 10px;
       }
 
-      &_invisible {
+      &_unnumbered {
         z-index: -1;
 
         &::before {
@@ -98,6 +98,11 @@
         span {
           visibility: hidden;
         }
+      }
+
+      &_invisible {
+        z-index: -1;
+        visibility: hidden;
       }
     }
   }
