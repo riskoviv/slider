@@ -59,7 +59,7 @@ interface ISliderModel {
 
 interface ISliderHandleView {
   setPositionAndCurrentValue?(allowedPosition: number): void;
-  allowedValues?: number[];
+  allowedPositions?: number[];
   otherHandlePosition?: number;
 }
 
@@ -90,6 +90,6 @@ type HandleBounds = {
 type HandleParams = {
   stepSizeInPercents?: number,
   halfStep?: number,
-  allowedValues?: number[],
+  allowedPositions?: number[],
   isInterval?: boolean,
 };

@@ -25,14 +25,14 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
       position: this.currentValue,
-      index: this.params.allowedValues.indexOf(this.currentValue),
+      index: this.params.allowedPositions.indexOf(this.currentValue),
     });
   }
 
   private isCursorMovedEnough(position: number): boolean {
     const isCursorMovedHalfStep = (position > (this.currentValue + this.params.halfStep))
       || (position < (this.currentValue - this.params.halfStep));
-    const isCursorOnAllowedValue = this.params.allowedValues.includes(position);
+    const isCursorOnAllowedValue = this.params.allowedPositions.includes(position);
 
     if (isCursorMovedHalfStep || isCursorOnAllowedValue) {
       return true;
@@ -45,7 +45,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private findClosestAllowedValue(position: number) {
-    return this.params.allowedValues.reduce((lastMinValue, currentValue) => {
+    return this.params.allowedPositions.reduce((lastMinValue, currentValue) => {
       if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
         return currentValue;
       }
