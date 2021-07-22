@@ -11,6 +11,12 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
         throw minMaxError;
       }
 
+      if (pluginOptions.stepSize <= 0) {
+        const invalidStepError = new Error('stepSize must be > 0');
+        invalidStepError.name = 'InvalidStepError';
+        throw invalidStepError;
+      }
+
       const totalSliderRange = pluginOptions.maxValue - pluginOptions.minValue;
 
       if (pluginOptions.stepSize > totalSliderRange) {
