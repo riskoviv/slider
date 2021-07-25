@@ -13,15 +13,22 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private isHandleKeepsBounds: boolean;
 
-  constructor(private params: HandleParams, private handleNumber: 1 | 2) {
+  private axis: 'left' | 'top';
+
+  constructor(
+    private params: HandleParams,
+    private handleNumber: 1 | 2,
+    private isVertical: boolean,
+  ) {
     super();
+    this.axis = this.isVertical ? 'top' : 'left';
     this.$elem.on('mousedown', this.handleMouseDown)
       .on('contextmenu', this.handlePreventContextMenu);
   }
 
   setPositionAndCurrentValue(allowedPosition: number) {
     this.changeCurrentValue(allowedPosition);
-    this.$elem.css('left', `${this.currentValue}%`);
+    this.$elem.css(this.axis, `${this.currentValue}%`);
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
       position: this.currentValue,
@@ -72,13 +79,16 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     }
   }
 
-  private pixelsToPercentsOfBaseLength(pixels: number) {
-    return Number(((pixels / this.handleDirectContainer.offsetWidth) * 100).toFixed(1));
+  private pixelsToPercentsOfBaseLength(pixels: number): number {
+    const dimension = this.isVertical ? 'offsetWidth' : 'offsetHeight';
+    return Number(((pixels / this.handleDirectContainer[dimension]) * 100).toFixed(1));
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
     this.newPosition = this.pixelsToPercentsOfBaseLength(
-      e.pageX - this.handleDirectContainer.offsetLeft,
+      this.isVertical
+        ? e.pageX - this.handleDirectContainer.offsetLeft
+        : e.pageY - this.handleDirectContainer.offsetTop,
     );
 
     const isValueChangeNeeded = this.isCursorMovedEnough(this.newPosition);

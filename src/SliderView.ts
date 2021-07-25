@@ -7,7 +7,7 @@ import SliderTipView from './subviews/SliderTipView';
 class SliderView extends EventEmitter {
   $elem = $('<div class="slider"></div>');
 
-  controlContainer = $('<div class="slider__control-container"></div>');
+  $controlContainer = $('<div class="slider__control-container"></div>');
 
   subViews: {
     [subViewName: string]: ISliderSubView;
@@ -24,9 +24,14 @@ class SliderView extends EventEmitter {
     private options: ISliderPluginStateOptions,
   ) {
     super();
+
+    if (this.options.isVertical) {
+      this.$elem.addClass('slider_vertical');
+    }
+
     this.handleParams = {};
     this.handleParams.isInterval = this.options.isInterval;
-    this.$elem.append(this.controlContainer);
+    this.$elem.append(this.$controlContainer);
     this.insertSliderToPluginRootElem();
     this.createAllowedPositionsArr();
     this.createSubViews();
@@ -66,13 +71,13 @@ class SliderView extends EventEmitter {
     };
 
     if (this.options.showTip) {
-      this.subViews.sliderTip1 = new SliderTipView();
+      this.subViews.sliderTip1 = new SliderTipView(this.options.isVertical);
     }
 
     if (this.options.isInterval) {
       this.subViews.sliderHandle2 = new SliderHandleView(this.handleParams, 2);
       if (this.options.showTip) {
-        this.subViews.sliderTip2 = new SliderTipView();
+        this.subViews.sliderTip2 = new SliderTipView(this.options.isVertical);
       }
     }
 
@@ -80,13 +85,14 @@ class SliderView extends EventEmitter {
       this.sliderScale = new SliderScaleView(
         this.handleParams.allowedPositions,
         this.allowedRealValues,
+        this.options.isVertical,
       );
     }
   }
 
   private insertSubViewsIntoContainer = () => {
     Object.values(this.subViews).forEach((subView) => {
-      this.controlContainer.append(subView.$elem);
+      this.$controlContainer.append(subView.$elem);
     });
 
     if (this.options.showScale) {

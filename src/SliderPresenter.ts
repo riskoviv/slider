@@ -35,7 +35,8 @@ class SliderPresenter {
 
     this.publicMethods = this.model.publicMethods;
 
-    this.model.on('stepSizeChanged', this.changeStepSize);
+    this.model.on('stepSizeChanged', this.changeStepSize)
+      .on('isVerticalChanged', this.toggleVerticalState);
 
     if (this.pluginStateOptions.showTip) {
       this.model.on('valueChanged', this.valueChanged);
@@ -58,8 +59,12 @@ class SliderPresenter {
     }
   }
 
-  changeStepSize = (stepSize: number) => {
+  private changeStepSize = (stepSize: number) => {
     // this.view.changeStepSize(stepSize);
+  }
+
+  private toggleVerticalState = (isVertical: boolean) => {
+
   }
 
   private retrieveStateOptions = () => {

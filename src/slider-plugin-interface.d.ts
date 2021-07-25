@@ -45,7 +45,8 @@ type EventName =
   'handleValueChange' |
   'valueChanged' |
   'scaleValueSelect' |
-  'getOtherHandlePosition';
+  'getOtherHandlePosition' |
+  'isVerticalChanged';
 
 interface IEventEmitter {
   private events: EventsStorage;
@@ -59,7 +60,6 @@ interface ISliderModel {
 
 interface ISliderHandleView {
   setPositionAndCurrentValue?(allowedPosition: number): void;
-  allowedPositions?: number[];
   otherHandlePosition?: number;
 }
 
@@ -70,7 +70,9 @@ interface ISliderTipView {
   setPosition?(position: number): void;
 }
 
-interface ISliderScaleView {}
+interface ISliderScaleView {
+  private valueElements?: JQuery<HTMLSpanElement>[];
+}
 
 interface ISliderSubView extends
   IEventEmitter,

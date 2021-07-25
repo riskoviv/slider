@@ -3,10 +3,20 @@ import EventEmitter from '../EventEmitter';
 class SliderScaleView extends EventEmitter implements ISliderSubView {
   $elem = $('<div class="slider__scale"></div>');
 
-  private valueElements: JQuery<HTMLSpanElement>[];
+  valueElements: JQuery<HTMLSpanElement>[];
 
-  constructor(public allowedPositions: number[], private allowedRealValues: number[]) {
+  private axis: 'top' | 'left';
+
+  private dimension: 'width' | 'height';
+
+  constructor(
+    public allowedPositions: number[],
+    private allowedRealValues: number[],
+    private isVertical: boolean,
+  ) {
     super();
+    this.axis = this.isVertical ? 'top' : 'left';
+    this.dimension = this.isVertical ? 'height' : 'width';
 
     setTimeout(() => {
       this.createValuesElements();
@@ -21,8 +31,9 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
   }
 
   private createValuesElements = () => {
-    const quotient = Math.round((this.allowedPositions.length / this.$elem.width()) * 3);
-    console.log('quotient: ', `${quotient} = ${this.allowedPositions.length} / ${this.$elem.width()} * 3`);
+    const quotient = Math.round((this.allowedPositions.length / this.$elem[this.dimension]()) * 3);
+    // eslint-disable-next-line max-len
+    // console.log('quotient: ', `${quotient} = ${this.allowedPositions.length} / ${this.$elem.width()} * 3`);
     const lastElemIndex = this.allowedPositions.length - 1;
 
     this.valueElements = [];
@@ -47,9 +58,9 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
     }
   }
 
-  private makeNewScaleValueElement = (index: number, value: number) => (
+  private makeNewScaleValueElement = (index: number, value: number): JQuery<HTMLSpanElement> => (
     $(`
-      <div class="slider__scale-block" data-index="${index}" style="left: ${value}%">
+      <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${value}%">
         <span class="slider__scale-text">${this.allowedRealValues[index]}</span>
       </div>
     `)
@@ -59,11 +70,11 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
     const $firstElem = this.valueElements[0];
     const $lastElem = this.valueElements[this.valueElements.length - 1];
     let $currentElem = $firstElem;
+    let curElemRightBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
 
     this.valueElements.slice(1).forEach(($elem) => {
-      const curElemRightBound = $currentElem.position().left + $currentElem.width();
       if ($elem) {
-        if ($elem.position().left - 5 <= curElemRightBound) {
+        if ($elem.position()[this.axis] - 5 <= curElemRightBound) {
           if ($elem === $lastElem && $currentElem !== $firstElem) {
             $currentElem.addClass('slider__scale-block_unnumbered');
           } else if ($elem !== $lastElem) {
@@ -71,6 +82,7 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
           }
         } else {
           $currentElem = $elem;
+          curElemRightBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
           $elem.removeClass('slider__scale-block_unnumbered');
         }
       }
