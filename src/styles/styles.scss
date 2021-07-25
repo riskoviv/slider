@@ -1,8 +1,9 @@
 .slider {
-  --slider-height: 30px;
-  --slider-margin: 0 calc(var(--slider-height) / 2);
+  --slider-size: 30px;
+  --slider-margin-h: 0 calc(var(--slider-size) / 2);
+  --slider-margin-v: calc(var(--slider-size) / 2) 0;
 
-  min-height: var(--slider-height);
+  min-height: var(--slider-size);
 
   * {
     box-sizing: border-box;
@@ -10,28 +11,28 @@
 
   &__control-container {
     position: relative;
-    height: var(--slider-height);
-    margin: var(--slider-margin);
+    height: var(--slider-size);
+    margin: var(--slider-margin-h);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   &__base {
-    --base-height: calc(var(--slider-height) / 2);
-    height: var(--base-height);
+    --base-size: calc(var(--slider-size) / 2);
+    height: var(--base-size);
     width: 100%;
     background-color: #444;
-    border-radius: calc(var(--base-height) / 2);
+    border-radius: calc(var(--base-size) / 2);
   }
 
   &__handle {
     position: absolute;
-    width: var(--slider-height);
-    height: var(--slider-height);
+    width: var(--slider-size);
+    height: var(--slider-size);
     background-color: rgb(47, 163, 12);
     border-radius: 10px;
-    border: calc(var(--slider-height) / 10) solid white;
+    border: calc(var(--slider-size) / 10) solid white;
     top: 0;
     left: 0%;
     transform: translateX(-50%);
@@ -39,12 +40,13 @@
   }
 
   &__tip {
+    --tip-margin: calc(100% + 5px);
     position: absolute;
     background-color: #aaa;
     border: 1px solid white;
     padding: 2px;
     border-radius: 2px;
-    bottom: calc(100% + 5px);
+    bottom: var(--tip-margin);
     transform: translateX(-50%);
 
     &::after {
@@ -65,8 +67,8 @@
   }
 
   &__scale {
-    height: 30px;
-    margin: var(--slider-margin);
+    height: var(--slider-size);
+    margin: var(--slider-margin-h);
     position: relative;
 
     &-block {
@@ -74,8 +76,6 @@
       bottom: 0;
       transform: translateX(-50%);
       cursor: pointer;
-      // background-color: #fff;
-      // border: 1px solid #222;
 
       &::before {
         display: block;
@@ -113,40 +113,53 @@
   &_vertical {
     .slider {
       &__control-container {
-
+        height: auto;
+        width: var(--slider-size);
+        margin: var(--slider-margin-v);
       }
 
       &__base {
-
+        height: 100%;
+        width: var(--base-size);
       }
 
       &__handle {
-
+        transform: translateY(-50%);
       }
 
       &__tip {
+        bottom: unset;
+        right: var(--tip-margin);
+        transform: translateY(-50%);
 
         &::after {
-
+          top: 50%;
+          left: 100%;
+          transform: translateY(-50%), rotate(-90deg);
         }
       }
 
       &__scale {
+        width: var(--slider-size);
+        height: 100%;
+        margin: var(--slider-margin-v);
 
         &-block {
+          bottom: unset;
+          right: 0;
+          transform: translateY(-50%);
 
           &::before {
-
+            bottom: unset;
+            top: 50%;
+            left: -50%;
+            width: 10px;
+            height: 2px;
           }
 
-          &_invisible {
-
+          &_unnumbered {
             &::before {
-
-            }
-
-            span {
-
+              height: 1px;
             }
           }
         }
