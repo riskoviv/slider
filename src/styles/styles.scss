@@ -93,7 +93,7 @@
 
         &::before {
           width: 1px;
-          background-color: #333;
+          background-color: rgba(0, 0, 0, 0.5);
         }
 
         .slider__scale-text {
@@ -168,7 +168,7 @@
           &_unnumbered {
             &::before {
               height: 1px;
-              background-color: #333;
+              background-color: rgba(0, 0, 0, 0.5);
             }
           }
         }
