@@ -80,15 +80,15 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
-    const dimension = this.isVertical ? 'offsetWidth' : 'offsetHeight';
+    const dimension = this.isVertical ? 'offsetHeight' : 'offsetWidth';
     return Number(((pixels / this.handleDirectContainer[dimension]) * 100).toFixed(1));
   }
 
   private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
     this.newPosition = this.pixelsToPercentsOfBaseLength(
       this.isVertical
-        ? e.pageX - this.handleDirectContainer.offsetLeft
-        : e.pageY - this.handleDirectContainer.offsetTop,
+        ? e.pageY - this.handleDirectContainer.offsetTop
+        : e.pageX - this.handleDirectContainer.offsetLeft,
     );
 
     const isValueChangeNeeded = this.isCursorMovedEnough(this.newPosition);
