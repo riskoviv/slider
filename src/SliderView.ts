@@ -67,7 +67,11 @@ class SliderView extends EventEmitter {
   private createSubViews() {
     this.subViews = {
       sliderBase: new SliderBaseView(),
-      sliderHandle1: new SliderHandleView(this.handleParams, 1),
+      sliderHandle1: new SliderHandleView(
+        this.handleParams,
+        1,
+        this.options.isVertical,
+      ),
     };
 
     if (this.options.showTip) {
@@ -75,7 +79,11 @@ class SliderView extends EventEmitter {
     }
 
     if (this.options.isInterval) {
-      this.subViews.sliderHandle2 = new SliderHandleView(this.handleParams, 2);
+      this.subViews.sliderHandle2 = new SliderHandleView(
+        this.handleParams,
+        2,
+        this.options.isVertical,
+      );
       if (this.options.showTip) {
         this.subViews.sliderTip2 = new SliderTipView(this.options.isVertical);
       }
