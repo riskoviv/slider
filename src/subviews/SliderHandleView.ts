@@ -3,6 +3,8 @@ import EventEmitter from '../EventEmitter';
 class SliderHandleView extends EventEmitter implements ISliderHandleView {
   $elem = $('<div class="slider__handle"></div>');
 
+  elem = this.$elem.get()[0];
+
   otherHandlePosition: number;
 
   private newPosition: number;
@@ -22,8 +24,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   ) {
     super();
     this.axis = this.isVertical ? 'top' : 'left';
-    this.$elem.on('mousedown', this.handleMouseDown)
-      .on('contextmenu', this.handlePreventContextMenu);
+    this.bindEventListeners();
   }
 
   setPositionAndCurrentValue(allowedPosition: number) {
@@ -34,6 +35,11 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       position: this.currentValue,
       index: this.params.allowedPositions.indexOf(this.currentValue),
     });
+  }
+
+  private bindEventListeners() {
+    this.elem.addEventListener('pointerdown', this.handleMouseDown);
+    this.$elem.on('contextmenu', this.handlePreventContextMenu);
   }
 
   private isCursorMovedEnough(position: number): boolean {
@@ -60,19 +66,21 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     });
   }
 
-  private handleMouseDown = (e: JQuery.MouseDownEvent) => {
-    if (e.originalEvent.button !== 0) {
+  private handleMouseDown = (e: PointerEvent) => {
+    if (e.button !== 0) {
       return;
     }
 
     e.preventDefault();
 
+    this.elem.setPointerCapture(e.pointerId);
+
     if (this.handleDirectContainer === undefined) {
       [this.handleDirectContainer] = this.$elem.parent().get();
     }
 
-    $(document).on('mousemove', this.handleMouseMove)
-      .on('mouseup', this.handleMouseUp);
+    this.elem.addEventListener('pointermove', this.handleMouseMove);
+    this.elem.addEventListener('pointerup', this.handleMouseUp);
 
     if (this.params.isInterval) {
       this.emit('getOtherHandlePosition', this.handleNumber);
@@ -84,7 +92,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     return Number(((pixels / this.handleDirectContainer[dimension]) * 100).toFixed(1));
   }
 
-  private handleMouseMove = (e: JQuery.MouseMoveEvent) => {
+  private handleMouseMove = (e: PointerEvent) => {
     this.newPosition = this.pixelsToPercentsOfBaseLength(
       this.isVertical
         ? e.pageY - this.handleDirectContainer.offsetTop
@@ -112,13 +120,13 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     return this.newPosition >= this.otherHandlePosition + this.params.stepSizeInPercents;
   }
 
-  private handleMouseUp = (e: JQuery.MouseUpEvent) => {
-    if (e.originalEvent.button !== 0) {
+  private handleMouseUp = (e: PointerEvent) => {
+    if (e.button !== 0) {
       e.preventDefault();
     }
 
-    $(document).off('mousemove', this.handleMouseMove)
-      .off('mouseup', this.handleMouseUp);
+    this.elem.removeEventListener('pointermove', this.handleMouseMove);
+    this.elem.removeEventListener('pointerup', this.handleMouseUp);
   }
 
   private handlePreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
