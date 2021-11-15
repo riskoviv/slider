@@ -81,6 +81,12 @@ class SliderPresenter {
     if (this.pluginStateOptions.showTip) {
       this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.position);
     }
+    if (this.pluginStateOptions.showProgressBar) {
+      this.view.subViews.sliderProgress.updateProgressSize(
+        values.handleNumber,
+        values.position,
+      );
+    }
     this.model.setHandlePos(values.handleNumber, values.position);
     this.model.setValue(values.handleNumber, values.index);
   }

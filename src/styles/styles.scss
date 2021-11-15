@@ -1,6 +1,7 @@
 .slider {
   --slider-size: 30px;
   --slider-margin: calc(var(--slider-size) / 2);
+  --green: rgb(47, 163, 12);
 
   min-height: var(--slider-size);
 
@@ -19,17 +20,19 @@
 
   &__base {
     --base-size: calc(var(--slider-size) / 2);
+    --base-border-radius: calc(var(--base-size) / 2);
+    position: relative;
     height: var(--base-size);
     width: 100%;
     background-color: #444;
-    border-radius: calc(var(--base-size) / 2);
+    border-radius: var(--base-border-radius);
   }
 
   &__handle {
     position: absolute;
     width: var(--slider-size);
     height: var(--slider-size);
-    background-color: rgb(47, 163, 12);
+    background-color: var(--green);
     border-radius: 10px;
     border: calc(var(--slider-size) / 10) solid white;
     top: 0;
@@ -108,6 +111,14 @@
     }
   }
 
+  &__progress {
+    position: absolute;
+    height: var(--base-size);
+    background-color: var(--green);
+    width: unset;
+    border-radius: var(--base-border-radius);
+  }
+
   /**********************
     SLIDER VERTICAL VIEW
     *********************/
@@ -176,6 +187,11 @@
         &-text {
           text-align: left;
         }
+      }
+
+      &__progress {
+        height: unset;
+        width: var(--base-size);
       }
     }
   }

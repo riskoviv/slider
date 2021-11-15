@@ -3,6 +3,7 @@ import SliderBaseView from './subviews/SliderBaseView';
 import SliderHandleView from './subviews/SliderHandleView';
 import SliderScaleView from './subviews/SliderScaleView';
 import SliderTipView from './subviews/SliderTipView';
+import SliderProgressView from './subviews/SliderProgressView';
 
 class SliderView extends EventEmitter {
   $elem = $('<div class="slider"></div>');
@@ -96,11 +97,21 @@ class SliderView extends EventEmitter {
         this.options.isVertical,
       );
     }
+
+    if (this.options.showProgressBar) {
+      this.subViews.sliderProgress = new SliderProgressView(
+        this.options.isInterval,
+        this.options.isVertical,
+      );
+      this.subViews.sliderBase.$elem.append(this.subViews.sliderProgress.$elem);
+    }
   }
 
   private insertSubViewsIntoContainer = () => {
     Object.values(this.subViews).forEach((subView) => {
-      this.$controlContainer.append(subView.$elem);
+      if (subView !== this.subViews.sliderProgress) {
+        this.$controlContainer.append(subView.$elem);
+      }
     });
 
     if (this.options.showScale) {

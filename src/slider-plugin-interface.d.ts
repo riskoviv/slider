@@ -74,12 +74,17 @@ interface ISliderScaleView {
   private valueElements?: JQuery<HTMLSpanElement>[];
 }
 
+interface ISliderProgressView {
+  updateProgressSize?(handleNumber: number, handlePosition: number): void;
+}
+
 interface ISliderSubView extends
   IEventEmitter,
   ISliderHandleView,
   ISliderBaseView,
   ISliderTipView,
-  ISliderScaleView {
+  ISliderScaleView,
+  ISliderProgressView {
   $elem: JQuery<HTMLElement>;
 }
 
