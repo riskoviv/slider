@@ -1,7 +1,6 @@
 .slider {
   --slider-size: 30px;
-  --slider-margin-h: 0 calc(var(--slider-size) / 2);
-  --slider-margin-v: calc(var(--slider-size) / 2) 0;
+  --slider-margin: calc(var(--slider-size) / 2);
 
   min-height: var(--slider-size);
 
@@ -12,7 +11,7 @@
   &__control-container {
     position: relative;
     height: var(--slider-size);
-    margin: var(--slider-margin-h);
+    margin: 0 var(--slider-margin);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,7 +67,7 @@
 
   &__scale {
     height: var(--slider-size);
-    margin: var(--slider-margin-h);
+    margin: 0 var(--slider-margin);
     position: relative;
 
     &-block {
@@ -82,6 +81,7 @@
         position: absolute;
         bottom: 110%;
         left: 50%;
+        transform: translateX(-50%);
         content: '';
         background-color: black;
         width: 2px;
@@ -93,9 +93,10 @@
 
         &::before {
           width: 1px;
+          background-color: #333;
         }
 
-        span {
+        .slider__scale-text {
           visibility: hidden;
         }
       }
@@ -111,11 +112,16 @@
     SLIDER VERTICAL VIEW
     *********************/
   &_vertical {
+    height: 100%;
+    display: flex;
+    width: fit-content;
+
     .slider {
+
       &__control-container {
-        height: auto;
+        height: calc(100% - var(--slider-size));
         width: var(--slider-size);
-        margin: var(--slider-margin-v);
+        margin: var(--slider-margin) 0;
       }
 
       &__base {
@@ -135,23 +141,25 @@
         &::after {
           top: 50%;
           left: 100%;
-          transform: translateY(-50%), rotate(-90deg);
+          transform: translateY(-50%) rotate(-90deg);
         }
       }
 
       &__scale {
         width: var(--slider-size);
-        height: 100%;
-        margin: var(--slider-margin-v);
+        height: calc(100% - var(--slider-size));
+        margin: var(--slider-margin) 0;
 
         &-block {
           bottom: unset;
           right: 0;
-          transform: translateY(-50%);
+          width: 100%;
+          transform: translate(50%, -50%);
 
           &::before {
             bottom: unset;
             top: 50%;
+            transform: translateY(-50%);
             left: -50%;
             width: 10px;
             height: 2px;
@@ -160,8 +168,13 @@
           &_unnumbered {
             &::before {
               height: 1px;
+              background-color: #333;
             }
           }
+        }
+
+        &-text {
+          text-align: left;
         }
       }
     }
