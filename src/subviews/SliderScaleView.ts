@@ -70,11 +70,11 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
     const $firstElem = this.valueElements[0];
     const $lastElem = this.valueElements[this.valueElements.length - 1];
     let $currentElem = $firstElem;
-    let curElemRightBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
+    let curElemEdgeBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
 
     this.valueElements.slice(1).forEach(($elem) => {
       if ($elem) {
-        if ($elem.position()[this.axis] - 5 <= curElemRightBound) {
+        if ($elem.position()[this.axis] - 5 <= curElemEdgeBound) {
           if ($elem === $lastElem && $currentElem !== $firstElem) {
             $currentElem.addClass('slider__scale-block_unnumbered');
           } else if ($elem !== $lastElem) {
@@ -82,7 +82,7 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
           }
         } else {
           $currentElem = $elem;
-          curElemRightBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
+          curElemEdgeBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
           $elem.removeClass('slider__scale-block_unnumbered');
         }
       }
