@@ -95,8 +95,28 @@ class SliderPresenter {
     this.view.subViews[`sliderTip${values.number}`].setValue(values.value);
   }
 
-  private scaleValueSelect = (value1Idx: number) => {
-    this.view.subViews.sliderHandle1.setPositionAndCurrentValue(value1Idx);
+  private findClosestHandle(position: number): 1 | 2 {
+    const handle1Pos = this.model.getHandlePos(1);
+    const handle2Pos = this.model.getHandlePos(2);
+
+    if (Math.abs(position - handle1Pos) < Math.abs(position - handle2Pos)) {
+      return 1;
+    }
+
+    if (Math.abs(position - handle1Pos) > Math.abs(position - handle2Pos)) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  private scaleValueSelect = (position: number) => {
+    if (this.pluginStateOptions.isInterval) {
+      const handleNumber = this.findClosestHandle(position);
+      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue(position);
+    } else {
+      this.view.subViews.sliderHandle1.setPositionAndCurrentValue(position);
+    }
   }
 
   private receiveAndSubmitOtherHandlePosition = (handleNumber: 1 | 2) => {
