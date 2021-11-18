@@ -6,6 +6,8 @@ class SliderPresenter {
 
   private view: SliderView;
 
+  $pluginElem: JQuery<HTMLElement>;
+
   publicMethods: Object;
 
   pluginStateOptions: ISliderPluginStateOptions;
@@ -32,6 +34,8 @@ class SliderPresenter {
       this.model.allowedRealValues,
       this.pluginStateOptions,
     );
+
+    this.$pluginElem = this.view.$elem;
 
     this.publicMethods = this.model.publicMethods;
 
