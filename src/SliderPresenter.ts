@@ -8,6 +8,8 @@ class SliderPresenter {
 
   publicMethods: Object;
 
+  pluginStateOptions: ISliderPluginStateOptions;
+
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
     private pluginOptions: ISliderPluginOptions,
@@ -15,8 +17,10 @@ class SliderPresenter {
     this.model = new SliderModel(this.pluginOptions);
 
     const {
-      value1, minValue, maxValue, stepSize,
-    } = this.pluginOptions;
+      value1, value2, minValue, maxValue, stepSize,
+    } = this.model.getOptions();
+
+    this.retrieveStateOptions();
 
     this.view = new SliderView(
       this.pluginRootElem,
@@ -25,29 +29,98 @@ class SliderPresenter {
         maxValue,
         stepSize,
       },
+      this.model.allowedRealValues,
+      this.pluginStateOptions,
     );
 
     this.publicMethods = this.model.publicMethods;
 
     this.model.on('stepSizeChanged', this.changeStepSize)
-      .on('value1Changed', this.value1Changed);
+      .on('isVerticalChanged', this.toggleVerticalState);
 
-    this.view.subViews.sliderHandle1.on('handle1ValueChange', this.handle1ValueChange);
+    if (this.pluginStateOptions.showTip) {
+      this.model.on('valueChanged', this.valueChanged);
+    }
 
-    this.view.render(value1, minValue, maxValue);
+    [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2].forEach((sliderHandle) => {
+      sliderHandle?.on('handleValueChange', this.handleValueChange);
+      if (this.pluginStateOptions.isInterval) {
+        sliderHandle?.on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePosition);
+      }
+    });
+
+    this.view.render(
+      this.model.allowedRealValues.indexOf(value1),
+      this.model.allowedRealValues.indexOf(value2),
+    );
+
+    if (this.pluginStateOptions.showScale) {
+      this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
+    }
   }
 
-  changeStepSize = (stepSize: number) => {
+  private changeStepSize = (stepSize: number) => {
     // this.view.changeStepSize(stepSize);
   }
 
-  private handle1ValueChange = (left: number) => {
-    this.view.subViews.sliderTip1.setPosition(left);
-    this.model.setValue1(left);
+  private toggleVerticalState = (isVertical: boolean) => {
+
   }
 
-  private value1Changed = (value1: number) => {
-    this.view.subViews.sliderTip1.setValue(value1);
+  private retrieveStateOptions = () => {
+    this.pluginStateOptions = this.model.getStateOptions();
+  }
+
+  private handleValueChange = (
+    values: {
+      handleNumber: 1 | 2,
+      position: number,
+      index: number
+    },
+  ) => {
+    if (this.pluginStateOptions.showTip) {
+      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.position);
+    }
+    if (this.pluginStateOptions.showProgressBar) {
+      this.view.subViews.sliderProgress.updateProgressSize(
+        values.handleNumber,
+        values.position,
+      );
+    }
+    this.model.setHandlePos(values.handleNumber, values.position);
+    this.model.setValue(values.handleNumber, values.index);
+  }
+
+  private valueChanged = (values: { number: 1 | 2, value: number }) => {
+    this.view.subViews[`sliderTip${values.number}`].setValue(values.value);
+  }
+
+  private findClosestHandle(position: number): 1 | 2 {
+    const handle1Pos = this.model.getHandlePos(1);
+    const handle2Pos = this.model.getHandlePos(2);
+
+    if (Math.abs(position - handle1Pos) < Math.abs(position - handle2Pos)) {
+      return 1;
+    }
+
+    if (Math.abs(position - handle1Pos) > Math.abs(position - handle2Pos)) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  private scaleValueSelect = (position: number) => {
+    if (this.pluginStateOptions.isInterval) {
+      const handleNumber = this.findClosestHandle(position);
+      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue(position);
+    } else {
+      this.view.subViews.sliderHandle1.setPositionAndCurrentValue(position);
+    }
+  }
+
+  private receiveAndSubmitOtherHandlePosition = (handleNumber: 1 | 2) => {
+    this.view.subViews[`sliderHandle${handleNumber}`].otherHandlePosition = this.model.getOptions()[`handle${handleNumber === 1 ? 2 : 1}Pos`];
   }
 }
 

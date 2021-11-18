@@ -9,10 +9,12 @@ class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  emit(evt: EventName, arg?: unknown): void {
+  emit(evt: EventName, arg?: object | number | boolean): void {
     try {
       if (this.events[evt] === undefined) {
-        const emitError = new Error(`${evt} event is not registered`);
+        const emitError = new Error(`${evt} event is not registered. arg = ${
+          typeof arg === 'object' ? Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ') : arg
+        }`);
         emitError.name = 'EmitError';
         throw emitError;
       }

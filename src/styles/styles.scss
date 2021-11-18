@@ -1,8 +1,9 @@
 .slider {
-  --slider-height: 30px;
-  --slider-margin: 0 calc(var(--slider-height) / 2);
+  --slider-size: 30px;
+  --slider-margin: calc(var(--slider-size) / 2);
+  --green: rgb(47, 163, 12);
 
-  min-height: var(--slider-height);
+  min-height: var(--slider-size);
 
   * {
     box-sizing: border-box;
@@ -10,40 +11,44 @@
 
   &__control-container {
     position: relative;
-    height: var(--slider-height);
-    margin: var(--slider-margin);
+    height: var(--slider-size);
+    margin: 0 var(--slider-margin);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   &__base {
-    --base-height: calc(var(--slider-height) / 2);
-    height: var(--base-height);
+    --base-size: calc(var(--slider-size) / 2);
+    --base-border-radius: calc(var(--base-size) / 2);
+    position: relative;
+    height: var(--base-size);
     width: 100%;
     background-color: #444;
-    border-radius: calc(var(--base-height) / 2);
+    border-radius: var(--base-border-radius);
   }
 
   &__handle {
     position: absolute;
-    width: var(--slider-height);
-    height: var(--slider-height);
-    background-color: rgba(74, 235, 25, 0.5);
-    border-radius: 50%;
-    border: calc(var(--slider-height) / 10) solid white;
+    width: var(--slider-size);
+    height: var(--slider-size);
+    background-color: var(--green);
+    border-radius: 10px;
+    border: calc(var(--slider-size) / 10) solid white;
     top: 0;
     left: 0%;
     transform: translateX(-50%);
+    cursor: pointer;
   }
 
   &__tip {
+    --tip-margin: calc(100% + 5px);
     position: absolute;
     background-color: #aaa;
     border: 1px solid white;
     padding: 2px;
     border-radius: 2px;
-    bottom: calc(100% + 5px);
+    bottom: var(--tip-margin);
     transform: translateX(-50%);
 
     &::after {
@@ -60,6 +65,134 @@
       border-right: 4px solid transparent;
       border-top: 5px solid white;
       border-bottom-width: 0px;
+    }
+  }
+
+  &__scale {
+    height: var(--slider-size);
+    margin: 0 var(--slider-margin);
+    position: relative;
+
+    &-block {
+      position: absolute;
+      bottom: 0;
+      transform: translateX(-50%);
+      cursor: pointer;
+
+      &::before {
+        display: block;
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        content: '';
+        background-color: black;
+        width: 2px;
+        height: 10px;
+      }
+
+      &_unnumbered {
+        z-index: -1;
+
+        &::before {
+          width: 1px;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .slider__scale-text {
+          visibility: hidden;
+        }
+      }
+
+      &_invisible {
+        z-index: -1;
+        visibility: hidden;
+      }
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    height: var(--base-size);
+    background-color: var(--green);
+    width: unset;
+    border-radius: var(--base-border-radius);
+  }
+
+  /**********************
+    SLIDER VERTICAL VIEW
+    *********************/
+  &_vertical {
+    height: 100%;
+    display: flex;
+    width: fit-content;
+
+    .slider {
+
+      &__control-container {
+        height: calc(100% - var(--slider-size));
+        width: var(--slider-size);
+        margin: var(--slider-margin) 0;
+      }
+
+      &__base {
+        height: 100%;
+        width: var(--base-size);
+      }
+
+      &__handle {
+        transform: translateY(-50%);
+      }
+
+      &__tip {
+        bottom: unset;
+        right: var(--tip-margin);
+        transform: translateY(-50%);
+
+        &::after {
+          top: 50%;
+          left: 100%;
+          transform: translateY(-50%) rotate(-90deg);
+        }
+      }
+
+      &__scale {
+        width: var(--slider-size);
+        height: calc(100% - var(--slider-size));
+        margin: var(--slider-margin) 0;
+
+        &-block {
+          bottom: unset;
+          right: 0;
+          width: 100%;
+          transform: translate(50%, -50%);
+
+          &::before {
+            bottom: unset;
+            top: 50%;
+            transform: translateY(-50%);
+            left: -50%;
+            width: 10px;
+            height: 2px;
+          }
+
+          &_unnumbered {
+            &::before {
+              height: 1px;
+              background-color: rgba(0, 0, 0, 0.5);
+            }
+          }
+        }
+
+        &-text {
+          text-align: left;
+        }
+      }
+
+      &__progress {
+        height: unset;
+        width: var(--base-size);
+      }
     }
   }
 }

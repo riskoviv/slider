@@ -1,16 +1,25 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
-interface ISliderPluginOptions {
+interface ISliderPluginValueOptions {
   stepSize?: number,
   minValue?: number,
   maxValue?: number,
   value1: number,
   value2: number,
+  handle1Pos?: number,
+  handle2Pos?: number,
+}
+
+interface ISliderPluginStateOptions {
   isVertical?: boolean,
   isInterval?: boolean,
-  showValueHint?: boolean,
+  showTip?: boolean,
   showScale?: boolean,
   showProgressBar?: boolean,
+}
+
+interface ISliderPluginOptions extends ISliderPluginValueOptions, ISliderPluginStateOptions {
+  [option: string],
 }
 
 interface ISliderPluginGlobalOptions {
@@ -33,8 +42,11 @@ type EventsStorage = {
 
 type EventName =
   'stepSizeChanged' |
-  'handle1ValueChange' |
-  'value1Changed';
+  'handleValueChange' |
+  'valueChanged' |
+  'scaleValueSelect' |
+  'getOtherHandlePosition' |
+  'isVerticalChanged';
 
 interface IEventEmitter {
   private events: EventsStorage;
@@ -47,17 +59,32 @@ interface ISliderModel {
 }
 
 interface ISliderHandleView {
-  setPositionAndCurrentValue?(allowedLeft: number): void;
+  setPositionAndCurrentValue?(allowedPosition: number): void;
+  otherHandlePosition?: number;
 }
 
 interface ISliderBaseView {}
 
 interface ISliderTipView {
   setValue?(value: number): void;
-  setPosition?(left: number): void;
+  setPosition?(position: number): void;
 }
 
-interface ISliderSubView extends IEventEmitter, ISliderHandleView, ISliderBaseView, ISliderTipView {
+interface ISliderScaleView {
+  private valueElements?: JQuery<HTMLSpanElement>[];
+}
+
+interface ISliderProgressView {
+  updateProgressSize?(handleNumber: number, handlePosition: number): void;
+}
+
+interface ISliderSubView extends
+  IEventEmitter,
+  ISliderHandleView,
+  ISliderBaseView,
+  ISliderTipView,
+  ISliderScaleView,
+  ISliderProgressView {
   $elem: JQuery<HTMLElement>;
 }
 
@@ -65,4 +92,11 @@ type HandleBounds = {
   minValue: number,
   maxValue: number,
   stepSize: number,
+};
+
+type HandleParams = {
+  stepSizeInPercents?: number,
+  halfStep?: number,
+  allowedPositions?: number[],
+  isInterval?: boolean,
 };
