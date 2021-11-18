@@ -6,8 +6,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
   constructor(private options: ISliderPluginOptions) {
     super();
     this.createAllowedRealValuesArr();
-    this.options.value1 = this.fixValue(this.options.value1);
-    this.options.value2 = this.fixValue(this.options.value2);
+    this.fixValues();
   }
 
   getOptions(): ISliderPluginOptions {
@@ -56,11 +55,18 @@ class SliderModel extends EventEmitter implements ISliderModel {
     toggleVertical: this.toggleVertical.bind(this),
   }
 
-  private fixValue(value: number) {
-    const { minValue, maxValue } = this.options;
-    if (value < minValue) return minValue;
-    if (value > maxValue) return maxValue;
+  private fixValues() {
+    this.options.value1 = this.fixValue(this.options.value1);
+    this.options.value2 = this.fixValue(this.options.value2);
 
+    if (this.options.value1 === this.options.value2) {
+      this.options.value1 = this.options.minValue;
+      this.options.value2 = this.options.maxValue;
+      console.warn(`Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2. Values are now reseted to minValue and maxValue respectively.\nPlease check values that you passed to plugin options.`);
+    }
+  }
+
+  private fixValue(value: number) {
     if (!this.allowedRealValues.includes(value)) {
       return this.findClosestAllowedRealValue(value);
     }
