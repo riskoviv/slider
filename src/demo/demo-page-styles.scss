@@ -4,19 +4,19 @@ html, body {
 }
 
 body {
-  background-color: #888;
+  background-color: #666;
   overflow: auto;
   padding: 10px;
 }
 
 .overscroll-container {
   height: 150%;
-  width: 200%;
-  padding-left: 100px;
+  // width: 200%;
+  // padding-left: 100px;
 }
 
 .slider-container {
   margin-top: 100px;
-  width: auto;
+  // width: 500px;
   height: 500px;
 }

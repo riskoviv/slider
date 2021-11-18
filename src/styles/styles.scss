@@ -97,6 +97,7 @@
         &::before {
           width: 1px;
           background-color: rgba(0, 0, 0, 0.5);
+          transform: none;
         }
 
         .slider__scale-text {
@@ -180,6 +181,7 @@
             &::before {
               height: 1px;
               background-color: rgba(0, 0, 0, 0.5);
+              transform: none;
             }
           }
         }
