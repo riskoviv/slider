@@ -43,7 +43,7 @@ class SliderPresenter {
       .on('isVerticalChanged', this.toggleVerticalState);
 
     if (this.pluginStateOptions.showTip) {
-      this.model.on('valueChanged', this.valueChanged);
+      this.model.on('valueChanged', this.changeTipValue);
     }
 
     [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2].forEach((sliderHandle) => {
@@ -95,7 +95,7 @@ class SliderPresenter {
     this.model.setValue(values.handleNumber, values.index);
   }
 
-  private valueChanged = (values: { number: 1 | 2, value: number }) => {
+  private changeTipValue = (values: { number: 1 | 2, value: number }) => {
     this.view.subViews[`sliderTip${values.number}`].setValue(values.value);
   }
 

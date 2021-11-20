@@ -41,12 +41,12 @@ class SliderView extends EventEmitter {
   render(index1: number, index2: number) {
     this.insertSubViewsIntoContainer();
 
-    const handle1LeftValue = this.handleParams.allowedPositions[index1];
-    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1LeftValue);
+    const handle1Position = this.handleParams.allowedPositions[index1];
+    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1Position);
 
     if (this.options.isInterval) {
-      const handle2LeftValue = this.handleParams.allowedPositions[index2];
-      this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2LeftValue);
+      const handle2Position = this.handleParams.allowedPositions[index2];
+      this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2Position);
     }
   }
 
