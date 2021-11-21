@@ -59,11 +59,11 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   },
   {
     options: {
-      stepSize: 1,
-      minValue: 0,
-      maxValue: 500,
-      value1: 100,
-      value2: 300,
+      stepSize: 10,
+      minValue: -100,
+      maxValue: 100,
+      value1: -50,
+      value2: 50,
       isVertical: false,
       isInterval: true,
       showTip: true,
