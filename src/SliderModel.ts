@@ -60,9 +60,19 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.options.value2 = this.fixValue(this.options.value2);
 
     if (this.options.value1 === this.options.value2) {
-      this.options.value1 = this.options.minValue;
-      this.options.value2 = this.options.maxValue;
-      console.warn(`Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2. Values are now reseted to minValue and maxValue respectively.\nPlease check values that you passed to plugin options.`);
+      const warnMsgStart = `Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2.`;
+      const warnMsgEnd = '\nPlease check values that you passed to plugin options.';
+
+      if (this.options.value1 === this.options.maxValue) {
+        this.options.value1 -= this.options.stepSize;
+        console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
+      } else if (this.options.value2 === this.options.minValue) {
+        this.options.value2 += this.options.stepSize;
+        console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
+      } else {
+        this.options.value2 += this.options.stepSize;
+        console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
+      }
     }
   }
 
