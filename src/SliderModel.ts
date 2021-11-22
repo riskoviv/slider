@@ -56,8 +56,23 @@ class SliderModel extends EventEmitter implements ISliderModel {
   }
 
   private fixValues() {
-    this.options.value1 = this.fixValue(this.options.value1);
-    this.options.value2 = this.fixValue(this.options.value2);
+    if (!this.allowedRealValues.includes(this.options.value1)) {
+      let isValue1Fixed: boolean;
+      ({ value: this.options.value1, isFixed: isValue1Fixed } = this.fixValue(this.options.value1));
+
+      if (isValue1Fixed) {
+        console.warn('Warning: value1 isn\'t fitting to step size so it was fixed :)');
+      }
+    }
+
+    if (!this.allowedRealValues.includes(this.options.value2)) {
+      let isValue2Fixed: boolean;
+      ({ value: this.options.value2, isFixed: isValue2Fixed } = this.fixValue(this.options.value2));
+
+      if (isValue2Fixed) {
+        console.warn('Warning: value2 isn\'t fitting to step size so it was fixed :)');
+      }
+    }
 
     if (this.options.value1 === this.options.value2) {
       const warnMsgStart = `Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2.`;
@@ -76,12 +91,15 @@ class SliderModel extends EventEmitter implements ISliderModel {
     }
   }
 
-  private fixValue(value: number) {
+  private fixValue(value: number): { value: number, isFixed: boolean } {
     if (!this.allowedRealValues.includes(value)) {
-      return this.findClosestAllowedRealValue(value);
+      return {
+        value: this.findClosestAllowedRealValue(value),
+        isFixed: true,
+      };
     }
 
-    return value;
+    return { value, isFixed: false };
   }
 
   private findClosestAllowedRealValue(position: number) {
