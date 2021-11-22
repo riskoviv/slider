@@ -3,7 +3,7 @@ import EventEmitter from '../EventEmitter';
 class SliderTipView extends EventEmitter implements ISliderTipView {
   $elem = $('<div class="slider__tip"></div>');
 
-  private axis: 'left' | 'top';
+  private axis: SliderAxis;
 
   constructor(private isVertical: boolean) {
     super();

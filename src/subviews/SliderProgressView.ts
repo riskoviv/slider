@@ -7,9 +7,9 @@ class SliderProgressView extends IEventEmitter implements ISliderProgressView {
 
   private size: number;
 
-  private dimension: 'width' | 'height';
+  private dimension: SliderDimension;
 
-  private topOrLeft: 'top' | 'left';
+  private topOrLeft: SliderAxis;
 
   constructor(
     private isInterval: boolean,

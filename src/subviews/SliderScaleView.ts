@@ -5,9 +5,9 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
 
   valueElements: JQuery<HTMLSpanElement>[];
 
-  private axis: 'top' | 'left';
+  private axis: SliderAxis;
 
-  private dimension: 'width' | 'height';
+  private dimension: SliderDimension;
 
   constructor(
     public allowedPositions: number[],

@@ -28,6 +28,8 @@ module.exports = {
     ISliderPluginStateOptions: 'readonly',
     ISliderProgressView: 'readonly',
     ISliderPluginPublicMethods: 'readonly',
+    SliderAxis: 'readonly',
+    SliderDimension: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',

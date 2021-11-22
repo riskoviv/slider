@@ -106,3 +106,7 @@ type HandleParams = {
   allowedPositions?: number[],
   isInterval?: boolean,
 };
+
+type SliderAxis = 'left' | 'top';
+
+type SliderDimension = 'width' | 'height';
