@@ -17,8 +17,6 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private axis: SliderAxis;
 
-  private dimension: SliderDimension;
-
   constructor(
     private params: HandleParams,
     private handleNumber: 1 | 2,
