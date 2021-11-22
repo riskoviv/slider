@@ -9,21 +9,25 @@ class SliderProgressView extends IEventEmitter implements ISliderProgressView {
 
   private dimension: SliderDimension;
 
-  private topOrLeft: SliderAxis;
+  private axis: SliderAxis;
 
   constructor(
     private isInterval: boolean,
     private isVertical: boolean,
   ) {
     super();
+    if (this.isInterval) {
+      this.$elem.addClass('slider__progress_interval');
+    }
+
     this.dimension = this.isVertical ? 'height' : 'width';
-    this.topOrLeft = this.isVertical ? 'top' : 'left';
+    this.axis = this.isVertical ? 'top' : 'left';
     this.handlesPositions = [];
   }
 
   updateProgressSize(handleNumber: 1 | 2, handlePosition: number) {
-    this.handlesPositions[handleNumber - 1] = handlePosition;
-    if (this.isInterval && this.handlesPositions[1] !== undefined) {
+    this.handlesPositions[handleNumber] = handlePosition;
+    if (this.isInterval && this.handlesPositions[2] !== undefined) {
       this.applyProgressSize();
     } else if (!this.isInterval) {
       this.applyProgressSize();
@@ -32,15 +36,15 @@ class SliderProgressView extends IEventEmitter implements ISliderProgressView {
 
   private applyProgressSize() {
     if (this.isInterval) {
-      this.size = this.handlesPositions[1] - this.handlesPositions[0];
+      this.size = this.handlesPositions[2] - this.handlesPositions[1];
       this.$elem.css({
-        [this.topOrLeft]: `${this.handlesPositions[0]}%`,
+        [this.axis]: `${this.handlesPositions[1]}%`,
         [this.dimension]: `${this.size}%`,
       });
     } else {
       this.$elem.css({
-        [this.topOrLeft]: 0,
-        [this.dimension]: `${this.handlesPositions[0]}%`,
+        [this.axis]: 0,
+        [this.dimension]: `${this.handlesPositions[1]}%`,
       });
     }
   }
