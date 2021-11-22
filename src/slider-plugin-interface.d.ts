@@ -32,7 +32,13 @@ interface ISliderPluginFunction {
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
 
-interface JQuery {
+interface ISliderPluginPublicMethods {
+  getOptions: Function,
+  setStepSize: Function,
+  toggleVertical: Function,
+}
+
+interface JQuery extends ISliderPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 

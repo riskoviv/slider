@@ -2,7 +2,7 @@ import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options?: ISliderPluginOptions): Object {
+  function sliderPlugin(this: JQuery, options?: ISliderPluginOptions): JQuery {
     const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
     const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 
@@ -55,7 +55,13 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
 
     const presenter = new SliderPresenter(this, pluginOptions);
 
-    return presenter.publicMethods;
+    ({
+      getOptions: this.getOptions,
+      setStepSize: this.setStepSize,
+      toggleVertical: this.toggleVertical,
+    } = presenter.publicMethods);
+
+    return this;
   },
   {
     options: {

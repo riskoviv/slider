@@ -49,7 +49,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('isVerticalChanged', this.options.isVertical);
   }
 
-  publicMethods: Object = {
+  publicMethods: ISliderPluginPublicMethods = {
     getOptions: this.getOptions.bind(this),
     setStepSize: this.setStepSize.bind(this),
     toggleVertical: this.toggleVertical.bind(this),

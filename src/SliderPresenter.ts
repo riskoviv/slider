@@ -8,7 +8,7 @@ class SliderPresenter {
 
   $pluginElem: JQuery<HTMLElement>;
 
-  publicMethods: Object;
+  publicMethods: ISliderPluginPublicMethods;
 
   pluginStateOptions: ISliderPluginStateOptions;
 

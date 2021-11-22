@@ -27,6 +27,7 @@ module.exports = {
     HandleParams: 'readonly',
     ISliderPluginStateOptions: 'readonly',
     ISliderProgressView: 'readonly',
+    ISliderPluginPublicMethods: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
