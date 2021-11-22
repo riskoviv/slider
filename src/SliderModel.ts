@@ -61,7 +61,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
       ({ value: this.options.value1, isFixed: isValue1Fixed } = this.fixValue(this.options.value1));
 
       if (isValue1Fixed) {
-        console.warn('Warning: value1 isn\'t fitting to step size so it was fixed :)');
+        console.warn('Warning: value1 that provided in plugin options isn\'t fitting to step size so it was fixed :)');
       }
     }
 
@@ -70,7 +70,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
       ({ value: this.options.value2, isFixed: isValue2Fixed } = this.fixValue(this.options.value2));
 
       if (isValue2Fixed) {
-        console.warn('Warning: value2 isn\'t fitting to step size so it was fixed :)');
+        console.warn('Warning: value2 that provided in plugin options isn\'t fitting to step size so it was fixed :)');
       }
     }
 
