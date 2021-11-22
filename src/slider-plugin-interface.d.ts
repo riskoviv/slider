@@ -41,7 +41,6 @@ type EventsStorage = {
 };
 
 type EventName =
-  'noEventName' |
   'stepSizeChanged' |
   'handleValueChange' |
   'valueChanged' |
