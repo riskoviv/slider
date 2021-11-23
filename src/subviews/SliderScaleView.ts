@@ -32,8 +32,6 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
 
   private createValuesElements = () => {
     const quotient = Math.round((this.allowedPositions.length / this.$elem[this.dimension]()) * 3);
-    // eslint-disable-next-line max-len
-    // console.log('quotient: ', `${quotient} = ${this.allowedPositions.length} / ${this.$elem.width()} * 3`);
     const lastElemIndex = this.allowedPositions.length - 1;
 
     this.valueElements = [];
