@@ -27,6 +27,7 @@
     width: 100%;
     background-color: #444;
     border-radius: var(--base-border-radius);
+    overflow: hidden;
   }
 
   &__handle {
@@ -119,12 +120,6 @@
     height: var(--base-size);
     background-color: var(--green);
     width: unset;
-    border-top-left-radius: var(--base-border-radius);
-    border-bottom-left-radius: var(--base-border-radius);
-
-    &_interval {
-      border-radius: 0;
-    }
   }
 
   /**********************
@@ -204,13 +199,6 @@
       &__progress {
         height: unset;
         width: var(--base-size);
-        border-top-left-radius: var(--base-border-radius);
-        border-top-right-radius: var(--base-border-radius);
-        border-bottom-left-radius: 0;
-
-        &_interval {
-          border-radius: 0;
-        }
       }
     }
   }
