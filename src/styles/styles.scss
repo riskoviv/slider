@@ -1,7 +1,7 @@
 .slider {
   --slider-size: 30px;
   --handle-thickness: 30px;
-  --slider-margin: calc(var(--slider-size) / 2);
+  --slider-half-size: calc(var(--slider-size) / 2);
   --green: rgb(47, 163, 12);
 
   min-height: var(--slider-size);
@@ -13,7 +13,7 @@
   &__control-container {
     position: relative;
     height: var(--slider-size);
-    margin: 0 var(--slider-margin);
+    margin: 0 var(--slider-half-size);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -73,7 +73,7 @@
 
   &__scale {
     height: var(--slider-size);
-    margin: 0 var(--slider-margin);
+    margin: 0 var(--slider-half-size);
     position: relative;
 
     &-block {
@@ -116,7 +116,7 @@
     }
 
     &-text {
-      top: var(--slider-margin);
+      top: var(--slider-half-size);
       position: relative;
     }
   }
@@ -141,7 +141,7 @@
       &__control-container {
         height: calc(100% - var(--slider-size));
         width: var(--slider-size);
-        margin: var(--slider-margin) 0;
+        margin: var(--slider-half-size) 0;
       }
 
       &__base {
@@ -171,12 +171,12 @@
       &__scale {
         width: calc(var(--slider-size) * 2);
         height: calc(100% - var(--slider-size));
-        margin: var(--slider-margin) 0;
+        margin: var(--slider-half-size) 0;
 
         &-block {
           top: unset;
           bottom: unset;
-          left: var(--slider-margin);
+          left: var(--slider-half-size);
           width: 100%;
           height: unset;
           transform: translateY(-50%);
@@ -186,7 +186,7 @@
             top: 50%;
             transform: translateX(-100%);
             left: 0;
-            width: var(--slider-margin);
+            width: var(--slider-half-size);
             height: 2px;
           }
 
