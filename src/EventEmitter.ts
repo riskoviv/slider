@@ -17,7 +17,7 @@ class EventEmitter implements IEventEmitter {
       if (this.events[evt] === undefined) {
         emitError.message = `${evt} event is not registered. arg = ${
           typeof arg === 'object'
-            ? Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ')
+            ? `{ ${Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ')} }`
             : arg
         }`;
         throw emitError;
