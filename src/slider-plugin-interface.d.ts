@@ -55,9 +55,7 @@ type EventName =
   'isVerticalChanged';
 
 interface IEventEmitter {
-  private events: EventsStorage;
   on(evt: EventName, listener: Function): this;
-  protected emit(evt: EventName, arg?: unknown): void;
 }
 
 interface ISliderModel {
@@ -77,7 +75,6 @@ interface ISliderTipView {
 }
 
 interface ISliderScaleView {
-  private valueElements?: JQuery<HTMLSpanElement>[];
 }
 
 interface ISliderProgressView {
