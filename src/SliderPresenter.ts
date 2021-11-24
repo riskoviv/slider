@@ -39,6 +39,27 @@ class SliderPresenter {
 
     this.publicMethods = this.model.publicMethods;
 
+    this.bindEventListeners();
+
+    this.view.render(
+      this.model.allowedRealValues.indexOf(value1),
+      this.model.allowedRealValues.indexOf(value2),
+    );
+  }
+
+  private changeStepSize = (stepSize: number) => {
+    // this.view.changeStepSize(stepSize);
+  }
+
+  private toggleVerticalState = (isVertical: boolean) => {
+
+  }
+
+  private retrieveStateOptions = () => {
+    this.pluginStateOptions = this.model.getStateOptions();
+  }
+
+  private bindEventListeners() {
     this.model.on('stepSizeChanged', this.changeStepSize)
       .on('isVerticalChanged', this.toggleVerticalState);
 
@@ -53,26 +74,9 @@ class SliderPresenter {
       }
     });
 
-    this.view.render(
-      this.model.allowedRealValues.indexOf(value1),
-      this.model.allowedRealValues.indexOf(value2),
-    );
-
     if (this.pluginStateOptions.showScale) {
       this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
     }
-  }
-
-  private changeStepSize = (stepSize: number) => {
-    // this.view.changeStepSize(stepSize);
-  }
-
-  private toggleVerticalState = (isVertical: boolean) => {
-
-  }
-
-  private retrieveStateOptions = () => {
-    this.pluginStateOptions = this.model.getStateOptions();
   }
 
   private handleValueChange = (
