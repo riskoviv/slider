@@ -1,5 +1,5 @@
 class EventEmitter implements IEventEmitter {
-  events: EventsStorage = {};
+  private events: EventsStorage = {};
 
   on(evt: EventName, listener: Function): this {
     if (this.events[evt] === undefined) {
@@ -9,7 +9,7 @@ class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  emit(evt: EventName, arg?: object | number | boolean): void {
+  protected emit(evt: EventName, arg?: object | number | boolean): void {
     try {
       const emitError = new Error();
       emitError.name = 'EmitError';
