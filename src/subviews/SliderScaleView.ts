@@ -31,7 +31,8 @@ class SliderScaleView extends EventEmitter {
   }
 
   private createValuesElements = () => {
-    const quotient = Math.round((this.allowedPositions.length / this.$elem[this.dimension]()) * 3);
+    const scaleSize = this.$elem.width() || 1;
+    const quotient = Math.round((this.allowedPositions.length / scaleSize) * 3);
     const lastElemIndex = this.allowedPositions.length - 1;
     const isEveryValueAllowed = [0, 1].includes(quotient);
 

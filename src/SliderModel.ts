@@ -33,7 +33,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.options[`handle${handleNumber}Pos`] = position;
   }
 
-  getHandlePos(handleNumber: 1 | 2) {
+  getHandlePos(handleNumber: 1 | 2): number {
     return this.options[`handle${handleNumber}Pos`];
   }
 

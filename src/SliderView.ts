@@ -12,7 +12,7 @@ class SliderView extends EventEmitter {
 
   subViews: {
     [subViewName: string]: ISliderSubView;
-  };
+  } = {};
 
   handleParams: HandleParams;
 
@@ -124,7 +124,7 @@ class SliderView extends EventEmitter {
       }
     });
 
-    if (this.options.showScale) {
+    if (this.options.showScale && this.sliderScale !== undefined) {
       this.$elem.append(this.sliderScale.$elem);
     }
   }
