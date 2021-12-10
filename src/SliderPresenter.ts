@@ -22,7 +22,7 @@ class SliderPresenter {
       value1, value2, minValue, maxValue, stepSize,
     } = this.model.getOptions();
 
-    this.retrieveStateOptions();
+    this.pluginStateOptions = this.getStateOptions();
 
     this.view = new SliderView(
       this.pluginRootElem,
@@ -55,9 +55,7 @@ class SliderPresenter {
 
   }
 
-  private retrieveStateOptions = () => {
-    this.pluginStateOptions = this.model.getStateOptions();
-  }
+  private getStateOptions = () => this.model.getStateOptions();
 
   private bindEventListeners() {
     this.model.on('stepSizeChanged', this.changeStepSize)
