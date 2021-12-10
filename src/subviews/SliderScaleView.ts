@@ -1,6 +1,6 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderScaleView extends EventEmitter implements ISliderSubView {
+class SliderScaleView extends EventEmitter {
   $elem = $('<div class="slider__scale"></div>');
 
   valueElements: JQuery<HTMLSpanElement>[] = [];
