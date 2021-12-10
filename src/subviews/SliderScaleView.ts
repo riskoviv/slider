@@ -61,11 +61,15 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
     `)
   );
 
+  private getElementEdgeBound(element: JQuery<HTMLSpanElement>): number {
+    return element.position()[this.axis] + (element[this.dimension]() ?? 1);
+  }
+
   private optimizeValuesCount() {
     const $firstElem = this.valueElements[0];
     const $lastElem = this.valueElements[this.valueElements.length - 1];
     let $currentElem = $firstElem;
-    let curElemEdgeBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
+    let curElemEdgeBound = this.getElementEdgeBound($currentElem);
 
     this.valueElements.slice(1).forEach(($elem) => {
       if ($elem) {
@@ -77,7 +81,7 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
           }
         } else {
           $currentElem = $elem;
-          curElemEdgeBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
+          curElemEdgeBound = this.getElementEdgeBound($currentElem);
           $elem.removeClass('slider__scale-block_unnumbered');
         }
       }
