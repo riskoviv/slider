@@ -1,21 +1,21 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
 interface ISliderPluginValueOptions {
-  stepSize?: number,
-  minValue?: number,
-  maxValue?: number,
+  stepSize: number,
+  minValue: number,
+  maxValue: number,
   value1: number,
   value2: number,
-  handle1Pos?: number,
-  handle2Pos?: number,
+  handle1Pos: number,
+  handle2Pos: number,
 }
 
 interface ISliderPluginStateOptions {
-  isVertical?: boolean,
-  isInterval?: boolean,
-  showTip?: boolean,
-  showScale?: boolean,
-  showProgressBar?: boolean,
+  isVertical: boolean,
+  isInterval: boolean,
+  showTip: boolean,
+  showScale: boolean,
+  showProgressBar: boolean,
 }
 
 interface ISliderPluginOptions extends ISliderPluginValueOptions, ISliderPluginStateOptions {
@@ -98,10 +98,10 @@ type HandleBounds = {
 };
 
 type HandleParams = {
-  stepSizeInPercents?: number,
-  halfStep?: number,
-  allowedPositions?: number[],
-  isInterval?: boolean,
+  stepSizeInPercents: number,
+  halfStep: number,
+  allowedPositions: number[],
+  isInterval: boolean,
 };
 
 type SliderAxis = 'left' | 'top';
