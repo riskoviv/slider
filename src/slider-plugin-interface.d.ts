@@ -62,34 +62,35 @@ interface ISliderModel {
   getOptions(): ISliderPluginOptions
 }
 
-interface ISliderHandleView {
-  setPositionAndCurrentValue?(allowedPosition: number): void;
+interface ISliderHTMLElement {
+  $elem: JQuery<HTMLElement>;
+}
+
+interface ISliderHandleView extends ISliderHTMLElement {
+  setPositionAndCurrentValue(allowedPosition: number): void;
   otherHandlePosition?: number;
 }
 
-interface ISliderBaseView {}
+interface ISliderBaseView extends ISliderHTMLElement {}
 
-interface ISliderTipView {
+interface ISliderTipView extends ISliderHTMLElement {
   setValue?(value: number): void;
   setPosition?(position: number): void;
 }
 
-interface ISliderScaleView {
+interface ISliderScaleView extends ISliderHTMLElement {
 }
 
-interface ISliderProgressView {
+interface ISliderProgressView extends ISliderHTMLElement {
   updateProgressSize?(handleNumber: number, handlePosition: number): void;
 }
 
-interface ISliderSubView extends
-  IEventEmitter,
-  ISliderHandleView,
-  ISliderBaseView,
-  ISliderTipView,
-  ISliderScaleView,
-  ISliderProgressView {
-  $elem: JQuery<HTMLElement>;
-}
+type ISliderSubView =
+  ISliderHandleView |
+  ISliderBaseView |
+  ISliderTipView |
+  ISliderScaleView |
+  ISliderProgressView;
 
 type HandleBounds = {
   minValue: number,
