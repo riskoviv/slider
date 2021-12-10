@@ -30,7 +30,12 @@ class SliderView extends EventEmitter {
       this.$elem.addClass('slider_vertical');
     }
 
-    this.handleParams = {};
+    this.handleParams = {
+      stepSizeInPercents: 10,
+      halfStep: 5,
+      allowedPositions: [],
+      isInterval: this.options.isInterval,
+    };
     this.handleParams.isInterval = this.options.isInterval;
     this.$elem.append(this.$controlContainer);
     this.insertSliderToPluginRootElem();

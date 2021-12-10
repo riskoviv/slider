@@ -3,7 +3,7 @@ import EventEmitter from '../EventEmitter';
 class SliderScaleView extends EventEmitter implements ISliderSubView {
   $elem = $('<div class="slider__scale"></div>');
 
-  valueElements: JQuery<HTMLSpanElement>[];
+  valueElements: JQuery<HTMLSpanElement>[] = [];
 
   private axis: SliderAxis;
 
@@ -33,9 +33,6 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
   private createValuesElements = () => {
     const quotient = Math.round((this.allowedPositions.length / this.$elem[this.dimension]()) * 3);
     const lastElemIndex = this.allowedPositions.length - 1;
-
-    this.valueElements = [];
-
     const isEveryValueAllowed = [0, 1].includes(quotient);
 
     if (isEveryValueAllowed) {

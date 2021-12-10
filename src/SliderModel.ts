@@ -1,7 +1,7 @@
 import EventEmitter from './EventEmitter';
 
 class SliderModel extends EventEmitter implements ISliderModel {
-  allowedRealValues: number[];
+  allowedRealValues: number[] = [];
 
   constructor(private options: ISliderPluginOptions) {
     super();
@@ -118,7 +118,6 @@ class SliderModel extends EventEmitter implements ISliderModel {
   }
 
   private createAllowedRealValuesArr(): void {
-    this.allowedRealValues = [];
     const stepPrecision = this.identifyStepSizeFractionalPrecision();
 
     for (
