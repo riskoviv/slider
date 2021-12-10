@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-unused-vars */
 interface ISliderPluginValueOptions {
   stepSize: number,
   minValue: number,
@@ -42,10 +40,6 @@ interface JQuery extends ISliderPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventsStorage = {
-  [event in EventName]?: Function[];
-};
-
 type EventName =
   'stepSizeChanged' |
   'handleValueChange' |
@@ -53,6 +47,10 @@ type EventName =
   'scaleValueSelect' |
   'getOtherHandlePosition' |
   'isVerticalChanged';
+
+type EventsStorage = {
+  [event in EventName]?: Function[];
+};
 
 interface IEventEmitter {
   on(evt: EventName, listener: Function): this;
