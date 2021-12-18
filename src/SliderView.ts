@@ -16,7 +16,7 @@ class SliderView extends EventEmitter {
 
   handleParams: HandleParams;
 
-  sliderScale: ISliderSubView;
+  sliderScale?: ISliderScaleView;
 
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
@@ -52,11 +52,17 @@ class SliderView extends EventEmitter {
     this.insertSubViewsIntoContainer();
 
     const handle1Position = this.handleParams.allowedPositions[index1];
-    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1Position);
+
+    if (this.subViews.sliderHandle1.setPositionAndCurrentValue !== undefined) {
+      this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1Position);
+    }
 
     if (this.options.isInterval) {
       const handle2Position = this.handleParams.allowedPositions[index2];
-      this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2Position);
+
+      if (this.subViews.sliderHandle2.setPositionAndCurrentValue !== undefined) {
+        this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2Position);
+      }
     }
   }
 

@@ -73,7 +73,7 @@ class SliderPresenter {
     });
 
     if (this.pluginStateOptions.showScale) {
-      this.view.sliderScale.on('scaleValueSelect', this.scaleValueSelect);
+      this.view.sliderScale!.on('scaleValueSelect', this.scaleValueSelect);
     }
   }
 
@@ -85,10 +85,10 @@ class SliderPresenter {
     },
   ) => {
     if (this.pluginStateOptions.showTip) {
-      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition(values.position);
+      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition!(values.position);
     }
     if (this.pluginStateOptions.showProgressBar) {
-      this.view.subViews.sliderProgress.updateProgressSize(
+      this.view.subViews.sliderProgress.updateProgressSize!(
         values.handleNumber,
         values.position,
       );
@@ -98,7 +98,7 @@ class SliderPresenter {
   }
 
   private changeTipValue = (values: { number: 1 | 2, value: number }) => {
-    this.view.subViews[`sliderTip${values.number}`].setValue(values.value);
+    this.view.subViews[`sliderTip${values.number}`].setValue!(values.value);
   }
 
   private findClosestHandle(position: number): 1 | 2 {
@@ -119,9 +119,9 @@ class SliderPresenter {
   private scaleValueSelect = (position: number) => {
     if (this.pluginStateOptions.isInterval) {
       const handleNumber = this.findClosestHandle(position);
-      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue(position);
+      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue!(position);
     } else {
-      this.view.subViews.sliderHandle1.setPositionAndCurrentValue(position);
+      this.view.subViews.sliderHandle1.setPositionAndCurrentValue!(position);
     }
   }
 

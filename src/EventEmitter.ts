@@ -1,15 +1,19 @@
 class EventEmitter implements IEventEmitter {
-  private events: EventsStorage = {};
+  private events: EventsStorage = {
+    getOtherHandlePosition: new Set<Function>(),
+    handleValueChange: new Set<Function>(),
+    isVerticalChanged: new Set<Function>(),
+    scaleValueSelect: new Set<Function>(),
+    stepSizeChanged: new Set<Function>(),
+    valueChanged: new Set<Function>(),
+  };
 
-  on(evt: EventName, listener: Function): this {
-    if (this.events[evt] === undefined) {
-      this.events[evt] = [];
-    }
-    this.events[evt].push(listener);
+  on(evt: EventNames, listener: Function): this {
+    (this.events[evt]).add(listener);
     return this;
   }
 
-  protected emit(evt: EventName, arg?: object | number | boolean): void {
+  protected emit(evt: EventNames, arg?: object | number | boolean): void {
     try {
       const emitError = new Error();
       emitError.name = 'EmitError';
@@ -23,7 +27,7 @@ class EventEmitter implements IEventEmitter {
         throw emitError;
       }
 
-      this.events[evt].slice().forEach((lsn) => lsn(arg));
+      this.events[evt].forEach((lsn) => lsn(arg));
     } catch (error) {
       console.error(error);
     }

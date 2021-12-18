@@ -5,7 +5,7 @@ class SliderProgressView extends IEventEmitter implements ISliderProgressView {
 
   private handlesPositions: number[];
 
-  private size: number;
+  private size: number = 0;
 
   private dimension: SliderDimension;
 

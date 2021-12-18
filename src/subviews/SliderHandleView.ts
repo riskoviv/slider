@@ -5,15 +5,15 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   elem = this.$elem.get()[0];
 
-  otherHandlePosition: number;
+  otherHandlePosition: number = 0;
 
-  private newPosition: number;
+  private newPosition: number = 0;
 
-  private currentValue: number;
+  private currentValue: number = 0;
 
-  private handleDirectContainer: HTMLElement;
+  private handleDirectContainer: HTMLElement = this.$elem.parent().get()[0];
 
-  private isHandleKeepsBounds: boolean;
+  private isHandleKeepsBounds: boolean = false;
 
   private axis: SliderAxis;
 
