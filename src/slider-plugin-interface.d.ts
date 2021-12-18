@@ -40,7 +40,7 @@ interface JQuery extends ISliderPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventName =
+type EventNames =
   'stepSizeChanged' |
   'handleValueChange' |
   'valueChanged' |
@@ -53,7 +53,7 @@ type EventsStorage = {
 };
 
 interface IEventEmitter {
-  on(evt: EventName, listener: Function): this;
+  on(evt: EventNames, listener: Function): this;
 }
 
 interface ISliderModel {

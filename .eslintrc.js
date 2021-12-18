@@ -15,7 +15,7 @@ module.exports = {
     ISliderPluginFunction: 'readonly',
     ISliderPlugin: 'readonly',
     ISliderModel: 'readonly',
-    EventName: 'readonly',
+    EventNames: 'readonly',
     ISliderSubView: 'readonly',
     IEventEmitter: 'readonly',
     EventsStorage: 'readonly',
