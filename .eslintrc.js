@@ -30,6 +30,8 @@ module.exports = {
     ISliderPluginPublicMethods: 'readonly',
     SliderAxis: 'readonly',
     SliderDimension: 'readonly',
+    ISliderHTMLElement: 'readonly',
+    SliderSubView: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',

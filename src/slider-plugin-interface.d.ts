@@ -60,7 +60,7 @@ interface ISliderModel {
   getOptions(): ISliderPluginOptions
 }
 
-interface ISliderHTMLElement {
+interface ISliderHTMLElement extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
 }
 
@@ -83,12 +83,13 @@ interface ISliderProgressView extends ISliderHTMLElement {
   updateProgressSize?(handleNumber: number, handlePosition: number): void;
 }
 
-type ISliderSubView =
-  ISliderHandleView |
-  ISliderBaseView |
-  ISliderTipView |
-  ISliderScaleView |
-  ISliderProgressView;
+interface ISliderSubView extends
+  IEventEmitter,
+  ISliderHandleView,
+  ISliderBaseView,
+  ISliderTipView,
+  ISliderScaleView,
+  ISliderProgressView {}
 
 type HandleBounds = {
   minValue: number,
