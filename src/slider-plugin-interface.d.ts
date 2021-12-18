@@ -49,7 +49,7 @@ type EventNames =
   'isVerticalChanged';
 
 type EventsStorage = {
-  [event in EventName]?: Function[];
+  [event in EventNames]: Set<Function>;
 };
 
 interface IEventEmitter {
