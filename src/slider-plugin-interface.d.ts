@@ -65,7 +65,7 @@ interface ISliderHTMLElement extends IEventEmitter {
 }
 
 interface ISliderHandleView extends ISliderHTMLElement {
-  setPositionAndCurrentValue(allowedPosition: number): void;
+  setPositionAndCurrentValue?: (allowedPosition: number) => void;
   otherHandlePosition?: number;
 }
 
@@ -76,8 +76,7 @@ interface ISliderTipView extends ISliderHTMLElement {
   setPosition?(position: number): void;
 }
 
-interface ISliderScaleView extends ISliderHTMLElement {
-}
+interface ISliderScaleView extends ISliderHTMLElement {}
 
 interface ISliderProgressView extends ISliderHTMLElement {
   updateProgressSize?(handleNumber: number, handlePosition: number): void;
