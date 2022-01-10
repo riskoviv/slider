@@ -1,15 +1,8 @@
 class EventEmitter implements IEventEmitter {
-  private events: EventsStorage = {
-    getOtherHandlePosition: new Set<Function>(),
-    handleValueChange: new Set<Function>(),
-    isVerticalChanged: new Set<Function>(),
-    scaleValueSelect: new Set<Function>(),
-    stepSizeChanged: new Set<Function>(),
-    valueChanged: new Set<Function>(),
-  };
+  private events: EventsStorage = {};
 
   on(evt: EventNames, listener: Function): this {
-    (this.events[evt]).add(listener);
+    this.events[evt]?.add(listener);
     return this;
   }
 
@@ -27,7 +20,7 @@ class EventEmitter implements IEventEmitter {
         throw emitError;
       }
 
-      this.events[evt].forEach((lsn) => lsn(arg));
+      this.events[evt]?.forEach((lsn) => lsn(arg));
     } catch (error) {
       console.error(error);
     }
