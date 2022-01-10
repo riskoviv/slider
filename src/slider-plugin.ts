@@ -6,9 +6,12 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
     const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
     const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 
-    if (pluginOptions.stepSize <= 0) {
+    if (pluginOptions.stepSize < 0) {
+      pluginOptions.stepSize = -pluginOptions.stepSize;
+      console.warn(`Warning: stepSize < 0 in plugin options. stepSize is set to absolute value of it (${pluginOptions.stepSize}).${warnMsgEnd}`);
+    } else {
       pluginOptions.stepSize = 10;
-      console.warn(`Warning: stepSize ≤ 0 in plugin options. stepSize is reset to default value (10).${warnMsgEnd}`);
+      console.warn(`Warning: stepSize is 0 in plugin options. stepSize is reset to default value (10).${warnMsgEnd}`);
     }
 
     if (pluginOptions.minValue > pluginOptions.maxValue) {
