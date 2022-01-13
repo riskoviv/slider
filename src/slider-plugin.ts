@@ -69,6 +69,16 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
       pluginOptions.stepSize = totalSliderRange * 0.1;
     }
 
+    if (this.not(':empty')) {
+      console.log('Warning: Element that you used to initialize the plugin contained something. It was cleared and now has only the slider-plugin\'s elements.');
+      this.empty();
+    }
+
+    if (this.has('.slider').length !== 0) {
+      console.error('No-no! Slider is already there! You can\'t make more than one slider on one HTML element. So new slider wasn\'t created.');
+      return this;
+    }
+
     const presenter = new SliderPresenter(this, pluginOptions);
     const $sliderElem = presenter.$pluginElem;
 
