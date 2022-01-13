@@ -59,14 +59,15 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
     }
 
     const presenter = new SliderPresenter(this, pluginOptions);
+    const $sliderElem = presenter.$pluginElem;
 
     ({
-      getOptions: this.getOptions,
-      setStepSize: this.setStepSize,
-      toggleVertical: this.toggleVertical,
+      getOptions: $sliderElem.getOptions,
+      setStepSize: $sliderElem.setStepSize,
+      toggleVertical: $sliderElem.toggleVertical,
     } = presenter.publicMethods);
 
-    return this;
+    return $sliderElem;
   },
   {
     options: {
