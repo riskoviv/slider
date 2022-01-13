@@ -2,15 +2,15 @@ import SliderModel from './SliderModel';
 import SliderView from './SliderView';
 
 class SliderPresenter {
-  private model: SliderModel;
+  private readonly model: SliderModel;
 
-  private view: SliderView;
+  readonly view: SliderView;
 
-  $pluginElem: JQuery<HTMLElement>;
+  readonly $pluginElem: JQuery<HTMLElement>;
 
-  publicMethods: ISliderPluginPublicMethods;
+  readonly publicMethods: ISliderPluginPublicMethods;
 
-  pluginStateOptions: ISliderPluginStateOptions;
+  readonly pluginStateOptions: ISliderPluginStateOptions;
 
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
@@ -49,10 +49,11 @@ class SliderPresenter {
 
   private changeStepSize = (stepSize: number) => {
     // this.view.changeStepSize(stepSize);
+    console.warn('Method is not implemented yet!');
   }
 
   private toggleVerticalState = (isVertical: boolean) => {
-
+    console.warn('Method is not implemented yet!');
   }
 
   private getStateOptions = () => this.model.getStateOptions();
