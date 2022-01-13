@@ -25,7 +25,7 @@ interface ISliderPluginGlobalOptions {
 }
 
 interface ISliderPluginFunction {
-  (options: ISliderPluginOptions): Object | null;
+  (options: Partial<ISliderPluginOptions>): Object;
 }
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
