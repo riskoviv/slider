@@ -2,8 +2,19 @@ import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-    const pluginOptions = $.extend({}, $.fn.sliderPlugin.options, options);
   function sliderPlugin(this: JQuery, options: Partial<ISliderPluginOptions> = {}): JQuery {
+    let isOptionsCorrect = true;
+
+    if (typeof options !== 'object' || options.length !== undefined) {
+      console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
+      isOptionsCorrect = false;
+    }
+
+    const pluginOptions = $.extend(
+      {},
+      $.fn.sliderPlugin.options,
+      isOptionsCorrect ? options : {},
+    );
     const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 
     if (pluginOptions.stepSize < 0) {
