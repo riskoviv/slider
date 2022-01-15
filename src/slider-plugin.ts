@@ -1,15 +1,19 @@
 import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
-let checkIsContainerEmpty: Function;
+let containerHasProblems: Function;
+let containerHasProblemsV2: Function;
+let cleanContainerIfNotEmpty: Function;
 let fixCustomOptions: Function;
 let checkOptionsValues: Function;
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: Partial<ISliderPluginOptions> = {}): JQuery {
-    if (checkIsContainerEmpty(this) === this) {
-      return this;
+  function sliderPlugin(this: JQuery, options: Partial<ISliderPluginOptions> = {}): JQuery | null {
+    if (containerHasProblems(this)) {
+      return null;
     }
+
+    cleanContainerIfNotEmpty(this);
 
     const pluginOptions = checkOptionsValues($.extend(
       {},
@@ -46,17 +50,57 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   },
 );
 
-checkIsContainerEmpty = (container: JQuery): JQuery | null => {
-  if (container.has('.slider').length !== 0) {
-    console.error('No-no! Slider is already there! You can\'t make more than one slider on one HTML element. So new slider wasn\'t created.');
-    return container;
-  }
+containerHasProblems = (container: JQuery) => {
+  const isContainerExists = (elem: JQuery) => {
+    if (elem.length > 0) {
+      return true;
+    }
+    console.error('Error: Container element does not exist!');
+    return false;
+  };
 
-  if (container.not(':empty').length !== 0) {
-    console.warn('Warning: Element that you used to initialize the plugin contained something. It was cleared and now has only the slider-plugin\'s elements.');
+  const isContainerAlreadyContainsSlider = (elem: JQuery) => {
+    if (elem.has('.slider').length > 0) {
+      console.error('Error: Container already contains slider! You can\'t make more than one slider on one HTML element. So new slider wasn\'t created.');
+      return true;
+    }
+    return false;
+  };
+
+  const isContainerInsideOtherSlider = (elem: JQuery) => {
+    if (elem.closest('.slider').length > 0) {
+      console.error('Error: Container is located inside other slider plugin. New slider plugin cannot be created here.');
+      return true;
+    }
+    return false;
+  };
+
+  return (
+    !isContainerExists(container)
+    || isContainerAlreadyContainsSlider(container)
+    || isContainerInsideOtherSlider(container)
+  );
+};
+
+containerHasProblemsV2 = (container: JQuery) => {
+  const checks = [
+    (elem: JQuery) => elem.length === 0,
+    (elem: JQuery) => elem.has('.slider').length > 0,
+    (elem: JQuery) => elem.closest('.slider').length > 0,
+  ];
+
+  return checks.reduce((result, check, checkNumber, checks) => {
+    if (check(container) {
+
+    }
+  });
+};
+
+cleanContainerIfNotEmpty = (container: JQuery): void => {
+  if (container.not(':empty').length > 0) {
     container.empty();
+    console.warn('Warning: An element where you intended to initialize the plugin contained something. It was cleared and now has only the slider-plugin\'s elements.');
   }
-  return null;
 };
 
 fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
@@ -66,23 +110,27 @@ fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
   }
 
   const defaultOptions = $.fn.sliderPlugin.options;
-  const checkedOptions = options;
+  const checkedOptions = { ...options };
 
-  Object.entries(options).forEach((option: [keyof ISliderPluginOptions, number | boolean]) => {
-    const [key, value] = option;
+  Object.entries(options).forEach(
+    (option: [keyof Partial<ISliderPluginOptions>, number | boolean]) => {
+      const [key, value] = option;
 
-    if (defaultOptions[key] === undefined
-      || typeof value !== typeof defaultOptions[key]) {
-      console.warn(`Warning: option named ${key} is irrelevant or has wrong value type (${typeof value})`);
-      delete checkedOptions[key];
-    }
-  });
+      if (defaultOptions[key] === undefined) {
+        console.warn(`Warning: option named ${key} is irrelevant`);
+        delete checkedOptions[key];
+      } else if (typeof value !== typeof defaultOptions[key]) {
+        console.warn(`Warning: option named ${key} has wrong value type (${typeof value}), but must be of type ${typeof defaultOptions[key]}`);
+        delete checkedOptions[key];
+      }
+    },
+  );
 
   return checkedOptions;
 };
 
 checkOptionsValues = (options: ISliderPluginOptions) => {
-  const pluginOptions = options;
+  const pluginOptions = { ...options };
   const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 
   if (pluginOptions.stepSize < 0) {
