@@ -25,7 +25,8 @@ interface ISliderPluginGlobalOptions {
 }
 
 interface ISliderPluginFunction {
-  (options: Partial<ISliderPluginOptions>): Object;
+  // eslint-disable-next-line no-use-before-define
+  (options: Partial<ISliderPluginOptions>): JQuery | null;
 }
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
