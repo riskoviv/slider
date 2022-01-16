@@ -41,11 +41,6 @@ class SliderView extends EventEmitter {
     this.insertSliderToPluginRootElem();
     this.createAllowedPositionsArr();
     this.createSubViews();
-
-    this.$elem.css(
-      '--handle-thickness',
-      `${this.handleParams.allowedPositions[1]}%`,
-    );
   }
 
   render(index1: number, index2: number) {

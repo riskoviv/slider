@@ -1,6 +1,6 @@
 .slider {
   --slider-size: 30px;
-  --handle-thickness: 30px;
+  --handle-thickness: var(--slider-size);
   --slider-half-size: calc(var(--slider-size) / 2);
   --green: rgb(47, 163, 12);
 

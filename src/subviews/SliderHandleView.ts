@@ -23,8 +23,12 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     private isVertical: boolean,
   ) {
     super();
-    this.axis = this.isVertical ? 'top' : 'left';
+    this.axis = isVertical ? 'top' : 'left';
     this.bindEventListeners();
+    this.$elem.css(
+      '--handle-thickness',
+      `${this.params.allowedPositions[1]}%`,
+    );
   }
 
   setPositionAndCurrentValue(allowedPosition: number) {
