@@ -2,14 +2,13 @@ import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
 let containerHasProblems: Function;
-let containerHasProblemsV2: Function;
 let cleanContainerIfNotEmpty: Function;
 let fixCustomOptions: Function;
 let checkOptionsValues: Function;
 
 $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
   function sliderPlugin(this: JQuery, options: Partial<ISliderPluginOptions> = {}): JQuery | null {
-    if (containerHasProblems(this)) {
+    if (containerHasProblems(this) > 0) {
       return null;
     }
 
@@ -50,50 +49,30 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
   },
 );
 
-containerHasProblems = (container: JQuery) => {
-  const isContainerExists = (elem: JQuery) => {
-    if (elem.length > 0) {
-      return true;
-    }
-    console.error('Error: Container element does not exist!');
-    return false;
-  };
-
-  const isContainerAlreadyContainsSlider = (elem: JQuery) => {
-    if (elem.has('.slider').length > 0) {
-      console.error('Error: Container already contains slider! You can\'t make more than one slider on one HTML element. So new slider wasn\'t created.');
-      return true;
-    }
-    return false;
-  };
-
-  const isContainerInsideOtherSlider = (elem: JQuery) => {
-    if (elem.closest('.slider').length > 0) {
-      console.error('Error: Container is located inside other slider plugin. New slider plugin cannot be created here.');
-      return true;
-    }
-    return false;
-  };
-
-  return (
-    !isContainerExists(container)
-    || isContainerAlreadyContainsSlider(container)
-    || isContainerInsideOtherSlider(container)
-  );
-};
-
-containerHasProblemsV2 = (container: JQuery) => {
-  const checks = [
-    (elem: JQuery) => elem.length === 0,
-    (elem: JQuery) => elem.has('.slider').length > 0,
-    (elem: JQuery) => elem.closest('.slider').length > 0,
+containerHasProblems = (container: JQuery): number => {
+  type checkBlock = [(elem: JQuery) => boolean, () => void];
+  const checks: checkBlock[] = [
+    [
+      (elem: JQuery) => elem.length === 0,
+      () => console.error('Error: Container element does not exist!'),
+    ],
+    [
+      (elem: JQuery) => elem.has('.slider').length > 0,
+      () => console.error('Error: Container already contains slider! You can\'t make more than one slider on one HTML element. So new slider wasn\'t created.'),
+    ],
+    [
+      (elem: JQuery) => elem.closest('.slider').length > 0,
+      () => console.error('Error: Container is located inside other slider plugin. New slider plugin cannot be created here.'),
+    ],
   ];
 
-  return checks.reduce((result, check, checkNumber, checks) => {
-    if (check(container) {
-
+  return checks.reduce((result: number, check: checkBlock) => {
+    if (check[0](container)) {
+      check[1]();
+      return result + 1;
     }
-  });
+    return result;
+  }, 0);
 };
 
 cleanContainerIfNotEmpty = (container: JQuery): void => {
