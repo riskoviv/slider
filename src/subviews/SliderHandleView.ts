@@ -90,7 +90,13 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
     const dimension = this.isVertical ? 'offsetHeight' : 'offsetWidth';
-    return Number(((pixels / this.handleDirectContainer[dimension]) * 100).toFixed(1));
+    return Number(((pixels / this.handleDirectContainer[dimension]) * 100)
+      .toFixed(this.params.stepPrecision));
+  }
+
+  private roundToStepPrecision = (position: number) => (
+    Number(position.toFixed(this.params.stepPrecision))
+  );
   }
 
   private handleMouseMove = (e: PointerEvent) => {

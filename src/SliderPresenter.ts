@@ -33,6 +33,7 @@ class SliderPresenter {
       },
       this.model.allowedRealValues,
       this.pluginStateOptions,
+      this.model.stepPrecision,
     );
 
     this.$pluginElem = this.view.$elem;

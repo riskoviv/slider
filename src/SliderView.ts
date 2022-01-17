@@ -23,6 +23,7 @@ class SliderView extends EventEmitter {
     private bounds: HandleBounds,
     private allowedRealValues: number[],
     private stateOptions: ISliderPluginStateOptions,
+    private stepPrecision: number,
   ) {
     super();
 
@@ -35,6 +36,7 @@ class SliderView extends EventEmitter {
       halfStep: 5,
       allowedPositions: [],
       isInterval: this.stateOptions.isInterval,
+      stepPrecision,
     };
     this.handleParams.isInterval = this.options.isInterval;
     this.$elem.append(this.$controlContainer);
@@ -68,7 +70,7 @@ class SliderView extends EventEmitter {
     this.handleParams.allowedPositions = [];
 
     for (let i = 0; i <= 100; i += this.handleParams.stepSizeInPercents) {
-      this.handleParams.allowedPositions.push(Number(i.toFixed(3)));
+      this.handleParams.allowedPositions.push(Number(i.toFixed(this.stepPrecision)));
     }
 
     if (this.handleParams.allowedPositions[this.handleParams.allowedPositions.length - 1] !== 100) {
