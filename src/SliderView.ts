@@ -22,11 +22,11 @@ class SliderView extends EventEmitter {
     private pluginRootElem: JQuery<HTMLElement>,
     private bounds: HandleBounds,
     private allowedRealValues: number[],
-    private options: ISliderPluginStateOptions,
+    private stateOptions: ISliderPluginStateOptions,
   ) {
     super();
 
-    if (this.options.isVertical) {
+    if (this.stateOptions.isVertical) {
       this.$elem.addClass('slider_vertical');
     }
 
@@ -34,7 +34,7 @@ class SliderView extends EventEmitter {
       stepSizeInPercents: 10,
       halfStep: 5,
       allowedPositions: [],
-      isInterval: this.options.isInterval,
+      isInterval: this.stateOptions.isInterval,
     };
     this.handleParams.isInterval = this.options.isInterval;
     this.$elem.append(this.$controlContainer);
@@ -52,7 +52,7 @@ class SliderView extends EventEmitter {
       this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1Position);
     }
 
-    if (this.options.isInterval) {
+    if (this.stateOptions.isInterval) {
       const handle2Position = this.handleParams.allowedPositions[index2];
 
       if (this.subViews.sliderHandle2.setPositionAndCurrentValue !== undefined) {
@@ -82,37 +82,37 @@ class SliderView extends EventEmitter {
       sliderHandle1: new SliderHandleView(
         this.handleParams,
         1,
-        this.options.isVertical,
+        this.stateOptions.isVertical,
       ),
     };
 
-    if (this.options.showTip) {
-      this.subViews.sliderTip1 = new SliderTipView(this.options.isVertical);
+    if (this.stateOptions.showTip) {
+      this.subViews.sliderTip1 = new SliderTipView(this.stateOptions.isVertical);
     }
 
-    if (this.options.isInterval) {
+    if (this.stateOptions.isInterval) {
       this.subViews.sliderHandle2 = new SliderHandleView(
         this.handleParams,
         2,
-        this.options.isVertical,
+        this.stateOptions.isVertical,
       );
-      if (this.options.showTip) {
-        this.subViews.sliderTip2 = new SliderTipView(this.options.isVertical);
+      if (this.stateOptions.showTip) {
+        this.subViews.sliderTip2 = new SliderTipView(this.stateOptions.isVertical);
       }
     }
 
-    if (this.options.showScale) {
+    if (this.stateOptions.showScale) {
       this.sliderScale = new SliderScaleView(
         this.handleParams.allowedPositions,
         this.allowedRealValues,
-        this.options.isVertical,
+        this.stateOptions.isVertical,
       );
     }
 
-    if (this.options.showProgressBar) {
+    if (this.stateOptions.showProgressBar) {
       this.subViews.sliderProgress = new SliderProgressView(
-        this.options.isInterval,
-        this.options.isVertical,
+        this.stateOptions.isInterval,
+        this.stateOptions.isVertical,
       );
       this.subViews.sliderBase.$elem.append(this.subViews.sliderProgress.$elem);
     }
@@ -125,7 +125,7 @@ class SliderView extends EventEmitter {
       }
     });
 
-    if (this.options.showScale && this.sliderScale !== undefined) {
+    if (this.stateOptions.showScale && this.sliderScale !== undefined) {
       this.$elem.append(this.sliderScale.$elem);
     }
   }
