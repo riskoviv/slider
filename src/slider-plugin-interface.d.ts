@@ -4,8 +4,6 @@ interface ISliderPluginValueOptions {
   maxValue: number,
   value1: number,
   value2: number,
-  handle1Pos: number,
-  handle2Pos: number,
 }
 
 interface ISliderPluginStateOptions {
@@ -98,6 +96,7 @@ type HandleBounds = {
 };
 
 type HandleParams = {
+  positions: { 1: number, 2: number },
   stepSizeInPercents: number,
   halfStep: number,
   allowedPositions: number[],

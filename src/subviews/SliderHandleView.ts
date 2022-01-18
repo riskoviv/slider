@@ -5,9 +5,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   elem = this.$elem.get()[0];
 
-  otherHandlePosition: number = 0;
-
-  private currentPosition: number = 0;
+  private currentPosition = 0;
 
   private handleDirectContainer: HTMLElement = this.$elem.parent().get()[0];
 
@@ -29,9 +27,9 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       ? this.findClosestAllowedPosition(allowedPosition)
       : allowedPosition;
     this.$elem.css('--handle-position', `${this.currentPosition}%`);
+    this.params.positions[this.handleNumber] = this.currentPosition;
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
-      position: this.currentPosition,
       index: this.params.allowedPositions.indexOf(this.currentPosition),
     });
   }
@@ -65,10 +63,6 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     this.elem.addEventListener('pointermove', this.handleMouseMove);
     this.elem.addEventListener('pointerup', this.handleMouseUp);
-
-    if (this.params.isInterval) {
-      this.emit('getOtherHandlePosition', this.handleNumber);
-    }
   }
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
@@ -115,10 +109,10 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private isHandleKeepsDistance(newPosition: number): boolean {
     if (this.handleNumber === 1) {
-      return newPosition <= this.otherHandlePosition - this.params.stepSizeInPercents;
+      return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
     }
 
-    return newPosition >= this.otherHandlePosition + this.params.stepSizeInPercents;
+    return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
   }
 
   private isHandleInRange = (position: number) => position >= 0 && position <= 100;

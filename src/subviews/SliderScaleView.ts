@@ -90,9 +90,10 @@ class SliderScaleView extends EventEmitter {
   }
 
   private scaleValueClick = (e: JQuery.ClickEvent) => {
-    const target = e.target.closest('.slider__scale-text')?.parentNode;
-    if (target) {
-      this.emit('scaleValueSelect', this.allowedPositions[target.dataset.index]);
+    const target: HTMLDivElement | undefined = e.target.closest('.slider__scale-text')?.parentNode;
+    console.log('target: ', target);
+    if (target !== undefined) {
+      this.emit('scaleValueSelect', Number(target.dataset.index));
     }
   }
 }

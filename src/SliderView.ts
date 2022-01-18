@@ -31,6 +31,7 @@ class SliderView extends EventEmitter {
     }
 
     this.handleParams = {
+      positions: { 1: 0, 2: 100 },
       stepSizeInPercents: 10,
       halfStep: 5,
       allowedPositions: [],

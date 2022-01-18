@@ -10,15 +10,20 @@ class SliderPresenter {
 
   readonly pluginStateOptions: ISliderPluginStateOptions;
 
+  readonly allowedRealValues: number[];
+
+  readonly allowedPositions: number[];
+
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
     private readonly model: SliderModel,
   ) {
     const {
       value1, value2, minValue, maxValue, stepSize,
-    } = this.model.getOptions();
+    } = model.getOptions();
 
     this.pluginStateOptions = this.getStateOptions();
+    this.allowedRealValues = model.allowedRealValues;
 
     this.view = new SliderView(
       this.pluginRootElem,
@@ -27,19 +32,21 @@ class SliderPresenter {
         maxValue,
         stepSize,
       },
-      this.model.allowedRealValues,
+      this.allowedRealValues,
       this.pluginStateOptions,
     );
 
+    this.allowedPositions = this.view.handleParams.allowedPositions;
+
     this.$pluginElem = this.view.$elem;
 
-    this.publicMethods = this.model.publicMethods;
+    this.publicMethods = model.publicMethods;
 
     this.bindEventListeners();
 
     this.view.render(
-      this.model.allowedRealValues.indexOf(value1),
-      this.model.allowedRealValues.indexOf(value2),
+      this.allowedRealValues.indexOf(value1),
+      this.allowedRealValues.indexOf(value2),
     );
   }
 
@@ -62,12 +69,10 @@ class SliderPresenter {
       this.model.on('valueChanged', this.changeTipValue);
     }
 
-    [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2].forEach((sliderHandle) => {
-      sliderHandle?.on('handleValueChange', this.handleValueChange);
-      if (this.pluginStateOptions.isInterval) {
-        sliderHandle?.on('getOtherHandlePosition', this.receiveAndSubmitOtherHandlePosition);
-      }
-    });
+    [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2]
+      .forEach((sliderHandle) => {
+        sliderHandle?.on('handleValueChange', this.handleValueChange);
+      });
 
     if (this.pluginStateOptions.showScale) {
       this.view.sliderScale!.on('scaleValueSelect', this.scaleValueSelect);
@@ -77,20 +82,20 @@ class SliderPresenter {
   private handleValueChange = (
     values: {
       handleNumber: 1 | 2,
-      position: number,
       index: number
     },
   ) => {
+    const position = this.allowedPositions[values.index];
+
     if (this.pluginStateOptions.showTip) {
-      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition!(values.position);
+      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition!(position);
     }
     if (this.pluginStateOptions.showProgressBar) {
       this.view.subViews.sliderProgress.updateProgressSize!(
         values.handleNumber,
-        values.position,
+        position,
       );
     }
-    this.model.setHandlePos(values.handleNumber, values.position);
     this.model.setValue(values.handleNumber, values.index);
   }
 
@@ -98,32 +103,32 @@ class SliderPresenter {
     this.view.subViews[`sliderTip${values.number}`].setValue!(values.value);
   }
 
-  private findClosestHandle(position: number): 1 | 2 {
-    const handle1Pos = this.model.getHandlePos(1);
-    const handle2Pos = this.model.getHandlePos(2);
+  private findClosestHandle(valueIndex: number): 1 | 2 {
+    const handle1Index = this.model.getValueIndex(1);
+    const handle2Index = this.model.getValueIndex(2);
 
-    if (Math.abs(position - handle1Pos) < Math.abs(position - handle2Pos)) {
+    if (Math.abs(valueIndex - handle1Index) < Math.abs(valueIndex - handle2Index)) {
       return 1;
     }
 
-    if (Math.abs(position - handle1Pos) > Math.abs(position - handle2Pos)) {
+    if (Math.abs(valueIndex - handle1Index) > Math.abs(valueIndex - handle2Index)) {
       return 2;
     }
 
     return 1;
   }
 
-  private scaleValueSelect = (position: number) => {
+  private scaleValueSelect = (valueIndex: number) => {
     if (this.pluginStateOptions.isInterval) {
-      const handleNumber = this.findClosestHandle(position);
-      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue!(position, false);
+      const handleNumber = this.findClosestHandle(valueIndex);
+      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue!(
+        this.allowedPositions[valueIndex], false,
+      );
     } else {
-      this.view.subViews.sliderHandle1.setPositionAndCurrentValue!(position, false);
+      this.view.subViews.sliderHandle1.setPositionAndCurrentValue!(
+        this.allowedPositions[valueIndex], false,
+      );
     }
-  }
-
-  private receiveAndSubmitOtherHandlePosition = (handleNumber: 1 | 2) => {
-    this.view.subViews[`sliderHandle${handleNumber}`].otherHandlePosition = this.model.getOptions()[`handle${handleNumber === 1 ? 2 : 1}Pos`];
   }
 }
 

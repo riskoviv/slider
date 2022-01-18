@@ -29,12 +29,8 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('stepSizeChanged', this.options.stepSize);
   }
 
-  setHandlePos(handleNumber: 1 | 2, position: number) {
-    this.options[`handle${handleNumber}Pos`] = position;
-  }
-
-  getHandlePos(handleNumber: 1 | 2): number {
-    return this.options[`handle${handleNumber}Pos`];
+  getValueIndex(valueNumber: 1 | 2): number {
+    return this.allowedRealValues.indexOf(this.options[`value${valueNumber}`]);
   }
 
   setValue(handleNumber: 1 | 2, valueIndex: number): void {

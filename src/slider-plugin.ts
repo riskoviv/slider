@@ -40,8 +40,6 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
       maxValue: 100,
       value1: -50,
       value2: 50,
-      handle1Pos: 0,
-      handle2Pos: 100,
       isVertical: false,
       isInterval: true,
       showTip: true,
