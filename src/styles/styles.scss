@@ -83,7 +83,6 @@
       top: 0;
       height: 100%;
       transform: translateX(-50%);
-      cursor: pointer;
 
       &::before {
         display: block;
@@ -120,6 +119,7 @@
     &-text {
       top: var(--slider-half-size);
       position: relative;
+      cursor: pointer;
     }
   }
 
