@@ -1,6 +1,5 @@
 .slider {
   --slider-size: 30px;
-  --handle-thickness: var(--slider-size);
   --slider-half-size: calc(var(--slider-size) / 2);
   --green: rgb(47, 163, 12);
 
@@ -31,6 +30,7 @@
   }
 
   &__handle {
+    --handle-thickness: var(--slider-size);
     --handle-position: 0%;
     position: absolute;
     max-width: var(--slider-size);
