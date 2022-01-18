@@ -15,15 +15,12 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private isHandleKeepsBounds: boolean = false;
 
-  private axis: SliderAxis;
-
   constructor(
     private params: HandleParams,
     private handleNumber: 1 | 2,
     private isVertical: boolean,
   ) {
     super();
-    this.axis = isVertical ? 'top' : 'left';
     this.bindEventListeners();
     this.$elem.css(
       '--handle-thickness',
@@ -31,11 +28,11 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     );
   }
 
-    this.$elem.css(this.axis, `${this.currentValue}%`);
   setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean) {
     this.currentPosition = findClosest
       ? this.findClosestAllowedPosition(allowedPosition)
       : allowedPosition;
+    this.$elem.css('--handle-position', `${this.currentPosition}%`);
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
       position: this.currentValue,

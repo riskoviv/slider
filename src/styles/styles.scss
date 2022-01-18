@@ -31,6 +31,7 @@
   }
 
   &__handle {
+    --handle-position: 0%;
     position: absolute;
     max-width: var(--slider-size);
     width: var(--handle-thickness);
@@ -39,7 +40,7 @@
     border-radius: 10px;
     border: calc(var(--slider-size) / 10) solid white;
     top: 0;
-    left: 0%;
+    left: var(--handle-position);
     transform: translateX(-50%);
     cursor: pointer;
     touch-action: none;
@@ -155,6 +156,8 @@
         max-height: var(--slider-size);
         height: var(--handle-thickness);
         min-width: var(--slider-size);
+        left: 0;
+        top: var(--handle-position);
       }
 
       &__tip {
