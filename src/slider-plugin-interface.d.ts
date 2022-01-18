@@ -102,7 +102,6 @@ type HandleParams = {
   halfStep: number,
   allowedPositions: number[],
   isInterval: boolean,
-  stepPrecision: number,
 };
 
 type SliderAxis = 'left' | 'top';

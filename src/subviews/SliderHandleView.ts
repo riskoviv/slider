@@ -74,7 +74,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   private pixelsToPercentsOfBaseLength(pixels: number): number {
     const dimension = this.isVertical ? 'offsetHeight' : 'offsetWidth';
     return Number(((pixels / this.handleDirectContainer[dimension]) * 100)
-      .toFixed(this.params.stepPrecision));
+      .toFixed(1));
   }
 
   private roundToStepPrecision = (position: number) => (
