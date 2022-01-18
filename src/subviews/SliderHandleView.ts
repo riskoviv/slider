@@ -119,12 +119,12 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     }
   }
 
-  private checkHandleBounds = (): boolean => {
+  private isHandleKeepsDistance(newPosition: number): boolean {
     if (this.handleNumber === 1) {
-      return this.newPosition <= this.otherHandlePosition - this.params.stepSizeInPercents;
+      return newPosition <= this.otherHandlePosition - this.params.stepSizeInPercents;
     }
 
-    return this.newPosition >= this.otherHandlePosition + this.params.stepSizeInPercents;
+    return newPosition >= this.otherHandlePosition + this.params.stepSizeInPercents;
   }
 
   private isHandleInRange = (position: number) => position >= 0 && position <= 100;
