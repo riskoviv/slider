@@ -9,7 +9,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   private newPosition: number = 0;
 
-  private currentValue: number = 0;
+  private currentPosition: number = 0;
 
   private handleDirectContainer: HTMLElement = this.$elem.parent().get()[0];
 
@@ -35,8 +35,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.$elem.css('--handle-position', `${this.currentPosition}%`);
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
-      position: this.currentValue,
-      index: this.params.allowedPositions.indexOf(this.currentValue),
+      position: this.currentPosition,
+      index: this.params.allowedPositions.indexOf(this.currentPosition),
     });
   }
 
