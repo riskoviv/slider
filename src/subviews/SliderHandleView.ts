@@ -91,22 +91,31 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private handleMouseMove = (e: PointerEvent) => {
-    this.newPosition = this.pixelsToPercentsOfBaseLength(
-      this.isVertical
-        ? e.pageY - this.handleDirectContainer.offsetTop
-        : e.pageX - this.handleDirectContainer.offsetLeft,
+    const newPosition = this.roundToStepPrecision(
+      this.pixelsToPercentsOfBaseLength(
+        this.isVertical
+          ? e.pageY - this.handleDirectContainer.offsetTop
+          : e.pageX - this.handleDirectContainer.offsetLeft,
+      ),
     );
 
-    const isValueChangeNeeded = this.isCursorMovedEnough(this.newPosition);
+    const movedHalfStep = this.isCursorMovedHalfStep(newPosition);
+    const onStepPosition = this.isCursorOnStepPosition(newPosition);
 
-    if (this.params.isInterval) {
-      this.isHandleKeepsBounds = this.checkHandleBounds();
-    } else {
-      this.isHandleKeepsBounds = true;
-    }
+    if (movedHalfStep || onStepPosition) {
+      const handleInRange = this.isHandleInRange(newPosition);
+      if (handleInRange) {
+        const isHandleAwayFromOtherHandle = this.params.isInterval
+          ? this.isHandleKeepsDistance(newPosition)
+          : true;
 
-    if (isValueChangeNeeded && this.isHandleKeepsBounds) {
-      this.setPositionAndCurrentValue(this.newPosition);
+        if (handleInRange && isHandleAwayFromOtherHandle) {
+          this.setPositionAndCurrentValue(
+            newPosition,
+            movedHalfStep,
+          );
+        }
+      }
     }
   }
 
@@ -117,6 +126,8 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
     return this.newPosition >= this.otherHandlePosition + this.params.stepSizeInPercents;
   }
+
+  private isHandleInRange = (position: number) => position >= 0 && position <= 100;
 
   private handleMouseUp = (e: PointerEvent) => {
     if (e.button !== 0) {
