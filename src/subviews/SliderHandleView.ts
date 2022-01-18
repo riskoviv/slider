@@ -7,13 +7,9 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
 
   otherHandlePosition: number = 0;
 
-  private newPosition: number = 0;
-
   private currentPosition: number = 0;
 
   private handleDirectContainer: HTMLElement = this.$elem.parent().get()[0];
-
-  private isHandleKeepsBounds: boolean = false;
 
   constructor(
     private params: HandleParams,
