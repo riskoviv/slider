@@ -77,10 +77,6 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
       .toFixed(1));
   }
 
-  private roundToStepPrecision = (position: number) => (
-    Number(position.toFixed(this.params.stepPrecision))
-  );
-
   private isCursorMovedHalfStep(position: number): boolean {
     return Math.abs(position - this.currentPosition) > this.params.halfStep;
   }
@@ -91,12 +87,10 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   }
 
   private handleMouseMove = (e: PointerEvent) => {
-    const newPosition = this.roundToStepPrecision(
-      this.pixelsToPercentsOfBaseLength(
-        this.isVertical
-          ? e.pageY - this.handleDirectContainer.offsetTop
-          : e.pageX - this.handleDirectContainer.offsetLeft,
-      ),
+    const newPosition = this.pixelsToPercentsOfBaseLength(
+      this.isVertical
+        ? e.pageY - this.handleDirectContainer.offsetTop
+        : e.pageX - this.handleDirectContainer.offsetLeft,
     );
 
     const movedHalfStep = this.isCursorMovedHalfStep(newPosition);
