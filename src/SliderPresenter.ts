@@ -121,9 +121,9 @@ class SliderPresenter {
   private scaleValueSelect = (position: number) => {
     if (this.pluginStateOptions.isInterval) {
       const handleNumber = this.findClosestHandle(position);
-      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue!(position);
+      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue!(position, false);
     } else {
-      this.view.subViews.sliderHandle1.setPositionAndCurrentValue!(position);
+      this.view.subViews.sliderHandle1.setPositionAndCurrentValue!(position, false);
     }
   }
 

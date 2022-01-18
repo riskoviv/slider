@@ -31,9 +31,11 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     );
   }
 
-  setPositionAndCurrentValue(allowedPosition: number) {
-    this.currentValue = this.findClosestAllowedValue(allowedPosition);
     this.$elem.css(this.axis, `${this.currentValue}%`);
+  setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean) {
+    this.currentPosition = findClosest
+      ? this.findClosestAllowedPosition(allowedPosition)
+      : allowedPosition;
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,
       position: this.currentValue,
