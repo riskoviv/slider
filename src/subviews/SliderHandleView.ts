@@ -41,18 +41,6 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.$elem.on('contextmenu', this.handlePreventContextMenu);
   }
 
-  private isCursorMovedEnough(position: number): boolean {
-    const isCursorMovedHalfStep = (position > (this.currentValue + this.params.halfStep))
-    || (position < (this.currentValue - this.params.halfStep));
-    const isCursorOnAllowedValue = this.params.allowedPositions.includes(position)
-      && position !== this.currentValue;
-
-    if (isCursorMovedHalfStep || isCursorOnAllowedValue) {
-      return true;
-    }
-    return false;
-  }
-
   private findClosestAllowedPosition(position: number) {
     return this.params.allowedPositions.reduce((lastMinValue, currentValue) => {
       if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
@@ -92,6 +80,14 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   private roundToStepPrecision = (position: number) => (
     Number(position.toFixed(this.params.stepPrecision))
   );
+
+  private isCursorMovedHalfStep(position: number): boolean {
+    return Math.abs(position - this.currentPosition) > this.params.halfStep;
+  }
+
+  private isCursorOnStepPosition(position: number) {
+    return (this.params.allowedPositions.includes(position)
+      && position !== this.currentPosition);
   }
 
   private handleMouseMove = (e: PointerEvent) => {
