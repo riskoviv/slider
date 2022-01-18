@@ -2,8 +2,6 @@ import SliderModel from './SliderModel';
 import SliderView from './SliderView';
 
 class SliderPresenter {
-  private readonly model: SliderModel;
-
   readonly view: SliderView;
 
   readonly $pluginElem: JQuery<HTMLElement>;
@@ -14,10 +12,8 @@ class SliderPresenter {
 
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
-    private pluginOptions: ISliderPluginOptions,
+    private readonly model: SliderModel,
   ) {
-    this.model = new SliderModel(this.pluginOptions);
-
     const {
       value1, value2, minValue, maxValue, stepSize,
     } = this.model.getOptions();

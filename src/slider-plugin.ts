@@ -1,3 +1,4 @@
+import SliderModel from './SliderModel';
 import SliderPresenter from './SliderPresenter';
 import './styles/styles.scss';
 
@@ -20,7 +21,8 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
       fixCustomOptions(options),
     ));
 
-    const presenter = new SliderPresenter(this, pluginOptions);
+    const model = new SliderModel(pluginOptions);
+    const presenter = new SliderPresenter(this, model);
     const $sliderElem = presenter.$pluginElem;
 
     ({
