@@ -20,7 +20,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     this.bindEventListeners();
     this.$elem.css(
       '--handle-thickness',
-      `${this.params.allowedPositions[1]}%`,
+      `${this.params.stepSizeInPercents}%`,
     );
   }
 
