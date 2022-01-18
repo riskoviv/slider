@@ -53,7 +53,7 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
     return false;
   }
 
-  private findClosestAllowedValue(position: number) {
+  private findClosestAllowedPosition(position: number) {
     return this.params.allowedPositions.reduce((lastMinValue, currentValue) => {
       if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
         return currentValue;
