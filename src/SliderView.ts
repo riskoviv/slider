@@ -63,11 +63,14 @@ class SliderView extends EventEmitter {
 
   private createAllowedPositionsArr = () => {
     const totalSliderRange = this.bounds.maxValue - this.bounds.minValue;
+    const positionAccuracy = (totalSliderRange / this.bounds.stepSize).toFixed(0).length - 2;
     this.handleParams.stepSizeInPercents = (this.bounds.stepSize / totalSliderRange) * 100;
     this.handleParams.halfStep = this.handleParams.stepSizeInPercents / 2;
 
     for (let i = 0; i <= 100; i += this.handleParams.stepSizeInPercents) {
-      this.handleParams.allowedPositions.push(Number(i.toFixed(1)));
+      this.handleParams.allowedPositions.push(
+        Number(i.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy)),
+      );
     }
 
     if (this.handleParams.allowedPositions[this.handleParams.allowedPositions.length - 1] !== 100) {
