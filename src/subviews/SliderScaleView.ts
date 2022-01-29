@@ -48,15 +48,15 @@ class SliderScaleView extends EventEmitter {
       const isLastElemIsNotMaxValue = this.valueElements[this.valueElements.length - 1].data('index') !== lastElemIndex;
       if (isLastElemIsNotMaxValue) {
         this.valueElements.push(
-          this.makeNewScaleValueElement(lastElemIndex, this.allowedPositions[lastElemIndex]),
+          this.makeNewScaleValueElement(lastElemIndex, 100),
         );
       }
     }
   }
 
-  private makeNewScaleValueElement = (index: number, value: number): JQuery<HTMLSpanElement> => (
+  private makeNewScaleValueElement = (index: number, position: number): JQuery<HTMLSpanElement> => (
     $(`
-      <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${value}%">
+      <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${position}%">
         <span class="slider__scale-text">${this.allowedRealValues[index]}</span>
       </div>
     `)
@@ -91,7 +91,6 @@ class SliderScaleView extends EventEmitter {
 
   private scaleValueClick = (e: JQuery.ClickEvent) => {
     const target: HTMLDivElement | undefined = e.target.closest('.slider__scale-text')?.parentNode;
-    console.log('target: ', target);
     if (target !== undefined) {
       this.emit('scaleValueSelect', Number(target.dataset.index));
     }
