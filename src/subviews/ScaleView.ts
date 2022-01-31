@@ -1,13 +1,13 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderScaleView extends EventEmitter {
+class ScaleView extends EventEmitter {
   $elem = $('<div class="slider__scale"></div>');
 
   valueElements: JQuery<HTMLSpanElement>[] = [];
 
-  private axis: SliderAxis;
+  private axis: Axis;
 
-  private dimension: SliderDimension;
+  private dimension: Dimension;
 
   constructor(
     public allowedPositions: number[],
@@ -97,4 +97,4 @@ class SliderScaleView extends EventEmitter {
   }
 }
 
-export default SliderScaleView;
+export default ScaleView;

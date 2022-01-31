@@ -1,14 +1,14 @@
-import SliderModel from './SliderModel';
-import SliderView from './SliderView';
+import Model from './Model';
+import View from './View';
 
-class SliderPresenter {
-  readonly view: SliderView;
+class Presenter {
+  readonly view: View;
 
   readonly $pluginElem: JQuery<HTMLElement>;
 
-  readonly publicMethods: ISliderPluginPublicMethods;
+  readonly publicMethods: IPluginPublicMethods;
 
-  readonly pluginStateOptions: ISliderPluginStateOptions;
+  readonly pluginStateOptions: IPluginStateOptions;
 
   readonly allowedRealValues: number[];
 
@@ -16,7 +16,7 @@ class SliderPresenter {
 
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
-    private readonly model: SliderModel,
+    private readonly model: Model,
   ) {
     const {
       value1, value2, minValue, maxValue, stepSize,
@@ -25,7 +25,7 @@ class SliderPresenter {
     this.pluginStateOptions = this.getStateOptions();
     this.allowedRealValues = model.allowedRealValues;
 
-    this.view = new SliderView(
+    this.view = new View(
       this.pluginRootElem,
       {
         minValue,
@@ -132,4 +132,4 @@ class SliderPresenter {
   }
 }
 
-export default SliderPresenter;
+export default Presenter;

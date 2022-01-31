@@ -1,5 +1,5 @@
-import SliderModel from './SliderModel';
-import SliderPresenter from './SliderPresenter';
+import Model from './Model';
+import Presenter from './Presenter';
 import './styles/styles.scss';
 
 let containerHasProblems: Function;
@@ -7,8 +7,8 @@ let cleanContainerIfNotEmpty: Function;
 let fixCustomOptions: Function;
 let checkOptionsValues: Function;
 
-$.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: Partial<ISliderPluginOptions> = {}): JQuery | null {
+$.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
+  function sliderPlugin(this: JQuery, options: Partial<IPluginOptions> = {}): JQuery | null {
     if (containerHasProblems(this) > 0) {
       return null;
     }
@@ -21,8 +21,8 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
       fixCustomOptions(options),
     ));
 
-    const model = new SliderModel(pluginOptions);
-    const presenter = new SliderPresenter(this, model);
+    const model = new Model(pluginOptions);
+    const presenter = new Presenter(this, model);
     const $sliderElem = presenter.$pluginElem;
 
     ({
@@ -86,7 +86,7 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
   }
 };
 
-fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
+fixCustomOptions = (options: Partial<IPluginOptions>) => {
   if (typeof options !== 'object' || options.length !== undefined) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
     return {};
@@ -96,7 +96,7 @@ fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
   const checkedOptions = { ...options };
 
   Object.entries(options).forEach(
-    (option: [keyof Partial<ISliderPluginOptions>, number | boolean]) => {
+    (option: [keyof Partial<IPluginOptions>, number | boolean]) => {
       const [key, value] = option;
 
       if (defaultOptions[key] === undefined) {
@@ -112,7 +112,7 @@ fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
   return checkedOptions;
 };
 
-checkOptionsValues = (options: ISliderPluginOptions) => {
+checkOptionsValues = (options: IPluginOptions) => {
   const pluginOptions = { ...options };
   const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 

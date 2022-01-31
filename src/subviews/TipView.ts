@@ -1,6 +1,6 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderTipView extends EventEmitter implements ISliderTipView {
+class TipView extends EventEmitter implements ITipView {
   $elem = $('<div class="slider__tip"></div>');
 
   setValue(value: number) {
@@ -12,4 +12,4 @@ class SliderTipView extends EventEmitter implements ISliderTipView {
   }
 }
 
-export default SliderTipView;
+export default TipView;

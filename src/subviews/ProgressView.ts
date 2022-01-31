@@ -1,6 +1,6 @@
 import IEventEmitter from '../EventEmitter';
 
-class SliderProgressView extends IEventEmitter implements ISliderProgressView {
+class ProgressView extends IEventEmitter implements IProgressView {
   $elem = $('<div class="slider__progress"></div>');
 
   private handlesPositions: number[];
@@ -39,4 +39,4 @@ class SliderProgressView extends IEventEmitter implements ISliderProgressView {
   }
 }
 
-export default SliderProgressView;
+export default ProgressView;

@@ -1,19 +1,19 @@
 import EventEmitter from './EventEmitter';
 
-class SliderModel extends EventEmitter implements ISliderModel {
+class Model extends EventEmitter implements IModel {
   allowedRealValues: number[] = [];
 
-  constructor(private options: ISliderPluginOptions) {
+  constructor(private options: IPluginOptions) {
     super();
     this.createAllowedRealValuesArr();
     this.fixValues();
   }
 
-  getOptions(): ISliderPluginOptions {
+  getOptions(): IPluginOptions {
     return this.options;
   }
 
-  getStateOptions(): ISliderPluginStateOptions {
+  getStateOptions(): IPluginStateOptions {
     const stateOptions = {
       isInterval: this.options.isInterval,
       isVertical: this.options.isVertical,
@@ -45,7 +45,7 @@ class SliderModel extends EventEmitter implements ISliderModel {
     this.emit('isVerticalChanged', this.options.isVertical);
   }
 
-  publicMethods: ISliderPluginPublicMethods = {
+  publicMethods: IPluginPublicMethods = {
     debug: {
       getOptions: this.getOptions.bind(this),
     },
@@ -129,4 +129,4 @@ class SliderModel extends EventEmitter implements ISliderModel {
   }
 }
 
-export default SliderModel;
+export default Model;

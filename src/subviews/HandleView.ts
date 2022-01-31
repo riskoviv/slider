@@ -1,6 +1,6 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderHandleView extends EventEmitter implements ISliderHandleView {
+class HandleView extends EventEmitter implements IHandleView {
   $elem = $('<div class="slider__handle"></div>');
 
   elem = this.$elem.get()[0];
@@ -129,4 +129,4 @@ class SliderHandleView extends EventEmitter implements ISliderHandleView {
   private handlePreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
 }
 
-export default SliderHandleView;
+export default HandleView;

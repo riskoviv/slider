@@ -1,28 +1,28 @@
 import EventEmitter from './EventEmitter';
-import SliderBaseView from './subviews/SliderBaseView';
-import SliderHandleView from './subviews/SliderHandleView';
-import SliderScaleView from './subviews/SliderScaleView';
-import SliderTipView from './subviews/SliderTipView';
-import SliderProgressView from './subviews/SliderProgressView';
+import BaseView from './subviews/BaseView';
+import HandleView from './subviews/HandleView';
+import ScaleView from './subviews/ScaleView';
+import TipView from './subviews/TipView';
+import ProgressView from './subviews/ProgressView';
 
-class SliderView extends EventEmitter {
+class View extends EventEmitter {
   $elem = $('<div class="slider"></div>');
 
   $controlContainer = $('<div class="slider__control-container"></div>');
 
   subViews: {
-    [subViewName: string]: ISliderSubView;
+    [subViewName: string]: ISubView;
   } = {};
 
   handleParams: HandleParams;
 
-  sliderScale?: ISliderScaleView;
+  sliderScale?: IScaleView;
 
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
     private bounds: HandleBounds,
     private allowedRealValues: number[],
-    private stateOptions: ISliderPluginStateOptions,
+    private stateOptions: IPluginStateOptions,
   ) {
     super();
 
@@ -80,8 +80,8 @@ class SliderView extends EventEmitter {
 
   private createSubViews() {
     this.subViews = {
-      sliderBase: new SliderBaseView(),
-      sliderHandle1: new SliderHandleView(
+      sliderBase: new BaseView(),
+      sliderHandle1: new HandleView(
         this.handleParams,
         1,
         this.stateOptions.isVertical,
@@ -89,22 +89,22 @@ class SliderView extends EventEmitter {
     };
 
     if (this.stateOptions.showTip) {
-      this.subViews.sliderTip1 = new SliderTipView();
+      this.subViews.sliderTip1 = new TipView();
     }
 
     if (this.stateOptions.isInterval) {
-      this.subViews.sliderHandle2 = new SliderHandleView(
+      this.subViews.sliderHandle2 = new HandleView(
         this.handleParams,
         2,
         this.stateOptions.isVertical,
       );
       if (this.stateOptions.showTip) {
-        this.subViews.sliderTip2 = new SliderTipView();
+        this.subViews.sliderTip2 = new TipView();
       }
     }
 
     if (this.stateOptions.showScale) {
-      this.sliderScale = new SliderScaleView(
+      this.sliderScale = new ScaleView(
         this.handleParams.allowedPositions,
         this.allowedRealValues,
         this.stateOptions.isVertical,
@@ -112,7 +112,7 @@ class SliderView extends EventEmitter {
     }
 
     if (this.stateOptions.showProgressBar) {
-      this.subViews.sliderProgress = new SliderProgressView(
+      this.subViews.sliderProgress = new ProgressView(
         this.stateOptions.isInterval,
       );
       this.subViews.sliderBase.$elem.append(this.subViews.sliderProgress.$elem);
@@ -136,4 +136,4 @@ class SliderView extends EventEmitter {
   }
 }
 
-export default SliderView;
+export default View;
