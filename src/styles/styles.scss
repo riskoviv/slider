@@ -48,6 +48,7 @@
 
   &__tip {
     --tip-margin: calc(100% + 5px);
+    --tip-position: 0%;
     position: absolute;
     background-color: #aaa;
     border: 1px solid white;
@@ -55,6 +56,7 @@
     border-radius: 2px;
     bottom: var(--tip-margin);
     transform: translateX(-50%);
+    left: var(--tip-position);
 
     &::after {
       position: absolute;
@@ -124,10 +126,14 @@
   }
 
   &__progress {
+    --progress-position: 0%;
+    --progress-length: 0%;
     position: absolute;
-    height: var(--base-size);
     background-color: var(--green);
-    width: unset;
+    height: var(--base-size);
+    width: var(--progress-length);
+    left: var(--progress-position);
+    top: unset;
   }
 
   /**********************
@@ -161,9 +167,12 @@
       }
 
       &__tip {
+        --tip-position: 0%;
         bottom: unset;
         right: var(--tip-margin);
         transform: translateY(-50%);
+        left: unset;
+        top: var(--tip-position);
 
         &::after {
           top: 50%;
@@ -210,8 +219,12 @@
       }
 
       &__progress {
-        height: unset;
+        --progress-position: 0%;
+        --progress-length: 0%;
+        height: var(--progress-length);
         width: var(--base-size);
+        top: var(--progress-position);
+        left: unset;
       }
     }
   }

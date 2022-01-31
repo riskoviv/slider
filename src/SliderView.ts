@@ -89,7 +89,7 @@ class SliderView extends EventEmitter {
     };
 
     if (this.stateOptions.showTip) {
-      this.subViews.sliderTip1 = new SliderTipView(this.stateOptions.isVertical);
+      this.subViews.sliderTip1 = new SliderTipView();
     }
 
     if (this.stateOptions.isInterval) {
@@ -99,7 +99,7 @@ class SliderView extends EventEmitter {
         this.stateOptions.isVertical,
       );
       if (this.stateOptions.showTip) {
-        this.subViews.sliderTip2 = new SliderTipView(this.stateOptions.isVertical);
+        this.subViews.sliderTip2 = new SliderTipView();
       }
     }
 
@@ -114,7 +114,6 @@ class SliderView extends EventEmitter {
     if (this.stateOptions.showProgressBar) {
       this.subViews.sliderProgress = new SliderProgressView(
         this.stateOptions.isInterval,
-        this.stateOptions.isVertical,
       );
       this.subViews.sliderBase.$elem.append(this.subViews.sliderProgress.$elem);
     }
