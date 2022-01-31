@@ -1,13 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[fullhash:7].${ext}`);
+const filename = (ext) => (isDev ? `[name].[fullhash:7].${ext}` : `[name].${ext}`);
 const filepath = (pathdata, ext) => (pathdata.chunk.name === 'demo-page' ? `demo/${filename(ext)}` : filename(ext));
 
 module.exports = {
@@ -19,11 +18,7 @@ module.exports = {
   output: {
     filename: (pathdata) => filepath(pathdata, 'js'),
     path: path.resolve(__dirname, 'dist'),
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
+    clean: true,
   },
   module: {
     rules: [
@@ -57,9 +52,6 @@ module.exports = {
       outputPath: './demo/assets',
       publicPath: 'demo',
     }),
-    new CleanWebpackPlugin({
-      cleanStaleWebpackAssets: false,
-    }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
@@ -72,10 +64,14 @@ module.exports = {
     jquery: 'jQuery',
   },
   devServer: {
-    openPage: 'demo/demo-page.html',
+    open: '/demo/demo-page.html',
     hot: false,
-    overlay: true,
     port: 4200,
-    stats: 'minimal',
+    client: {
+      overlay: true,
+      reconnect: 1,
+    },
+    static: './dist',
   },
+  stats: 'minimal',
 };
