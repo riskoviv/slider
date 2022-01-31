@@ -12,26 +12,31 @@ class SliderView extends EventEmitter {
 
   subViews: {
     [subViewName: string]: ISliderSubView;
-  };
+  } = {};
 
   handleParams: HandleParams;
 
-  sliderScale: ISliderSubView;
+  sliderScale?: ISliderScaleView;
 
   constructor(
     private pluginRootElem: JQuery<HTMLElement>,
     private bounds: HandleBounds,
     private allowedRealValues: number[],
-    private options: ISliderPluginStateOptions,
+    private stateOptions: ISliderPluginStateOptions,
   ) {
     super();
 
-    if (this.options.isVertical) {
+    if (this.stateOptions.isVertical) {
       this.$elem.addClass('slider_vertical');
     }
 
-    this.handleParams = {};
-    this.handleParams.isInterval = this.options.isInterval;
+    this.handleParams = {
+      positions: { 1: 0, 2: 100 },
+      stepSizeInPercents: 10,
+      halfStep: 5,
+      allowedPositions: [],
+      isInterval: this.stateOptions.isInterval,
+    };
     this.$elem.append(this.$controlContainer);
     this.insertSliderToPluginRootElem();
     this.createAllowedPositionsArr();
@@ -41,23 +46,31 @@ class SliderView extends EventEmitter {
   render(index1: number, index2: number) {
     this.insertSubViewsIntoContainer();
 
-    const handle1LeftValue = this.handleParams.allowedPositions[index1];
-    this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1LeftValue);
+    const handle1Position = this.handleParams.allowedPositions[index1];
 
-    if (this.options.isInterval) {
-      const handle2LeftValue = this.handleParams.allowedPositions[index2];
-      this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2LeftValue);
+    if (this.subViews.sliderHandle1.setPositionAndCurrentValue !== undefined) {
+      this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1Position, false);
+    }
+
+    if (this.stateOptions.isInterval) {
+      const handle2Position = this.handleParams.allowedPositions[index2];
+
+      if (this.subViews.sliderHandle2.setPositionAndCurrentValue !== undefined) {
+        this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2Position, false);
+      }
     }
   }
 
   private createAllowedPositionsArr = () => {
     const totalSliderRange = this.bounds.maxValue - this.bounds.minValue;
+    const positionAccuracy = (totalSliderRange / this.bounds.stepSize).toFixed(0).length - 2;
     this.handleParams.stepSizeInPercents = (this.bounds.stepSize / totalSliderRange) * 100;
     this.handleParams.halfStep = this.handleParams.stepSizeInPercents / 2;
-    this.handleParams.allowedPositions = [];
 
     for (let i = 0; i <= 100; i += this.handleParams.stepSizeInPercents) {
-      this.handleParams.allowedPositions.push(Number(i.toFixed(3)));
+      this.handleParams.allowedPositions.push(
+        Number(i.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy)),
+      );
     }
 
     if (this.handleParams.allowedPositions[this.handleParams.allowedPositions.length - 1] !== 100) {
@@ -71,37 +84,36 @@ class SliderView extends EventEmitter {
       sliderHandle1: new SliderHandleView(
         this.handleParams,
         1,
-        this.options.isVertical,
+        this.stateOptions.isVertical,
       ),
     };
 
-    if (this.options.showTip) {
-      this.subViews.sliderTip1 = new SliderTipView(this.options.isVertical);
+    if (this.stateOptions.showTip) {
+      this.subViews.sliderTip1 = new SliderTipView();
     }
 
-    if (this.options.isInterval) {
+    if (this.stateOptions.isInterval) {
       this.subViews.sliderHandle2 = new SliderHandleView(
         this.handleParams,
         2,
-        this.options.isVertical,
+        this.stateOptions.isVertical,
       );
-      if (this.options.showTip) {
-        this.subViews.sliderTip2 = new SliderTipView(this.options.isVertical);
+      if (this.stateOptions.showTip) {
+        this.subViews.sliderTip2 = new SliderTipView();
       }
     }
 
-    if (this.options.showScale) {
+    if (this.stateOptions.showScale) {
       this.sliderScale = new SliderScaleView(
         this.handleParams.allowedPositions,
         this.allowedRealValues,
-        this.options.isVertical,
+        this.stateOptions.isVertical,
       );
     }
 
-    if (this.options.showProgressBar) {
+    if (this.stateOptions.showProgressBar) {
       this.subViews.sliderProgress = new SliderProgressView(
-        this.options.isInterval,
-        this.options.isVertical,
+        this.stateOptions.isInterval,
       );
       this.subViews.sliderBase.$elem.append(this.subViews.sliderProgress.$elem);
     }
@@ -114,7 +126,7 @@ class SliderView extends EventEmitter {
       }
     });
 
-    if (this.options.showScale) {
+    if (this.stateOptions.showScale && this.sliderScale !== undefined) {
       this.$elem.append(this.sliderScale.$elem);
     }
   }

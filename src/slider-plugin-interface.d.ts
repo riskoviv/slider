@@ -1,21 +1,17 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-unused-vars */
 interface ISliderPluginValueOptions {
-  stepSize?: number,
-  minValue?: number,
-  maxValue?: number,
+  stepSize: number,
+  minValue: number,
+  maxValue: number,
   value1: number,
   value2: number,
-  handle1Pos?: number,
-  handle2Pos?: number,
 }
 
 interface ISliderPluginStateOptions {
-  isVertical?: boolean,
-  isInterval?: boolean,
-  showTip?: boolean,
-  showScale?: boolean,
-  showProgressBar?: boolean,
+  isVertical: boolean,
+  isInterval: boolean,
+  showTip: boolean,
+  showScale: boolean,
+  showProgressBar: boolean,
 }
 
 interface ISliderPluginOptions extends ISliderPluginValueOptions, ISliderPluginStateOptions {
@@ -27,20 +23,24 @@ interface ISliderPluginGlobalOptions {
 }
 
 interface ISliderPluginFunction {
-  (options: ISliderPluginOptions): Object | null;
+  // eslint-disable-next-line no-use-before-define
+  (options: Partial<ISliderPluginOptions>): JQuery | null;
 }
 
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
 
-interface JQuery {
+interface ISliderPluginPublicMethods {
+  debug: { [methodName: string]: Function },
+  setStepSize: Function,
+  toggleVertical: Function,
+  setValue: Function,
+}
+
+interface JQuery extends ISliderPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventsStorage = {
-  [event in EventName]?: Function[];
-};
-
-type EventName =
+type EventNames =
   'stepSizeChanged' |
   'handleValueChange' |
   'valueChanged' |
@@ -48,33 +48,37 @@ type EventName =
   'getOtherHandlePosition' |
   'isVerticalChanged';
 
+type EventsStorage = {
+  [event in EventNames]?: Set<Function>;
+};
+
 interface IEventEmitter {
-  private events: EventsStorage;
-  on(evt: EventName, listener: Function): this;
-  protected emit(evt: EventName, arg?: unknown): void;
+  on(evt: EventNames, listener: Function): this;
 }
 
 interface ISliderModel {
   getOptions(): ISliderPluginOptions
 }
 
-interface ISliderHandleView {
-  setPositionAndCurrentValue?(allowedPosition: number): void;
+interface ISliderHTMLElement extends IEventEmitter {
+  $elem: JQuery<HTMLElement>;
+}
+
+interface ISliderHandleView extends ISliderHTMLElement {
+  setPositionAndCurrentValue?: (allowedPosition: number, findClosest: boolean) => void;
   otherHandlePosition?: number;
 }
 
-interface ISliderBaseView {}
+interface ISliderBaseView extends ISliderHTMLElement {}
 
-interface ISliderTipView {
+interface ISliderTipView extends ISliderHTMLElement {
   setValue?(value: number): void;
   setPosition?(position: number): void;
 }
 
-interface ISliderScaleView {
-  private valueElements?: JQuery<HTMLSpanElement>[];
-}
+interface ISliderScaleView extends ISliderHTMLElement {}
 
-interface ISliderProgressView {
+interface ISliderProgressView extends ISliderHTMLElement {
   updateProgressSize?(handleNumber: number, handlePosition: number): void;
 }
 
@@ -84,9 +88,7 @@ interface ISliderSubView extends
   ISliderBaseView,
   ISliderTipView,
   ISliderScaleView,
-  ISliderProgressView {
-  $elem: JQuery<HTMLElement>;
-}
+  ISliderProgressView {}
 
 type HandleBounds = {
   minValue: number,
@@ -95,8 +97,13 @@ type HandleBounds = {
 };
 
 type HandleParams = {
-  stepSizeInPercents?: number,
-  halfStep?: number,
-  allowedPositions?: number[],
-  isInterval?: boolean,
+  positions: { 1: number, 2: number },
+  stepSizeInPercents: number,
+  halfStep: number,
+  allowedPositions: number[],
+  isInterval: boolean,
 };
+
+type SliderAxis = 'left' | 'top';
+
+type SliderDimension = 'width' | 'height';

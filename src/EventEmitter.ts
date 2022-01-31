@@ -1,26 +1,31 @@
 class EventEmitter implements IEventEmitter {
-  events: EventsStorage = {};
+  private events: EventsStorage = {};
 
-  on(evt: EventName, listener: Function): this {
+  on(evt: EventNames, listener: Function): this {
     if (this.events[evt] === undefined) {
-      this.events[evt] = [];
+      this.events[evt] = new Set<Function>();
     }
-    this.events[evt].push(listener);
+    this.events[evt]?.add(listener);
     return this;
   }
 
-  emit(evt: EventName, arg?: object | number | boolean): void {
+  protected emit(evt: EventNames, arg?: object | number | boolean): void {
     try {
+      const emitError = new Error();
+      emitError.name = 'EmitError';
+
       if (this.events[evt] === undefined) {
-        const emitError = new Error(`${evt} event is not registered. arg = ${
-          typeof arg === 'object' ? Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ') : arg
-        }`);
-        emitError.name = 'EmitError';
+        emitError.message = `${evt} event is not registered. arg = ${
+          typeof arg === 'object'
+            ? `{ ${Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ')} }`
+            : arg
+        }`;
         throw emitError;
       }
-      this.events[evt].slice().forEach((lsn) => lsn(arg));
-    } catch (e) {
-      console.error(e);
+
+      this.events[evt]?.forEach((lsn) => lsn(arg));
+    } catch (error) {
+      console.error(error);
     }
   }
 }

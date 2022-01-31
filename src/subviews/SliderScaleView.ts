@@ -1,13 +1,13 @@
 import EventEmitter from '../EventEmitter';
 
-class SliderScaleView extends EventEmitter implements ISliderSubView {
+class SliderScaleView extends EventEmitter {
   $elem = $('<div class="slider__scale"></div>');
 
-  valueElements: JQuery<HTMLSpanElement>[];
+  valueElements: JQuery<HTMLSpanElement>[] = [];
 
-  private axis: 'top' | 'left';
+  private axis: SliderAxis;
 
-  private dimension: 'width' | 'height';
+  private dimension: SliderDimension;
 
   constructor(
     public allowedPositions: number[],
@@ -31,13 +31,9 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
   }
 
   private createValuesElements = () => {
-    const quotient = Math.round((this.allowedPositions.length / this.$elem[this.dimension]()) * 3);
-    // eslint-disable-next-line max-len
-    // console.log('quotient: ', `${quotient} = ${this.allowedPositions.length} / ${this.$elem.width()} * 3`);
+    const scaleSize = this.$elem[this.dimension]() || 1;
+    const quotient = Math.round((this.allowedPositions.length / scaleSize) * 3);
     const lastElemIndex = this.allowedPositions.length - 1;
-
-    this.valueElements = [];
-
     const isEveryValueAllowed = [0, 1].includes(quotient);
 
     if (isEveryValueAllowed) {
@@ -52,25 +48,29 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
       const isLastElemIsNotMaxValue = this.valueElements[this.valueElements.length - 1].data('index') !== lastElemIndex;
       if (isLastElemIsNotMaxValue) {
         this.valueElements.push(
-          this.makeNewScaleValueElement(lastElemIndex, this.allowedPositions[lastElemIndex]),
+          this.makeNewScaleValueElement(lastElemIndex, 100),
         );
       }
     }
   }
 
-  private makeNewScaleValueElement = (index: number, value: number): JQuery<HTMLSpanElement> => (
+  private makeNewScaleValueElement = (index: number, position: number): JQuery<HTMLSpanElement> => (
     $(`
-      <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${value}%">
+      <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${position}%">
         <span class="slider__scale-text">${this.allowedRealValues[index]}</span>
       </div>
     `)
   );
 
+  private getElementEdgeBound(element: JQuery<HTMLSpanElement>): number {
+    return element.position()[this.axis] + (element[this.dimension]() ?? 1);
+  }
+
   private optimizeValuesCount() {
     const $firstElem = this.valueElements[0];
     const $lastElem = this.valueElements[this.valueElements.length - 1];
     let $currentElem = $firstElem;
-    let curElemEdgeBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
+    let curElemEdgeBound = this.getElementEdgeBound($currentElem);
 
     this.valueElements.slice(1).forEach(($elem) => {
       if ($elem) {
@@ -82,7 +82,7 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
           }
         } else {
           $currentElem = $elem;
-          curElemEdgeBound = $currentElem.position()[this.axis] + $currentElem[this.dimension]();
+          curElemEdgeBound = this.getElementEdgeBound($currentElem);
           $elem.removeClass('slider__scale-block_unnumbered');
         }
       }
@@ -90,9 +90,9 @@ class SliderScaleView extends EventEmitter implements ISliderSubView {
   }
 
   private scaleValueClick = (e: JQuery.ClickEvent) => {
-    const target = e.target.closest('.slider__scale-block');
-    if (target) {
-      this.emit('scaleValueSelect', this.allowedPositions[target.dataset.index]);
+    const target: HTMLDivElement | undefined = e.target.closest('.slider__scale-text')?.parentNode;
+    if (target !== undefined) {
+      this.emit('scaleValueSelect', Number(target.dataset.index));
     }
   }
 }

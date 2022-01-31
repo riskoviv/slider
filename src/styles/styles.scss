@@ -1,6 +1,6 @@
 .slider {
   --slider-size: 30px;
-  --slider-margin: calc(var(--slider-size) / 2);
+  --slider-half-size: calc(var(--slider-size) / 2);
   --green: rgb(47, 163, 12);
 
   min-height: var(--slider-size);
@@ -12,7 +12,7 @@
   &__control-container {
     position: relative;
     height: var(--slider-size);
-    margin: 0 var(--slider-margin);
+    margin: 0 var(--slider-half-size);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -26,23 +26,29 @@
     width: 100%;
     background-color: #444;
     border-radius: var(--base-border-radius);
+    overflow: hidden;
   }
 
   &__handle {
+    --handle-thickness: var(--slider-size);
+    --handle-position: 0%;
     position: absolute;
-    width: var(--slider-size);
+    max-width: var(--slider-size);
+    width: var(--handle-thickness);
     height: var(--slider-size);
     background-color: var(--green);
     border-radius: 10px;
     border: calc(var(--slider-size) / 10) solid white;
     top: 0;
-    left: 0%;
+    left: var(--handle-position);
     transform: translateX(-50%);
     cursor: pointer;
+    touch-action: none;
   }
 
   &__tip {
     --tip-margin: calc(100% + 5px);
+    --tip-position: 0%;
     position: absolute;
     background-color: #aaa;
     border: 1px solid white;
@@ -50,6 +56,7 @@
     border-radius: 2px;
     bottom: var(--tip-margin);
     transform: translateX(-50%);
+    left: var(--tip-position);
 
     &::after {
       position: absolute;
@@ -70,25 +77,25 @@
 
   &__scale {
     height: var(--slider-size);
-    margin: 0 var(--slider-margin);
+    margin: 0 var(--slider-half-size);
     position: relative;
 
     &-block {
       position: absolute;
-      bottom: 0;
+      top: 0;
+      height: 100%;
       transform: translateX(-50%);
-      cursor: pointer;
 
       &::before {
         display: block;
         position: absolute;
-        bottom: 110%;
+        // bottom: 110%;
         left: 50%;
         transform: translateX(-50%);
         content: '';
         background-color: black;
         width: 2px;
-        height: 10px;
+        height: calc(var(--slider-size) * 0.4);
       }
 
       &_unnumbered {
@@ -110,14 +117,23 @@
         visibility: hidden;
       }
     }
+
+    &-text {
+      top: var(--slider-half-size);
+      position: relative;
+      cursor: pointer;
+    }
   }
 
   &__progress {
+    --progress-position: 0%;
+    --progress-length: 0%;
     position: absolute;
-    height: var(--base-size);
     background-color: var(--green);
-    width: unset;
-    border-radius: var(--base-border-radius);
+    height: var(--base-size);
+    width: var(--progress-length);
+    left: var(--progress-position);
+    top: unset;
   }
 
   /**********************
@@ -133,7 +149,7 @@
       &__control-container {
         height: calc(100% - var(--slider-size));
         width: var(--slider-size);
-        margin: var(--slider-margin) 0;
+        margin: var(--slider-half-size) 0;
       }
 
       &__base {
@@ -143,12 +159,20 @@
 
       &__handle {
         transform: translateY(-50%);
+        max-height: var(--slider-size);
+        height: var(--handle-thickness);
+        min-width: var(--slider-size);
+        left: 0;
+        top: var(--handle-position);
       }
 
       &__tip {
+        --tip-position: 0%;
         bottom: unset;
         right: var(--tip-margin);
         transform: translateY(-50%);
+        left: unset;
+        top: var(--tip-position);
 
         &::after {
           top: 50%;
@@ -158,22 +182,24 @@
       }
 
       &__scale {
-        width: var(--slider-size);
+        width: calc(var(--slider-size) * 2);
         height: calc(100% - var(--slider-size));
-        margin: var(--slider-margin) 0;
+        margin: var(--slider-half-size) 0;
 
         &-block {
+          top: unset;
           bottom: unset;
-          right: 0;
+          left: var(--slider-half-size);
           width: 100%;
-          transform: translate(50%, -50%);
+          height: unset;
+          transform: translateY(-50%);
 
           &::before {
             bottom: unset;
             top: 50%;
-            transform: translateY(-50%);
-            left: -50%;
-            width: 10px;
+            transform: translateX(-100%);
+            left: 0;
+            width: var(--slider-half-size);
             height: 2px;
           }
 
@@ -181,19 +207,24 @@
             &::before {
               height: 1px;
               background-color: rgba(0, 0, 0, 0.5);
-              transform: none;
             }
           }
         }
 
         &-text {
           text-align: left;
+          top: unset;
+          left: 5px;
         }
       }
 
       &__progress {
-        height: unset;
+        --progress-position: 0%;
+        --progress-length: 0%;
+        height: var(--progress-length);
         width: var(--base-size);
+        top: var(--progress-position);
+        left: unset;
       }
     }
   }
