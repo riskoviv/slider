@@ -26,9 +26,10 @@ $.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOpti
     const $sliderElem = presenter.$pluginElem;
 
     ({
-      getOptions: $sliderElem.getOptions,
+      debug: $sliderElem.debug,
       setStepSize: $sliderElem.setStepSize,
       toggleVertical: $sliderElem.toggleVertical,
+      setValue: $sliderElem.setValue,
     } = presenter.publicMethods);
 
     return $sliderElem;

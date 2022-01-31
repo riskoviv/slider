@@ -30,9 +30,10 @@ interface ISliderPluginFunction {
 interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
 
 interface ISliderPluginPublicMethods {
-  getOptions: Function,
+  debug: { [methodName: string]: Function },
   setStepSize: Function,
   toggleVertical: Function,
+  setValue: Function,
 }
 
 interface JQuery extends ISliderPluginPublicMethods {

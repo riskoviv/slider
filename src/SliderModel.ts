@@ -46,9 +46,12 @@ class SliderModel extends EventEmitter implements ISliderModel {
   }
 
   publicMethods: ISliderPluginPublicMethods = {
-    getOptions: this.getOptions.bind(this),
+    debug: {
+      getOptions: this.getOptions.bind(this),
+    },
     setStepSize: this.setStepSize.bind(this),
     toggleVertical: this.toggleVertical.bind(this),
+    setValue: this.setValue.bind(this),
   }
 
   private fixValues() {
