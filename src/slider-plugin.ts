@@ -163,8 +163,8 @@ checkOptionsValues = (options: ISliderPluginOptions) => {
   const totalSliderRange = pluginOptions.maxValue - pluginOptions.minValue;
 
   if (pluginOptions.stepSize >= totalSliderRange) {
-    console.warn(`Warning: stepSize (${pluginOptions.stepSize}) must be less that slider range (${totalSliderRange}). stepSize is now reset to 10% of total slider range (${totalSliderRange * 0.1}).${warnMsgEnd}.`);
-    pluginOptions.stepSize = totalSliderRange * 0.1;
+    console.warn(`Warning: stepSize (${pluginOptions.stepSize}) must be less that slider range (${totalSliderRange}). stepSize is now reset to 1.${warnMsgEnd}.`);
+    pluginOptions.stepSize = 1;
   }
 
   return pluginOptions;
