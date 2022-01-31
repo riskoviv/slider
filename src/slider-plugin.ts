@@ -140,8 +140,14 @@ checkOptionsValues = (options: ISliderPluginOptions) => {
     console.warn(`Warning: maxValue is equal to minValue in plugin options. maxValue is now increased by stepSize (${pluginOptions.stepSize}).${warnMsgEnd}.`);
   }
 
-  if (pluginOptions.value1 > pluginOptions.value2) {
-    [pluginOptions.value1, pluginOptions.value2] = [pluginOptions.value2, pluginOptions.value1];
+  if (pluginOptions.isInterval && pluginOptions.value1 > pluginOptions.value2) {
+    [
+      pluginOptions.value1,
+      pluginOptions.value2,
+    ] = [
+      pluginOptions.value2,
+      pluginOptions.value1,
+    ];
     console.warn(`Warning: value1 > value2 in plugin options. Values are now swapped.${warnMsgEnd}.`);
   }
 
@@ -149,16 +155,23 @@ checkOptionsValues = (options: ISliderPluginOptions) => {
     pluginOptions.value1 = pluginOptions.minValue;
     console.warn(`Warning: value1 < minValue in plugin options. value1 is now set to minValue.${warnMsgEnd}.`);
   } else if (pluginOptions.value1 > pluginOptions.maxValue) {
-    pluginOptions.value1 = pluginOptions.maxValue - pluginOptions.stepSize;
-    console.warn(`Warning: value1 > maxValue in plugin options. value1 is now set to maxValue - stepSize.${warnMsgEnd}.`);
+    if (pluginOptions.isInterval) {
+      pluginOptions.value1 = pluginOptions.maxValue - pluginOptions.stepSize;
+      console.warn(`Warning: value1 > maxValue in plugin options. value1 is now set to maxValue - stepSize.${warnMsgEnd}.`);
+    } else {
+      pluginOptions.value1 = pluginOptions.maxValue;
+      console.warn(`Warning: value1 > maxValue in plugin options. value1 is now set to maxValue.${warnMsgEnd}.`);
+    }
   }
 
-  if (pluginOptions.value2 < pluginOptions.minValue) {
-    pluginOptions.value2 = pluginOptions.minValue + pluginOptions.stepSize;
-    console.warn(`Warning: value2 < minValue in plugin options. value2 is now set to minValue + stepSize.${warnMsgEnd}.`);
-  } else if (pluginOptions.value2 > pluginOptions.maxValue) {
-    pluginOptions.value2 = pluginOptions.maxValue;
-    console.warn(`Warning: value2 > maxValue in plugin options. value2 is now set to maxValue.${warnMsgEnd}.`);
+  if (pluginOptions.isInterval) {
+    if (pluginOptions.value2 < pluginOptions.minValue) {
+      pluginOptions.value2 = pluginOptions.minValue + pluginOptions.stepSize;
+      console.warn(`Warning: value2 < minValue in plugin options. value2 is now set to minValue + stepSize.${warnMsgEnd}.`);
+    } else if (pluginOptions.value2 > pluginOptions.maxValue) {
+      pluginOptions.value2 = pluginOptions.maxValue;
+      console.warn(`Warning: value2 > maxValue in plugin options. value2 is now set to maxValue.${warnMsgEnd}.`);
+    }
   }
 
   const totalSliderRange = pluginOptions.maxValue - pluginOptions.minValue;
