@@ -56,49 +56,37 @@ class SliderModel extends EventEmitter implements ISliderModel {
 
   private fixValues() {
     if (!this.allowedRealValues.includes(this.options.value1)) {
-      let isValue1Fixed: boolean;
-      ({ value: this.options.value1, isFixed: isValue1Fixed } = this.fixValue(this.options.value1));
-
-      if (isValue1Fixed) {
-        console.warn('Warning: value1 that provided in plugin options isn\'t fitting to step size so it was fixed :)');
-      }
+      this.options.value1 = this.fixValue(this.options.value1, 1);
     }
 
-    if (!this.allowedRealValues.includes(this.options.value2)) {
-      let isValue2Fixed: boolean;
-      ({ value: this.options.value2, isFixed: isValue2Fixed } = this.fixValue(this.options.value2));
+    if (this.options.isInterval) {
+      this.options.value2 = this.fixValue(this.options.value2, 2);
 
-      if (isValue2Fixed) {
-        console.warn('Warning: value2 that provided in plugin options isn\'t fitting to step size so it was fixed :)');
-      }
-    }
+      if (this.options.value1 === this.options.value2) {
+        const warnMsgStart = `Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2.`;
+        const warnMsgEnd = '\nPlease check values that you passed to plugin options.';
 
-    if (this.options.value1 === this.options.value2) {
-      const warnMsgStart = `Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2.`;
-      const warnMsgEnd = '\nPlease check values that you passed to plugin options.';
-
-      if (this.options.value1 === this.options.maxValue) {
-        this.options.value1 -= this.options.stepSize;
-        console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
-      } else if (this.options.value2 === this.options.minValue) {
-        this.options.value2 += this.options.stepSize;
-        console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
-      } else {
-        this.options.value2 += this.options.stepSize;
-        console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
+        if (this.options.value1 === this.options.maxValue) {
+          this.options.value1 -= this.options.stepSize;
+          console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
+        } else if (this.options.value2 === this.options.minValue) {
+          this.options.value2 += this.options.stepSize;
+          console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
+        } else {
+          this.options.value2 += this.options.stepSize;
+          console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
+        }
       }
     }
   }
 
-  private fixValue(value: number): { value: number, isFixed: boolean } {
-    if (!this.allowedRealValues.includes(value)) {
-      return {
-        value: this.findClosestAllowedRealValue(value),
-        isFixed: true,
-      };
+  private fixValue(value: number, num: 1 | 2): number {
+    if (this.allowedRealValues.includes(value)) {
+      return value;
     }
-
-    return { value, isFixed: false };
+    const fixedValue = this.findClosestAllowedRealValue(value);
+    console.warn(`Note: value${num} (${value}) is changed to ${fixedValue} to fit to step size.`);
+    return fixedValue;
   }
 
   private findClosestAllowedRealValue(position: number) {
