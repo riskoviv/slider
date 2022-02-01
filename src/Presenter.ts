@@ -1,5 +1,6 @@
 import Model from './Model';
-import View from './View';
+import View from './View_old';
+import ViewNew from './View';
 
 class Presenter {
   readonly view: View;
@@ -24,7 +25,6 @@ class Presenter {
 
     this.pluginStateOptions = this.getStateOptions();
     this.allowedRealValues = model.allowedRealValues;
-
     this.view = new View(
       this.pluginRootElem,
       {

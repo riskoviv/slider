@@ -1,6 +1,7 @@
 import IEventEmitter from '../EventEmitter';
+import View from '../View';
 
-class ProgressView extends IEventEmitter implements IProgressView {
+class ProgressView extends View implements IProgressView {
   $elem = $('<div class="slider__progress"></div>');
 
   private handlesPositions: number[];

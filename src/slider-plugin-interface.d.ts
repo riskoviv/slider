@@ -54,31 +54,33 @@ type EventsStorage = {
 
 interface IEventEmitter {
   on(evt: EventNames, listener: Function): this;
+  off(evt: EventNames, listener?: Function): this;
 }
 
 interface IModel {
   getOptions(): IPluginOptions
 }
 
-interface IHTMLElement extends IEventEmitter {
+interface IView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
+  render(options): void;
 }
 
-interface IHandleView extends IHTMLElement {
+interface IHandleView extends IEventEmitter {
   setPositionAndCurrentValue?: (allowedPosition: number, findClosest: boolean) => void;
   otherHandlePosition?: number;
 }
 
-interface IBaseView extends IHTMLElement {}
+interface IBaseView extends IEventEmitter {}
 
-interface ITipView extends IHTMLElement {
+interface ITipView extends IEventEmitter {
   setValue?(value: number): void;
   setPosition?(position: number): void;
 }
 
-interface IScaleView extends IHTMLElement {}
+interface IScaleView extends IEventEmitter {}
 
-interface IProgressView extends IHTMLElement {
+interface IProgressView extends IEventEmitter {
   updateProgressSize?(handleNumber: number, handlePosition: number): void;
 }
 
@@ -107,3 +109,7 @@ type HandleParams = {
 type Axis = 'left' | 'top';
 
 type Dimension = 'width' | 'height';
+
+type ViewParams = {
+  parentElement: JQuery<HTMLElement>,
+};

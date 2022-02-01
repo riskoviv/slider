@@ -1,6 +1,6 @@
-import EventEmitter from '../EventEmitter';
+import View from '../View';
 
-class TipView extends EventEmitter implements ITipView {
+class TipView extends View implements ITipView {
   $elem = $('<div class="slider__tip"></div>');
 
   setValue(value: number) {

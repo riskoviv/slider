@@ -1,6 +1,6 @@
-import EventEmitter from '../EventEmitter';
+import View from '../View';
 
-class HandleView extends EventEmitter implements IHandleView {
+class HandleView extends View implements IHandleView {
   $elem = $('<div class="slider__handle"></div>');
 
   elem = this.$elem.get()[0];

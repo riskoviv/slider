@@ -15,6 +15,7 @@ module.exports = {
     IPluginFunction: 'readonly',
     ISliderPlugin: 'readonly',
     IModel: 'readonly',
+    IView: 'readonly',
     EventNames: 'readonly',
     ISubView: 'readonly',
     IEventEmitter: 'readonly',
@@ -31,6 +32,7 @@ module.exports = {
     Axis: 'readonly',
     Dimension: 'readonly',
     IHTMLElement: 'readonly',
+    ViewParams: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',
@@ -49,6 +51,7 @@ module.exports = {
     'linebreak-style': ['error', 'windows'],
     'eol-last': 'warn',
     'no-unused-vars': 'off',
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
   settings: {
     'import/resolver': {

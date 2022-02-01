@@ -1,6 +1,6 @@
-import EventEmitter from '../EventEmitter';
+import View from '../View';
 
-class ScaleView extends EventEmitter {
+class ScaleView extends View {
   $elem = $('<div class="slider__scale"></div>');
 
   valueElements: JQuery<HTMLSpanElement>[] = [];
