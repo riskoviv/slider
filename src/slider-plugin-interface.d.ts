@@ -111,5 +111,6 @@ type Axis = 'left' | 'top';
 type Dimension = 'width' | 'height';
 
 type ViewParams = {
-  parentElement: JQuery<HTMLElement>,
+  parentElement?: JQuery<HTMLElement>,
+  elementNumber?: 1 | 2,
 };

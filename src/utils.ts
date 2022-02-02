@@ -1,0 +1,5 @@
+class Utils {
+  createAllowedPositionsArr(): number[] {
+
+  };
+}

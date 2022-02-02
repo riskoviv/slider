@@ -30,6 +30,10 @@ class View extends EventEmitter {
       this.$elem.addClass('slider_vertical');
     }
 
+    if (this.stateOptions.isInterval) {
+      this.$elem.addClass('slider_interval');
+    }
+
     this.handleParams = {
       positions: { 1: 0, 2: 100 },
       stepSizeInPercents: 10,
@@ -89,7 +93,7 @@ class View extends EventEmitter {
     };
 
     if (this.stateOptions.showTip) {
-      this.subViews.sliderTip1 = new TipView();
+      this.subViews.sliderTip1 = new TipView(1);
     }
 
     if (this.stateOptions.isInterval) {
@@ -99,7 +103,7 @@ class View extends EventEmitter {
         this.stateOptions.isVertical,
       );
       if (this.stateOptions.showTip) {
-        this.subViews.sliderTip2 = new TipView();
+        this.subViews.sliderTip2 = new TipView(2);
       }
     }
 

@@ -1,7 +1,7 @@
 import View from '../View';
 
 class HandleView extends View implements IHandleView {
-  $elem = $('<div class="slider__handle"></div>');
+  readonly $elem: JQuery<HTMLDivElement>;
 
   elem = this.$elem.get()[0];
 
@@ -15,6 +15,7 @@ class HandleView extends View implements IHandleView {
     private isVertical: boolean,
   ) {
     super();
+    this.$elem = $(`<div class="slider__handle slider__handle_${handleNumber}"></div>`);
     this.bindEventListeners();
     this.$elem.css(
       '--handle-thickness',
@@ -26,7 +27,7 @@ class HandleView extends View implements IHandleView {
     this.currentPosition = findClosest
       ? this.findClosestAllowedPosition(allowedPosition)
       : allowedPosition;
-    this.$elem.css('--handle-position', `${this.currentPosition}%`);
+    View.$controlContainer.css(`--handle-${this.handleNumber}-position`, `${this.currentPosition}%`);
     this.params.positions[this.handleNumber] = this.currentPosition;
     this.emit('handleValueChange', {
       handleNumber: this.handleNumber,

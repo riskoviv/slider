@@ -1,7 +1,12 @@
 import View from '../View';
 
 class TipView extends View implements ITipView {
-  $elem = $('<div class="slider__tip"></div>');
+  readonly $elem: JQuery<HTMLDivElement>;
+
+  constructor(elementNumber: 1 | 2) {
+    super({ elementNumber });
+    this.$elem = $(`<div class="slider__tip slider__tip_${elementNumber}"></div>`);
+  }
 
   setValue(value: number) {
     this.$elem.text(value);
