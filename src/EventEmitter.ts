@@ -1,15 +1,15 @@
 class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on(event: EventNames, listener: Function): this {
+  on(event: EventNames, listener: () => void): this {
     if (this.events[event] === undefined) {
-      this.events[event] = new Set<Function>();
+      this.events[event] = new Set<() => void>();
     }
     this.events[event]?.add(listener);
     return this;
   }
 
-  off(event: EventNames, listener?: Function): this {
+  off(event: EventNames, listener?: () => void): this {
     if (listener !== undefined) {
       this.events[event]?.delete(listener);
     } else {
