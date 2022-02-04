@@ -36,7 +36,7 @@ class HandleView extends View implements IHandleView {
   }
 
   private bindEventListeners() {
-    this.elem.addEventListener('pointerdown', this.handleMouseDown);
+    this.elem.addEventListener('pointerdown', this.handlePointerDown);
     this.$elem.on('contextmenu', this.handlePreventContextMenu);
   }
 
@@ -49,7 +49,7 @@ class HandleView extends View implements IHandleView {
     });
   }
 
-  private handleMouseDown = (e: PointerEvent) => {
+  private handlePointerDown = (e: PointerEvent) => {
     if (e.button !== 0) {
       return;
     }
@@ -62,8 +62,8 @@ class HandleView extends View implements IHandleView {
       [this.handleDirectContainer] = this.$elem.parent().get();
     }
 
-    this.elem.addEventListener('pointermove', this.handleMouseMove);
-    this.elem.addEventListener('pointerup', this.handleMouseUp);
+    this.elem.addEventListener('pointermove', this.handlePointerMove);
+    this.elem.addEventListener('pointerup', this.handlePointerUp);
   }
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
@@ -81,7 +81,7 @@ class HandleView extends View implements IHandleView {
       && position !== this.currentPosition);
   }
 
-  private handleMouseMove = (e: PointerEvent) => {
+  private handlePointerMove = (e: PointerEvent) => {
     const newPosition = this.pixelsToPercentsOfBaseLength(
       this.isVertical
         ? e.pageY - this.handleDirectContainer.offsetTop
@@ -118,13 +118,13 @@ class HandleView extends View implements IHandleView {
 
   private isHandleInRange = (position: number) => position >= 0 && position <= 100;
 
-  private handleMouseUp = (e: PointerEvent) => {
+  private handlePointerUp = (e: PointerEvent) => {
     if (e.button !== 0) {
       e.preventDefault();
     }
 
-    this.elem.removeEventListener('pointermove', this.handleMouseMove);
-    this.elem.removeEventListener('pointerup', this.handleMouseUp);
+    this.elem.removeEventListener('pointermove', this.handlePointerMove);
+    this.elem.removeEventListener('pointerup', this.handlePointerUp);
   }
 
   private handlePreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
