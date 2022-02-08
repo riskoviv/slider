@@ -92,7 +92,9 @@ class ScaleView extends View {
   private scaleValueClick = (e: JQuery.ClickEvent) => {
     const target: HTMLDivElement | undefined = e.target.closest('.slider__scale-text')?.parentNode;
     if (target !== undefined) {
-      this.emit('scaleValueSelect', Number(target.dataset.index));
+      this.emit('scaleValueSelect', {
+        index: Number(target.dataset.index),
+      });
     }
   }
 }

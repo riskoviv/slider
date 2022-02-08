@@ -47,7 +47,7 @@ class View extends EventEmitter {
     this.createSubViews();
   }
 
-  render(index1: number, index2: number) {
+  render(index1: number, index2: number): void {
     this.insertSubViewsIntoContainer();
 
     const handle1Position = this.handleParams.allowedPositions[index1];

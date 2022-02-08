@@ -5,8 +5,6 @@ import ViewNew from './View';
 class Presenter {
   readonly view: View;
 
-  readonly $pluginElem: JQuery<HTMLElement>;
-
   readonly publicMethods: IPluginPublicMethods;
 
   readonly pluginStateOptions: IPluginStateOptions;
@@ -38,8 +36,6 @@ class Presenter {
 
     this.allowedPositions = this.view.handleParams.allowedPositions;
 
-    this.$pluginElem = this.view.$elem;
-
     this.publicMethods = model.publicMethods;
 
     this.bindEventListeners();
@@ -50,16 +46,18 @@ class Presenter {
     );
   }
 
-  private changeStepSize = (stepSize: number) => {
+  private changeStepSize = (options: { stepSize: number }) => {
     // this.view.changeStepSize(stepSize);
     console.warn('Method is not implemented yet!');
   }
 
-  private toggleVerticalState = (isVertical: boolean) => {
+  private toggleVerticalState = (options: { isVertical: boolean }) => {
     console.warn('Method is not implemented yet!');
   }
 
-  private getStateOptions = () => this.model.getStateOptions();
+  private getStateOptions() {
+    this.model.getStateOptions();
+  }
 
   private bindEventListeners() {
     this.model.on('stepSizeChanged', this.changeStepSize)
@@ -75,7 +73,7 @@ class Presenter {
       });
 
     if (this.pluginStateOptions.showScale) {
-      this.view.sliderScale!.on('scaleValueSelect', this.scaleValueSelect);
+      this.view.sliderScale?.on('scaleValueSelect', this.scaleValueSelect);
     }
   }
 
@@ -88,10 +86,10 @@ class Presenter {
     const position = this.allowedPositions[values.index];
 
     if (this.pluginStateOptions.showTip) {
-      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition!(position);
+      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition?.(position);
     }
     if (this.pluginStateOptions.showProgressBar) {
-      this.view.subViews.sliderProgress.updateProgressSize!(
+      this.view.subViews.sliderProgress.updateProgressSize?.(
         values.handleNumber,
         position,
       );
@@ -100,7 +98,7 @@ class Presenter {
   }
 
   private changeTipValue = (values: { number: 1 | 2, value: number }) => {
-    this.view.subViews[`sliderTip${values.number}`].setValue!(values.value);
+    this.view.subViews[`sliderTip${values.number}`].setValue?.(values.value);
   }
 
   private findClosestHandle(valueIndex: number): 1 | 2 {
@@ -118,15 +116,15 @@ class Presenter {
     return 1;
   }
 
-  private scaleValueSelect = (valueIndex: number) => {
+  private scaleValueSelect = (options: { index: number }) => {
     if (this.pluginStateOptions.isInterval) {
-      const handleNumber = this.findClosestHandle(valueIndex);
-      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue!(
-        this.allowedPositions[valueIndex], false,
+      const handleNumber = this.findClosestHandle(options.index);
+      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue?.(
+        this.allowedPositions[options.index], false,
       );
     } else {
-      this.view.subViews.sliderHandle1.setPositionAndCurrentValue!(
-        this.allowedPositions[valueIndex], false,
+      this.view.subViews.sliderHandle1.setPositionAndCurrentValue?.(
+        this.allowedPositions[options.index], false,
       );
     }
   }

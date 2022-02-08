@@ -23,7 +23,7 @@ class HandleView extends View implements IHandleView {
     );
   }
 
-  setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean) {
+  setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean): void {
     this.currentPosition = findClosest
       ? this.findClosestAllowedPosition(allowedPosition)
       : allowedPosition;
@@ -127,7 +127,7 @@ class HandleView extends View implements IHandleView {
     this.elem.removeEventListener('pointerup', this.handlePointerUp);
   }
 
-  private handlePreventContextMenu = (e: JQuery.ContextMenuEvent) => false;
+  private handlePreventContextMenu = () => false;
 }
 
 export default HandleView;

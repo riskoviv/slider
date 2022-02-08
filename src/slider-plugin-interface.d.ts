@@ -15,8 +15,10 @@ interface IPluginStateOptions {
 }
 
 interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {
-  [option: string],
+  [option: string]: number | boolean,
 }
+
+type PartialPluginOptions = Partial<IPluginOptions>;
 
 interface IPluginGlobalOptions {
   options: IPluginOptions;
@@ -24,7 +26,7 @@ interface IPluginGlobalOptions {
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
-  (options: Partial<IPluginOptions>): JQuery | null;
+  (options: PartialPluginOptions): JQuery | null;
 }
 
 interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction { }
@@ -40,7 +42,7 @@ interface JQuery extends IPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventNames =
+type EventName =
   'stepSizeChanged' |
   'handleValueChange' |
   'valueChanged' |
@@ -48,13 +50,17 @@ type EventNames =
   'getOtherHandlePosition' |
   'isVerticalChanged';
 
+type OptionsObject = Record<string, unknown>;
+
+type EventHandler = (options: OptionsObject) => void;
+
 type EventsStorage = {
-  [event in EventNames]?: Set<Function>;
+  [event in EventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on(evt: EventNames, listener: Function): this;
-  off(evt: EventNames, listener?: Function): this;
+  on(evt: EventName, listener: EventHandler): this;
+  off(evt: EventName, listener?: EventHandler): this;
 }
 
 interface IModel {
@@ -114,3 +120,5 @@ type ViewParams = {
   parentElement?: JQuery<HTMLElement>,
   elementNumber?: 1 | 2,
 };
+
+type TypeOfValues<T> = T[keyof T];

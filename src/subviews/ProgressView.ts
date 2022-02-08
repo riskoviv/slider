@@ -1,4 +1,3 @@
-import IEventEmitter from '../EventEmitter';
 import View from '../View';
 
 class ProgressView extends View implements IProgressView {

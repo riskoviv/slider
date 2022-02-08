@@ -3,6 +3,8 @@ import EventEmitter from './EventEmitter';
 class Model extends EventEmitter implements IModel {
   allowedRealValues: number[] = [];
 
+  allowedPositions: number[] = [];
+
   constructor(private options: IPluginOptions) {
     super();
     this.createAllowedRealValuesArr();
@@ -26,7 +28,9 @@ class Model extends EventEmitter implements IModel {
 
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
-    this.emit('stepSizeChanged', this.options.stepSize);
+    this.emit('stepSizeChanged', {
+      stepSize: this.options.stepSize,
+    });
   }
 
   getValueIndex(valueNumber: 1 | 2): number {
@@ -37,12 +41,17 @@ class Model extends EventEmitter implements IModel {
     this.options[`value${handleNumber}`] = this.allowedRealValues[valueIndex];
 
     if (this.options.showTip) {
-      this.emit('valueChanged', { number: handleNumber, value: this.options[`value${handleNumber}`] });
+      this.emit('valueChanged', {
+        number: handleNumber,
+        value: this.options[`value${handleNumber}`],
+      });
     }
   }
 
   toggleVertical(): void {
-    this.emit('isVerticalChanged', this.options.isVertical);
+    this.emit('isVerticalChanged', {
+      isVertical: this.options.isVertical,
+    });
   }
 
   publicMethods: IPluginPublicMethods = {

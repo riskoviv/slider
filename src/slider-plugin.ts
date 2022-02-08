@@ -2,13 +2,13 @@ import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
 
-let containerHasProblems: Function;
-let cleanContainerIfNotEmpty: Function;
-let fixCustomOptions: Function;
-let checkOptionsValues: Function;
+let containerHasProblems: (container: JQuery) => number;
+let cleanContainerIfNotEmpty: (container: JQuery) => void;
+let fixCustomOptions: (options: PartialPluginOptions) => null | PartialPluginOptions;
+let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
 
 $.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: Partial<IPluginOptions> = {}): JQuery | null {
+  function sliderPlugin(this: JQuery, options: PartialPluginOptions = {}): JQuery | null {
     if (containerHasProblems(this) > 0) {
       return null;
     }
@@ -23,7 +23,7 @@ $.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
 
     const model = new Model(pluginOptions);
     const presenter = new Presenter(this, model);
-    const $sliderElem = presenter.$pluginElem;
+    const $sliderElem = presenter.view.$elem;
 
     ({
       debug: $sliderElem.debug,
@@ -86,17 +86,22 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
   }
 };
 
-fixCustomOptions = (options: Partial<IPluginOptions>) => {
-  if (typeof options !== 'object' || options.length !== undefined) {
+fixCustomOptions = (options: PartialPluginOptions) => {
+  if (typeof options !== 'object' || Object.prototype.hasOwnProperty.call(options, 'length')) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
-    return {};
+    return null;
   }
 
   const defaultOptions = $.fn.sliderPlugin.options;
   const checkedOptions = { ...options };
 
+  type pluginOptionsEntry = [
+    keyof PartialPluginOptions,
+    TypeOfValues<PartialPluginOptions>
+  ];
+
   Object.entries(options).forEach(
-    (option: [keyof Partial<IPluginOptions>, number | boolean]) => {
+    (option: pluginOptionsEntry) => {
       const [key, value] = option;
 
       if (defaultOptions[key] === undefined) {
