@@ -1,21 +1,12 @@
 import View from '../View';
 
-class HandleView extends View implements IHandleView {
-  readonly $elem: JQuery<HTMLDivElement>;
+class HandleView extends View {
+  protected readonly viewType = 'handle';
 
-  elem = this.$elem.get()[0];
+  private elem = this.$elem.get()[0];
 
-  private currentPosition = 0;
-
-  private handleDirectContainer: HTMLElement = this.$elem.parent().get()[0];
-
-  constructor(
-    private params: HandleParams,
-    private handleNumber: 1 | 2,
-    private isVertical: boolean,
-  ) {
+  constructor(protected readonly elementNumber: 1 | 2) {
     super();
-    this.$elem = $(`<div class="slider__handle slider__handle_${handleNumber}"></div>`);
     this.bindEventListeners();
     this.$elem.css(
       '--handle-thickness',
@@ -23,30 +14,10 @@ class HandleView extends View implements IHandleView {
     );
   }
 
-  setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean): void {
-    this.currentPosition = findClosest
-      ? this.findClosestAllowedPosition(allowedPosition)
-      : allowedPosition;
-    View.$controlContainer.css(`--handle-${this.handleNumber}-position`, `${this.currentPosition}%`);
-    this.params.positions[this.handleNumber] = this.currentPosition;
-    this.emit('handleValueChange', {
-      handleNumber: this.handleNumber,
-      index: this.params.allowedPositions.indexOf(this.currentPosition),
-    });
-  }
 
   private bindEventListeners() {
     this.elem.addEventListener('pointerdown', this.handlePointerDown);
     this.$elem.on('contextmenu', this.handlePreventContextMenu);
-  }
-
-  private findClosestAllowedPosition(position: number) {
-    return this.params.allowedPositions.reduce((lastMinValue, currentValue) => {
-      if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
-        return currentValue;
-      }
-      return lastMinValue;
-    });
   }
 
   private handlePointerDown = (e: PointerEvent) => {
@@ -66,20 +37,6 @@ class HandleView extends View implements IHandleView {
     this.elem.addEventListener('pointerup', this.handlePointerUp);
   }
 
-  private pixelsToPercentsOfBaseLength(pixels: number): number {
-    const dimension = this.isVertical ? 'offsetHeight' : 'offsetWidth';
-    return Number(((pixels / this.handleDirectContainer[dimension]) * 100)
-      .toFixed(1));
-  }
-
-  private isCursorMovedHalfStep(position: number): boolean {
-    return Math.abs(position - this.currentPosition) > this.params.halfStep;
-  }
-
-  private isCursorOnStepPosition(position: number) {
-    return (this.params.allowedPositions.includes(position)
-      && position !== this.currentPosition);
-  }
 
   private handlePointerMove = (e: PointerEvent) => {
     const newPosition = this.pixelsToPercentsOfBaseLength(
@@ -107,16 +64,6 @@ class HandleView extends View implements IHandleView {
       }
     }
   }
-
-  private isHandleKeepsDistance(newPosition: number): boolean {
-    if (this.handleNumber === 1) {
-      return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
-    }
-
-    return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
-  }
-
-  private isHandleInRange = (position: number) => position >= 0 && position <= 100;
 
   private handlePointerUp = (e: PointerEvent) => {
     if (e.button !== 0) {

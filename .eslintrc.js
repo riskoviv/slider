@@ -4,7 +4,6 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'airbnb-base',
     'plugin:fsd/all',
@@ -28,7 +27,6 @@ module.exports = {
     IHandleView: 'readonly',
     IBaseView: 'readonly',
     ITipView: 'readonly',
-    HandleBounds: 'readonly',
     IScaleView: 'readonly',
     HandleParams: 'readonly',
     IPluginStateOptions: 'readonly',
@@ -39,6 +37,7 @@ module.exports = {
     IHTMLElement: 'readonly',
     ViewParams: 'readonly',
     TypeOfValues: 'readonly',
+    ViewValues: 'readonly',
   },
   ignorePatterns: ['dist'],
   parser: '@typescript-eslint/parser',

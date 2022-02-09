@@ -20,6 +20,8 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {
 
 type PartialPluginOptions = Partial<IPluginOptions>;
 
+type OptionsObject = Record<string, unknown>;
+
 interface IPluginGlobalOptions {
   options: IPluginOptions;
 }
@@ -32,10 +34,10 @@ interface IPluginFunction {
 interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction { }
 
 interface IPluginPublicMethods {
-  debug: { [methodName: string]: Function },
-  setStepSize: Function,
-  toggleVertical: Function,
-  setValue: Function,
+  debug: { [methodName: string]: () => IPluginOptions },
+  setStepSize: (stepSize: number) => void,
+  changeOrientation: (isVertical: boolean) => void,
+  setValue: (handleNumber: 1 | 2, valueIndex: number) => void,
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -50,8 +52,6 @@ type EventName =
   'getOtherHandlePosition' |
   'isVerticalChanged';
 
-type OptionsObject = Record<string, unknown>;
-
 type EventHandler = (options: OptionsObject) => void;
 
 type EventsStorage = {
@@ -63,18 +63,25 @@ interface IEventEmitter {
   off(evt: EventName, listener?: EventHandler): this;
 }
 
-interface IModel {
-  getOptions(): IPluginOptions
+type ViewValues = {
+  positions: { 1: number, 2: number },
+  stepSizeInPercents: number,
+};
+
+interface IModel extends IEventEmitter {
+  options: IPluginOptions,
+  allowedRealValues: number[],
+  allowedPositions: number[],
+  viewValues: ViewValues,
+  getOptions(): IPluginOptions,
+  publicMethods: IPluginPublicMethods,
 }
 
 interface IView extends IEventEmitter {
-  $elem: JQuery<HTMLElement>;
-  render(options): void;
-}
-
-interface IHandleView extends IEventEmitter {
-  setPositionAndCurrentValue?: (allowedPosition: number, findClosest: boolean) => void;
-  otherHandlePosition?: number;
+  $elem: JQuery<HTMLDivElement>;
+  setPosition?(position: number): void;
+  setValue?(value: string): void;
+  removeView(): void;
 }
 
 interface IBaseView extends IEventEmitter {}
@@ -98,20 +105,6 @@ interface ISubView extends
   IScaleView,
   IProgressView {}
 
-type HandleBounds = {
-  minValue: number,
-  maxValue: number,
-  stepSize: number,
-};
-
-type HandleParams = {
-  positions: { 1: number, 2: number },
-  stepSizeInPercents: number,
-  halfStep: number,
-  allowedPositions: number[],
-  isInterval: boolean,
-};
-
 type Axis = 'left' | 'top';
 
 type Dimension = 'width' | 'height';
@@ -122,3 +115,10 @@ type ViewParams = {
 };
 
 type TypeOfValues<T> = T[keyof T];
+
+type ViewType =
+  'base' |
+  'handle' |
+  'progress' |
+  'scale' |
+  'tip';

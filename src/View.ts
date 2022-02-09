@@ -1,24 +1,19 @@
 import EventEmitter from './EventEmitter';
 
 abstract class View extends EventEmitter implements IView {
-  readonly $elem: JQuery<HTMLElement> = $('<div></div>');
+  readonly $elem: JQuery<HTMLDivElement>;
 
-  private readonly viewType: string = 'view';
+  protected readonly viewType: string = 'view';
 
-  constructor(private params: ViewParams) {
+  protected readonly elementNumber?: 1 | 2;
+
+  constructor() {
     super();
+    this.$elem = this.render();
   }
 
-  render(parentElement: JQuery<HTMLElement>): void {
-    parentElement.append(this.$elem);
-  }
-
-  setPosition?(position: number): void {
-    this.$elem.css(`--${this.viewType}-position`, `${position}%`);
-  }
-
-  setValue?(value: string): void {
-    this.$elem.text(value);
+  protected render(): JQuery<HTMLDivElement> {
+    return $(`<div class="slider__${this.viewType}${this.elementNumber !== undefined ? ` slider__${this.viewType}_${this.elementNumber}` : ''}"></div>`);
   }
 
   removeView(): void {

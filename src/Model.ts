@@ -5,7 +5,12 @@ class Model extends EventEmitter implements IModel {
 
   allowedPositions: number[] = [];
 
-  constructor(private options: IPluginOptions) {
+  viewValues: ViewValues = {
+    positions: { 1: 0, 2: 100 },
+    stepSizeInPercents: 10,
+  };
+
+  constructor(public options: IPluginOptions) {
     super();
     this.createAllowedRealValuesArr();
     this.fixValues();
@@ -48,7 +53,8 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  toggleVertical(): void {
+  changeOrientation(isVertical: boolean): void {
+    this.options.isVertical = isVertical;
     this.emit('isVerticalChanged', {
       isVertical: this.options.isVertical,
     });
@@ -59,7 +65,7 @@ class Model extends EventEmitter implements IModel {
       getOptions: this.getOptions.bind(this),
     },
     setStepSize: this.setStepSize.bind(this),
-    toggleVertical: this.toggleVertical.bind(this),
+    changeOrientation: this.changeOrientation.bind(this),
     setValue: this.setValue.bind(this),
   }
 

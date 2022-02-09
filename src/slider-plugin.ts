@@ -30,7 +30,7 @@ $.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
       setStepSize: $sliderElem.setStepSize,
       toggleVertical: $sliderElem.toggleVertical,
       setValue: $sliderElem.setValue,
-    } = presenter.publicMethods);
+    } = model.publicMethods);
 
     return $sliderElem;
   },
