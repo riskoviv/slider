@@ -6,7 +6,7 @@ import SliderView from './subviews/SliderView';
 import TipView from './subviews/TipView';
 
 class Presenter {
-  views: { [viewName: string]: IView } = {};
+  private views: { [viewName: string]: IView } = {};
 
   constructor(
     private readonly pluginRootElem: JQuery<HTMLElement>,
@@ -22,23 +22,44 @@ class Presenter {
   }
 
   private createSubViews(): void {
+    const { options } = this.model;
+    const handlesCount = options.isInterval ? 2 : 1;
+    const tipsCount = options.showTip ? handlesCount : 0;
+
     const optionsToSubviewsRelations = {
       showProgressBar: {
         viewClass: ProgressView,
+        viewName: 'progressView',
       },
       showScale: {
         viewClass: ScaleView,
+        viewName: 'scaleView',
       },
       showTip: {
         viewClass: TipView,
+        viewName: 'tipView',
       },
+    };
+
+    this.views = {
+      sliderView: new SliderView(),
+      baseView: new BaseView(),
+      handleView1: new HandleView(1),
     };
 
     Object.keys(optionsToSubviewsRelations).forEach((optionalSubView, i, relations) => {
       if (this.model.options[optionalSubView]) {
-
+        this.views
       }
     });
+  }
+
+  private insertSliderToPage(): void {
+    Object.entries(this.views).forEach((view) => {
+      this.views.sliderView.$controlContainer.append(view.$elem);
+    });
+
+    this.pluginRootElem.append(this.views.sliderView.$elem);
   }
 
   private bindEventListeners() {
