@@ -84,27 +84,6 @@ interface IView extends IEventEmitter {
   removeView(): void;
 }
 
-interface IBaseView extends IEventEmitter {}
-
-interface ITipView extends IEventEmitter {
-  setValue?(value: number): void;
-  setPosition?(position: number): void;
-}
-
-interface IScaleView extends IEventEmitter {}
-
-interface IProgressView extends IEventEmitter {
-  updateProgressSize?(handleNumber: number, handlePosition: number): void;
-}
-
-interface ISubView extends
-  IEventEmitter,
-  IHandleView,
-  IBaseView,
-  ITipView,
-  IScaleView,
-  IProgressView {}
-
 type Axis = 'left' | 'top';
 
 type Dimension = 'width' | 'height';
