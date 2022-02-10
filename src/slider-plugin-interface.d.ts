@@ -78,7 +78,8 @@ interface IModel extends IEventEmitter {
 }
 
 interface IView extends IEventEmitter {
-  $elem: JQuery<HTMLDivElement>;
+  $elem: JQuery<HTMLElement>;
+  $controlContainer?: JQuery<HTMLElement>;
   setPosition?(position: number): void;
   setValue?(value: string): void;
   removeView(): void;

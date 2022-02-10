@@ -1,7 +1,7 @@
 import EventEmitter from './EventEmitter';
 
 abstract class View extends EventEmitter implements IView {
-  readonly $elem: JQuery<HTMLDivElement>;
+  readonly $elem: JQuery<HTMLElement>;
 
   protected readonly viewType: string = 'view';
 
@@ -12,7 +12,7 @@ abstract class View extends EventEmitter implements IView {
     this.$elem = this.render();
   }
 
-  protected render(): JQuery<HTMLDivElement> {
+  protected render(options?: Record<string, boolean>): JQuery<HTMLElement> {
     return $(`<div class="slider__${this.viewType}${this.elementNumber !== undefined ? ` slider__${this.viewType}_${this.elementNumber}` : ''}"></div>`);
   }
 
