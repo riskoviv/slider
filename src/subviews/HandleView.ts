@@ -3,7 +3,7 @@ import View from '../View';
 class HandleView extends View {
   protected readonly viewType = 'handle';
 
-  private elem = this.$elem.get()[0];
+  private readonly elem = this.$elem.get()[0];
 
   constructor(protected readonly elementNumber: 1 | 2) {
     super();
