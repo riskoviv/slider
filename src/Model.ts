@@ -53,7 +53,7 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  changeOrientation(isVertical: boolean): void {
+  setVerticalState(isVertical: boolean): void {
     this.options.isVertical = isVertical;
     this.emit('isVerticalChanged', {
       isVertical: this.options.isVertical,
@@ -65,7 +65,7 @@ class Model extends EventEmitter implements IModel {
       getOptions: this.getOptions.bind(this),
     },
     setStepSize: this.setStepSize.bind(this),
-    changeOrientation: this.changeOrientation.bind(this),
+    setVerticalState: this.setVerticalState.bind(this),
     setValue: this.setValue.bind(this),
   }
 

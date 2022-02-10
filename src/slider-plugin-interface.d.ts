@@ -36,7 +36,7 @@ interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction { }
 interface IPluginPublicMethods {
   debug: { [methodName: string]: () => IPluginOptions },
   setStepSize: (stepSize: number) => void,
-  changeOrientation: (isVertical: boolean) => void,
+  setVerticalState: (isVertical: boolean) => void,
   setValue: (handleNumber: 1 | 2, valueIndex: number) => void,
 }
 
