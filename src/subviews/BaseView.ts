@@ -1,7 +1,7 @@
-import EventEmitter from '../EventEmitter';
+import View from '../View';
 
-class BaseView extends EventEmitter implements IBaseView {
-  $elem = $('<div class="slider__base"></div>');
+class BaseView extends View {
+  protected readonly viewType: string = 'base';
 }
 
 export default BaseView;
