@@ -20,8 +20,6 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {
 
 type PartialPluginOptions = Partial<IPluginOptions>;
 
-type OptionsObject = Record<string, unknown>;
-
 interface IPluginGlobalOptions {
   options: IPluginOptions;
 }
@@ -52,6 +50,8 @@ type EventName =
   'getOtherHandlePosition' |
   'isVerticalChanged' |
   'isIntervalChanged';
+
+type OptionsObject = Record<string, unknown>;
 
 type EventHandler = (options: OptionsObject) => void;
 
