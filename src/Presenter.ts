@@ -8,6 +8,8 @@ import TipView from './subviews/TipView';
 class Presenter {
   private views: { [viewName: string]: IView } = {};
 
+  private scaleValueElements: JQuery<HTMLDivElement>[] = [];
+
   constructor(
     private readonly pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -149,17 +151,17 @@ class Presenter {
     const isEveryValueAllowed = [0, 1].includes(quotient);
 
     if (isEveryValueAllowed) {
-      this.valueElements = this.allowedPositions.map((value, index) => (
+      this.scaleValueElements = this.allowedPositions.map((value, index) => (
         this.makeNewScaleValueElement(index, value)
       ));
     } else {
       for (let index = 0; index <= lastElemIndex; index += quotient) {
-        this.valueElements.push(this.makeNewScaleValueElement(index, this.allowedPositions[index]));
+        this.scaleValueElements.push(this.makeNewScaleValueElement(index, this.allowedPositions[index]));
       }
 
-      const isLastElemIsNotMaxValue = this.valueElements[this.valueElements.length - 1].data('index') !== lastElemIndex;
+      const isLastElemIsNotMaxValue = this.scaleValueElements[this.scaleValueElements.length - 1].data('index') !== lastElemIndex;
       if (isLastElemIsNotMaxValue) {
-        this.valueElements.push(
+        this.scaleValueElements.push(
           this.makeNewScaleValueElement(lastElemIndex, 100),
         );
       }
@@ -179,12 +181,12 @@ class Presenter {
   }
 
   private optimizeValuesCount() {
-    const $firstElem = this.valueElements[0];
-    const $lastElem = this.valueElements[this.valueElements.length - 1];
+    const $firstElem = this.scaleValueElements[0];
+    const $lastElem = this.scaleValueElements[this.scaleValueElements.length - 1];
     let $currentElem = $firstElem;
     let curElemEdgeBound = this.getElementEdgeBound($currentElem);
 
-    this.valueElements.slice(1).forEach(($elem) => {
+    this.scaleValueElements.slice(1).forEach(($elem) => {
       if ($elem) {
         if ($elem.position()[this.axis] - 5 <= curElemEdgeBound) {
           if ($elem === $lastElem && $currentElem !== $firstElem) {
