@@ -2,6 +2,7 @@ import SubView from '../SubView';
 
   valueElements: JQuery<HTMLSpanElement>[] = [];
 class ScaleView extends SubView {
+  protected readonly viewType = 'scale';
 
   constructor() {
     super();
