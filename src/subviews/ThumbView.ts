@@ -14,7 +14,6 @@ class ThumbView extends SubView {
     );
   }
 
-
   private bindEventListeners() {
     this.elem.addEventListener('pointerdown', this.thumbPointerDown);
     this.$elem.on('contextmenu', this.thumbPreventContextMenu);
@@ -36,7 +35,6 @@ class ThumbView extends SubView {
     this.elem.addEventListener('pointermove', this.thumbPointerMove);
     this.elem.addEventListener('pointerup', this.thumbPointerUp);
   }
-
 
   private thumbPointerMove = (e: PointerEvent) => {
     const newPosition = this.pixelsToPercentsOfBaseLength(
