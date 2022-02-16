@@ -6,7 +6,8 @@ import SliderView from './subviews/SliderView';
 import TipView from './subviews/TipView';
 
 class Presenter {
-  private views: { [viewName: string]: IView } = {};
+
+  private subViews: ISubView[] = [];
 
   private scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
@@ -57,11 +58,11 @@ class Presenter {
   }
 
   private insertSliderToPage(): void {
-    Object.entries(this.views).forEach((view) => {
-      this.views.sliderView.$controlContainer.append(view.$elem);
+    Object.entries(this.subViews).forEach((view) => {
+      this.subViews.sliderView.$controlContainer.append(view.$elem);
     });
 
-    this.pluginRootElem.append(this.views.sliderView.$elem);
+    this.pluginRootElem.append(this.subViews.sliderView.$elem);
   }
 
   private bindEventListeners() {
@@ -72,7 +73,7 @@ class Presenter {
       this.model.on('valueChanged', this.changeTipValue);
     }
 
-    [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2]
+    [this.subViews.sliderHandle1, this.subViews.sliderHandle2]
       .forEach((sliderHandle) => {
         sliderHandle?.on('thumbValueChange', this.thumbValueChange);
       });
