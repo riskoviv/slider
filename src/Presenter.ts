@@ -169,7 +169,7 @@ class Presenter {
     }
   }
 
-  private makeNewScaleValueElement = (index: number, position: number): JQuery<HTMLSpanElement> => (
+  private makeNewScaleValueElement = (index: number, position: number): JQuery<HTMLDivElement> => (
     $(`
       <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${position}%">
         <span class="slider__scale-text">${this.allowedRealValues[index]}</span>
