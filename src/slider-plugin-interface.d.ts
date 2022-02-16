@@ -83,6 +83,7 @@ interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
   render(): JQuery<HTMLElement>
   removeView(): void;
+  setValue?(value: number): void;
 }
 
 interface ISliderView {
