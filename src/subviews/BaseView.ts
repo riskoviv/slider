@@ -1,7 +1,7 @@
-import View from '../View';
+import SubView from '../SubView';
 
-class BaseView extends View {
   protected readonly viewType: string = 'base';
+class BaseView extends SubView {
 }
 
 export default BaseView;

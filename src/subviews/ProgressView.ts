@@ -1,6 +1,5 @@
-import View from '../View';
+import SubView from '../SubView';
 
-class ProgressView extends View implements IProgressView {
   $elem = $('<div class="slider__progress"></div>');
 
   private handlesPositions: number[];
@@ -59,6 +58,7 @@ class ProgressView extends View implements IProgressView {
       });
     }
   }
+class ProgressView extends SubView {
 }
 
 export default ProgressView;

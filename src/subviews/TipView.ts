@@ -1,6 +1,6 @@
-import View from '../View';
+import SubView from '../SubView';
 
-class TipView extends View {
+class TipView extends SubView {
   protected readonly viewType = 'tip';
 
   constructor(protected readonly elementNumber?: 1 | 2) {

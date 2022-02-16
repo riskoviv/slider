@@ -17,7 +17,6 @@
     "IPluginFunction": "readonly",
     "ISliderPlugin": "readonly",
     "IModel": "readonly",
-    "IView": "readonly",
     "ISliderView": "readonly",
     "EventName": "readonly",
     "ISubView": "readonly",

@@ -1,7 +1,7 @@
-import View from '../View';
+import SubView from '../SubView';
 
-class ScaleView extends View {
   valueElements: JQuery<HTMLSpanElement>[] = [];
+class ScaleView extends SubView {
 
   constructor() {
     super();
