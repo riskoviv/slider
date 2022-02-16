@@ -26,8 +26,8 @@ class SliderView implements ISliderView {
     this.$elem.toggleClass('slider_interval');
   }
 
-  setPosition(position: number): void {
-    this.$elem.css(`--${this.viewType}-position`, `${position}%`);
+  setPosition(valueNumber: 1 | 2, position: number): void {
+    this.$elem.css(`--value-${valueNumber}-position`, `${position}%`);
   }
 }
 
