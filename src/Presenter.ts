@@ -108,7 +108,8 @@ class Presenter {
 
   private bindEventListeners() {
     this.model.on('stepSizeChanged', this.changeStepSize)
-      .on('isVerticalChanged', this.changeOrientation);
+      .on('isVerticalChanged', this.changeOrientation)
+      .on('isIntervalChanged', this.changeInterval);
 
     if (this.pluginStateOptions.showTip) {
       this.model.on('valueChanged', this.changeTipValue);
@@ -121,6 +122,17 @@ class Presenter {
 
     if (this.pluginStateOptions.showScale) {
       this.view.sliderScale?.on('scaleValueSelect', this.scaleValueSelect);
+  private changeInterval(options: { isInterval: boolean }) {
+    if (options.isInterval) {
+      if (this.subViews.thumb2 === undefined) {
+        this.subViews.thumb2 = new ThumbView(2);
+        this.sliderView.$controlContainer.append(this.subViews.thumb2.render());
+      }
+    } else {
+      this.subViews.thumb2.removeView();
+      delete this.subViews.thumb2;
+    }
+  }
     }
   }
 

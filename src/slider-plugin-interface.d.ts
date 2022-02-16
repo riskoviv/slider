@@ -50,7 +50,8 @@ type EventName =
   'valueChanged' |
   'scaleValueSelect' |
   'getOtherHandlePosition' |
-  'isVerticalChanged';
+  'isVerticalChanged' |
+  'isIntervalChanged';
 
 type EventHandler = (options: OptionsObject) => void;
 
