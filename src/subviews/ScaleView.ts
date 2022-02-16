@@ -1,6 +1,5 @@
 import SubView from '../SubView';
 
-  valueElements: JQuery<HTMLSpanElement>[] = [];
 class ScaleView extends SubView {
   protected readonly viewType = 'scale';
 
@@ -17,6 +16,10 @@ class ScaleView extends SubView {
     }, 0);
 
     this.$elem.on('click', this.scaleValueClick);
+  }
+
+  insertValueElements(valueElements: JQuery<HTMLDivElement>[]): void {
+    this.$elem.append(valueElements);
   }
 
   private scaleValueClick = (e: JQuery.ClickEvent) => {
