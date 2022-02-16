@@ -81,7 +81,7 @@ interface IModel extends IEventEmitter {
 
 interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
-  setValue?(value: number): void;
+  render(): JQuery<HTMLElement>
   removeView(): void;
 }
 
