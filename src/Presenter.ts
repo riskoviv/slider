@@ -8,6 +8,8 @@ import TipView from './subviews/TipView';
 class Presenter {
   private options: IPluginOptions;
 
+  private readonly sliderView: ISliderView;
+
   private subViews: ISubView[] = [];
 
   private scaleValueElements: JQuery<HTMLDivElement>[] = [];
@@ -22,9 +24,10 @@ class Presenter {
       value1, value2, minValue, maxValue, stepSize,
     } = this.options;
 
-    this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
     const { isVertical, isInterval } = this.options;
+    this.sliderView = new SliderView({ isVertical, isInterval });
 
+    this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
     this.createSubViews();
     this.bindEventListeners();
   }
