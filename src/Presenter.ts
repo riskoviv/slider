@@ -122,8 +122,20 @@ class Presenter {
         }
       });
     });
+  }
+
+  private removeSubView(subViewName: string): void {
+    this.subViews[subViewName].removeView();
+    delete this.subViews[subViewName];
+  }
 
     this.pluginRootElem.append(this.subViews.sliderView.$elem);
+  private renderSubView(subViewName: string): void {
+    this.subViews[subViewName].render();
+  }
+
+  private insertSliderToContainer(): void {
+    this.$pluginRootElem.append(this.sliderView.$elem);
   }
 
   private bindEventListeners() {
