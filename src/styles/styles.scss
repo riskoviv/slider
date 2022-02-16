@@ -31,12 +31,12 @@
     overflow: hidden;
   }
 
-  &__handle {
-    --handle-thickness: var(--slider-size);
-    --handle-position: 0%;
+  &__thumb {
+    --thumb-thickness: var(--slider-size);
+    --thumb-position: 0%;
     position: absolute;
     max-width: var(--slider-size);
-    width: var(--handle-thickness);
+    width: var(--thumb-thickness);
     height: var(--slider-size);
     background-color: var(--green);
     border-radius: 10px;
@@ -170,13 +170,13 @@
         width: var(--base-size);
       }
 
-      &__handle {
+      &__thumb {
         transform: translateY(-50%);
         max-height: var(--slider-size);
-        height: var(--handle-thickness);
+        height: var(--thumb-thickness);
         min-width: var(--slider-size);
         left: 0;
-        top: var(--handle-position);
+        top: var(--thumb-position);
       }
 
       &__tip {

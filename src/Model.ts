@@ -42,13 +42,13 @@ class Model extends EventEmitter implements IModel {
     return this.allowedRealValues.indexOf(this.options[`value${valueNumber}`]);
   }
 
-  setValue(handleNumber: 1 | 2, valueIndex: number): void {
-    this.options[`value${handleNumber}`] = this.allowedRealValues[valueIndex];
+  setValue(thumbNumber: 1 | 2, valueIndex: number): void {
+    this.options[`value${thumbNumber}`] = this.allowedRealValues[valueIndex];
 
     if (this.options.showTip) {
       this.emit('valueChanged', {
-        number: handleNumber,
-        value: this.options[`value${handleNumber}`],
+        number: thumbNumber,
+        value: this.options[`value${thumbNumber}`],
       });
     }
   }

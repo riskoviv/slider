@@ -1,5 +1,5 @@
 import BaseView from './subviews/BaseView';
-import HandleView from './subviews/HandleView';
+import ThumbView from './subviews/ThumbView';
 import ProgressView from './subviews/ProgressView';
 import ScaleView from './subviews/ScaleView';
 import SliderView from './subviews/SliderView';
@@ -72,7 +72,7 @@ class Presenter {
 
     [this.view.subViews.sliderHandle1, this.view.subViews.sliderHandle2]
       .forEach((sliderHandle) => {
-        sliderHandle?.on('handleValueChange', this.handleValueChange);
+        sliderHandle?.on('thumbValueChange', this.thumbValueChange);
       });
 
     if (this.pluginStateOptions.showScale) {
@@ -112,7 +112,7 @@ class Presenter {
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
     const dimension = this.isVertical ? 'offsetHeight' : 'offsetWidth';
-    return Number(((pixels / this.handleDirectContainer[dimension]) * 100)
+    return Number(((pixels / this.thumbDirectContainer[dimension]) * 100)
       .toFixed(1));
   }
 
@@ -130,10 +130,10 @@ class Presenter {
     this.currentPosition = findClosest
       ? this.findClosestAllowedPosition(allowedPosition)
       : allowedPosition;
-    View.$controlContainer.css(`--handle-${this.handleNumber}-position`, `${this.currentPosition}%`);
-    this.params.positions[this.handleNumber] = this.currentPosition;
-    this.emit('handleValueChange', {
-      handleNumber: this.handleNumber,
+    View.$controlContainer.css(`--thumb-${this.thumbNumber}-position`, `${this.currentPosition}%`);
+    this.params.positions[this.thumbNumber] = this.currentPosition;
+    this.emit('thumbValueChange', {
+      thumbNumber: this.thumbNumber,
       index: this.params.allowedPositions.indexOf(this.currentPosition),
     });
   }
@@ -214,16 +214,16 @@ class Presenter {
     console.warn('Method is not implemented yet!');
   }
 
-  private handleChecks = {
-    isCursorMovedHalfStep: (handle: IHandleView, position: number) => (
-      Math.abs(position - handle.currentPosition) > this.params.stepSizeInPercents / 2
+  private thumbChecks = {
+    isCursorMovedHalfStep: (thumb: IHandleView, position: number) => (
+      Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
     ),
     isCursorOnStepPosition: (position: number) => (
       this.model.allowedPositions.includes(position)
         && position !== this.currentPosition
     ),
     isHandleKeepsDistance: (newPosition: number): boolean => {
-      if (this.handleNumber === 1) {
+      if (this.thumbNumber === 1) {
         return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
       }
 
@@ -232,39 +232,39 @@ class Presenter {
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
   }
 
-  private handleValueChange = (
+  private thumbValueChange = (
     values: {
-      handleNumber: 1 | 2,
+      thumbNumber: 1 | 2,
       index: number
     },
   ) => {
     const position = this.allowedPositions[values.index];
 
     if (this.pluginStateOptions.showTip) {
-      this.view.subViews[`sliderTip${values.handleNumber}`].setPosition?.(position);
+      this.view.subViews[`sliderTip${values.thumbNumber}`].setPosition?.(position);
     }
     if (this.pluginStateOptions.showProgressBar) {
       this.view.subViews.sliderProgress.updateProgressSize?.(
-        values.handleNumber,
+        values.thumbNumber,
         position,
       );
     }
-    this.model.setValue(values.handleNumber, values.index);
+    this.model.setValue(values.thumbNumber, values.index);
   }
 
   private changeTipValue = (values: { number: 1 | 2, value: number }) => {
     this.view.subViews[`sliderTip${values.number}`].setValue?.(values.value);
   }
 
-  private findClosestHandle(valueIndex: number): 1 | 2 {
-    const handle1Index = this.model.getValueIndex(1);
-    const handle2Index = this.model.getValueIndex(2);
+  private findClosestThumb(valueIndex: number): 1 | 2 {
+    const thumb1Index = this.model.getValueIndex(1);
+    const thumb2Index = this.model.getValueIndex(2);
 
-    if (Math.abs(valueIndex - handle1Index) < Math.abs(valueIndex - handle2Index)) {
+    if (Math.abs(valueIndex - thumb1Index) < Math.abs(valueIndex - thumb2Index)) {
       return 1;
     }
 
-    if (Math.abs(valueIndex - handle1Index) > Math.abs(valueIndex - handle2Index)) {
+    if (Math.abs(valueIndex - thumb1Index) > Math.abs(valueIndex - thumb2Index)) {
       return 2;
     }
 
@@ -273,8 +273,8 @@ class Presenter {
 
   private scaleValueSelect = (options: { index: number }) => {
     if (this.pluginStateOptions.isInterval) {
-      const handleNumber = this.findClosestHandle(options.index);
-      this.view.subViews[`sliderHandle${handleNumber}`].setPositionAndCurrentValue?.(
+      const thumbNumber = this.findClosestThumb(options.index);
+      this.view.subViews[`sliderHandle${thumbNumber}`].setPositionAndCurrentValue?.(
         this.allowedPositions[options.index], false,
       );
     } else {

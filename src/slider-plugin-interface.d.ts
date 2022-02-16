@@ -37,7 +37,7 @@ interface IPluginPublicMethods {
   debug: { [methodName: string]: () => IPluginOptions },
   setStepSize: (stepSize: number) => void,
   setVerticalState: (isVertical: boolean) => void,
-  setValue: (handleNumber: 1 | 2, valueIndex: number) => void,
+  setValue: (thumbNumber: 1 | 2, valueIndex: number) => void,
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -46,7 +46,7 @@ interface JQuery extends IPluginPublicMethods {
 
 type EventName =
   'stepSizeChanged' |
-  'handleValueChange' |
+  'thumbValueChange' |
   'valueChanged' |
   'scaleValueSelect' |
   'getOtherHandlePosition' |
@@ -98,7 +98,7 @@ type TypeOfValues<T> = T[keyof T];
 
 type ViewType =
   'base' |
-  'handle' |
+  'thumb' |
   'progress' |
   'scale' |
   'tip';
