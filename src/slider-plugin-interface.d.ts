@@ -76,6 +76,7 @@ interface IModel extends IEventEmitter {
   viewValues: ViewValues,
   getOptions(): IPluginOptions,
   publicMethods: IPluginPublicMethods,
+  setValue(thumbNumber: 1 | 2, valueIndex: number): void,
 }
 
 interface ISubView extends IEventEmitter {
