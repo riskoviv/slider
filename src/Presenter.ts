@@ -15,7 +15,7 @@ class Presenter {
   private scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
   constructor(
-    private readonly pluginRootElem: JQuery<HTMLElement>,
+    private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
   ) {
     this.options = this.model.options;
@@ -129,7 +129,6 @@ class Presenter {
     delete this.subViews[subViewName];
   }
 
-    this.pluginRootElem.append(this.subViews.sliderView.$elem);
   private renderSubView(subViewName: string): void {
     this.subViews[subViewName].render();
   }
@@ -143,13 +142,10 @@ class Presenter {
       .on('isVerticalChanged', this.changeOrientation)
       .on('isIntervalChanged', this.changeInterval);
 
-    if (this.pluginStateOptions.showTip) {
+    if (this.options.showTip) {
       this.model.on('valueChanged', this.changeTipValue);
     }
 
-    [this.subViews.sliderHandle1, this.subViews.sliderHandle2]
-      .forEach((sliderHandle) => {
-        sliderHandle?.on('thumbValueChange', this.thumbValueChange);
     type subViewListenersObj = {
       [subViewType in ViewType]: [
         {
@@ -182,9 +178,31 @@ class Presenter {
           });
         }
       });
+    });
 
-    if (this.pluginStateOptions.showScale) {
-      this.view.sliderScale?.on('scaleValueSelect', this.scaleValueSelect);
+    [this.subViews.thumb1, this.subViews.thumb2]
+      .forEach((thumb) => {
+        thumb?.on('thumbValueChange', this.thumbValueChange);
+      });
+
+    if (this.options.showScale) {
+      this.subViews.sliderScale?.on('scaleValueSelect', this.scaleValueSelect);
+    }
+  }
+
+  /**
+   * Model listeners
+   */
+
+  private changeStepSize = (options: { stepSize: number }) => {
+    // this.view.changeStepSize(stepSize);
+    console.warn('Method is not implemented yet!');
+  }
+
+  private changeOrientation = (options: { isVertical: boolean }) => {
+    console.warn('Method is not implemented yet!');
+  }
+
   private changeInterval(options: { isInterval: boolean }) {
     if (options.isInterval) {
       if (this.subViews.thumb2 === undefined) {
@@ -196,6 +214,34 @@ class Presenter {
       delete this.subViews.thumb2;
     }
   }
+
+  /**
+   * SubViews listeners
+   */
+
+  private thumbValueChange = (
+    options: {
+      thumbNumber: 1 | 2,
+      index: number
+    },
+  ) => {
+    this.model.setValue(options.thumbNumber, options.index);
+  }
+
+  private changeTipValue = (values: { number: 1 | 2, value: number }) => {
+    this.subViews[`tip${values.number}`].setValue?.(values.value);
+  }
+
+  private scaleValueSelect(options: { index: number }) {
+    if (this.options.isInterval) {
+      const thumbNumber = this.findClosestThumb(options.index);
+      this.subViews[`thumb${thumbNumber}`].setPositionAndCurrentValue?.(
+        this.allowedPositions[options.index], false,
+      );
+    } else {
+      this.subViews.thumb1.setPositionAndCurrentValue?.(
+        this.allowedPositions[options.index], false,
+      );
     }
   }
 
@@ -230,14 +276,13 @@ class Presenter {
    */
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
-    const dimension = this.isVertical ? 'offsetHeight' : 'offsetWidth';
-    return Number(((pixels / this.thumbDirectContainer[dimension]) * 100)
+    const dimension = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
+    return Number(((pixels / this.sliderView.$controlContainer[dimension]) * 100)
       .toFixed(1));
   }
 
-
   private findClosestAllowedPosition(position: number) {
-    return this.params.allowedPositions.reduce((lastMinValue, currentValue) => {
+    return this.model.allowedPositions.reduce((lastMinValue: number, currentValue: number) => {
       if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
         return currentValue;
       }
@@ -320,19 +365,6 @@ class Presenter {
     });
   }
 
-  /**
-   * Model listeners
-   */
-
-  private changeStepSize = (options: { stepSize: number }) => {
-    // this.view.changeStepSize(stepSize);
-    console.warn('Method is not implemented yet!');
-  }
-
-  private changeOrientation = (options: { isVertical: boolean }) => {
-    console.warn('Method is not implemented yet!');
-  }
-
   private thumbChecks = {
     isCursorMovedHalfStep: (thumb: IHandleView, position: number) => (
       Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
@@ -351,30 +383,6 @@ class Presenter {
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
   }
 
-  private thumbValueChange = (
-    values: {
-      thumbNumber: 1 | 2,
-      index: number
-    },
-  ) => {
-    const position = this.allowedPositions[values.index];
-
-    if (this.pluginStateOptions.showTip) {
-      this.view.subViews[`sliderTip${values.thumbNumber}`].setPosition?.(position);
-    }
-    if (this.pluginStateOptions.showProgressBar) {
-      this.view.subViews.sliderProgress.updateProgressSize?.(
-        values.thumbNumber,
-        position,
-      );
-    }
-    this.model.setValue(values.thumbNumber, values.index);
-  }
-
-  private changeTipValue = (values: { number: 1 | 2, value: number }) => {
-    this.view.subViews[`sliderTip${values.number}`].setValue?.(values.value);
-  }
-
   private findClosestThumb(valueIndex: number): 1 | 2 {
     const thumb1Index = this.model.getValueIndex(1);
     const thumb2Index = this.model.getValueIndex(2);
@@ -390,18 +398,7 @@ class Presenter {
     return 1;
   }
 
-  private scaleValueSelect = (options: { index: number }) => {
-    if (this.pluginStateOptions.isInterval) {
-      const thumbNumber = this.findClosestThumb(options.index);
-      this.view.subViews[`sliderHandle${thumbNumber}`].setPositionAndCurrentValue?.(
-        this.allowedPositions[options.index], false,
-      );
-    } else {
-      this.view.subViews.sliderHandle1.setPositionAndCurrentValue?.(
-        this.allowedPositions[options.index], false,
-      );
-    }
-  }
+
 }
 
 export default Presenter;
