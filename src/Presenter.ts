@@ -21,38 +21,57 @@ class Presenter {
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
 
+    this.createSubViews();
     this.bindEventListeners();
   }
 
   private createSubViews(): void {
-    const { options } = this.model;
-    const handlesCount = options.isInterval ? 2 : 1;
-    const tipsCount = options.showTip ? handlesCount : 0;
+    const thumbsCount = this.options.isInterval ? 2 : 1;
+    const tipsCount = this.options.showTip ? thumbsCount : 0;
 
-    const optionsToSubviewsRelations = {
-      showProgressBar: {
-        viewClass: ProgressView,
-        viewName: 'progressView',
-      },
-      showScale: {
-        viewClass: ScaleView,
-        viewName: 'scaleView',
-      },
-      showTip: {
-        viewClass: TipView,
-        viewName: 'tipView',
-      },
+    type stateOption = Omit<IPluginStateOptions, 'isVertical'>;
+
+    type optionalSubViewsStateOptions = {
+      [stateOptionName in keyof stateOption]:
+        typeof ProgressView |
+        typeof ScaleView |
+        typeof TipView |
+        typeof ThumbView
     };
 
-    this.views = {
-      sliderView: new SliderView(),
-      baseView: new BaseView(),
-      handleView1: new HandleView(1),
+    const optionsToSubviewsRelations: optionalSubViewsStateOptions = {
+      showProgressBar: ProgressView,
+      showScale: ScaleView,
+      showTip: TipView,
+      isInterval: ThumbView,
     };
 
-    Object.keys(optionsToSubviewsRelations).forEach((optionalSubView, i, relations) => {
-      if (this.model.options[optionalSubView]) {
-        this.views
+    this.subViews = [
+      new BaseView(),
+      new ThumbView(1),
+    ];
+
+    Object.entries(optionsToSubviewsRelations).forEach(([stateOptionName, SubViewClassName]) => {
+      if (this.model.options[stateOptionName]) {
+        const SubViewClass = SubViewClassName;
+        switch (SubViewClass) {
+          case ProgressView || ScaleView:
+            this.subViews.push(new SubViewClass());
+            break;
+          case TipView: {
+            let tipNumber: 1 | 2 = 1;
+            while (tipNumber <= tipsCount) {
+              this.subViews.push(new SubViewClass(tipNumber));
+              tipNumber = 2;
+            }
+            break;
+          }
+          case ThumbView:
+            this.subViews.push(new SubViewClass(2));
+            break;
+          default:
+            break;
+        }
       }
     });
   }
