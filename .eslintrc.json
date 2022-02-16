@@ -18,8 +18,8 @@
     "ISliderPlugin": "readonly",
     "IModel": "readonly",
     "ISliderView": "readonly",
-    "EventName": "readonly",
     "ISubView": "readonly",
+    "EventName": "readonly",
     "IEventEmitter": "readonly",
     "EventHandler": "readonly",
     "EventsStorage": "readonly",
@@ -37,7 +37,8 @@
     "IHTMLElement": "readonly",
     "ViewParams": "readonly",
     "TypeOfValues": "readonly",
-    "ViewValues": "readonly"
+    "ViewValues": "readonly",
+    "ViewType": "readonly"
   },
   "ignorePatterns": [
     "dist"
