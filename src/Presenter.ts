@@ -6,6 +6,7 @@ import SliderView from './subviews/SliderView';
 import TipView from './subviews/TipView';
 
 class Presenter {
+  private options: IPluginOptions;
 
   private subViews: ISubView[] = [];
 
@@ -15,11 +16,14 @@ class Presenter {
     private readonly pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
   ) {
+    this.options = this.model.options;
+
     const {
       value1, value2, minValue, maxValue, stepSize,
-    } = model.options;
+    } = this.options;
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
+    const { isVertical, isInterval } = this.options;
 
     this.createSubViews();
     this.bindEventListeners();
