@@ -75,7 +75,9 @@ class Model extends EventEmitter implements IModel {
     }
 
     if (this.options.isInterval) {
-      this.options.value2 = this.fixValue(this.options.value2, 2);
+      if (!this.allowedRealValues.includes(this.options.value2)) {
+        this.options.value2 = this.fixValue(this.options.value2, 2);
+      }
 
       if (this.options.value1 === this.options.value2) {
         const warnMsgStart = `Warning: difference between value1 and value2 is less than stepSize (${this.options.stepSize}) in plugin options and leads to equality of value1 and value2.`;
@@ -96,9 +98,6 @@ class Model extends EventEmitter implements IModel {
   }
 
   private fixValue(value: number, num: 1 | 2): number {
-    if (this.allowedRealValues.includes(value)) {
-      return value;
-    }
     const fixedValue = this.findClosestAllowedRealValue(value);
     console.warn(`Note: value${num} (${value}) is changed to ${fixedValue} to fit to step size.`);
     return fixedValue;
