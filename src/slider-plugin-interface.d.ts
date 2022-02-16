@@ -77,11 +77,9 @@ interface IModel extends IEventEmitter {
   publicMethods: IPluginPublicMethods,
 }
 
-interface IView extends IEventEmitter {
+interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
-  $controlContainer?: JQuery<HTMLElement>;
-  setPosition?(position: number): void;
-  setValue?(value: string): void;
+  setValue?(value: number): void;
   removeView(): void;
 }
 
