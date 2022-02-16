@@ -10,7 +10,7 @@ class Presenter {
 
   private readonly sliderView: ISliderView;
 
-  private subViews: ISubView[] = [];
+  private subViews: { [viewName: string]: ISubView } = {};
 
   private scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
@@ -33,48 +33,63 @@ class Presenter {
   }
 
   private createSubViews(): void {
-    const thumbsCount = this.options.isInterval ? 2 : 1;
-    const tipsCount = this.options.showTip ? thumbsCount : 0;
-
     type stateOption = Omit<IPluginStateOptions, 'isVertical'>;
 
     type optionalSubViewsStateOptions = {
-      [stateOptionName in keyof stateOption]:
-        typeof ProgressView |
-        typeof ScaleView |
-        typeof TipView |
-        typeof ThumbView
+      [stateOptionName in keyof stateOption]: {
+        subViewClass:
+          typeof ProgressView |
+          typeof ScaleView |
+          typeof TipView |
+          typeof ThumbView,
+        subViewName: string,
+      }
     };
 
     const optionsToSubviewsRelations: optionalSubViewsStateOptions = {
-      showProgressBar: ProgressView,
-      showScale: ScaleView,
-      showTip: TipView,
-      isInterval: ThumbView,
+      showProgressBar: {
+        subViewClass: ProgressView,
+        subViewName: 'progress',
+      },
+      showScale: {
+        subViewClass: ScaleView,
+        subViewName: 'scale',
+      },
+      showTip: {
+        subViewClass: TipView,
+        subViewName: 'tip',
+      },
+      isInterval: {
+        subViewClass: ThumbView,
+        subViewName: 'thumb',
+      },
     };
 
-    this.subViews = [
-      new BaseView(),
-      new ThumbView(1),
-    ];
+    this.subViews = {
+      base: new BaseView(),
+      thumb1: new ThumbView(1),
+    };
 
-    Object.entries(optionsToSubviewsRelations).forEach(([stateOptionName, SubViewClassName]) => {
+    const thumbsCount = this.options.isInterval ? 2 : 1;
+    const tipsCount = this.options.showTip ? thumbsCount : 0;
+
+    Object.entries(optionsToSubviewsRelations).forEach(([stateOptionName, SubViewClassData]) => {
       if (this.model.options[stateOptionName]) {
-        const SubViewClass = SubViewClassName;
+        const SubViewClass = SubViewClassData.subViewClass;
         switch (SubViewClass) {
           case ProgressView || ScaleView:
-            this.subViews.push(new SubViewClass());
+            this.subViews[SubViewClassData.subViewName] = new SubViewClass();
             break;
           case TipView: {
             let tipNumber: 1 | 2 = 1;
             while (tipNumber <= tipsCount) {
-              this.subViews.push(new SubViewClass(tipNumber));
+              this.subViews[`tip${tipNumber}`] = new SubViewClass(tipNumber);
               tipNumber = 2;
             }
             break;
           }
           case ThumbView:
-            this.subViews.push(new SubViewClass(2));
+            this.subViews.thumb2 = new SubViewClass(2);
             break;
           default:
             break;
