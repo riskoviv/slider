@@ -1,16 +1,15 @@
-import View from '../View';
-
 type SliderViewOptions = {
   isVertical: boolean,
   isInterval: boolean,
 };
 
-class SliderView extends View {
+class SliderView implements ISliderView {
+  readonly $elem: JQuery<HTMLElement>;
+
   readonly $controlContainer: JQuery<HTMLDivElement> = $('<div class="slider__control-container"></div>');
 
-  constructor(options: SliderViewOptions) {
-    super();
-    this.render(options);
+  constructor(options?: SliderViewOptions) {
+    this.$elem = this.render(options);
   }
 
   protected render(

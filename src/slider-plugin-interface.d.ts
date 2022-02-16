@@ -83,6 +83,12 @@ interface ISubView extends IEventEmitter {
   removeView(): void;
 }
 
+interface ISliderView {
+  toggleVertical(): void;
+  toggleInterval(): void;
+  setPosition(valueNumber: 1 | 2, position: number): void;
+}
+
 type Axis = 'left' | 'top';
 
 type Dimension = 'width' | 'height';
