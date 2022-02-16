@@ -80,14 +80,12 @@ class Presenter {
           case ProgressView || ScaleView:
             this.subViews[subViewClassData.subViewName] = new SubViewClass();
             break;
-          case TipView: {
-            let tipNumber: 1 | 2 = 1;
-            while (tipNumber <= tipsCount) {
-              this.subViews[`tip${tipNumber}`] = new SubViewClass(tipNumber);
-              tipNumber = 2;
+          case TipView:
+            this.subViews.tip1 = new SubViewClass(1);
+            if (tipsCount === 2) {
+              this.subViews.tip2 = new SubViewClass(2);
             }
             break;
-          }
           case ThumbView:
             this.subViews.thumb2 = new SubViewClass(2);
             break;
