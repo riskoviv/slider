@@ -1,6 +1,6 @@
 import EventEmitter from './EventEmitter';
 import BaseView from './subviews/BaseView';
-import HandleView from './subviews/HandleView';
+import ThumbView from './subviews/ThumbView';
 import ScaleView from './subviews/ScaleView';
 import TipView from './subviews/TipView';
 import ProgressView from './subviews/ProgressView';
@@ -11,10 +11,10 @@ class View extends EventEmitter {
   $controlContainer = $('<div class="slider__control-container"></div>');
 
   subViews: {
-    [subViewName: string]: IView;
+    [subViewName: string]: ISubView;
   } = {};
 
-  handleParams: ViewValues;
+  thumbParams: ViewValues;
 
   sliderScale?: IScaleView;
 
@@ -34,7 +34,7 @@ class View extends EventEmitter {
       this.$elem.addClass('slider_interval');
     }
 
-    this.handleParams = {
+    this.thumbParams = {
       positions: { 1: 0, 2: 100 },
       stepSizeInPercents: 10,
       halfStepInPercents: 5,
@@ -50,17 +50,17 @@ class View extends EventEmitter {
   render(index1: number, index2: number): void {
     this.insertSubViewsIntoContainer();
 
-    const handle1Position = this.handleParams.allowedPositions[index1];
+    const thumb1Position = this.thumbParams.allowedPositions[index1];
 
     if (this.subViews.sliderHandle1.setPositionAndCurrentValue !== undefined) {
-      this.subViews.sliderHandle1.setPositionAndCurrentValue(handle1Position, false);
+      this.subViews.sliderHandle1.setPositionAndCurrentValue(thumb1Position, false);
     }
 
     if (this.stateOptions.isInterval) {
-      const handle2Position = this.handleParams.allowedPositions[index2];
+      const thumb2Position = this.thumbParams.allowedPositions[index2];
 
       if (this.subViews.sliderHandle2.setPositionAndCurrentValue !== undefined) {
-        this.subViews.sliderHandle2.setPositionAndCurrentValue(handle2Position, false);
+        this.subViews.sliderHandle2.setPositionAndCurrentValue(thumb2Position, false);
       }
     }
   }
@@ -69,8 +69,8 @@ class View extends EventEmitter {
   private createSubViews() {
     this.subViews = {
       sliderBase: new BaseView(),
-      sliderHandle1: new HandleView(
-        this.handleParams,
+      sliderHandle1: new ThumbView(
+        this.thumbParams,
         1,
         this.stateOptions.isVertical,
       ),
@@ -81,8 +81,8 @@ class View extends EventEmitter {
     }
 
     if (this.stateOptions.isInterval) {
-      this.subViews.sliderHandle2 = new HandleView(
-        this.handleParams,
+      this.subViews.sliderHandle2 = new ThumbView(
+        this.thumbParams,
         2,
         this.stateOptions.isVertical,
       );
@@ -93,7 +93,7 @@ class View extends EventEmitter {
 
     if (this.stateOptions.showScale) {
       this.sliderScale = new ScaleView(
-        this.handleParams.allowedPositions,
+        this.thumbParams.allowedPositions,
         this.allowedRealValues,
         this.stateOptions.isVertical,
       );
