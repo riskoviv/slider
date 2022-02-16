@@ -3,7 +3,7 @@ import SubView from '../SubView';
 class TipView extends SubView {
   protected readonly viewType = 'tip';
 
-  constructor(protected readonly elementNumber?: 1 | 2) {
+  constructor(public readonly elementNumber: 1 | 2) {
     super();
   }
 
