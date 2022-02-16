@@ -121,6 +121,8 @@ class Model extends EventEmitter implements IModel {
   private createAllowedRealValuesArr(): void {
     const stepPrecision = this.identifyStepSizeFractionalPrecision();
 
+    this.allowedRealValues.length = 0;
+
     for (
       let stepValue = this.options.minValue;
       stepValue <= this.options.maxValue;
