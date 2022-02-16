@@ -98,9 +98,29 @@ class Presenter {
     });
   }
 
-  private insertSliderToPage(): void {
-    Object.entries(this.subViews).forEach((view) => {
-      this.subViews.sliderView.$controlContainer.append(view.$elem);
+  private appendSubViewsToSlider(): void {
+    const subViewsParentElements = [
+      {
+        element: this.sliderView.$controlContainer,
+        children: ['BaseView', 'HandleView', 'TipView'],
+      },
+      {
+        element: this.subViews.base.$elem,
+        children: ['ProgressView'],
+      },
+      {
+        element: this.sliderView.$elem,
+        children: ['ScaleView'],
+      },
+    ];
+    const subViewsInstances = Object.values(this.subViews);
+
+    subViewsParentElements.forEach((parent) => {
+      subViewsInstances.forEach((instance) => {
+        if (parent.children.includes(instance.constructor.name)) {
+          parent.element.append(instance.render());
+        }
+      });
     });
 
     this.pluginRootElem.append(this.subViews.sliderView.$elem);
