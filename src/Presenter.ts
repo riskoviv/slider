@@ -29,6 +29,8 @@ class Presenter {
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
     this.createSubViews();
+    this.appendSubViewsToSlider();
+    this.insertSliderToContainer();
     this.bindEventListeners();
   }
 
