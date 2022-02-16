@@ -150,6 +150,37 @@ class Presenter {
     [this.subViews.sliderHandle1, this.subViews.sliderHandle2]
       .forEach((sliderHandle) => {
         sliderHandle?.on('thumbValueChange', this.thumbValueChange);
+    type subViewListenersObj = {
+      [subViewType in ViewType]: [
+        {
+          eventName: EventName,
+          listener: EventHandler,
+        },
+      ];
+    }
+
+    const subViewsListeners: subViewListenersObj = {
+      thumb: [
+        {
+          eventName: 'thumbValueChange',
+          listener: this.thumbValueChange,
+        },
+      ],
+      scale: [
+        {
+          eventName: 'scaleValueSelect',
+          listener: this.scaleValueSelect,
+        },
+      ],
+    };
+
+    Object.entries(this.subViews).forEach(([name, subView]) => {
+      Object.entries(subViewsListeners).forEach(([subViewType, events]) => {
+        if (name.startsWith(subViewType)) {
+          events.forEach((event) => {
+            subView.on(event.name, event.listener);
+          });
+        }
       });
 
     if (this.pluginStateOptions.showScale) {
