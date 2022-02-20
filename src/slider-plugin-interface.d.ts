@@ -51,7 +51,12 @@ type EventName =
   'isVerticalChanged' |
   'isIntervalChanged';
 
-type OptionsObject = Record<string, unknown>;
+type OptionsObject = IPluginOptions & {
+  number: 1 | 2,
+  value: number,
+  thumbNumber: 1 | 2,
+  index: number,
+};
 
 type EventHandler = (options: OptionsObject) => void;
 
