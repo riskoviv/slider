@@ -8,7 +8,10 @@ abstract class SubView extends EventEmitter implements ISubView {
   protected readonly elementNumber?: 1 | 2;
 
   render(): JQuery<HTMLElement> {
-    this.$elem = $(`<div class="slider__${this.viewType}${this.elementNumber !== undefined ? ` slider__${this.viewType}_${this.elementNumber}` : ''}"></div>`);
+    const elementNumberModifier = this.elementNumber !== undefined
+      ? ` slider__${this.viewType}_${this.elementNumber}`
+      : '';
+    this.$elem = $(`<div class="slider__${this.viewType}${elementNumberModifier}"></div>`);
     return this.$elem;
   }
 
