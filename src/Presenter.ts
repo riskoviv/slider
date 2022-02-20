@@ -44,7 +44,7 @@ class Presenter {
           typeof ScaleView |
           typeof TipView |
           typeof ThumbView,
-        subViewName: string,
+        subViewName: ViewType,
       }
     };
 
@@ -147,7 +147,7 @@ class Presenter {
     }
 
     type subViewListenersObj = {
-      [subViewType in ViewType]: [
+      [subViewType in ViewType]?: [
         {
           eventName: EventName,
           listener: EventHandler,
@@ -174,7 +174,7 @@ class Presenter {
       Object.entries(subViewsListeners).forEach(([subViewType, events]) => {
         if (name.startsWith(subViewType)) {
           events.forEach((event) => {
-            subView.on(event.name, event.listener);
+            subView.on(event.eventName, event.listener);
           });
         }
       });
@@ -228,8 +228,8 @@ class Presenter {
     this.model.setValue(options.thumbNumber, options.index);
   }
 
-  private changeTipValue = (values: { number: 1 | 2, value: number }) => {
-    this.subViews[`tip${values.number}`].setValue?.(values.value);
+  private changeTipValue = (options: { number: 1 | 2, value: number }) => {
+    this.subViews[`tip${options.number}`].setValue?.(options.value);
   }
 
   private scaleValueSelect(options: { index: number }) {
@@ -397,8 +397,6 @@ class Presenter {
 
     return 1;
   }
-
-
 }
 
 export default Presenter;
