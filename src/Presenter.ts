@@ -8,7 +8,7 @@ import TipView from './subviews/TipView';
 class Presenter {
   private options: IPluginOptions;
 
-  private readonly sliderView: ISliderView;
+  readonly sliderView: ISliderView;
 
   private subViews: { [viewName: string]: ISubView } = {};
 
