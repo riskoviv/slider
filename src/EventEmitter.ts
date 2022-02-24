@@ -20,10 +20,9 @@ class EventEmitter implements IEventEmitter {
 
   protected emit(event: EventName, arg: OptionsObject): void {
     try {
-      const emitError = new Error();
-      emitError.name = 'EmitError';
-
       if (this.events[event] === undefined) {
+        const emitError = new Error();
+        emitError.name = 'EmitError';
         emitError.message = `${event} event is not registered. arg = { ${Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ')} }`;
         throw emitError;
       }
