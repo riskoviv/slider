@@ -56,7 +56,7 @@ class Model extends EventEmitter implements IModel {
   setVerticalState(isVertical: boolean): void {
     this.options.isVertical = isVertical;
     this.emit('isVerticalChanged', {
-      isVertical: this.options.isVertical,
+      isVertical,
     });
   }
 
