@@ -14,11 +14,14 @@ interface IPluginStateOptions {
   showProgressBar: boolean,
 }
 
-interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {
-  [option: string]: number | boolean,
-}
+interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
 
 type PartialPluginOptions = Partial<IPluginOptions>;
+
+/**
+ * Returns type of values of object-like type
+ */
+ type TypeOfValues<T> = T[keyof T];
 
 interface IPluginGlobalOptions {
   options: IPluginOptions;
@@ -29,7 +32,7 @@ interface IPluginFunction {
   (options: PartialPluginOptions): JQuery | null;
 }
 
-interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction { }
+interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction {}
 
 interface IPluginPublicMethods {
   debug: { [methodName: string]: () => IPluginOptions },
@@ -51,14 +54,16 @@ type EventName =
   'isVerticalChanged' |
   'isIntervalChanged';
 
-type OptionsObject = IPluginOptions & {
-  number: 1 | 2,
-  value: number,
-  thumbNumber: 1 | 2,
-  index: number,
+type EventHandlers = {
+  changeStepSize: (options: { stepSize: number }) => void,
+  changeOrientation: (options: { isVertical: boolean }) => void,
+  changeInterval: (options: { isInterval: boolean }) => void,
+  changeTipValue: (options: { number: 1 | 2, value: number }) => void,
+  thumbValueChange: (options: { thumbNumber: 1 | 2, index: number }) => void,
+  scaleValueSelect: (options: { index: number }) => void,
 };
 
-type EventHandler = (options: OptionsObject) => void;
+type EventHandler = TypeOfValues<EventHandlers>;
 
 type EventsStorage = {
   [event in EventName]?: Set<EventHandler>;
@@ -107,8 +112,6 @@ type ViewParams = {
   parentElement?: JQuery<HTMLElement>,
   elementNumber?: 1 | 2,
 };
-
-type TypeOfValues<T> = T[keyof T];
 
 type ViewType =
   'base' |
