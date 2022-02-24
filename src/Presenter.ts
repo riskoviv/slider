@@ -4,6 +4,7 @@ import ProgressView from './subviews/ProgressView';
 import ScaleView from './subviews/ScaleView';
 import SliderView from './subviews/SliderView';
 import TipView from './subviews/TipView';
+import utils from './utils';
 
 class Presenter {
   private options: IPluginOptions;
@@ -75,13 +76,10 @@ class Presenter {
     const thumbsCount = this.options.isInterval ? 2 : 1;
     const tipsCount = this.options.showTip ? thumbsCount : 0;
 
-    function extractTypedKeys<T extends Record<string, unknown>>(obj: T): (keyof T)[] {
-      return Object.keys(obj);
-    }
-
-    extractTypedKeys(optionsToSubviewsRelations).forEach((stateCondition) => {
+    utils.getEntriesWithTypedKeys(optionsToSubviewsRelations).forEach((
+      [stateCondition, subViewClassData],
+    ) => {
       if (this.model.options[stateCondition]) {
-        const subViewClassData = optionsToSubviewsRelations[stateCondition];
         const SubViewClass = subViewClassData.subViewClass;
         switch (SubViewClass) {
           case ProgressView || ScaleView:
