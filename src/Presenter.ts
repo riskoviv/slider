@@ -179,15 +179,6 @@ class Presenter {
         }
       });
     });
-
-    [this.subViews.thumb1, this.subViews.thumb2]
-      .forEach((thumb) => {
-        thumb?.on('thumbValueChange', this.thumbValueChange);
-      });
-
-    if (this.options.showScale) {
-      this.subViews.sliderScale?.on('scaleValueSelect', this.scaleValueSelect);
-    }
   }
 
   /**
