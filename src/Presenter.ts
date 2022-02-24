@@ -75,8 +75,13 @@ class Presenter {
     const thumbsCount = this.options.isInterval ? 2 : 1;
     const tipsCount = this.options.showTip ? thumbsCount : 0;
 
-    Object.entries(optionsToSubviewsRelations).forEach(([stateOptionName, subViewClassData]) => {
-      if (this.model.options[stateOptionName]) {
+    function extractTypedKeys<T extends Record<string, unknown>>(obj: T): (keyof T)[] {
+      return Object.keys(obj);
+    }
+
+    extractTypedKeys(optionsToSubviewsRelations).forEach((stateCondition) => {
+      if (this.model.options[stateCondition]) {
+        const subViewClassData = optionsToSubviewsRelations[stateCondition];
         const SubViewClass = subViewClassData.subViewClass;
         switch (SubViewClass) {
           case ProgressView || ScaleView:
