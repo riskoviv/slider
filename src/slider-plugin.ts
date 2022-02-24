@@ -100,7 +100,12 @@ fixCustomOptions = (options: PartialPluginOptions) => {
     TypeOfValues<PartialPluginOptions>
   ];
 
-  Object.entries(options).forEach(
+  // eslint-disable-next-line max-len
+  function extractEntriesWithTypedKeys<T extends Record<string, number | boolean>>(obj: T): [keyof T, number | boolean][] {
+    return Object.entries(obj);
+  }
+
+  extractEntriesWithTypedKeys(options).forEach(
     (option: pluginOptionsEntry) => {
       const [key, value] = option;
 
