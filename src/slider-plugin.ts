@@ -1,6 +1,7 @@
 import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
+import utils from './utils';
 
 let containerHasProblems: (container: JQuery) => number;
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
@@ -100,12 +101,7 @@ fixCustomOptions = (options: PartialPluginOptions) => {
     TypeOfValues<PartialPluginOptions>
   ];
 
-  // eslint-disable-next-line max-len
-  function extractEntriesWithTypedKeys<T extends Record<string, number | boolean>>(obj: T): [keyof T, number | boolean][] {
-    return Object.entries(obj);
-  }
-
-  extractEntriesWithTypedKeys(options).forEach(
+  utils.getEntriesWithTypedKeys(options).forEach(
     (option: pluginOptionsEntry) => {
       const [key, value] = option;
 
