@@ -122,7 +122,7 @@ class Model extends EventEmitter implements IModel {
   private identifyStepSizeFractionalPrecision(): number {
     const stepAsString = this.options.stepSize.toString();
     if (!stepAsString.includes('.')) return 0;
-    return (stepAsString.length - 1) - stepAsString.indexOf('.');
+    return stepAsString.split('.')[1].length;
   }
 
   private createAllowedRealValuesArr(): void {
