@@ -54,24 +54,15 @@ type EventName =
   'isVerticalChanged' |
   'isIntervalChanged';
 
-type EventHandlers = {
-  changeStepSize: (options: { stepSize: number }) => void,
-  changeOrientation: (options: { isVertical: boolean }) => void,
-  changeInterval: (options: { isInterval: boolean }) => void,
-  changeTipValue: (options: { number: 1 | 2, value: number }) => void,
-  thumbValueChange: (options: { thumbNumber: 1 | 2, index: number }) => void,
-  scaleValueSelect: (options: { index: number }) => void,
-};
-
-type EventHandler = TypeOfValues<EventHandlers>;
+type EventHandler<T> = (arg: T) => void;
 
 type EventsStorage = {
   [event in EventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on(evt: EventName, listener: EventHandler): this;
-  off(evt: EventName, listener?: EventHandler): this;
+  on<T>(evt: EventName, handler: EventHandler<T>): this;
+  off(evt: EventName, handler?: EventHandler): this;
 }
 
 type ViewValues = {

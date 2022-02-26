@@ -153,7 +153,10 @@ class Presenter {
       [subViewType in ViewType]?: [
         {
           eventName: EventName,
-          listener: EventHandler,
+          listener: EventHandler<{
+            thumbNumber: 1 | 2;
+            index: number;
+          }>,
         },
       ];
     }
