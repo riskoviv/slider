@@ -188,17 +188,17 @@ class Presenter {
    * Model listeners
    */
 
-  private changeStepSize = (options: { stepSize: number }) => {
+  private changeStepSize = (stepSize: number) => {
     // this.view.changeStepSize(stepSize);
     console.warn('Method is not implemented yet!');
   }
 
-  private changeOrientation = (options: { isVertical: boolean }) => {
+  private changeOrientation = (isVertical: boolean) => {
     console.warn('Method is not implemented yet!');
   }
 
-  private changeInterval(options: { isInterval: boolean }) {
-    if (options.isInterval) {
+  private changeInterval(isInterval: boolean) {
+    if (isInterval) {
       if (this.subViews.thumb2 === undefined) {
         this.subViews.thumb2 = new ThumbView(2);
         this.sliderView.$controlContainer.append(this.subViews.thumb2.render());

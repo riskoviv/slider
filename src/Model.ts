@@ -33,9 +33,7 @@ class Model extends EventEmitter implements IModel {
 
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
-    this.emit('stepSizeChanged', {
-      stepSize: this.options.stepSize,
-    });
+    this.emit('stepSizeChanged', this.options.stepSize);
   }
 
   getValueIndex(valueNumber: 1 | 2): number {
@@ -47,7 +45,7 @@ class Model extends EventEmitter implements IModel {
 
     if (this.options.showTip) {
       this.emit('valueChanged', {
-        number: thumbNumber,
+        thumbNumber,
         value: this.options[`value${thumbNumber}`],
       });
     }
@@ -55,16 +53,12 @@ class Model extends EventEmitter implements IModel {
 
   setVerticalState(isVertical: boolean): void {
     this.options.isVertical = isVertical;
-    this.emit('isVerticalChanged', {
-      isVertical,
-    });
+    this.emit('isVerticalChanged', isVertical);
   }
 
   setInterval(isInterval: boolean): void {
     this.options.isInterval = isInterval;
-    this.emit('isIntervalChanged', {
-      isInterval,
-    });
+    this.emit('isIntervalChanged', isInterval);
   }
 
   publicMethods: IPluginPublicMethods = {
