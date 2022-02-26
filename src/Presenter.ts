@@ -222,8 +222,8 @@ class Presenter {
     this.model.setValue(options.thumbNumber, options.index);
   }
 
-  private changeTipValue = (options: { number: 1 | 2, value: number }) => {
-    this.subViews[`tip${options.number}`].setValue?.(options.value);
+  private changeTipValue = (options: { tipNumber: 1 | 2, value: number }) => {
+    this.subViews[`tip${options.tipNumber}`].setValue?.(options.value);
   }
 
   private scaleValueSelect(options: { index: number }) {
