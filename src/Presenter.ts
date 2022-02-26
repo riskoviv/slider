@@ -260,7 +260,7 @@ class Presenter {
       );
     }
 
-    if (this.model.allowedPositions[this.model.allowedPositions.length - 1] !== 100) {
+    if (this.model.allowedPositions.slice(-1)[0] !== 100) {
       this.model.allowedPositions.push(100);
     }
   }
@@ -315,7 +315,7 @@ class Presenter {
         this.scaleValueElements.push(this.makeNewScaleValueElement(index, this.allowedPositions[index]));
       }
 
-      const isLastElemIsNotMaxValue = this.scaleValueElements[this.scaleValueElements.length - 1].data('index') !== lastElemIndex;
+      const isLastElemIsNotMaxValue = this.scaleValueElements.slice(-1)[0].data('index') !== lastElemIndex;
       if (isLastElemIsNotMaxValue) {
         this.scaleValueElements.push(
           this.makeNewScaleValueElement(lastElemIndex, 100),
@@ -338,7 +338,7 @@ class Presenter {
 
   private optimizeValuesCount() {
     const $firstElem = this.scaleValueElements[0];
-    const $lastElem = this.scaleValueElements[this.scaleValueElements.length - 1];
+    const $lastElem = this.scaleValueElements.slice(-1)[0];
     let $currentElem = $firstElem;
     let curElemEdgeBound = this.getElementEdgeBound($currentElem);
 

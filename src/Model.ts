@@ -144,7 +144,7 @@ class Model extends EventEmitter implements IModel {
       ));
     }
 
-    const allowedRealValuesLastValue = this.allowedRealValues[this.allowedRealValues.length - 1];
+    const allowedRealValuesLastValue = this.allowedRealValues.slice(-1)[0];
 
     if (allowedRealValuesLastValue < this.options.maxValue) {
       this.allowedRealValues.push(this.options.maxValue);
