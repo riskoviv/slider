@@ -50,7 +50,6 @@ type EventName =
   'thumbValueChange' |
   'valueChanged' |
   'scaleValueSelect' |
-  'getOtherHandlePosition' |
   'isVerticalChanged' |
   'isIntervalChanged';
 
