@@ -231,18 +231,20 @@ class Presenter {
   }
 
   private changeTipValue = (options: { tipNumber: 1 | 2, value: number }) => {
-    this.subViews[`tip${options.tipNumber}`].setValue?.(options.value);
+    const { tipNumber, value } = options;
+    this.subViews[`tip${tipNumber}`].setValue?.(value);
   }
 
   private scaleValueSelect(options: { index: number }) {
+    const { index } = options;
     if (this.options.isInterval) {
-      const thumbNumber = this.findClosestThumb(options.index);
+      const thumbNumber = this.findClosestThumb(index);
       this.subViews[`thumb${thumbNumber}`].setPositionAndCurrentValue?.(
-        this.allowedPositions[options.index], false,
+        this.allowedPositions[index], false,
       );
     } else {
       this.subViews.thumb1.setPositionAndCurrentValue?.(
-        this.allowedPositions[options.index], false,
+        this.allowedPositions[index], false,
       );
     }
   }
