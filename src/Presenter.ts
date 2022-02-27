@@ -46,10 +46,11 @@ class Presenter {
           typeof TipView |
           typeof ThumbView,
         subViewName: ViewType,
+        count?: 0 | 1 | 2,
       }
     };
 
-    const optionsToSubviewsRelations: optionalSubViewsStateOptions = {
+    const optionalSubviews: optionalSubViewsStateOptions = {
       showProgressBar: {
         subViewClass: ProgressView,
         subViewName: 'progress',
@@ -70,30 +71,34 @@ class Presenter {
 
     this.subViews = {
       base: new BaseView(),
-      thumb1: new ThumbView(1),
     };
 
-    const thumbsCount = this.options.isInterval ? 2 : 1;
-    const tipsCount = this.options.showTip ? thumbsCount : 0;
+    optionalSubviews.isInterval.count = this.options.isInterval ? 2 : 1;
+    optionalSubviews.showTip.count = this.options.showTip
+      ? optionalSubviews.isInterval.count : 0;
 
-    utils.getEntriesWithTypedKeys(optionsToSubviewsRelations).forEach((
+    utils.getEntriesWithTypedKeys(optionalSubviews).forEach((
       [stateCondition, subViewClassData],
     ) => {
       if (this.model.options[stateCondition]) {
-        const SubViewClass = subViewClassData.subViewClass;
-        switch (SubViewClass) {
+        const SubView = subViewClassData.subViewClass;
+        switch (SubView) {
           case ProgressView || ScaleView:
-            this.subViews[subViewClassData.subViewName] = new SubViewClass();
+            this.subViews[subViewClassData.subViewName] = new SubView();
             break;
-          case TipView:
-            this.subViews.tip1 = new SubViewClass(1);
-            if (tipsCount === 2) {
-              this.subViews.tip2 = new SubViewClass(2);
+          case TipView || ThumbView: {
+            const { count } = subViewClassData;
+            const name = subViewClassData.subViewName;
+            if (count !== undefined && count !== 0) {
+              const numbers: [1, 2] = [1, 2];
+              numbers.forEach((number) => {
+                if (number <= count) {
+                  this.subViews[`${name}${number}`] = new SubView(number);
+                }
+              });
             }
             break;
-          case ThumbView:
-            this.subViews.thumb2 = new SubViewClass(2);
-            break;
+          }
           default:
             break;
         }
