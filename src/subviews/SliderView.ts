@@ -15,7 +15,11 @@ class SliderView implements ISliderView {
   protected render(
     options: SliderViewOptions = { isVertical: false, isInterval: false },
   ): JQuery<HTMLElement> {
-    return $(`<div class="slider${options.isVertical ? ' slider_vertical' : ''}${options.isInterval ? ' slider_interval' : ''}"></div>`).append(this.$controlContainer);
+    return $(`<div class="slider${
+      options.isVertical ? ' slider_vertical' : ''
+    }${
+      options.isInterval ? ' slider_interval' : ''
+    }"></div>`).append(this.$controlContainer);
   }
 
   toggleVertical(): void {
