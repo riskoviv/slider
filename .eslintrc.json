@@ -12,7 +12,6 @@
     "$": "readonly",
     "JQuery": "readonly",
     "IPluginOptions": "readonly",
-    "PartialPluginOptions": "readonly",
     "IPluginGlobalOptions": "readonly",
     "IPluginFunction": "readonly",
     "ISliderPlugin": "readonly",

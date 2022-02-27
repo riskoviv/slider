@@ -16,8 +16,6 @@ interface IPluginStateOptions {
 
 interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
 
-type PartialPluginOptions = Partial<IPluginOptions>;
-
 /**
  * Returns type of values of object-like type
  */
@@ -29,7 +27,7 @@ interface IPluginGlobalOptions {
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
-  (options: PartialPluginOptions): JQuery | null;
+  (options: Partial<IPluginOptions>): JQuery | null;
 }
 
 interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction {}

@@ -5,11 +5,11 @@ import utils from './utils';
 
 let containerHasProblems: (container: JQuery) => number;
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
-let fixCustomOptions: (options: PartialPluginOptions) => null | PartialPluginOptions;
+let fixCustomOptions: (options: Partial<IPluginOptions>) => null | Partial<IPluginOptions>;
 let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
 
 $.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: PartialPluginOptions = {}): JQuery | null {
+  function sliderPlugin(this: JQuery, options: Partial<IPluginOptions> = {}): JQuery | null {
     if (containerHasProblems(this) > 0) {
       return null;
     }
@@ -87,7 +87,7 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
   }
 };
 
-fixCustomOptions = (options: PartialPluginOptions) => {
+fixCustomOptions = (options: Partial<IPluginOptions>) => {
   if (typeof options !== 'object' || Object.prototype.hasOwnProperty.call(options, 'length')) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
     return null;
@@ -97,8 +97,8 @@ fixCustomOptions = (options: PartialPluginOptions) => {
   const checkedOptions = { ...options };
 
   type pluginOptionsEntry = [
-    keyof PartialPluginOptions,
-    TypeOfValues<PartialPluginOptions>
+    keyof Partial<IPluginOptions>,
+    TypeOfValues<Partial<IPluginOptions>>
   ];
 
   utils.getEntriesWithTypedKeys(options).forEach(
