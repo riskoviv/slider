@@ -114,7 +114,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   private identifyStepSizeFractionalPrecision(): number {
-    const stepAsString = this.options.stepSize.toString();
+    const stepAsString = String(this.options.stepSize);
     if (!stepAsString.includes('.')) return 0;
     return stepAsString.split('.')[1].length;
   }
