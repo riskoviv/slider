@@ -1,8 +1,6 @@
 import SubView from '../SubView';
 
 class TipView extends SubView {
-  protected readonly viewType = 'tip';
-
   constructor(public readonly elementNumber: 1 | 2) {
     super();
   }

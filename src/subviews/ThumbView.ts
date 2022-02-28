@@ -1,8 +1,6 @@
 import SubView from '../SubView';
 
 class ThumbView extends SubView {
-  protected readonly viewType = 'thumb';
-
   private readonly elem = this.$elem.get()[0];
 
   constructor(protected readonly elementNumber: 1 | 2) {

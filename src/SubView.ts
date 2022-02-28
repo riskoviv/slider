@@ -3,7 +3,7 @@ import EventEmitter from './EventEmitter';
 abstract class SubView extends EventEmitter implements ISubView {
   $elem: JQuery<HTMLElement> = $('<div></div>');
 
-  protected abstract readonly viewType: ViewType;
+  protected readonly viewType = this.constructor.name.slice(0, -4).toLowerCase();
 
   protected readonly elementNumber?: 1 | 2;
 

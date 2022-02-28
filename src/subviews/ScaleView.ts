@@ -1,8 +1,6 @@
 import SubView from '../SubView';
 
 class ScaleView extends SubView {
-  protected readonly viewType = 'scale';
-
   constructor() {
     super();
 
