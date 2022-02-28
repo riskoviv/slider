@@ -6,6 +6,34 @@ import View from './View';
 import TipView from './subviews/TipView';
 import utils from './utils';
 
+type stateOption = Omit<IPluginStateOptions, 'isVertical'>;
+
+type optionalSubViewsData = {
+  [stateOptionName in keyof stateOption]: typeof ProgressView
+    | typeof ScaleView
+    | typeof TipView
+    | typeof ThumbView
+};
+
+type subViewsData = {
+  [stateOptionName in keyof stateOption]: {
+    className: typeof ProgressView
+    | typeof ScaleView
+    | typeof TipView
+    | typeof ThumbView,
+    parentElement?: JQuery<HTMLElement>,
+    events?: [
+      {
+        eventName: EventName,
+        listener: EventHandler<{
+          thumbNumber: 1 | 2;
+          index: number;
+        }>,
+      }
+    ]
+  }
+};
+
 class Presenter {
   private options: IPluginOptions;
 
@@ -22,10 +50,15 @@ class Presenter {
     this.options = this.model.options;
 
     const {
-      value1, value2, minValue, maxValue, stepSize,
+      value1,
+      value2,
+      minValue,
+      maxValue,
+      stepSize,
+      isVertical,
+      isInterval,
     } = this.options;
 
-    const { isVertical, isInterval } = this.options;
     this.sliderView = new View({ isVertical, isInterval });
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
@@ -35,82 +68,113 @@ class Presenter {
     this.bindEventListeners();
   }
 
-  private createSubViews(): void {
-    type stateOption = Omit<IPluginStateOptions, 'isVertical'>;
-
-    type optionalSubViewsStateOptions = {
-      [stateOptionName in keyof stateOption]: {
-        subViewClass:
-          typeof ProgressView |
-          typeof ScaleView |
-          typeof TipView |
-          typeof ThumbView,
-        subViewName: ViewType,
-        count?: 0 | 1 | 2,
-      }
-    };
-
-    const optionalSubviews: optionalSubViewsStateOptions = {
+  private fullyCreateSubViews(): void {
+    const subViewsData: subViewsData = {
+      isInterval: {
+        className: ThumbView,
+        events: [
+          {
+            eventName: 'thumbValueChange',
+            listener: this.thumbValueChange,
+          },
+        ],
+      },
       showProgressBar: {
-        subViewClass: ProgressView,
-        subViewName: 'progress',
+        className: ProgressView,
+        parentElement: this.subViews.base.$elem,
       },
       showScale: {
-        subViewClass: ScaleView,
-        subViewName: 'scale',
+        className: ScaleView,
+        parentElement: this.sliderView.$elem,
+        events: [
+          {
+            eventName: 'scaleValueSelect',
+            listener: this.scaleValueSelect,
+          },
+        ],
       },
       showTip: {
-        subViewClass: TipView,
-        subViewName: 'tip',
-      },
-      isInterval: {
-        subViewClass: ThumbView,
-        subViewName: 'thumb',
+        className: TipView,
       },
     };
+  }
 
+  private fullyCreateSubView(subViewName: ViewType, number: 1 | 2): void {
+
+  }
+
+  private createSubViews(): void {
     this.subViews = {
       base: new BaseView(),
+      thumb1: new ThumbView(1),
     };
 
-    optionalSubviews.isInterval.count = this.options.isInterval ? 2 : 1;
-    optionalSubviews.showTip.count = this.options.showTip
-      ? optionalSubviews.isInterval.count : 0;
-
-    utils.getEntriesWithTypedKeys(optionalSubviews).forEach((
-      [stateCondition, subViewClassData],
-    ) => {
-      if (this.model.options[stateCondition]) {
-        const SubView = subViewClassData.subViewClass;
-        switch (SubView) {
-          case ProgressView || ScaleView:
-            this.subViews[subViewClassData.subViewName] = new SubView();
-            break;
-          case TipView || ThumbView: {
-            const { count } = subViewClassData;
-            const name = subViewClassData.subViewName;
-            if (count !== undefined && count !== 0) {
-              const numbers: [1, 2] = [1, 2];
-              numbers.forEach((number) => {
-                if (number <= count) {
-                  this.subViews[`${name}${number}`] = new SubView(number);
-                }
-              });
-            }
-            break;
-          }
-          default:
-            break;
-        }
+    // Этот список условий заменяет 2 функции (весь код выше и createSubView)
+    // Но мне нужно создать универсальную функцию, которая будет выполнять
+    // полный комплекс действий для сознания subView
+    // на основе этих функций и также рендеринг и привязку обработчиков
+    if (this.options.showTip) {
+      this.subViews.tip1 = new TipView(1);
+      if (this.options.isInterval) {
+        this.subViews.tip2 = new TipView(2);
       }
-    });
+    }
+
+    if (this.options.isInterval) {
+      this.subViews.thumb2 = new ThumbView(2);
+    }
+
+    if (this.options.showProgressBar) {
+      this.subViews.progress = new ProgressView();
+    }
+
+    if (this.options.showScale) {
+      this.subViews.scale = new ScaleView();
+    }
+
+    const optionalSubviews: optionalSubViewsData = {
+      isInterval: ThumbView,
+      showProgressBar: ProgressView,
+      showScale: ScaleView,
+      showTip: TipView,
+    };
+
+    utils.getEntriesWithTypedKeys(optionalSubviews)
+      .forEach(([stateCondition, subViewClass]) => {
+        if (this.model.options[stateCondition]) {
+          this.createSubView(subViewClass);
+        }
+      });
+  }
+
+  private createSubView(subViewClass: TypeOfValues<optionalSubViewsData>): void {
+    const SubView = subViewClass;
+    switch (SubView) {
+      case ProgressView || ScaleView: {
+        const name = SubView.name.slice(0, -4).toLowerCase();
+        this.subViews[name] = new SubView();
+        break;
+      }
+      case ThumbView:
+        this.subViews.thumb2 = new SubView(2);
+        break;
+      case TipView:
+        this.subViews.tip1 = new SubView(1);
+        if (this.options.isInterval) {
+          this.subViews.tip2 = new SubView(2);
+        }
+
+        break;
+      default:
+        break;
+    }
   }
 
   private appendSubViewsToSlider(): void {
     const subViewsParentElements = [
       {
         element: this.sliderView.$controlContainer,
-        children: ['BaseView', 'HandleView', 'TipView'],
+        children: ['BaseView', 'ThumbView', 'TipView'],
       },
       {
         element: this.subViews.base.$elem,
