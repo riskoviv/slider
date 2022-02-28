@@ -43,13 +43,12 @@ interface JQuery extends IPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventName =
-  'stepSizeChanged' |
-  'thumbValueChange' |
-  'valueChanged' |
-  'scaleValueSelect' |
-  'isVerticalChanged' |
-  'isIntervalChanged';
+type EventName = 'stepSizeChanged'
+  | 'thumbValueChange'
+  | 'valueChanged'
+  | 'scaleValueSelect'
+  | 'isVerticalChanged'
+  | 'isIntervalChanged';
 
 type EventHandler<T> = (arg: T) => void;
 
@@ -101,9 +100,8 @@ type ViewParams = {
   elementNumber?: 1 | 2,
 };
 
-type ViewType =
-  'base' |
-  'thumb' |
-  'progress' |
-  'scale' |
-  'tip';
+type ViewType = 'base'
+  | 'thumb'
+  | 'progress'
+  | 'scale'
+  | 'tip';
