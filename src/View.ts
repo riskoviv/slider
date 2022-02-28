@@ -3,7 +3,7 @@ type SliderViewOptions = {
   isInterval: boolean,
 };
 
-class SliderView implements ISliderView {
+class View implements IView {
   readonly $elem: JQuery<HTMLElement>;
 
   readonly $controlContainer: JQuery<HTMLDivElement> = $('<div class="slider__control-container"></div>');
@@ -35,4 +35,4 @@ class SliderView implements ISliderView {
   }
 }
 
-export default SliderView;
+export default View;

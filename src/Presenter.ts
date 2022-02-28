@@ -2,14 +2,14 @@ import BaseView from './subviews/BaseView';
 import ThumbView from './subviews/ThumbView';
 import ProgressView from './subviews/ProgressView';
 import ScaleView from './subviews/ScaleView';
-import SliderView from './subviews/SliderView';
+import View from './View';
 import TipView from './subviews/TipView';
 import utils from './utils';
 
 class Presenter {
   private options: IPluginOptions;
 
-  readonly sliderView: ISliderView;
+  readonly sliderView: IView;
 
   private subViews: { [viewName: string]: ISubView } = {};
 
@@ -26,7 +26,7 @@ class Presenter {
     } = this.options;
 
     const { isVertical, isInterval } = this.options;
-    this.sliderView = new SliderView({ isVertical, isInterval });
+    this.sliderView = new View({ isVertical, isInterval });
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
     this.createSubViews();

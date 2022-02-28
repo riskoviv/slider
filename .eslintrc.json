@@ -16,7 +16,7 @@
     "IPluginStateOptions": "readonly",
     "IPluginFunction": "readonly",
     "IModel": "readonly",
-    "ISliderView": "readonly",
+    "IView": "readonly",
     "ISubView": "readonly",
     "EventName": "readonly",
     "IEventEmitter": "readonly",

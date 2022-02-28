@@ -84,7 +84,7 @@ interface ISubView extends IEventEmitter {
   setValue?(value: number): void;
 }
 
-interface ISliderView {
+interface IView {
   $elem: JQuery<HTMLElement>;
   $controlContainer: JQuery<HTMLElement>;
   toggleVertical(): void;
