@@ -16,6 +16,7 @@ class Model extends EventEmitter implements IModel {
     this.fixValues();
   }
 
+  // debug method
   getOptions(): IPluginOptions {
     return this.options;
   }
