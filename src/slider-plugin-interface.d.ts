@@ -72,6 +72,7 @@ interface IModel extends IEventEmitter {
   allowedPositions: number[],
   viewValues: ViewValues,
   getOptions(): IPluginOptions,
+  getStateOptions(): IPluginStateOptions,
   publicMethods: IPluginPublicMethods,
   setValue(thumbNumber: 1 | 2, valueIndex: number): void,
 }
