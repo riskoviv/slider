@@ -71,6 +71,43 @@ class Presenter {
     this.bindEventListeners();
   }
 
+  // Генерирует объект со всеми данными для создания всех subView
+  // Берёт нужные опции из опций плагина (из модели)
+  // объект состоит из названия сабвью,
+  private generateDataObjectForSubViewsCreation() {
+    const subViewsCreationData: [ViewType, (1 | 2)?][] = [
+      ['base'],
+      ['thumb', 1],
+    ];
+
+    if (this.options.showTip) {
+      subViewsCreationData.push(['tip', 1]);
+    }
+
+    if (this.options.isInterval) {
+      subViewsCreationData.push(['thumb', 2]);
+      if (this.options.showTip) {
+        subViewsCreationData.push(['tip', 2]);
+      }
+    }
+
+    if (this.options.showScale) {
+      subViewsCreationData.push(['scale'])
+    }
+
+    if (this.options.showProgressBar) {
+      subViewsCreationData.push(['progress']);
+    }
+
+    subViewsCreationData.forEach(([subViewName, number]) => {
+      if (number === undefined) {
+        this.createSubView(subViewName);
+      } else {
+        this.createSubView(subViewName, number);
+      }
+    })
+  }
+
   private createSubView(subViewName: ViewType, number?: 1 | 2) {
     const subViewCreationData: subViewsData = {
       base: {
