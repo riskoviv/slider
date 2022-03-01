@@ -9,29 +9,32 @@ import utils from './utils';
 type stateOption = Omit<IPluginStateOptions, 'isVertical'>;
 
 type optionalSubViewsData = {
-  [stateOptionName in keyof stateOption]: typeof ProgressView
+  [stateOptionName in keyof stateOption]:
+    | typeof ProgressView
     | typeof ScaleView
     | typeof TipView
     | typeof ThumbView
 };
 
 type subViewsData = {
-  [stateOptionName in keyof stateOption]: {
-    className: typeof ProgressView
-    | typeof ScaleView
-    | typeof TipView
-    | typeof ThumbView,
-    parentElement?: JQuery<HTMLElement>,
-    events?: [
+  [subViewName in ViewType]: {
+    constructorClass:
+      | typeof BaseView
+      | typeof ThumbView
+      | typeof ProgressView
+      | typeof ScaleView
+      | typeof TipView,
+    parentElement: JQuery<HTMLElement>,
+    handlers?: [
       {
         eventName: EventName,
-        listener: EventHandler<{
-          thumbNumber: 1 | 2;
-          index: number;
+        handler: EventHandler<{
+          thumbNumber: 1 | 2,
+          index: number,
         }>,
-      }
-    ]
-  }
+      },
+    ],
+  };
 };
 
 class Presenter {
@@ -68,132 +71,61 @@ class Presenter {
     this.bindEventListeners();
   }
 
-  private fullyCreateSubViews(): void {
-    const subViewsData: subViewsData = {
-      isInterval: {
-        className: ThumbView,
-        events: [
+  private createSubView(subViewName: ViewType, number?: 1 | 2) {
+    const subViewCreationData: subViewsData = {
+      base: {
+        constructorClass: BaseView,
+        parentElement: this.sliderView.$controlContainer,
+      },
+      thumb: {
+        constructorClass: ThumbView,
+        parentElement: this.sliderView.$controlContainer,
+        handlers: [
           {
             eventName: 'thumbValueChange',
-            listener: this.thumbValueChange,
+            handler: this.thumbValueChange,
           },
         ],
       },
-      showProgressBar: {
-        className: ProgressView,
+      progress: {
+        constructorClass: ProgressView,
         parentElement: this.subViews.base.$elem,
       },
-      showScale: {
-        className: ScaleView,
+      scale: {
+        constructorClass: ScaleView,
         parentElement: this.sliderView.$elem,
-        events: [
+        handlers: [
           {
             eventName: 'scaleValueSelect',
-            listener: this.scaleValueSelect,
+            handler: this['scaleValueSelect'],
           },
         ],
       },
-      showTip: {
-        className: TipView,
+      tip: {
+        constructorClass: TipView,
+        parentElement: this.sliderView.$controlContainer,
       },
     };
-  }
 
-  private fullyCreateSubView(subViewName: ViewType, number: 1 | 2): void {
-
-  }
-
-  private createSubViews(): void {
-    this.subViews = {
-      base: new BaseView(),
-      thumb1: new ThumbView(1),
-    };
-
-    // Этот список условий заменяет 2 функции (весь код выше и createSubView)
-    // Но мне нужно создать универсальную функцию, которая будет выполнять
-    // полный комплекс действий для сознания subView
-    // на основе этих функций и также рендеринг и привязку обработчиков
-    if (this.options.showTip) {
-      this.subViews.tip1 = new TipView(1);
-      if (this.options.isInterval) {
-        this.subViews.tip2 = new TipView(2);
-      }
-    }
-
-    if (this.options.isInterval) {
-      this.subViews.thumb2 = new ThumbView(2);
-    }
-
-    if (this.options.showProgressBar) {
-      this.subViews.progress = new ProgressView();
-    }
-
-    if (this.options.showScale) {
-      this.subViews.scale = new ScaleView();
-    }
-
-    const optionalSubviews: optionalSubViewsData = {
-      isInterval: ThumbView,
-      showProgressBar: ProgressView,
-      showScale: ScaleView,
-      showTip: TipView,
-    };
-
-    utils.getEntriesWithTypedKeys(optionalSubviews)
-      .forEach(([stateCondition, subViewClass]) => {
-        if (this.model.options[stateCondition]) {
-          this.createSubView(subViewClass);
-        }
-      });
-  }
-
-  private createSubView(subViewClass: TypeOfValues<optionalSubViewsData>): void {
-    const SubView = subViewClass;
-    switch (SubView) {
-      case ProgressView || ScaleView: {
-        const name = SubView.name.slice(0, -4).toLowerCase();
-        this.subViews[name] = new SubView();
+    const currentElementData = subViewCreationData[subViewName];
+    const subViewFullName = `${subViewName}${number ?? ''}`;
+    const { constructorClass: SubViewClass } = currentElementData;
+    switch (SubViewClass) {
+      case ThumbView || TipView:
+        this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
         break;
-      }
-      case ThumbView:
-        this.subViews.thumb2 = new SubView(2);
-        break;
-      case TipView:
-        this.subViews.tip1 = new SubView(1);
-        if (this.options.isInterval) {
-          this.subViews.tip2 = new SubView(2);
-        }
-
+      case BaseView || ProgressView || ScaleView:
+        this.subViews[subViewFullName] = new SubViewClass();
         break;
       default:
         break;
     }
-  }
 
-  private appendSubViewsToSlider(): void {
-    const subViewsParentElements = [
-      {
-        element: this.sliderView.$controlContainer,
-        children: ['BaseView', 'ThumbView', 'TipView'],
-      },
-      {
-        element: this.subViews.base.$elem,
-        children: ['ProgressView'],
-      },
-      {
-        element: this.sliderView.$elem,
-        children: ['ScaleView'],
-      },
-    ];
-    const subViewsInstances = Object.values(this.subViews);
+    currentElementData.parentElement.append(this.subViews[subViewFullName].render());
 
-    subViewsParentElements.forEach((parent) => {
-      subViewsInstances.forEach((instance) => {
-        if (parent.children.includes(instance.constructor.name)) {
-          parent.element.append(instance.render());
-        }
-      });
-    });
+    currentElementData.handlers?.forEach(({ eventName, handler }) => {
+      this.subViews[subViewFullName].on(eventName, handler);
+    })
   }
 
   private removeSubView(subViewName: string): void {
@@ -207,53 +139,6 @@ class Presenter {
 
   private insertSliderToContainer(): void {
     this.$pluginRootElem.append(this.sliderView.$elem);
-  }
-
-  private bindEventListeners() {
-    this.model.on('stepSizeChanged', this.changeStepSize)
-      .on('isVerticalChanged', this.changeOrientation)
-      .on('isIntervalChanged', this.changeInterval);
-
-    if (this.options.showTip) {
-      this.model.on('valueChanged', this.changeTipValue);
-    }
-
-    type subViewListenersObj = {
-      [subViewType in ViewType]?: [
-        {
-          eventName: EventName,
-          listener: EventHandler<{
-            thumbNumber: 1 | 2;
-            index: number;
-          }>,
-        },
-      ];
-    }
-
-    const subViewsListeners: subViewListenersObj = {
-      thumb: [
-        {
-          eventName: 'thumbValueChange',
-          listener: this.thumbValueChange,
-        },
-      ],
-      scale: [
-        {
-          eventName: 'scaleValueSelect',
-          listener: this.scaleValueSelect,
-        },
-      ],
-    };
-
-    Object.entries(this.subViews).forEach(([name, subView]) => {
-      Object.entries(subViewsListeners).forEach(([subViewType, events]) => {
-        if (name.startsWith(subViewType)) {
-          events.forEach((event) => {
-            subView.on(event.eventName, event.listener);
-          });
-        }
-      });
-    });
   }
 
   /**
