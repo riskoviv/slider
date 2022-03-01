@@ -19,7 +19,7 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
 /**
  * Returns type of values of object-like type
  */
- type TypeOfValues<T> = T[keyof T];
+type TypeOfValues<T> = T[keyof T];
 
 interface IPluginGlobalOptions {
   options: IPluginOptions;
@@ -43,7 +43,8 @@ interface JQuery extends IPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventName = 'stepSizeChanged'
+type EventName =
+  | 'stepSizeChanged'
   | 'thumbValueChange'
   | 'valueChanged'
   | 'scaleValueSelect'
@@ -100,7 +101,8 @@ type ViewParams = {
   elementNumber?: 1 | 2,
 };
 
-type ViewType = 'base'
+type ViewType =
+  | 'base'
   | 'thumb'
   | 'progress'
   | 'scale'
