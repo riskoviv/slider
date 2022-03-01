@@ -19,7 +19,7 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
 /**
  * Returns type of values of object-like type
  */
-type TypeOfValues<T> = T[keyof T];
+type TypeOfValues<Object> = Object[keyof Object];
 
 interface IPluginGlobalOptions {
   options: IPluginOptions;
@@ -51,14 +51,14 @@ type EventName =
   | 'isVerticalChanged'
   | 'isIntervalChanged';
 
-type EventHandler<T> = (arg: T) => void;
+type EventHandler<argumentType> = (arg: argumentType) => void;
 
 type EventsStorage = {
   [event in EventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on<T>(evt: EventName, handler: EventHandler<T>): this;
+  on<argumentType>(evt: EventName, handler: EventHandler<argumentType>): this;
 }
 
 type ViewValues = {
