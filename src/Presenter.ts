@@ -6,12 +6,12 @@ import View from './View';
 import TipView from './subviews/TipView';
 import utils from './utils';
 
-type thumbValueChange = (options: {
+type SubViewEventHandler = (options: {
   thumbNumber: 1 | 2,
   index: number,
+  target: JQuery<HTMLElement>,
+  number: 1 | 2,
 }) => void;
-
-type scaleValueSelect = (options: { index: number }) => void;
 
 type subViewClass =
   | typeof BaseView
@@ -27,7 +27,7 @@ type subViewsData = {
     handlers?: [
       {
         eventName: EventName,
-        handler: thumbValueChange | scaleValueSelect,
+        handler: SubViewEventHandler,
       },
     ],
   };
@@ -241,7 +241,7 @@ class Presenter {
    * SubViews listeners
    */
 
-  private thumbValueChange: thumbValueChange = (
+  private thumbValueChange = (
     options: {
       thumbNumber: 1 | 2,
       index: number
@@ -255,7 +255,7 @@ class Presenter {
     this.subViews[`tip${tipNumber}`].setValue?.(value);
   }
 
-  private scaleValueSelect: scaleValueSelect = (options: { index: number }): void => {
+  private scaleValueSelect = (options: { index: number }): void => {
     const { index } = options;
     if (this.options.isInterval) {
       const thumbNumber = this.findClosestThumb(index);
