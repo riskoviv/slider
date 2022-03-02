@@ -65,7 +65,7 @@ class Presenter {
     this.view = new View({ isVertical, isInterval });
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
-    this.generateDataObjectForSubViewsCreation();
+    this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
     this.updateScaleView();
@@ -101,7 +101,7 @@ class Presenter {
     }
   }
 
-  private generateDataObjectForSubViewsCreation() {
+  private createInitialSubViews() {
     const subViewsCreationData: [ViewType, (1 | 2)?][] = [
       ['base'],
       ['thumb', 1],
