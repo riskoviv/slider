@@ -68,7 +68,7 @@ class Presenter {
     this.generateDataObjectForSubViewsCreation();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
-    this.performScaleViewActions();
+    this.updateScaleView();
   }
 
   private bindModelEventListeners(): void {
@@ -85,7 +85,7 @@ class Presenter {
     this.axis = this.options.isVertical ? 'top' : 'left';
   }
 
-  private performScaleViewActions() {
+  private updateScaleView() {
     // probably there will be needed a setTimeout
     // because elements are not located on page yet
     // and this function needs actual scale element's size
