@@ -13,14 +13,16 @@ type thumbValueChange = (options: {
 
 type scaleValueSelect = (options: { index: number }) => void;
 
+type subViewClass =
+  | typeof BaseView
+  | typeof ThumbView
+  | typeof ProgressView
+  | typeof ScaleView
+  | typeof TipView;
+
 type subViewsData = {
   [subViewName in ViewType]: {
-    constructorClass:
-      | typeof BaseView
-      | typeof ThumbView
-      | typeof ProgressView
-      | typeof ScaleView
-      | typeof TipView,
+    constructorClass: subViewClass,
     parentElement: JQuery<HTMLElement>,
     handlers?: [
       {
@@ -36,7 +38,9 @@ class Presenter {
 
   readonly view: IView;
 
-  private subViews: { [viewName: string]: ISubView } = {};
+  private subViews: { [viewName: string]: InstanceType<subViewClass> } = {};
+
+  private dimension: Dimension = 'width';
 
   private scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
