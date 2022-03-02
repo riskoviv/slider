@@ -144,6 +144,12 @@ class Presenter {
       base: {
         constructorClass: BaseView,
         parentElement: this.view.$controlContainer,
+        handlers: [
+          {
+            eventName: 'basePointerDown',
+            handler: this.basePointerDown,
+          }
+        ]
       },
       thumb: {
         constructorClass: ThumbView,
@@ -316,6 +322,52 @@ class Presenter {
       return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
     },
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
+  }
+
+  private basePointerDown = (data: {
+    target: JQuery<HTMLElement>,
+    number: 1 | 2,
+  }): void => {
+    const { target, number } = data;
+    if (this.subViews.base instanceof BaseView) {
+      this.subViews.base.elem.addEventListener('pointermove', this.basePointerMove);
+      this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp);
+    }
+  }
+
+  private basePointerMove(e: PointerEvent): void {
+    const newPosition = this.pixelsToPercentsOfBaseLength(
+      this.options.isVertical ? e.offsetY : e.offsetX
+    );
+
+    const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
+    const onStepPosition = this.isCursorOnStepPosition(newPosition);
+
+    if (movedHalfStep || onStepPosition) {
+      const thumbInRange = this.isHandleInRange(newPosition);
+      if (thumbInRange) {
+        const isHandleAwayFromOtherHandle = this.params.isInterval
+          ? this.isHandleKeepsDistance(newPosition)
+          : true;
+
+        if (thumbInRange && isHandleAwayFromOtherHandle) {
+          this.setPositionAndCurrentValue(
+            newPosition,
+            movedHalfStep,
+          );
+        }
+      }
+    }
+
+    this.elem.addEventListener('pointerup', this.basePointerUp, { once: true });
+  }
+
+  private basePointerUp(e: PointerEvent): void {
+    if (e.button !== 0) {
+      e.preventDefault();
+    }
+
+    this.elem.removeEventListener('pointermove', this.basePointerMove);
   }
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
