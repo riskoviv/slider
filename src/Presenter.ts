@@ -303,7 +303,7 @@ class Presenter {
   }
 
   /**
-   * HandleView helper functions
+   * BaseView helper functions
    */
 
   private thumbChecks = {
@@ -396,12 +396,6 @@ class Presenter {
       index: this.params.allowedPositions.indexOf(this.currentPosition),
     });
   }
-
-  /**
-   * ScaleView helper functions
-   */
-
-
 
   private findClosestThumb(valueIndex: number): 1 | 2 {
     const thumb1Index = this.model.getValueIndex(1);
