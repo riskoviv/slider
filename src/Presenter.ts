@@ -144,10 +144,11 @@ class Presenter {
     };
 
     const currentElementData = subViewCreationData[subViewName];
-    const subViewFullName = `${subViewName}${number ?? ''}`;
+    let subViewFullName = subViewName;
     const { constructorClass: SubViewClass } = currentElementData;
     switch (SubViewClass) {
       case ThumbView || TipView:
+        subViewFullName += number ?? 1;
         this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
         break;
       case BaseView || ProgressView || ScaleView:
