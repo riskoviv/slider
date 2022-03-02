@@ -34,7 +34,7 @@ type subViewsData = {
 class Presenter {
   private options: IPluginOptions;
 
-  readonly sliderView: IView;
+  readonly view: IView;
 
   private subViews: { [viewName: string]: ISubView } = {};
 
@@ -56,7 +56,7 @@ class Presenter {
       isInterval,
     } = this.options;
 
-    this.sliderView = new View({ isVertical, isInterval });
+    this.view = new View({ isVertical, isInterval });
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
     this.generateDataObjectForSubViewsCreation();
@@ -111,11 +111,11 @@ class Presenter {
     const subViewCreationData: subViewsData = {
       base: {
         constructorClass: BaseView,
-        parentElement: this.sliderView.$controlContainer,
+        parentElement: this.view.$controlContainer,
       },
       thumb: {
         constructorClass: ThumbView,
-        parentElement: this.sliderView.$controlContainer,
+        parentElement: this.view.$controlContainer,
         handlers: [
           {
             eventName: 'thumbValueChange',
@@ -129,7 +129,7 @@ class Presenter {
       },
       scale: {
         constructorClass: ScaleView,
-        parentElement: this.sliderView.$elem,
+        parentElement: this.view.$elem,
         handlers: [
           {
             eventName: 'scaleValueSelect',
@@ -139,7 +139,7 @@ class Presenter {
       },
       tip: {
         constructorClass: TipView,
-        parentElement: this.sliderView.$controlContainer,
+        parentElement: this.view.$controlContainer,
       },
     };
 
@@ -175,7 +175,7 @@ class Presenter {
   }
 
   private insertSliderToContainer(): void {
-    this.$pluginRootElem.append(this.sliderView.$elem);
+    this.$pluginRootElem.append(this.view.$elem);
   }
 
   /**
@@ -195,7 +195,7 @@ class Presenter {
     if (isInterval) {
       if (this.subViews.thumb2 === undefined) {
         this.subViews.thumb2 = new ThumbView(2);
-        this.sliderView.$controlContainer.append(this.subViews.thumb2.render());
+        this.view.$controlContainer.append(this.subViews.thumb2.render());
       }
     } else {
       this.subViews.thumb2.removeView();
@@ -267,7 +267,7 @@ class Presenter {
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
     const dimension = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    return Number(((pixels / this.sliderView.$controlContainer[dimension]) * 100)
+    return Number(((pixels / this.view.$controlContainer[dimension]) * 100)
       .toFixed(1));
   }
 

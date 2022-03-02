@@ -24,7 +24,7 @@ $.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
 
     const model = new Model(pluginOptions);
     const presenter = new Presenter(this, model);
-    const $sliderElem = presenter.sliderView.$elem;
+    const $sliderElem = presenter.view.$elem;
 
     ({
       debug: $sliderElem.debug,
