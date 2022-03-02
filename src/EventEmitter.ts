@@ -1,15 +1,15 @@
 class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on<T>(event: EventName, handler: EventHandler<T>): this {
+  on<argumentType>(event: EventName, handler: EventHandler<argumentType>): this {
     if (this.events[event] === undefined) {
-      this.events[event] = new Set<EventHandler<T>>();
+      this.events[event] = new Set<EventHandler<argumentType>>();
     }
     this.events[event]?.add(handler);
     return this;
   }
 
-  off<T>(event: EventName, handler?: EventHandler<T>): this {
+  off<argumentType>(event: EventName, handler?: EventHandler<argumentType>): this {
     if (handler !== undefined) {
       this.events[event]?.delete(handler);
     } else {
