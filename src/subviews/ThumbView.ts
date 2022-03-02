@@ -1,17 +1,14 @@
 import SubView from '../SubView';
 
-class ThumbView extends SubView {
-  private readonly elem = this.$elem.get()[0];
-
+class ThumbView extends SubView implements IThumbView {
   constructor(protected readonly elementNumber: 1 | 2) {
     super();
-    this.$elem.css(
-      '--thumb-thickness',
-      `${this.params.stepSizeInPercents}%`,
-    );
-  }
   }
 
+  setThumbThickness(thickness: number): void {
+    this.$elem.css(
+      '--thumb-thickness',
+      `${thickness}%`,
     );
   }
 }
