@@ -26,8 +26,8 @@ class View implements IView {
     this.$elem.toggleClass('slider_vertical', isVertical);
   }
 
-  toggleInterval(): void {
-    this.$elem.toggleClass('slider_interval');
+  toggleInterval(isInterval: boolean): void {
+    this.$elem.toggleClass('slider_interval', isInterval);
   }
 
   setPosition(valueNumber: 1 | 2, position: number): void {

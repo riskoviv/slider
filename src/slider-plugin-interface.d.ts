@@ -103,7 +103,7 @@ interface IView {
   $elem: JQuery<HTMLElement>;
   $controlContainer: JQuery<HTMLElement>;
   toggleVertical(isVertical: boolean): void;
-  toggleInterval(): void;
+  toggleInterval(isInterval: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
 }
 
