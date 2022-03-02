@@ -19,7 +19,7 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
 /**
  * Returns type of values of object-like type
  */
-type TypeOfValues<Object> = Object[keyof Object];
+type TypeOfValues<Obj> = Obj[keyof Obj];
 
 interface IPluginGlobalOptions {
   options: IPluginOptions;
