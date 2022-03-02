@@ -33,7 +33,6 @@
 
   &__thumb {
     --thumb-thickness: var(--slider-size);
-    --thumb-position: 0%;
     position: absolute;
     max-width: var(--slider-size);
     width: var(--thumb-thickness);
@@ -176,7 +175,14 @@
         height: var(--thumb-thickness);
         min-width: var(--slider-size);
         left: 0;
-        top: var(--thumb-position);
+
+        &_1 {
+          top: var(--value-1-position);
+        }
+
+        &_2 {
+          top: var(--value-2-position);
+        }
       }
 
       &__tip {
