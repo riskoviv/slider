@@ -300,6 +300,24 @@ class Presenter {
    * HandleView helper functions
    */
 
+  private thumbChecks = {
+    isCursorMovedHalfStep: (thumb: IThumbView, position: number) => (
+      Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
+    ),
+    isCursorOnStepPosition: (position: number) => (
+      this.model.allowedPositions.includes(position)
+        && position !== this.currentPosition
+    ),
+    isHandleKeepsDistance: (thumbNumber: 1 | 2, newPosition: number): boolean => {
+      if (thumbNumber === 1) {
+        return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
+      }
+
+      return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
+    },
+    isHandleInRange: (position: number) => position >= 0 && position <= 100,
+  }
+
   private pixelsToPercentsOfBaseLength(pixels: number): number {
     const dimension = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
     return Number(((pixels / this.view.$controlContainer[dimension]) * 100)
@@ -332,24 +350,6 @@ class Presenter {
    */
 
 
-
-  private thumbChecks = {
-    isCursorMovedHalfStep: (thumb: IHandleView, position: number) => (
-      Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
-    ),
-    isCursorOnStepPosition: (position: number) => (
-      this.model.allowedPositions.includes(position)
-        && position !== this.currentPosition
-    ),
-    isHandleKeepsDistance: (newPosition: number): boolean => {
-      if (this.thumbNumber === 1) {
-        return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
-      }
-
-      return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
-    },
-    isHandleInRange: (position: number) => position >= 0 && position <= 100,
-  }
 
   private findClosestThumb(valueIndex: number): 1 | 2 {
     const thumb1Index = this.model.getValueIndex(1);
