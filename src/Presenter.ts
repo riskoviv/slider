@@ -64,7 +64,11 @@ class Presenter {
 
     this.view = new View({ isVertical, isInterval });
 
-    this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
+    this.fillAllowedPositionsArr({
+      minValue,
+      maxValue,
+      stepSize,
+    });
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -269,11 +273,12 @@ class Presenter {
    * Functions from View, now they're for View
    */
 
-  private fillAllowedPositionsArr = (
-    maxValue: number,
+  private fillAllowedPositionsArr = (constraints: {
     minValue: number,
+    maxValue: number,
     stepSize: number,
-  ) => {
+  }) => {
+    const { maxValue, minValue, stepSize } = constraints;
     const totalSliderRange = maxValue - minValue;
     const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
 
