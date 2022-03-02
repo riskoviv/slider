@@ -177,7 +177,7 @@ class Presenter {
 
     const currentElementData = subViewCreationData[subViewName];
     let subViewFullName = subViewName;
-    const { constructorClass: SubViewClass } = currentElementData;
+    const SubViewClass = currentElementData.constructorClass;
     switch (SubViewClass) {
       case ThumbView || TipView:
         subViewFullName += number ?? 1;
