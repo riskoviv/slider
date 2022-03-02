@@ -44,6 +44,7 @@ interface JQuery extends IPluginPublicMethods {
 }
 
 type EventName =
+  | 'basePointerDown'
   | 'stepSizeChanged'
   | 'thumbValueChange'
   | 'valueChanged'
@@ -97,7 +98,13 @@ interface IScaleView extends ISubView {
   }): void;
 }
 
-interface IThumbView extends ISubView {}
+interface IBaseView extends ISubView {
+  elem: HTMLElement;
+}
+
+interface IThumbView extends ISubView {
+  setThumbThickness(thickness: number): void;
+}
 
 interface IView {
   $elem: JQuery<HTMLElement>;
