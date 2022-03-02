@@ -6,7 +6,9 @@ type SliderViewOptions = {
 class View implements IView {
   readonly $elem: JQuery<HTMLElement>;
 
-  readonly $controlContainer: JQuery<HTMLDivElement> = $('<div class="slider__control-container"></div>');
+  readonly $controlContainer: JQuery<HTMLDivElement> = $(
+    '<div class="slider__control-container"></div>',
+  );
 
   constructor(options?: SliderViewOptions) {
     this.$elem = this.render(options);
@@ -15,11 +17,13 @@ class View implements IView {
   protected render(
     options: SliderViewOptions = { isVertical: false, isInterval: false },
   ): JQuery<HTMLElement> {
-    return $(`<div class="slider${
-      options.isVertical ? ' slider_vertical' : ''
-    }${
-      options.isInterval ? ' slider_interval' : ''
-    }"></div>`).append(this.$controlContainer);
+    return $(
+      `<div class="slider${
+        options.isVertical ? ' slider_vertical' : ''
+      }${
+        options.isInterval ? ' slider_interval' : ''
+      }"></div>`
+    ).append(this.$controlContainer);
   }
 
   toggleVertical(isVertical: boolean): void {
