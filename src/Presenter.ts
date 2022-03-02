@@ -135,7 +135,7 @@ class Presenter {
     });
   }
 
-  private createSubView(subViewName: ViewType, number?: 1 | 2) {
+  private createSubView(subViewName: ViewType, number?: 1 | 2): InstanceType<subViewClass> {
     const subViewCreationData: subViewsData = {
       base: {
         constructorClass: BaseView,
@@ -191,6 +191,8 @@ class Presenter {
     currentElementData.handlers?.forEach(({ eventName, handler }) => {
       this.subViews[subViewFullName].on(eventName, handler);
     });
+
+    return this.subViews[subViewFullName];
   }
 
   private removeSubView(subViewName: string): void {
