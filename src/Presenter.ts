@@ -42,7 +42,7 @@ class Presenter {
 
   private dimension: Dimension = 'width';
 
-  private scaleValueElements: JQuery<HTMLDivElement>[] = [];
+  private axis: Axis = 'left';
 
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
@@ -60,12 +60,15 @@ class Presenter {
       isInterval,
     } = this.options;
 
+    this.updateDimensionAndAxis();
+
     this.view = new View({ isVertical, isInterval });
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
     this.generateDataObjectForSubViewsCreation();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
+    this.performScaleViewActions();
   }
 
   private bindModelEventListeners(): void {
@@ -74,6 +77,27 @@ class Presenter {
       .on('isIntervalChanged', this.changeInterval);
     if (this.options.showTip) {
       this.model.on('valueChanged', this.changeTipValue);
+    }
+  }
+
+  private updateDimensionAndAxis() {
+    this.dimension = this.options.isVertical ? 'height' : 'width';
+    this.axis = this.options.isVertical ? 'top' : 'left';
+  }
+
+  private performScaleViewActions() {
+    // probably there will be needed a setTimeout
+    // because elements are not located on page yet
+    // and this function needs actual scale element's size
+    this.updateDimensionAndAxis();
+    const scaleView = this.subViews.scale;
+    if (scaleView instanceof ScaleView) {
+      scaleView.updateScale({
+        allowedPositions: this.model.allowedPositions,
+        allowedRealValues: this.model.allowedRealValues,
+        dimension: this.dimension,
+        axis: this.axis,
+      });
     }
   }
 
@@ -300,64 +324,7 @@ class Presenter {
    * ScaleView helper functions
    */
 
-  private createValuesElements = () => {
-    const scaleSize = this.$elem[this.dimension]() || 1;
-    const quotient = Math.round((this.allowedPositions.length / scaleSize) * 3);
-    const lastElemIndex = this.allowedPositions.length - 1;
-    const isEveryValueAllowed = [0, 1].includes(quotient);
 
-    if (isEveryValueAllowed) {
-      this.scaleValueElements = this.allowedPositions.map((value, index) => (
-        this.makeNewScaleValueElement(index, value)
-      ));
-    } else {
-      for (let index = 0; index <= lastElemIndex; index += quotient) {
-        this.scaleValueElements.push(this.makeNewScaleValueElement(index, this.allowedPositions[index]));
-      }
-
-      const isLastElemIsNotMaxValue = this.scaleValueElements.slice(-1)[0].data('index') !== lastElemIndex;
-      if (isLastElemIsNotMaxValue) {
-        this.scaleValueElements.push(
-          this.makeNewScaleValueElement(lastElemIndex, 100),
-        );
-      }
-    }
-  }
-
-  private makeNewScaleValueElement = (index: number, position: number): JQuery<HTMLDivElement> => (
-    $(`
-      <div class="slider__scale-block" data-index="${index}" style="${this.axis}: ${position}%">
-        <span class="slider__scale-text">${this.allowedRealValues[index]}</span>
-      </div>
-    `)
-  );
-
-  private getElementEdgeBound(element: JQuery<HTMLSpanElement>): number {
-    return element.position()[this.axis] + (element[this.dimension]() ?? 1);
-  }
-
-  private optimizeValuesCount() {
-    const $firstElem = this.scaleValueElements[0];
-    const $lastElem = this.scaleValueElements.slice(-1)[0];
-    let $currentElem = $firstElem;
-    let curElemEdgeBound = this.getElementEdgeBound($currentElem);
-
-    this.scaleValueElements.slice(1).forEach(($elem) => {
-      if ($elem) {
-        if ($elem.position()[this.axis] - 5 <= curElemEdgeBound) {
-          if ($elem === $lastElem && $currentElem !== $firstElem) {
-            $currentElem.addClass('slider__scale-block_unnumbered');
-          } else if ($elem !== $lastElem) {
-            $elem.addClass('slider__scale-block_unnumbered');
-          }
-        } else {
-          $currentElem = $elem;
-          curElemEdgeBound = this.getElementEdgeBound($currentElem);
-          $elem.removeClass('slider__scale-block_unnumbered');
-        }
-      }
-    });
-  }
 
   private thumbChecks = {
     isCursorMovedHalfStep: (thumb: IHandleView, position: number) => (

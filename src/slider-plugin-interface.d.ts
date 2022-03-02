@@ -78,12 +78,26 @@ interface IModel extends IEventEmitter {
   setValue(thumbNumber: 1 | 2, valueIndex: number): void,
 }
 
+type Axis = 'left' | 'top';
+type Dimension = 'width' | 'height';
+
 interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
   render(): JQuery<HTMLElement>
   removeView(): void;
   setValue?(value: number): void;
 }
+
+interface IScaleView extends ISubView {
+  updateScale(data: {
+    allowedPositions: number[],
+    allowedRealValues: number[],
+    dimension: Dimension,
+    axis: Axis,
+  }): void;
+}
+
+interface IThumbView extends ISubView {}
 
 interface IView {
   $elem: JQuery<HTMLElement>;
@@ -92,10 +106,6 @@ interface IView {
   toggleInterval(): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
 }
-
-type Axis = 'left' | 'top';
-
-type Dimension = 'width' | 'height';
 
 type ViewParams = {
   parentElement?: JQuery<HTMLElement>,
