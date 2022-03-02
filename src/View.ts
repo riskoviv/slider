@@ -22,8 +22,8 @@ class View implements IView {
     }"></div>`).append(this.$controlContainer);
   }
 
-  toggleVertical(): void {
-    this.$elem.toggleClass('slider_vertical');
+  toggleVertical(isVertical: boolean): void {
+    this.$elem.toggleClass('slider_vertical', isVertical);
   }
 
   toggleInterval(): void {

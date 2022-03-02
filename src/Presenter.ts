@@ -188,7 +188,7 @@ class Presenter {
   }
 
   private changeOrientation = (isVertical: boolean) => {
-    console.warn('Method is not implemented yet!');
+    this.view.toggleVertical(isVertical);
   }
 
   private changeInterval(isInterval: boolean) {

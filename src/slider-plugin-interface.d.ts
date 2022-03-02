@@ -88,7 +88,7 @@ interface ISubView extends IEventEmitter {
 interface IView {
   $elem: JQuery<HTMLElement>;
   $controlContainer: JQuery<HTMLElement>;
-  toggleVertical(): void;
+  toggleVertical(isVertical: boolean): void;
   toggleInterval(): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
 }
