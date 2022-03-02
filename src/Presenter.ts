@@ -6,6 +6,12 @@ import View from './View';
 import TipView from './subviews/TipView';
 import utils from './utils';
 
+type thumbValueChange = (options: {
+  thumbNumber: 1 | 2,
+  index: number,
+}) => void;
+
+type scaleValueSelect = (options: { index: number }) => void;
 
 type subViewsData = {
   [subViewName in ViewType]: {
@@ -19,10 +25,7 @@ type subViewsData = {
     handlers?: [
       {
         eventName: EventName,
-        handler: EventHandler<{
-          thumbNumber: 1 | 2,
-          index: number,
-        }>,
+        handler: thumbValueChange | scaleValueSelect,
       },
     ],
   };
@@ -56,15 +59,20 @@ class Presenter {
     this.sliderView = new View({ isVertical, isInterval });
 
     this.fillAllowedPositionsArr(maxValue, minValue, stepSize);
-    this.createSubViews();
-    this.appendSubViewsToSlider();
+    this.generateDataObjectForSubViewsCreation();
     this.insertSliderToContainer();
-    this.bindEventListeners();
+    this.bindModelEventListeners();
   }
 
-  // Генерирует объект со всеми данными для создания всех subView
-  // Берёт нужные опции из опций плагина (из модели)
-  // объект состоит из названия сабвью,
+  private bindModelEventListeners(): void {
+    this.model.on('stepSizeChanged', this.changeStepSize)
+      .on('isVerticalChanged', this.changeOrientation)
+      .on('isIntervalChanged', this.changeInterval);
+    if (this.options.showTip) {
+      this.model.on('valueChanged', this.changeTipValue);
+    }
+  }
+
   private generateDataObjectForSubViewsCreation() {
     const subViewsCreationData: [ViewType, (1 | 2)?][] = [
       ['base'],
@@ -83,7 +91,7 @@ class Presenter {
     }
 
     if (this.options.showScale) {
-      subViewsCreationData.push(['scale'])
+      subViewsCreationData.push(['scale']);
     }
 
     if (this.options.showProgressBar) {
@@ -96,7 +104,7 @@ class Presenter {
       } else {
         this.createSubView(subViewName, number);
       }
-    })
+    });
   }
 
   private createSubView(subViewName: ViewType, number?: 1 | 2) {
@@ -125,7 +133,7 @@ class Presenter {
         handlers: [
           {
             eventName: 'scaleValueSelect',
-            handler: this['scaleValueSelect'],
+            handler: this.scaleValueSelect,
           },
         ],
       },
@@ -149,11 +157,11 @@ class Presenter {
         break;
     }
 
-    currentElementData.parentElement.append(this.subViews[subViewFullName].render());
+    currentElementData.parentElement.append(this.renderSubView(subViewFullName));
 
     currentElementData.handlers?.forEach(({ eventName, handler }) => {
       this.subViews[subViewFullName].on(eventName, handler);
-    })
+    });
   }
 
   private removeSubView(subViewName: string): void {
@@ -161,8 +169,8 @@ class Presenter {
     delete this.subViews[subViewName];
   }
 
-  private renderSubView(subViewName: string): void {
-    this.subViews[subViewName].render();
+  private renderSubView(subViewName: string): JQuery<HTMLElement> {
+    return this.subViews[subViewName].render();
   }
 
   private insertSliderToContainer(): void {
@@ -198,12 +206,12 @@ class Presenter {
    * SubViews listeners
    */
 
-  private thumbValueChange = (
+  private thumbValueChange: thumbValueChange = (
     options: {
       thumbNumber: 1 | 2,
       index: number
     },
-  ) => {
+  ): void => {
     this.model.setValue(options.thumbNumber, options.index);
   }
 
@@ -212,7 +220,7 @@ class Presenter {
     this.subViews[`tip${tipNumber}`].setValue?.(value);
   }
 
-  private scaleValueSelect(options: { index: number }) {
+  private scaleValueSelect: scaleValueSelect = (options: { index: number }): void => {
     const { index } = options;
     if (this.options.isInterval) {
       const thumbNumber = this.findClosestThumb(index);
