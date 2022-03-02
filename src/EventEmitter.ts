@@ -9,6 +9,15 @@ class EventEmitter implements IEventEmitter {
     return this;
   }
 
+  off<T>(event: EventName, handler?: EventHandler<T>): this {
+    if (handler !== undefined) {
+      this.events[event]?.delete(handler);
+    } else {
+      delete this.events[event];
+    }
+    return this;
+  }
+
   protected emit<T>(event: EventName, arg: T): void {
     try {
       if (this.events[event] === undefined) {

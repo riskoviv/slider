@@ -58,7 +58,8 @@ type EventsStorage = {
 };
 
 interface IEventEmitter {
-  on<argumentType>(evt: EventName, handler: EventHandler<argumentType>): this;
+  on<T>(evt: EventName, handler: EventHandler<T>): this;
+  off(evt: EventName, handler?: EventHandler): this;
 }
 
 type ViewValues = {
