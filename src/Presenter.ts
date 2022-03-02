@@ -6,15 +6,6 @@ import View from './View';
 import TipView from './subviews/TipView';
 import utils from './utils';
 
-type stateOption = Omit<IPluginStateOptions, 'isVertical'>;
-
-type optionalSubViewsData = {
-  [stateOptionName in keyof stateOption]:
-    | typeof ProgressView
-    | typeof ScaleView
-    | typeof TipView
-    | typeof ThumbView
-};
 
 type subViewsData = {
   [subViewName in ViewType]: {
