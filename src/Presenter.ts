@@ -239,10 +239,10 @@ class Presenter {
 
     isHandleKeepsDistance: (thumbNumber: 1 | 2, newPosition: number): boolean => {
       if (thumbNumber === 1) {
-        return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
+        return newPosition <= this.model.viewValues.positions[2] - this.model.viewValues.stepSizeInPercents;
       }
 
-      return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
+      return newPosition >= this.model.viewValues.positions[1] + this.model.viewValues.stepSizeInPercents;
     },
 
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
@@ -350,10 +350,10 @@ class Presenter {
       ? this.findClosestAllowedPosition(allowedPosition)
       : allowedPosition;
     View.$controlContainer.css(`--thumb-${this.thumbNumber}-position`, `${this.currentPosition}%`);
-    this.params.positions[this.thumbNumber] = this.currentPosition;
+    this.model.viewValues.positions[this.thumbNumber] = this.currentPosition;
     this.emit('thumbValueChange', {
       thumbNumber: this.thumbNumber,
-      index: this.params.allowedPositions.indexOf(this.currentPosition),
+      index: this.model.viewValues.allowedPositions.indexOf(this.currentPosition),
     });
   }
 
