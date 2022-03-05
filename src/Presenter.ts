@@ -5,13 +5,6 @@ import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
 
-type SubViewEventHandler = (options: {
-  thumbNumber: 1 | 2,
-  index: number,
-  target: JQuery<HTMLElement>,
-  number: 1 | 2,
-}) => void;
-
 type subViewClass =
   | typeof BaseView
   | typeof ThumbView
@@ -20,15 +13,9 @@ type subViewClass =
   | typeof TipView;
 
 type subViewsData = {
-  [subViewName in ViewType]?: {
+  [subViewName in ViewType]: {
     constructorClass: subViewClass,
     parentElement: JQuery<HTMLElement>,
-    handlers?: [
-      {
-        eventName: EventName,
-        handler: SubViewEventHandler,
-      },
-    ],
   };
 };
 
@@ -43,7 +30,7 @@ class Presenter {
 
   private axis: Axis = 'left';
 
-  private subViewCreationData: subViewsData = {};
+  private subViewCreationData: subViewsData;
 
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
@@ -59,19 +46,12 @@ class Presenter {
     } = this.options;
 
     this.updateDimensionAndAxis();
-
     this.view = new View({ isVertical, isInterval });
     this.updateAllowedPositionsArr();
     this.subViewCreationData = {
       base: {
         constructorClass: BaseView,
         parentElement: this.view.$controlContainer,
-        handlers: [
-          {
-            eventName: 'basePointerDown',
-            handler: this.basePointerDown,
-          },
-        ],
       },
       thumb: {
         constructorClass: ThumbView,
@@ -84,12 +64,6 @@ class Presenter {
       scale: {
         constructorClass: ScaleView,
         parentElement: this.view.$elem,
-        handlers: [
-          {
-            eventName: 'scaleValueSelect',
-            handler: this.scaleValueSelect,
-          },
-        ],
       },
       tip: {
         constructorClass: TipView,
@@ -166,18 +140,21 @@ class Presenter {
     });
   }
 
-  private createSubView(subViewName: ViewType, number?: 1 | 2): InstanceType<subViewClass> {
-
-    const currentElementData = subViewCreationData[subViewName];
+  private createSubView(subViewName: ViewType, number?: 1 | 2): void {
+    const currentElementData = this.subViewCreationData[subViewName];
     let subViewFullName = subViewName;
     const SubViewClass = currentElementData.constructorClass;
     switch (SubViewClass) {
       case ThumbView || TipView:
         subViewFullName += number ?? 1;
-        this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
+        if (!this.subViewExists(subViewFullName)) {
+          this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
+        }
         break;
       case BaseView || ProgressView || ScaleView:
-        this.subViews[subViewFullName] = new SubViewClass();
+        if (!this.subViewExists(subViewFullName)) {
+          this.subViews[subViewFullName] = new SubViewClass();
+        }
         break;
       default:
         break;
@@ -185,11 +162,11 @@ class Presenter {
 
     currentElementData.parentElement.append(this.renderSubView(subViewFullName));
 
-    currentElementData.handlers?.forEach(({ eventName, handler }) => {
-      this.subViews[subViewFullName].on(eventName, handler);
-    });
-
-    return this.subViews[subViewFullName];
+    if (subViewName === 'base') {
+      this.subViews[subViewFullName].on('basePointerDown', this.viewEventHandlers.basePointerDown);
+    } else if (subViewName === 'scale') {
+      this.subViews[subViewFullName].on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
+    }
   }
 
   private subViewExists(subViewName: keyof ViewClasses): boolean {
@@ -258,19 +235,40 @@ class Presenter {
       tip.setValue(value);
     }
   }
+  private viewEventHandlers = {
+    basePointerDown: (data: {
+      target: EventTarget,
+    }): void => {
+      const { target } = data;
+      if ([
+        this.subViews.thumb1.$elem.get()[0],
+        this.subViews.thumb2.$elem.get()[0],
+      ].includes(target)) {
+        this.currentThumb = target;
+      }
 
-  private scaleValueSelect = (options: { index: number }): void => {
-    const { index } = options;
-    if (this.options.isInterval) {
-      const thumbNumber = this.findClosestThumb(index);
-      this.subViews[`thumb${thumbNumber}`].setPositionAndCurrentValue?.(
-        this.allowedPositions[index], false,
-      );
-    } else {
-      this.subViews.thumb1.setPositionAndCurrentValue?.(
-        this.allowedPositions[index], false,
-      );
-    }
+      if (this.subViews.base instanceof BaseView) {
+        this.subViews.base.elem.addEventListener('pointermove', this.basePointerMove);
+        this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp);
+      }
+    },
+
+    scaleValueSelect: (options: { index: number }): void => {
+      const { index } = options;
+      if (this.options.isInterval) {
+        const thumbNumber = this.findClosestThumb(index);
+        const thumb = this.subViews[`thumb${thumbNumber}`];
+        if (thumb instanceof ThumbView) {
+          thumb.setPositionAndCurrentValue?.(
+            this.allowedPositions[index], false,
+          );
+        }
+      } else {
+        this.subViews.thumb1.setPositionAndCurrentValue?.(
+          this.allowedPositions[index], false,
+        );
+      }
+    },
   }
 
   /**
@@ -333,16 +331,6 @@ class Presenter {
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
   }
 
-  private basePointerDown = (data: {
-    target: JQuery<HTMLElement>,
-    number: 1 | 2,
-  }): void => {
-    const { target, number } = data;
-    if (this.subViews.base instanceof BaseView) {
-      this.subViews.base.elem.addEventListener('pointermove', this.basePointerMove);
-      this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp);
-    }
-  }
 
   private basePointerMove(e: PointerEvent): void {
     const newPosition = this.pixelsToPercentsOfBaseLength(
