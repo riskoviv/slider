@@ -197,9 +197,15 @@ class Presenter {
     return this.subViews[subViewFullName];
   }
 
-  private removeSubView(subViewName: string): void {
-    this.subViews[subViewName].removeView();
-    delete this.subViews[subViewName];
+  private subViewExists(subViewName: keyof ViewClasses): boolean {
+    return this.subViews[subViewName] !== undefined;
+  }
+
+  private removeSubView(subViewName: keyof ViewClasses): void {
+    if (this.subViewExists(subViewName)) {
+      this.subViews[subViewName].removeView();
+      delete this.subViews[subViewName];
+    }
   }
 
   private renderSubView(subViewName: string): JQuery<HTMLElement> {
@@ -305,7 +311,7 @@ class Presenter {
   }
 
   /**
-   * BaseView helper functions
+   * TODO Fix BaseView helper functions
    */
 
   private thumbChecks = {
