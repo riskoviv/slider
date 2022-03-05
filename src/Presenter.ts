@@ -77,11 +77,12 @@ class Presenter {
   }
 
   private bindModelEventListeners(): void {
-    this.model.on('stepSizeChanged', this.changeStepSize)
-      .on('isVerticalChanged', this.changeOrientation)
-      .on('isIntervalChanged', this.changeInterval);
+    const listeners = this.modelEventListeners;
+    this.model.on('stepSizeChanged', listeners.changeStepSize)
+      .on('isVerticalChanged', listeners.changeOrientation)
+      .on('isIntervalChanged', listeners.changeInterval);
     if (this.options.showTip) {
-      this.model.on('valueChanged', this.changeTipValue);
+      this.model.on('valueChanged', listeners.changeTipValue);
     }
   }
 
@@ -188,32 +189,38 @@ class Presenter {
     this.$pluginRootElem.append(this.view.$elem);
   }
 
-  /**
-   * Model listeners
-   */
-
-  private changeStepSize = () => {
-    this.updateAllowedPositionsArr();
-    if (this.options.showScale) {
-      this.updateScaleView();
-    }
-  }
-
-  private changeOrientation = (isVertical: boolean) => {
-    this.view.toggleVertical(isVertical);
-  }
-
-  private changeInterval(isInterval: boolean) {
-    if (isInterval) {
-      this.createSubView('thumb2');
-      if (this.options.showTip) {
-        this.createSubView('tip2');
+  private modelEventListeners = {
+    changeStepSize: (): void => {
+      this.updateAllowedPositionsArr();
+      if (this.options.showScale) {
+        this.updateScaleView();
       }
-    } else {
-      this.removeSubView('thumb2');
-      this.removeSubView('tip2');
-    }
-  }
+    },
+
+    changeOrientation: (isVertical: boolean): void => {
+      this.view.toggleVertical(isVertical);
+    },
+
+    changeInterval: (isInterval: boolean): void => {
+      if (isInterval) {
+        this.createSubView('thumb', 2);
+        if (this.options.showTip) {
+          this.createSubView('tip', 2);
+        }
+      } else {
+        this.removeSubView('thumb2');
+        this.removeSubView('tip2');
+      }
+    },
+
+    changeTipValue: (options: { tipNumber: 1 | 2, value: number }): void => {
+      const { tipNumber, value } = options;
+      const tip = this.subViews[`tip${tipNumber}`];
+      if (tip instanceof TipView) {
+        tip.setValue(value);
+      }
+    },
+  };
 
   /**
    * SubViews listeners
@@ -228,13 +235,6 @@ class Presenter {
     this.model.setValue(options.thumbNumber, options.index);
   }
 
-  private changeTipValue = (options: { tipNumber: 1 | 2, value: number }) => {
-    const { tipNumber, value } = options;
-    const tip = this.subViews[`tip${tipNumber}`];
-    if (tip instanceof TipView) {
-      tip.setValue(value);
-    }
-  }
   private viewEventHandlers = {
     basePointerDown: (data: {
       target: EventTarget,
