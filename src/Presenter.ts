@@ -271,7 +271,7 @@ class Presenter {
 
       if (this.subViews.base instanceof BaseView) {
         this.subViews.base.elem.addEventListener('pointermove', this.basePointerMove);
-        this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp);
+        this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp, { once: true });
       }
     },
 
