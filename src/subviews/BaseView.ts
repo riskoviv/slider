@@ -21,7 +21,10 @@ class BaseView extends SubView implements IBaseView {
     e.preventDefault();
     this.elem.setPointerCapture(e.pointerId);
 
-    this.emit('basePointerDown', { target: e.target, number: this.elementNumber });
+    const { target } = e;
+    if (target instanceof HTMLDivElement) {
+      this.emit('basePointerDown', target);
+    }
   }
 
   private preventContextMenu = () => false;
