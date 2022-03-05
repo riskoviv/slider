@@ -270,18 +270,23 @@ class Presenter {
   }
 
   private viewEventHandlers = {
-    basePointerDown: (data: {
-      target: EventTarget,
-    }): void => {
-      const { target } = data;
-      if ([
-        this.subViews.thumb1.$elem.get()[0],
-        this.subViews.thumb2.$elem.get()[0],
-      ].includes(target)) {
-        this.currentThumb = target;
-      }
-
+    basePointerDown: (target: HTMLDivElement): void => {
       if (this.subViews.base instanceof BaseView) {
+        if (target.classList.contains('.slider__thumb')) {
+          const thumbNumber = Number(target.dataset.number);
+          if (thumbNumber === 1 || thumbNumber === 2) {
+            this.currentThumbData = {
+              thumbElement: target,
+              thumbNumber,
+            };
+          }
+        } else if (target === this.subViews.base.elem) {
+          this.currentThumbData = null;
+          // TODO: add checks if click was made on base element:
+          // TODO: 1) find closest allowedPosition;
+          // TODO: 2) find closest thumb to that position
+        }
+
         this.subViews.base.elem.addEventListener('pointermove', this.basePointerMove);
         this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp, { once: true });
       }
