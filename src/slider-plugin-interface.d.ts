@@ -106,6 +106,12 @@ interface IThumbView extends ISubView {
   setThumbThickness(thickness: number): void;
 }
 
+interface ITipView extends ISubView {
+  setValue(value: number): void;
+}
+
+interface IProgressView extends ISubView {}
+
 interface IView {
   $elem: JQuery<HTMLElement>;
   $controlContainer: JQuery<HTMLElement>;
