@@ -258,7 +258,10 @@ class Presenter {
 
   private changeTipValue = (options: { tipNumber: 1 | 2, value: number }) => {
     const { tipNumber, value } = options;
-    this.subViews[`tip${tipNumber}`].setValue?.(value);
+    const tip = this.subViews[`tip${tipNumber}`];
+    if (tip instanceof TipView) {
+      tip.setValue(value);
+    }
   }
 
   private scaleValueSelect = (options: { index: number }): void => {
