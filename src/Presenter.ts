@@ -4,7 +4,6 @@ import ProgressView from './subviews/ProgressView';
 import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
-import utils from './utils';
 
 type SubViewEventHandler = (options: {
   thumbNumber: 1 | 2,
