@@ -21,7 +21,7 @@ type subViewClass =
   | typeof TipView;
 
 type subViewsData = {
-  [subViewName in ViewType]: {
+  [subViewName in ViewType]?: {
     constructorClass: subViewClass,
     parentElement: JQuery<HTMLElement>,
     handlers?: [
@@ -44,6 +44,8 @@ class Presenter {
 
   private axis: Axis = 'left';
 
+  private subViewCreationData: subViewsData = {};
+
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -61,6 +63,40 @@ class Presenter {
 
     this.view = new View({ isVertical, isInterval });
     this.updateAllowedPositionsArr();
+    this.subViewCreationData = {
+      base: {
+        constructorClass: BaseView,
+        parentElement: this.view.$controlContainer,
+        handlers: [
+          {
+            eventName: 'basePointerDown',
+            handler: this.basePointerDown,
+          },
+        ],
+      },
+      thumb: {
+        constructorClass: ThumbView,
+        parentElement: this.view.$controlContainer,
+      },
+      progress: {
+        constructorClass: ProgressView,
+        parentElement: this.subViews.base.$elem,
+      },
+      scale: {
+        constructorClass: ScaleView,
+        parentElement: this.view.$elem,
+        handlers: [
+          {
+            eventName: 'scaleValueSelect',
+            handler: this.scaleValueSelect,
+          },
+        ],
+      },
+      tip: {
+        constructorClass: TipView,
+        parentElement: this.view.$controlContainer,
+      },
+    };
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -132,46 +168,6 @@ class Presenter {
   }
 
   private createSubView(subViewName: ViewType, number?: 1 | 2): InstanceType<subViewClass> {
-    const subViewCreationData: subViewsData = {
-      base: {
-        constructorClass: BaseView,
-        parentElement: this.view.$controlContainer,
-        handlers: [
-          {
-            eventName: 'basePointerDown',
-            handler: this.basePointerDown,
-          }
-        ]
-      },
-      thumb: {
-        constructorClass: ThumbView,
-        parentElement: this.view.$controlContainer,
-        handlers: [
-          {
-            eventName: 'thumbValueChange',
-            handler: this.thumbValueChange,
-          },
-        ],
-      },
-      progress: {
-        constructorClass: ProgressView,
-        parentElement: this.subViews.base.$elem,
-      },
-      scale: {
-        constructorClass: ScaleView,
-        parentElement: this.view.$elem,
-        handlers: [
-          {
-            eventName: 'scaleValueSelect',
-            handler: this.scaleValueSelect,
-          },
-        ],
-      },
-      tip: {
-        constructorClass: TipView,
-        parentElement: this.view.$controlContainer,
-      },
-    };
 
     const currentElementData = subViewCreationData[subViewName];
     let subViewFullName = subViewName;
