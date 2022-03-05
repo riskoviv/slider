@@ -25,6 +25,7 @@
     "IHandleView": "readonly",
     "IBaseView": "readonly",
     "ITipView": "readonly",
+    "IThumbView": "readonly",
     "IScaleView": "readonly",
     "IProgressView": "readonly",
     "IPluginPublicMethods": "readonly",
