@@ -99,7 +99,7 @@ interface IScaleView extends ISubView {
 }
 
 interface IBaseView extends ISubView {
-  elem: HTMLElement;
+  elem: HTMLDivElement;
 }
 
 interface IThumbView extends ISubView {

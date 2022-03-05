@@ -1,13 +1,13 @@
 import EventEmitter from './EventEmitter';
 
 abstract class SubView extends EventEmitter implements ISubView {
-  $elem: JQuery<HTMLElement> = $('<div></div>');
+  $elem: JQuery<HTMLDivElement> = $('<div></div>');
 
   protected readonly viewType = this.constructor.name.slice(0, -4).toLowerCase();
 
   protected readonly elementNumber?: 1 | 2;
 
-  render(): JQuery<HTMLElement> {
+  render(): JQuery<HTMLDivElement> {
     let numberModifier = '';
     let numberDataAttr = '';
     if (this.elementNumber !== undefined) {
