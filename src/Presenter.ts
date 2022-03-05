@@ -215,7 +215,8 @@ class Presenter {
 
     changeTipValue: (options: { tipNumber: 1 | 2, value: number }): void => {
       const { tipNumber, value } = options;
-      const tip = this.subViews[`tip${tipNumber}`];
+      const tipName = tipNumber === 1 ? 'tip1' : 'tip2';
+      const tip = this.subViews[tipName];
       if (tip instanceof TipView) {
         tip.setValue(value);
       }
