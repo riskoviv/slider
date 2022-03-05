@@ -18,7 +18,7 @@ class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  protected emit<T>(event: EventName, arg: T): void {
+  protected emit<argumentType>(event: EventName, arg?: argumentType): void {
     try {
       if (this.events[event] === undefined) {
         const emitError = new Error();
