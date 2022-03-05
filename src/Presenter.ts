@@ -350,13 +350,13 @@ class Presenter {
     );
 
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
-    const onStepPosition = this.isCursorOnStepPosition(newPosition);
+    const onStepPosition = this.thumbChecks.isCursorOnStepPosition(newPosition);
 
     if (movedHalfStep || onStepPosition) {
-      const thumbInRange = this.isHandleInRange(newPosition);
+      const thumbInRange = this.thumbChecks.isHandleInRange(newPosition);
       if (thumbInRange) {
-        const isHandleAwayFromOtherHandle = this.params.isInterval
-          ? this.isHandleKeepsDistance(newPosition)
+        const isHandleAwayFromOtherHandle = this.options.isInterval
+          ? this.thumbChecks.isHandleKeepsDistance(newPosition)
           : true;
 
         if (thumbInRange && isHandleAwayFromOtherHandle) {
