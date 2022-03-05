@@ -170,11 +170,11 @@ class Presenter {
     }
   }
 
-  private subViewExists(subViewName: keyof ViewClasses): boolean {
+  private subViewExists(subViewName: string): boolean {
     return this.subViews[subViewName] !== undefined;
   }
 
-  private removeSubView(subViewName: keyof ViewClasses): void {
+  private removeSubView(subViewName: string): void {
     if (this.subViewExists(subViewName)) {
       this.subViews[subViewName].removeView();
       delete this.subViews[subViewName];
