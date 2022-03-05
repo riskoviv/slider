@@ -53,9 +53,6 @@ class Presenter {
     const {
       value1,
       value2,
-      minValue,
-      maxValue,
-      stepSize,
       isVertical,
       isInterval,
     } = this.options;
@@ -63,12 +60,7 @@ class Presenter {
     this.updateDimensionAndAxis();
 
     this.view = new View({ isVertical, isInterval });
-
-    this.fillAllowedPositionsArr({
-      minValue,
-      maxValue,
-      stepSize,
-    });
+    this.updateAllowedPositionsArr();
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -280,6 +272,14 @@ class Presenter {
   /**
    * Functions from View, now they're for View
    */
+
+  private updateAllowedPositionsArr(): void {
+    this.fillAllowedPositionsArr({
+      minValue: this.options.minValue,
+      maxValue: this.options.maxValue,
+      stepSize: this.options.stepSize,
+    });
+  }
 
   private fillAllowedPositionsArr = (constraints: {
     minValue: number,
