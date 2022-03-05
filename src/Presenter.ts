@@ -99,7 +99,7 @@ class Presenter {
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
-    this.updateScaleView();
+    if (this.options.showScale) this.updateScaleView();
   }
 
   private bindModelEventListeners(): void {
