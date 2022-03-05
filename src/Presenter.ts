@@ -223,8 +223,29 @@ class Presenter {
   };
 
   /**
-   * SubViews listeners
+   * TODO Fix BaseView helper functions
    */
+
+  private thumbChecks = {
+    isCursorMovedHalfStep: (thumb: ThumbView, position: number) => (
+      Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
+    ),
+
+    isCursorOnStepPosition: (position: number) => (
+      this.model.allowedPositions.includes(position)
+        && position !== this.currentPosition
+    ),
+
+    isHandleKeepsDistance: (thumbNumber: 1 | 2, newPosition: number): boolean => {
+      if (thumbNumber === 1) {
+        return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
+      }
+
+      return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
+    },
+
+    isHandleInRange: (position: number) => position >= 0 && position <= 100,
+  }
 
   private thumbValueChange = (
     options: {
@@ -271,66 +292,7 @@ class Presenter {
     },
   }
 
-  /**
-   * Functions from View, now they're for View
-   */
-
-  private updateAllowedPositionsArr(): void {
-    this.fillAllowedPositionsArr({
-      minValue: this.options.minValue,
-      maxValue: this.options.maxValue,
-      stepSize: this.options.stepSize,
-    });
-  }
-
-  private fillAllowedPositionsArr = (constraints: {
-    minValue: number,
-    maxValue: number,
-    stepSize: number,
-  }) => {
-    const { maxValue, minValue, stepSize } = constraints;
-    const totalSliderRange = maxValue - minValue;
-    const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
-
-    this.model.viewValues.stepSizeInPercents = (stepSize / totalSliderRange) * 100;
-    this.model.allowedPositions.length = 0;
-
-    for (let i = 0; i <= 100; i += this.model.viewValues.stepSizeInPercents) {
-      this.model.allowedPositions.push(
-        Number(i.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy)),
-      );
-    }
-
-    if (this.model.allowedPositions.slice(-1)[0] !== 100) {
-      this.model.allowedPositions.push(100);
-    }
-  }
-
-  /**
-   * TODO Fix BaseView helper functions
-   */
-
-  private thumbChecks = {
-    isCursorMovedHalfStep: (thumb: IThumbView, position: number) => (
-      Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
-    ),
-
-    isCursorOnStepPosition: (position: number) => (
-      this.model.allowedPositions.includes(position)
-        && position !== this.currentPosition
-    ),
-
-    isHandleKeepsDistance: (thumbNumber: 1 | 2, newPosition: number): boolean => {
-      if (thumbNumber === 1) {
-        return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
-      }
-
-      return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
-    },
-
-    isHandleInRange: (position: number) => position >= 0 && position <= 100,
-  }
-
+  private currentThumb: HTMLDivElement | null = null;
 
   private basePointerMove(e: PointerEvent): void {
     const newPosition = this.pixelsToPercentsOfBaseLength(
@@ -407,6 +369,37 @@ class Presenter {
     }
 
     return 1;
+  }
+
+  private updateAllowedPositionsArr(): void {
+    this.fillAllowedPositionsArr({
+      minValue: this.options.minValue,
+      maxValue: this.options.maxValue,
+      stepSize: this.options.stepSize,
+    });
+  }
+
+  private fillAllowedPositionsArr = (constraints: {
+    minValue: number,
+    maxValue: number,
+    stepSize: number,
+  }) => {
+    const { maxValue, minValue, stepSize } = constraints;
+    const totalSliderRange = maxValue - minValue;
+    const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
+
+    this.model.viewValues.stepSizeInPercents = (stepSize / totalSliderRange) * 100;
+    this.model.allowedPositions.length = 0;
+
+    for (let i = 0; i <= 100; i += this.model.viewValues.stepSizeInPercents) {
+      this.model.allowedPositions.push(
+        Number(i.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy)),
+      );
+    }
+
+    if (this.model.allowedPositions.slice(-1)[0] !== 100) {
+      this.model.allowedPositions.push(100);
+    }
   }
 }
 
