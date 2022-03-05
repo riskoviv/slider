@@ -376,9 +376,8 @@ class Presenter {
   }
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
-    const dimension = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    return Number(((pixels / this.view.$controlContainer[dimension]) * 100)
-      .toFixed(1));
+    const offset = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
+    const baseLength = this.view.$controlContainer.get()[0][offset];
   }
 
   private findClosestAllowedPosition(position: number) {
