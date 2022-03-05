@@ -222,9 +222,11 @@ class Presenter {
    * Model listeners
    */
 
-  private changeStepSize = (stepSize: number) => {
-    // this.view.changeStepSize(stepSize);
-    console.warn('Method is not implemented yet!');
+  private changeStepSize = () => {
+    this.updateAllowedPositionsArr();
+    if (this.options.showScale) {
+      this.updateScaleView();
+    }
   }
 
   private changeOrientation = (isVertical: boolean) => {

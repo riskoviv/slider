@@ -34,7 +34,7 @@ class Model extends EventEmitter implements IModel {
 
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
-    this.emit('stepSizeChanged', this.options.stepSize);
+    this.emit('stepSizeChanged');
   }
 
   getValueIndex(valueNumber: 1 | 2): number {
