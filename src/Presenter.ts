@@ -233,13 +233,13 @@ class Presenter {
 
   private changeInterval(isInterval: boolean) {
     if (isInterval) {
-      if (this.subViews.thumb2 === undefined) {
-        this.subViews.thumb2 = new ThumbView(2);
-        this.view.$controlContainer.append(this.subViews.thumb2.render());
+      this.createSubView('thumb2');
+      if (this.options.showTip) {
+        this.createSubView('tip2');
       }
     } else {
-      this.subViews.thumb2.removeView();
-      delete this.subViews.thumb2;
+      this.removeSubView('thumb2');
+      this.removeSubView('tip2');
     }
   }
 
