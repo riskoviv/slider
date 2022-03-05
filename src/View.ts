@@ -22,7 +22,7 @@ class View implements IView {
         options.isVertical ? ' slider_vertical' : ''
       }${
         options.isInterval ? ' slider_interval' : ''
-      }"></div>`
+      }"></div>`,
     ).append(this.$controlContainer);
   }
 

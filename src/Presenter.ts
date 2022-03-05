@@ -312,10 +312,12 @@ class Presenter {
     isCursorMovedHalfStep: (thumb: IThumbView, position: number) => (
       Math.abs(position - thumb.currentPosition) > this.params.stepSizeInPercents / 2
     ),
+
     isCursorOnStepPosition: (position: number) => (
       this.model.allowedPositions.includes(position)
         && position !== this.currentPosition
     ),
+
     isHandleKeepsDistance: (thumbNumber: 1 | 2, newPosition: number): boolean => {
       if (thumbNumber === 1) {
         return newPosition <= this.params.positions[2] - this.params.stepSizeInPercents;
@@ -323,6 +325,7 @@ class Presenter {
 
       return newPosition >= this.params.positions[1] + this.params.stepSizeInPercents;
     },
+
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
   }
 
@@ -339,7 +342,7 @@ class Presenter {
 
   private basePointerMove(e: PointerEvent): void {
     const newPosition = this.pixelsToPercentsOfBaseLength(
-      this.options.isVertical ? e.offsetY : e.offsetX
+      this.options.isVertical ? e.offsetY : e.offsetX,
     );
 
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
