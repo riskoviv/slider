@@ -76,8 +76,12 @@ interface IModel extends IEventEmitter {
   viewValues: ViewValues,
   getOptions(): IPluginOptions,
   getStateOptions(): IPluginStateOptions,
-  publicMethods: IPluginPublicMethods,
+  setStepSize(stepSize: number): void,
+  getValueIndex(valueNumber: 1 | 2): number,
   setValue(thumbNumber: 1 | 2, valueIndex: number): void,
+  setVerticalState(isVertical: boolean): void,
+  setInterval(isInterval: boolean): void
+  publicMethods: IPluginPublicMethods,
 }
 
 type Axis = 'left' | 'top';
