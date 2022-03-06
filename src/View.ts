@@ -35,7 +35,7 @@ class View implements IView {
   }
 
   setPosition(valueNumber: 1 | 2, position: number): void {
-    this.$elem.css(`--value-${valueNumber}-position`, `${position}%`);
+    this.$controlContainer.css(`--value-${valueNumber}-position`, `${position}%`);
   }
 }
 
