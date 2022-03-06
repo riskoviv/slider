@@ -349,8 +349,35 @@ class Presenter {
   }
 
   private findClosestAllowedPosition(position: number) {
-    return this.model.allowedPositions.reduce((lastMinValue: number, currentValue: number) => {
-      if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
+    let closest = 0;
+    let minDiff = position;
+    this.model.allowedPositions.every((allowedPosition) => {
+      const diff = position - allowedPosition;
+      if (diff < 0) {
+        if (Math.abs(diff) < minDiff) {
+          closest = allowedPosition;
+        }
+        return false;
+      }
+
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = allowedPosition;
+      }
+
+      return true;
+    });
+
+    return closest;
+  }
+
+  private findClosestAllowedPositionOld(position: number) {
+    let minDifference = position;
+
+    return this.model.allowedPositions.reduce((lastMinValue, currentValue) => {
+      const currentDifference = Math.abs(position - currentValue);
+      if (currentDifference < minDifference) {
+        minDifference = currentDifference;
         return currentValue;
       }
       return lastMinValue;
