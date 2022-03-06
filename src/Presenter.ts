@@ -260,15 +260,6 @@ class Presenter {
     isHandleInRange: (position: number) => position >= 0 && position <= 100,
   }
 
-  private thumbValueChange = (
-    options: {
-      thumbNumber: 1 | 2,
-      index: number
-    },
-  ): void => {
-    this.model.setValue(options.thumbNumber, options.index);
-  }
-
   private viewEventHandlers = {
     basePointerDown: (target: HTMLDivElement): void => {
       if (this.subViews.base instanceof BaseView) {
@@ -367,15 +358,18 @@ class Presenter {
   }
 
   private setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean): void {
-    this.currentPosition = findClosest
-      ? this.findClosestAllowedPosition(allowedPosition)
-      : allowedPosition;
-    View.$controlContainer.css(`--thumb-${this.thumbNumber}-position`, `${this.currentPosition}%`);
-    this.model.viewValues.positions[this.thumbNumber] = this.currentPosition;
-    this.emit('thumbValueChange', {
-      thumbNumber: this.thumbNumber,
-      index: this.model.viewValues.allowedPositions.indexOf(this.currentPosition),
-    });
+    if (this.currentThumbData !== null) {
+      const thumbData = this.currentThumbData;
+      thumbData.currentPosition = findClosest
+        ? this.findClosestAllowedPosition(allowedPosition)
+        : allowedPosition;
+      this.view.setPosition(thumbData.thumbNumber, thumbData.currentPosition);
+      this.model.viewValues.positions[thumbData.thumbNumber] = thumbData.currentPosition;
+      this.model.setValue(
+        thumbData.thumbNumber,
+        this.model.allowedPositions.indexOf(thumbData.currentPosition),
+      );
+    }
   }
 
   private findClosestThumb(valueIndex: number): 1 | 2 {

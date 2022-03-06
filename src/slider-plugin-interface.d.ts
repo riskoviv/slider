@@ -46,7 +46,6 @@ interface JQuery extends IPluginPublicMethods {
 type EventName = (
   | 'basePointerDown'
   | 'stepSizeChanged'
-  | 'thumbValueChange'
   | 'valueChanged'
   | 'scaleValueSelect'
   | 'isVerticalChanged'
