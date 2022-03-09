@@ -55,10 +55,7 @@
         "ts": "never"
       }
     ],
-    "linebreak-style": [
-      "error",
-      "windows"
-    ],
+    "linebreak-style": "off",
     "eol-last": "warn",
     "no-unused-vars": "off",
     "no-console": [
