@@ -378,12 +378,14 @@ class Presenter {
       thumbData.currentPosition = findClosest
         ? this.findClosestAllowedPosition(allowedPosition)
         : allowedPosition;
-      this.view.setPosition(thumbData.thumbNumber, thumbData.currentPosition);
-      this.model.viewValues.positions[thumbData.thumbNumber] = thumbData.currentPosition;
-      this.model.setValue(
-        thumbData.thumbNumber,
-        this.model.allowedPositions.indexOf(thumbData.currentPosition),
-      );
+      if (thumbData.currentPosition !== undefined) {
+        this.view.setPosition(thumbData.thumbNumber, thumbData.currentPosition);
+        this.model.viewValues.positions[thumbData.thumbNumber] = thumbData.currentPosition;
+        this.model.setValue(
+          thumbData.thumbNumber,
+          this.model.allowedPositions.indexOf(thumbData.currentPosition),
+        );
+      }
     }
   }
 
