@@ -7,7 +7,7 @@ class Model extends EventEmitter implements IModel {
 
   viewValues: ViewValues = {
     positions: { 1: 0, 2: 100 },
-    stepSizeInPercents: 10,
+    stepInPercents: 10,
     halfStepInPercents: 5,
   };
 

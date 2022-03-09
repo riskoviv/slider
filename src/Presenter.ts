@@ -231,7 +231,7 @@ class Presenter {
     isCursorMovedHalfStep: (position: number) => {
       if (this.currentThumbData?.currentPosition !== undefined) {
         return Math.abs(position - this.currentThumbData.currentPosition)
-          > this.model.viewValues.stepSizeInPercents / 2;
+          > this.model.viewValues.stepInPercents / 2;
       }
       return false;
     },
@@ -245,14 +245,14 @@ class Presenter {
       if (thumbNumber === 1) {
         return (
           newPosition <= (
-            this.model.viewValues.positions[2] - this.model.viewValues.stepSizeInPercents
+            this.model.viewValues.positions[2] - this.model.viewValues.stepInPercents
           )
         );
       }
 
       return (
         newPosition >= (
-          this.model.viewValues.positions[1] + this.model.viewValues.stepSizeInPercents
+          this.model.viewValues.positions[1] + this.model.viewValues.stepInPercents
         )
       );
     },
@@ -416,11 +416,11 @@ class Presenter {
     const totalSliderRange = maxValue - minValue;
     const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
 
-    this.model.viewValues.stepSizeInPercents = (stepSize / totalSliderRange) * 100;
+    this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
     this.model.allowedPositions.length = 0;
 
-    for (let i = 0; i <= 100; i += this.model.viewValues.stepSizeInPercents) {
+    for (let i = 0; i <= 100; i += this.model.viewValues.stepInPercents) {
       this.model.allowedPositions.push(
         Number(i.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy)),
       );
