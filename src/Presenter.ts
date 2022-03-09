@@ -393,10 +393,6 @@ class Presenter {
     const thumb1Index = this.model.getValueIndex(1);
     const thumb2Index = this.model.getValueIndex(2);
 
-    if (Math.abs(valueIndex - thumb1Index) < Math.abs(valueIndex - thumb2Index)) {
-      return 1;
-    }
-
     if (Math.abs(valueIndex - thumb1Index) > Math.abs(valueIndex - thumb2Index)) {
       return 2;
     }
