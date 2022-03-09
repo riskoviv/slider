@@ -371,6 +371,26 @@ class Presenter {
     return closest;
   }
 
+  private findClosestAllowedPositionV3(position: number): number | undefined {
+    const posToRight = this.model.allowedPositions.find((pos) => pos > position);
+    if (posToRight !== undefined) {
+      return posToRight - position < this.model.viewValues.stepSizeInPercents / 2
+        ? posToRight
+        : posToRight - this.model.viewValues.stepSizeInPercents;
+    }
+    return undefined;
+  }
+
+  private findClosestAllowedPositionV2(position: number) {
+    const allowedPositions = [...this.model.allowedPositions, position].sort((a, b) => a - b);
+    const positionIdx = allowedPositions.indexOf(position);
+    const positionToLeft = allowedPositions[positionIdx - 1];
+    const positionToRight = allowedPositions[positionIdx + 1];
+    const leftElemDiff = position - positionToLeft;
+    const rightElemDiff = positionToRight - position;
+    return leftElemDiff <= rightElemDiff ? positionToLeft : positionToRight;
+  }
+
   private findClosestAllowedPositionOld(position: number) {
     let minDifference = position;
 
