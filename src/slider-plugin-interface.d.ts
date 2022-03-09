@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 interface IPluginValueOptions {
   stepSize: number,
   minValue: number,
