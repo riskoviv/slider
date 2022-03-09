@@ -316,10 +316,9 @@ class Presenter {
   }
 
   private currentThumbData: {
-    thumbElement: HTMLDivElement,
     thumbNumber: 1 | 2,
     currentPosition?: number,
-   } | null = null;
+  } | null = null;
 
   private basePointerMove(e: PointerEvent): void {
     const newPosition = this.pixelsToPercentsOfBaseLength(
