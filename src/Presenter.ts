@@ -351,13 +351,13 @@ class Presenter {
   private findClosestAllowedPosition(position: number) {
     let closest = 0;
     let minDiff = position;
-    this.model.allowedPositions.every((allowedPosition) => {
+    this.model.allowedPositions.some((allowedPosition) => {
       const diff = position - allowedPosition;
       if (diff < 0) {
         if (Math.abs(diff) < minDiff) {
           closest = allowedPosition;
         }
-        return false;
+        return true;
       }
 
       if (diff < minDiff) {
@@ -365,7 +365,7 @@ class Presenter {
         closest = allowedPosition;
       }
 
-      return true;
+      return false;
     });
 
     return closest;
