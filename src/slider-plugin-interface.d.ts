@@ -67,6 +67,7 @@ interface IEventEmitter {
 type ViewValues = {
   positions: { 1: number, 2: number },
   stepSizeInPercents: number,
+  halfStepInPercents: number,
 };
 
 interface IModel extends IEventEmitter {

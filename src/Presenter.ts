@@ -417,6 +417,7 @@ class Presenter {
     const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
 
     this.model.viewValues.stepSizeInPercents = (stepSize / totalSliderRange) * 100;
+    this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
     this.model.allowedPositions.length = 0;
 
     for (let i = 0; i <= 100; i += this.model.viewValues.stepSizeInPercents) {
