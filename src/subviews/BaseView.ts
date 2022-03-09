@@ -23,7 +23,11 @@ class BaseView extends SubView implements IBaseView {
 
     const { target } = e;
     if (target instanceof HTMLDivElement) {
-      this.emit('basePointerDown', target);
+      this.emit('basePointerDown', {
+        target,
+        offsetX: e.offsetX,
+        offsetY: e.offsetY,
+      });
     }
   }
 
