@@ -298,19 +298,20 @@ class Presenter {
 
     scaleValueSelect: (options: { index: number }): void => {
       const { index } = options;
+      const position = this.model.allowedPositions[index];
       if (this.options.isInterval) {
         const thumbNumber = this.findClosestThumb(index);
-        const thumb = this.subViews[`thumb${thumbNumber}`];
-        if (thumb instanceof ThumbView) {
-          thumb.setPositionAndCurrentValue?.(
-            this.allowedPositions[index], false,
-          );
-        }
+        this.currentThumbData = {
+          thumbNumber,
+          currentPosition: position,
+        };
       } else {
-        this.subViews.thumb1.setPositionAndCurrentValue?.(
-          this.allowedPositions[index], false,
-        );
+        this.currentThumbData = {
+          thumbNumber: 1,
+          currentPosition: position,
+        };
       }
+      this.setPositionAndCurrentValue(position, false);
     },
   }
 
