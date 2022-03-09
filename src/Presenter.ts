@@ -348,60 +348,14 @@ class Presenter {
     return Number(((pixels / baseLength) * 100).toFixed(1));
   }
 
-  private findClosestAllowedPosition(position: number) {
-    let closest = 0;
-    let minDiff = position;
-    this.model.allowedPositions.some((allowedPosition) => {
-      const diff = position - allowedPosition;
-      if (diff < 0) {
-        if (Math.abs(diff) < minDiff) {
-          closest = allowedPosition;
-        }
-        return true;
-      }
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = allowedPosition;
-      }
-
-      return false;
-    });
-
-    return closest;
-  }
-
-  private findClosestAllowedPositionV3(position: number): number | undefined {
+  private findClosestAllowedPosition(position: number): number | undefined {
     const posToRight = this.model.allowedPositions.find((pos) => pos > position);
     if (posToRight !== undefined) {
-      return posToRight - position < this.model.viewValues.stepSizeInPercents / 2
+      return (posToRight - position) < this.model.viewValues.halfStepInPercents
         ? posToRight
-        : posToRight - this.model.viewValues.stepSizeInPercents;
+        : posToRight - this.model.viewValues.stepInPercents;
     }
     return undefined;
-  }
-
-  private findClosestAllowedPositionV2(position: number) {
-    const allowedPositions = [...this.model.allowedPositions, position].sort((a, b) => a - b);
-    const positionIdx = allowedPositions.indexOf(position);
-    const positionToLeft = allowedPositions[positionIdx - 1];
-    const positionToRight = allowedPositions[positionIdx + 1];
-    const leftElemDiff = position - positionToLeft;
-    const rightElemDiff = positionToRight - position;
-    return leftElemDiff <= rightElemDiff ? positionToLeft : positionToRight;
-  }
-
-  private findClosestAllowedPositionOld(position: number) {
-    let minDifference = position;
-
-    return this.model.allowedPositions.reduce((lastMinValue, currentValue) => {
-      const currentDifference = Math.abs(position - currentValue);
-      if (currentDifference < minDifference) {
-        minDifference = currentDifference;
-        return currentValue;
-      }
-      return lastMinValue;
-    });
   }
 
   private setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean): void {
