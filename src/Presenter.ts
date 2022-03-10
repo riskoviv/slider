@@ -151,20 +151,13 @@ class Presenter {
     const currentElementData = this.subViewCreationData[subViewName];
     let subViewFullName = subViewName;
     const SubViewClass = currentElementData.constructorClass;
-    switch (SubViewClass) {
-      case ThumbView || TipView:
-        subViewFullName += number ?? 1;
-        if (!this.subViewExists(subViewFullName)) {
-          this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
-        }
-        break;
-      case BaseView || ProgressView || ScaleView:
-        if (!this.subViewExists(subViewFullName)) {
-          this.subViews[subViewFullName] = new SubViewClass();
-        }
-        break;
-      default:
-        break;
+    if (subViewName === 'thumb' || subViewName === 'tip') {
+      subViewFullName += number ?? 1;
+      if (!this.subViewExists(subViewFullName)) {
+        this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
+      }
+    } else if (!this.subViewExists(subViewFullName)) {
+      this.subViews[subViewFullName] = new SubViewClass();
     }
 
     currentElementData.parentElement.append(this.renderSubView(subViewFullName));
