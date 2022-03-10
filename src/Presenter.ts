@@ -103,9 +103,6 @@ class Presenter {
   }
 
   private updateScaleView() {
-    // probably there will be needed a setTimeout
-    // because elements are not located on page yet
-    // and this function needs actual scale element's size
     this.updateDimensionAndAxis();
     const scaleView = this.subViews.scale;
     if (scaleView instanceof ScaleView) {
@@ -234,10 +231,6 @@ class Presenter {
       }
     },
   };
-
-  /**
-   * TODO Fix BaseView helper functions
-   */
 
   private thumbChecks = {
     isCursorMovedHalfStep: (position: number) => {
