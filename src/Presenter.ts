@@ -31,6 +31,8 @@ class Presenter {
 
   private axis: Axis = 'left';
 
+  private offset: 'offsetX' | 'offsetY' = 'offsetX';
+
   private subViewCreationData: subViewsData;
 
   constructor(
@@ -93,6 +95,7 @@ class Presenter {
   private updateDimensionAndAxis() {
     this.dimension = this.options.isVertical ? 'height' : 'width';
     this.axis = this.options.isVertical ? 'top' : 'left';
+    this.offset = this.options.isVertical ? 'offsetY' : 'offsetX';
   }
 
   private updateScaleView() {
@@ -328,7 +331,7 @@ class Presenter {
 
   private sliderPointerMove = (e: PointerEvent): void => {
     const newPosition = this.pixelsToPercentsOfBaseLength(
-      this.options.isVertical ? e.offsetY : e.offsetX,
+      e[this.offset],
     );
 
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
