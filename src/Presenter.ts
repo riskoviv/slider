@@ -5,12 +5,13 @@ import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
 
-type subViewClass =
+type subViewClass = (
   | typeof BaseView
   | typeof ThumbView
   | typeof ProgressView
   | typeof ScaleView
-  | typeof TipView;
+  | typeof TipView
+);
 
 type subViewsData = {
   [subViewName in ViewType]: {
