@@ -182,7 +182,7 @@ class Presenter {
   }
 
   private renderSubView(subViewName: string): JQuery<HTMLElement> {
-    return this.subViews[subViewName].render();
+    return this.subViews[subViewName].$elem;
   }
 
   private insertSliderToContainer(): void {
