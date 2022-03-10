@@ -299,26 +299,32 @@ class Presenter {
     scaleValueSelect: (options: { index: number }): void => {
       const { index } = options;
       const position = this.model.allowedPositions[index];
+      let thumbNumber: 1 | 2 = 1;
       if (this.options.isInterval) {
-        const thumbNumber = this.findClosestThumb(index);
+        thumbNumber = this.findClosestThumb(index);
         this.currentThumbData = {
           thumbNumber,
           currentPosition: position,
         };
       } else {
         this.currentThumbData = {
-          thumbNumber: 1,
+          thumbNumber,
           currentPosition: position,
         };
       }
-      this.setPositionAndCurrentValue(position, false);
+
+      this.setPositionAndCurrentValue({
+        number: thumbNumber,
+        allowedPosition: position,
+        findClosest: false,
+      });
     },
   }
 
   private currentThumbData: {
     thumbNumber: 1 | 2,
     currentPosition?: number,
-  } | null = null;
+  } = { thumbNumber: 1 };
 
   private basePointerMove(e: PointerEvent): void {
     const newPosition = this.pixelsToPercentsOfBaseLength(
@@ -332,14 +338,18 @@ class Presenter {
       const thumbInRange = this.thumbChecks.isHandleInRange(newPosition);
       if (thumbInRange) {
         const isHandleAwayFromOtherHandle = this.options.isInterval
-          ? this.thumbChecks.isHandleKeepsDistance(newPosition)
+          ? this.thumbChecks.isHandleKeepsDistance(
+            this.currentThumbData?.thumbNumber,
+            newPosition,
+          )
           : true;
 
         if (thumbInRange && isHandleAwayFromOtherHandle) {
-          this.setPositionAndCurrentValue(
-            newPosition,
-            movedHalfStep,
-          );
+          this.setPositionAndCurrentValue({
+            number: this.currentThumbData.thumbNumber,
+            allowedPosition: newPosition,
+            findClosest: movedHalfStep,
+          });
         }
       }
     }
@@ -371,20 +381,24 @@ class Presenter {
     return undefined;
   }
 
-  private setPositionAndCurrentValue(allowedPosition: number, findClosest: boolean): void {
-    if (this.currentThumbData !== null) {
-      const thumbData = this.currentThumbData;
-      thumbData.currentPosition = findClosest
-        ? this.findClosestAllowedPosition(allowedPosition)
-        : allowedPosition;
-      if (thumbData.currentPosition !== undefined) {
-        this.view.setPosition(thumbData.thumbNumber, thumbData.currentPosition);
-        this.model.viewValues.positions[thumbData.thumbNumber] = thumbData.currentPosition;
-        this.model.setValue(
-          thumbData.thumbNumber,
-          this.model.allowedPositions.indexOf(thumbData.currentPosition),
-        );
-      }
+  private setPositionAndCurrentValue(options: {
+    number: 1 | 2 | undefined,
+    allowedPosition: number,
+    findClosest: boolean
+  }): void {
+    const { allowedPosition, findClosest } = options;
+    const thumbData = this.currentThumbData;
+    const number = options.number ?? thumbData.thumbNumber;
+    thumbData.currentPosition = findClosest
+      ? this.findClosestAllowedPosition(allowedPosition)
+      : allowedPosition;
+    if (thumbData.currentPosition !== undefined) {
+      this.view.setPosition(number, thumbData.currentPosition);
+      this.model.viewValues.positions[number] = thumbData.currentPosition;
+      this.model.setValue(
+        number,
+        this.model.allowedPositions.indexOf(thumbData.currentPosition),
+      );
     }
   }
 
