@@ -90,7 +90,6 @@ type Dimension = 'width' | 'height';
 
 interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
-  render(): JQuery<HTMLElement>
   removeView(): void;
 }
 
