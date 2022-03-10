@@ -1,9 +1,17 @@
+html {
+  --page-color: #ddd;
+
+  @media (prefers-color-scheme: dark) {
+    --page-color: #666;
+  }
+}
+
 html, body {
   height: 100%;
 }
 
 body {
-  background-color: #666;
+  background-color: var(--page-color);
   margin: 0;
 }
 
