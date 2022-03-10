@@ -368,7 +368,7 @@ class Presenter {
       e.preventDefault();
     }
 
-    this.elem.removeEventListener('pointermove', this.basePointerMove);
+    this.view.controlContainerElem.removeEventListener('pointermove', this.sliderPointerMove);
   }
 
   private pixelsToPercentsOfBaseLength(pixels: number): number {
