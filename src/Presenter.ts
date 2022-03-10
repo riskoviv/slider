@@ -356,8 +356,6 @@ class Presenter {
         }
       }
     }
-
-    this.elem.addEventListener('pointerup', this.basePointerUp, { once: true });
   }
 
   private sliderPointerUp = (e: PointerEvent): void => {
