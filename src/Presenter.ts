@@ -116,7 +116,6 @@ class Presenter {
     this.subViewCreationData.progress.parentElement = this.subViews.base.$elem;
 
     const subViewsCreationData: [ViewType, (1 | 2)?][] = [
-      ['base'],
       ['thumb', 1],
     ];
 
