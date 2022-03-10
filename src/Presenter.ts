@@ -401,10 +401,11 @@ class Presenter {
   }
 
   private updateAllowedPositionsArr(): void {
+    const { minValue, maxValue, stepSize } = this.options;
     this.fillAllowedPositionsArr({
-      minValue: this.options.minValue,
-      maxValue: this.options.maxValue,
-      stepSize: this.options.stepSize,
+      minValue,
+      maxValue,
+      stepSize,
     });
   }
 
