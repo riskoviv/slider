@@ -59,7 +59,9 @@ class Presenter {
       },
       progress: {
         constructorClass: ProgressView,
-        parentElement: this.subViews.base.$elem,
+        // temporarily set this parentElement because BaseView isn't created at this moment yet
+        // and base cannot be created before initialization on this object
+        parentElement: this.view.$controlContainer,
       },
       scale: {
         constructorClass: ScaleView,
@@ -108,6 +110,9 @@ class Presenter {
   }
 
   private createInitialSubViews() {
+    this.createSubView('base');
+    this.subViewCreationData.progress.parentElement = this.subViews.base.$elem;
+
     const subViewsCreationData: [ViewType, (1 | 2)?][] = [
       ['base'],
       ['thumb', 1],
