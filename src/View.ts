@@ -1,17 +1,24 @@
+import EventEmitter from './EventEmitter';
+
 type SliderViewOptions = {
   isVertical: boolean,
   isInterval: boolean,
 };
 
-class View implements IView {
+class View extends EventEmitter implements IView {
   readonly $elem: JQuery<HTMLElement>;
 
   readonly $controlContainer: JQuery<HTMLDivElement> = $(
     '<div class="slider__control-container"></div>',
   );
 
+  readonly controlContainerElem: HTMLDivElement;
+
   constructor(options?: SliderViewOptions) {
+    super();
     this.$elem = this.render(options);
+    [this.controlContainerElem] = this.$controlContainer.get();
+    this.bindEventListeners();
   }
 
   protected render(
@@ -37,6 +44,31 @@ class View implements IView {
   setPosition(valueNumber: 1 | 2, position: number): void {
     this.$controlContainer.css(`--value-${valueNumber}-position`, `${position}%`);
   }
+
+  private bindEventListeners() {
+    this.controlContainerElem.addEventListener('pointerdown', this.pointerDown);
+    this.$controlContainer.on('contextmenu', this.preventContextMenu);
+  }
+
+  private pointerDown = (e: PointerEvent): void => {
+    if (e.button !== 0) {
+      return;
+    }
+
+    e.preventDefault();
+    this.controlContainerElem.setPointerCapture(e.pointerId);
+
+    const { target } = e;
+    if (target instanceof HTMLDivElement) {
+      this.emit('sliderPointerDown', {
+        target,
+        offsetX: e.offsetX,
+        offsetY: e.offsetY,
+      });
+    }
+  }
+
+  private preventContextMenu = () => false;
 }
 
 export default View;

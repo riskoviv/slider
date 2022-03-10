@@ -48,6 +48,7 @@ class Presenter {
 
     this.updateDimensionAndAxis();
     this.view = new View({ isVertical, isInterval });
+    this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
     this.updateAllowedPositionsArr();
     this.subViewCreationData = {
       base: {
@@ -162,9 +163,7 @@ class Presenter {
 
     currentElementData.parentElement.append(this.renderSubView(subViewFullName));
 
-    if (subViewName === 'base') {
-      this.subViews[subViewFullName].on('basePointerDown', this.viewEventHandlers.basePointerDown);
-    } else if (subViewName === 'scale') {
+    if (subViewName === 'scale') {
       this.subViews[subViewFullName].on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
     }
   }
@@ -260,39 +259,42 @@ class Presenter {
   }
 
   private viewEventHandlers = {
-    basePointerDown: (data: {
+    sliderPointerDown: (data: {
       target: HTMLDivElement,
       offsetX: number,
       offsetY: number,
     }): void => {
-      const { target, offsetX, offsetY } = data;
-      if (this.subViews.base instanceof BaseView) {
-        if (target.classList.contains('.slider__thumb')) {
-          const thumbNumber = Number(target.dataset.number);
-          if (thumbNumber === 1 || thumbNumber === 2) {
-            this.currentThumbData = {
-              thumbNumber,
-            };
-          }
-        } else if (target === this.subViews.base.elem) {
-          this.currentThumbData = null;
-          const position = this.pixelsToPercentsOfBaseLength(
-            this.options.isVertical ? offsetY : offsetX,
-          );
-          const allowedPosition = this.findClosestAllowedPosition(position);
-          if (allowedPosition !== undefined) {
-            const allowedIndex = this.model.allowedPositions.indexOf(allowedPosition);
-            const chosenThumb = this.findClosestThumb(allowedIndex);
-            this.currentThumbData = {
-              thumbNumber: chosenThumb,
-            };
-            this.setPositionAndCurrentValue(this.model.allowedPositions[allowedIndex], false);
-          }
+      const { target } = data;
+      if (target.classList.contains('slider__thumb')) {
+        const thumbNumber = Number(target.dataset.number);
+        if (thumbNumber === 1 || thumbNumber === 2) {
+          this.currentThumbData = {
+            thumbNumber,
+          };
         }
-
-        this.subViews.base.elem.addEventListener('pointermove', this.basePointerMove);
-        this.subViews.base.elem.addEventListener('pointerup', this.basePointerUp, { once: true });
+      } else if (target === this.view.controlContainerElem) {
+        const position = this.pixelsToPercentsOfBaseLength(
+          data[this.offset],
+        );
+        const allowedPosition = this.findClosestAllowedPosition(position);
+        if (allowedPosition !== undefined) {
+          const allowedIndex = this.model.allowedPositions.indexOf(allowedPosition);
+          const chosenThumb = this.findClosestThumb(allowedIndex);
+          this.currentThumbData = {
+            thumbNumber: chosenThumb,
+          };
+          this.setPositionAndCurrentValue({
+            number: chosenThumb,
+            allowedPosition: this.model.allowedPositions[allowedIndex],
+            findClosest: false,
+          });
+        }
       }
+
+      this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
+      this.view.controlContainerElem.addEventListener('pointerup', this.sliderPointerUp, {
+        once: true,
+      });
     },
 
     scaleValueSelect: (options: { index: number }): void => {

@@ -45,7 +45,7 @@ interface JQuery extends IPluginPublicMethods {
 }
 
 type EventName = (
-  | 'basePointerDown'
+  | 'sliderPointerDown'
   | 'stepSizeChanged'
   | 'valueChanged'
   | 'scaleValueSelect'
@@ -102,10 +102,6 @@ interface IScaleView extends ISubView {
   }): void;
 }
 
-interface IBaseView extends ISubView {
-  elem: HTMLDivElement;
-}
-
 interface IThumbView extends ISubView {
   setThumbThickness(thickness: number): void;
 }
@@ -114,9 +110,10 @@ interface ITipView extends ISubView {
   setValue(value: number): void;
 }
 
-interface IView {
+interface IView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
   $controlContainer: JQuery<HTMLElement>;
+  controlContainerElem: HTMLDivElement;
   toggleVertical(isVertical: boolean): void;
   toggleInterval(isInterval: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
