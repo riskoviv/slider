@@ -326,7 +326,7 @@ class Presenter {
     currentPosition?: number,
   } = { thumbNumber: 1 };
 
-  private basePointerMove(e: PointerEvent): void {
+  private sliderPointerMove = (e: PointerEvent): void => {
     const newPosition = this.pixelsToPercentsOfBaseLength(
       this.options.isVertical ? e.offsetY : e.offsetX,
     );
@@ -357,7 +357,7 @@ class Presenter {
     this.elem.addEventListener('pointerup', this.basePointerUp, { once: true });
   }
 
-  private basePointerUp(e: PointerEvent): void {
+  private sliderPointerUp = (e: PointerEvent): void => {
     if (e.button !== 0) {
       e.preventDefault();
     }
