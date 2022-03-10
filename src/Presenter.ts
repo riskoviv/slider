@@ -80,6 +80,10 @@ class Presenter {
     this.insertSliderToContainer();
     this.bindModelEventListeners();
     if (this.options.showScale) this.updateScaleView();
+    this.passInitialValuesToSubViews({
+      value1,
+      value2,
+    });
   }
 
   private bindModelEventListeners(): void {
@@ -111,6 +115,14 @@ class Presenter {
         dimension: this.dimension,
         axis: this.axis,
       });
+    }
+  }
+
+  private passInitialValuesToSubViews(values: { value1: number, value2: number }): void {
+    const { value1, value2 } = values;
+    this.view.setPosition(1, value1);
+    if (this.options.isInterval) {
+      this.view.setPosition(2, value2);
     }
   }
 
