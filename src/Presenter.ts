@@ -364,8 +364,8 @@ class Presenter {
 
   private currentThumbData: {
     thumbNumber: 1 | 2,
-    currentPosition?: number,
-  } = { thumbNumber: 1 };
+    currentPosition: number,
+  } = { thumbNumber: 1, currentPosition: 0 };
 
   private sliderPointerMove = (e: PointerEvent): void => {
     let newPosition = this.pixelsToPercentsOfBaseLength(e[this.offset]);
