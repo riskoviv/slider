@@ -481,7 +481,11 @@ class Presenter {
     const totalSliderRange = maxValue - minValue;
     const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
 
-    this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
+    const roundToAccuracy = function roundNumberToPositionAccuracy(num: number): number {
+      return Number(num.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy));
+    };
+
+    this.model.viewValues.stepInPercents = roundToAccuracy((stepSize / totalSliderRange) * 100);
     this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
     this.model.allowedPositions.length = 0;
 
