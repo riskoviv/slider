@@ -84,6 +84,10 @@ class Presenter {
       value1,
       value2,
     });
+    this.setMonitorData({
+      position1: this.model.viewValues.positions[1],
+      position2: this.model.viewValues.positions[2],
+    });
   }
 
   private bindModelEventListeners(): void {
@@ -298,6 +302,12 @@ class Presenter {
         }
       }
 
+      this.setMonitorData({
+        action: 'down',
+        thumbNumber: this.currentThumbData.thumbNumber,
+        currentPosition: this.currentThumbData.currentPosition!,
+      });
+
       this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
       this.view.controlContainerElem.addEventListener('pointerup', this.sliderPointerUp, {
         once: true,
@@ -329,6 +339,16 @@ class Presenter {
     },
   }
 
+  // debug tool
+  private dataMonitor: JQuery<HTMLElement> = $('.data-monitor');
+
+  private setMonitorData(elementsData: { [elementName: string]: string | number | boolean }): void {
+    this.dataMonitor.html('');
+    Object.entries(elementsData).forEach(([elementName, elementText]) => {
+      this.dataMonitor.append(`<p>${elementName}: <span>${elementText}</span></p>`);
+    });
+  }
+
   private currentThumbData: {
     thumbNumber: 1 | 2,
     currentPosition?: number,
@@ -351,6 +371,15 @@ class Presenter {
             newPosition,
           )
           : true;
+    this.setMonitorData({
+      action: 'move',
+      newPosition,
+      movedHalfStep,
+      onStepPosition,
+      // this is for debugging purposes
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      currentPosition: this.currentThumbData.currentPosition!,
+    });
 
         if (thumbInRange && isHandleAwayFromOtherHandle) {
           this.setPositionAndCurrentValue({
