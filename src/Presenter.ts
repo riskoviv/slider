@@ -249,20 +249,18 @@ class Presenter {
   };
 
   private thumbChecks = {
-    isCursorMovedHalfStep: (position: number) => {
-      if (this.currentThumbData?.currentPosition !== undefined) {
-        return Math.abs(position - this.currentThumbData.currentPosition)
-          > this.model.viewValues.stepInPercents / 2;
-      }
-      return false;
-    },
-
-    isCursorOnStepPosition: (position: number) => (
-      this.model.allowedPositions.includes(position)
-        && position !== this.currentThumbData?.currentPosition
+    isCursorMovedHalfStep: (position: number): boolean => (
+      Math.abs(position - this.currentThumbData.currentPosition)
+        > this.model.viewValues.halfStepInPercents
     ),
 
-    isHandleKeepsDistance: (thumbNumber: 1 | 2, newPosition: number): boolean => {
+    isCursorOnStepPosition: (position: number): boolean => (
+      this.model.allowedPositions.includes(position)
+        && position !== this.currentThumbData.currentPosition
+    ),
+
+    isThumbKeepsDistance: (newPosition: number): boolean => {
+      const { thumbNumber } = this.currentThumbData;
       if (thumbNumber === 1) {
         return (
           newPosition <= (
@@ -278,7 +276,11 @@ class Presenter {
       );
     },
 
-    isHandleInRange: (position: number) => position >= 0 && position <= 100,
+    fixIfOutOfRange: (position: number): number => {
+      if (position <= 0) return 0;
+      if (position >= 100) return 100;
+      return position;
+    },
   }
 
   private viewEventHandlers = {
