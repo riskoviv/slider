@@ -337,15 +337,6 @@ class Presenter {
       let thumbNumber: 1 | 2 = 1;
       if (this.options.isInterval) {
         thumbNumber = this.findClosestThumb(index);
-        this.currentThumbData = {
-          thumbNumber,
-          currentPosition: position,
-        };
-      } else {
-        this.currentThumbData = {
-          thumbNumber,
-          currentPosition: position,
-        };
       }
 
       this.currentThumbData = {
