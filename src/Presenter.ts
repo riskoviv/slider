@@ -313,7 +313,7 @@ class Presenter {
           };
           this.setPositionAndCurrentValue({
             number: chosenThumb,
-            allowedPosition: this.model.allowedPositions[allowedIndex],
+            potentialPosition: this.model.allowedPositions[allowedIndex],
             findClosest: false,
           });
         }
@@ -346,7 +346,7 @@ class Presenter {
 
       this.setPositionAndCurrentValue({
         number: thumbNumber,
-        allowedPosition: position,
+        potentialPosition: position,
         findClosest: false,
       });
     },
