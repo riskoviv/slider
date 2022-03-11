@@ -29,6 +29,7 @@
     background-color: #444;
     border-radius: var(--base-border-radius);
     overflow: hidden;
+    pointer-events: none;
   }
 
   &__thumb {
@@ -63,6 +64,7 @@
     border-radius: 2px;
     bottom: var(--tip-margin);
     transform: translateX(-50%);
+    pointer-events: none;
 
     &::after {
       position: absolute;
