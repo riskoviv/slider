@@ -223,6 +223,7 @@ class Presenter {
     },
 
     changeOrientation: (isVertical: boolean): void => {
+      this.updateDimensionAndAxis();
       this.view.toggleVertical(isVertical);
     },
 
