@@ -432,24 +432,22 @@ class Presenter {
   }
 
   private setPositionAndCurrentValue(options: {
-    number: 1 | 2 | undefined,
-    allowedPosition: number,
+    number: 1 | 2,
+    potentialPosition: number,
     findClosest: boolean
   }): void {
-    const { allowedPosition, findClosest } = options;
-    const thumbData = this.currentThumbData;
-    const number = options.number ?? thumbData.thumbNumber;
-    thumbData.currentPosition = findClosest
-      ? this.findClosestAllowedPosition(allowedPosition)
-      : allowedPosition;
-    if (thumbData.currentPosition !== undefined) {
-      this.view.setPosition(number, thumbData.currentPosition);
-      this.model.viewValues.positions[number] = thumbData.currentPosition;
-      this.model.setValue(
-        number,
-        this.model.allowedPositions.indexOf(thumbData.currentPosition),
-      );
-    }
+    const { potentialPosition, findClosest } = options;
+    const { number } = options;
+    const approvedPosition = findClosest
+      ? this.findClosestAllowedPosition(potentialPosition)
+      : potentialPosition;
+
+    this.view.setPosition(number, approvedPosition);
+    this.model.viewValues.positions[number] = approvedPosition;
+    this.model.setValue(
+      number,
+      this.model.allowedPositions.indexOf(approvedPosition),
+    );
   }
 
   private findClosestThumb(valueIndex: number): 1 | 2 {
