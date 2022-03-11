@@ -87,18 +87,16 @@ class ScaleView extends SubView implements IScaleView {
     let curElemEdgeBound = this.getElementEdgeBound($currentElem, axis, dimension);
 
     this.scaleValueElements.slice(1).forEach(($elem) => {
-      if ($elem) {
-        if ($elem.position()[axis] - 5 <= curElemEdgeBound) {
-          if ($elem === $lastElem && $currentElem !== $firstElem) {
-            $currentElem.addClass('slider__scale-block_unnumbered');
-          } else if ($elem !== $lastElem) {
-            $elem.addClass('slider__scale-block_unnumbered');
-          }
-        } else {
-          $currentElem = $elem;
-          curElemEdgeBound = this.getElementEdgeBound($currentElem, axis, dimension);
-          $elem.removeClass('slider__scale-block_unnumbered');
+      if ($elem.position()[axis] - 5 <= curElemEdgeBound) {
+        if ($elem === $lastElem && $currentElem !== $firstElem) {
+          $currentElem.addClass('slider__scale-block_unnumbered');
+        } else if ($elem !== $lastElem) {
+          $elem.addClass('slider__scale-block_unnumbered');
         }
+      } else {
+        $currentElem = $elem;
+        curElemEdgeBound = this.getElementEdgeBound($currentElem, axis, dimension);
+        $elem.removeClass('slider__scale-block_unnumbered');
       }
     });
   }
