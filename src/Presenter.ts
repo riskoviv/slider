@@ -369,22 +369,10 @@ class Presenter {
   } = { thumbNumber: 1 };
 
   private sliderPointerMove = (e: PointerEvent): void => {
-    const newPosition = this.pixelsToPercentsOfBaseLength(
-      e[this.offset],
-    );
-
+    let newPosition = this.pixelsToPercentsOfBaseLength(e[this.offset]);
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
     const onStepPosition = this.thumbChecks.isCursorOnStepPosition(newPosition);
 
-    if (movedHalfStep || onStepPosition) {
-      const thumbInRange = this.thumbChecks.isHandleInRange(newPosition);
-      if (thumbInRange) {
-        const isHandleAwayFromOtherHandle = this.options.isInterval
-          ? this.thumbChecks.isHandleKeepsDistance(
-            this.currentThumbData?.thumbNumber,
-            newPosition,
-          )
-          : true;
     this.setMonitorData({
       action: 'move',
       newPosition,
@@ -395,13 +383,18 @@ class Presenter {
       currentPosition: this.currentThumbData.currentPosition!,
     });
 
-        if (thumbInRange && isHandleAwayFromOtherHandle) {
-          this.setPositionAndCurrentValue({
-            number: this.currentThumbData.thumbNumber,
-            allowedPosition: newPosition,
-            findClosest: movedHalfStep,
-          });
-        }
+    if (movedHalfStep || onStepPosition) {
+      newPosition = this.thumbChecks.fixIfOutOfRange(newPosition);
+      const isHandleAwayFromOtherHandle = this.options.isInterval
+        ? this.thumbChecks.isThumbKeepsDistance(newPosition)
+        : true;
+
+      if (isHandleAwayFromOtherHandle) {
+        this.setPositionAndCurrentValue({
+          number: this.currentThumbData.thumbNumber,
+          potentialPosition: newPosition,
+          findClosest: movedHalfStep,
+        });
       }
     }
   }
