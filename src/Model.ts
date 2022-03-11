@@ -44,10 +44,9 @@ class Model extends EventEmitter implements IModel {
 
   setValue(thumbNumber: 1 | 2, valueIndex: number): void {
     this.options[`value${thumbNumber}`] = this.allowedRealValues[valueIndex];
-
     if (this.options.showTip) {
       this.emit('valueChanged', {
-        thumbNumber,
+        tipNumber: thumbNumber,
         value: this.options[`value${thumbNumber}`],
       });
     }
