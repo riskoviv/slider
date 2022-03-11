@@ -121,9 +121,21 @@ class Presenter {
 
   private passInitialValuesToSubViews(values: { value1: number, value2: number }): void {
     const { value1, value2 } = values;
-    this.view.setPosition(1, value1);
+    const value1Index = this.model.allowedRealValues.indexOf(value1);
+    const position1 = this.model.allowedPositions[value1Index];
+    const value2Index = this.model.allowedRealValues.indexOf(value2);
+    const position2 = this.model.allowedPositions[value2Index];
+    this.setPositionAndCurrentValue({
+      number: 1,
+      potentialPosition: position1,
+      findClosest: false,
+    });
     if (this.options.isInterval) {
-      this.view.setPosition(2, value2);
+      this.setPositionAndCurrentValue({
+        number: 2,
+        potentialPosition: position2,
+        findClosest: false,
+      });
     }
   }
 
