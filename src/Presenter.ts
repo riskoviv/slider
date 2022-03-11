@@ -479,9 +479,7 @@ class Presenter {
     this.model.allowedPositions.length = 0;
 
     for (let i = 0; i <= 100; i += this.model.viewValues.stepInPercents) {
-      this.model.allowedPositions.push(
-        Number(i.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy)),
-      );
+      this.model.allowedPositions.push(roundToAccuracy(i));
     }
 
     if (this.model.allowedPositions.slice(-1)[0] !== 100) {
