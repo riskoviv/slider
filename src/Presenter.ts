@@ -296,6 +296,7 @@ class Presenter {
         if (thumbNumber === 1 || thumbNumber === 2) {
           this.currentThumbData = {
             thumbNumber,
+            currentPosition: this.model.viewValues.positions[thumbNumber],
           };
         }
       } else if (target === this.view.controlContainerElem) {
@@ -308,6 +309,7 @@ class Presenter {
           const chosenThumb = this.findClosestThumb(allowedIndex);
           this.currentThumbData = {
             thumbNumber: chosenThumb,
+            currentPosition: allowedPosition,
           };
           this.setPositionAndCurrentValue({
             number: chosenThumb,
@@ -345,6 +347,11 @@ class Presenter {
           currentPosition: position,
         };
       }
+
+      this.currentThumbData = {
+        thumbNumber,
+        currentPosition: position,
+      };
 
       this.setPositionAndCurrentValue({
         number: thumbNumber,
