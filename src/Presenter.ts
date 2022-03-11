@@ -412,14 +412,16 @@ class Presenter {
     return Number(((pixels / baseLength) * 100).toFixed(1));
   }
 
-  private findClosestAllowedPosition(position: number): number | undefined {
+  private findClosestAllowedPosition(position: number): number {
     const posToRight = this.model.allowedPositions.find((pos) => pos > position);
     if (posToRight !== undefined) {
-      return (posToRight - position) < this.model.viewValues.halfStepInPercents
+      const posToRightIndex = this.model.allowedPositions.indexOf(posToRight);
+      return (posToRight - position < this.model.viewValues.halfStepInPercents)
         ? posToRight
-        : posToRight - this.model.viewValues.stepInPercents;
+        : this.model.allowedPositions[posToRightIndex - 1];
     }
-    return undefined;
+
+    return position;
   }
 
   private setPositionAndCurrentValue(options: {
@@ -448,7 +450,6 @@ class Presenter {
     if (Math.abs(valueIndex - thumb1Index) > Math.abs(valueIndex - thumb2Index)) {
       return 2;
     }
-
     return 1;
   }
 
