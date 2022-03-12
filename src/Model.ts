@@ -77,8 +77,9 @@ class Model extends EventEmitter implements IModel {
       getOptions: this.getOptions.bind(this),
     },
     setStepSize: this.setStepSize.bind(this),
-    setVerticalState: this.setVerticalState.bind(this),
     setValue: this.setValue.bind(this),
+    setVerticalState: this.setVerticalState.bind(this),
+    setInterval: this.setInterval.bind(this),
   }
 
   private fixValues() {
