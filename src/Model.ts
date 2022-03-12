@@ -84,12 +84,12 @@ class Model extends EventEmitter implements IModel {
 
   private fixValues() {
     if (!this.allowedRealValues.includes(this.options.value1)) {
-      this.options.value1 = this.fixValue(this.options.value1, 1);
+      this.options.value1 = this.fixValue(1, this.options.value1);
     }
 
     if (this.options.isInterval) {
       if (!this.allowedRealValues.includes(this.options.value2)) {
-        this.options.value2 = this.fixValue(this.options.value2, 2);
+        this.options.value2 = this.fixValue(2, this.options.value2);
       }
 
       if (this.options.value1 === this.options.value2) {
@@ -97,14 +97,22 @@ class Model extends EventEmitter implements IModel {
         const warnMsgEnd = '\nPlease check values that you passed to plugin options.';
 
         if (this.options.value1 === this.options.maxValue) {
-          this.options.value1 -= this.options.stepSize;
+          [this.options.value1] = this.allowedRealValues.slice(-2);
           console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
         } else if (this.options.value2 === this.options.minValue) {
-          this.options.value2 += this.options.stepSize;
+          [, this.options.value2] = this.allowedRealValues;
           console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
         } else {
-          this.options.value2 += this.options.stepSize;
+          const value1Index = this.allowedRealValues.indexOf(this.options.value1);
+          this.options.value2 = this.allowedRealValues[value1Index + 1];
           console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
+        }
+      } else if (this.options.value2 < this.options.value1) {
+        if (this.options.value1 === this.options.maxValue) {
+          this.options.value2 = this.options.maxValue;
+          this.options.value1 = this.fixValue(1, this.options.value1);
+        } else {
+          this.options.value2 = this.fixValue(2, this.options.value2);
         }
       }
     }
