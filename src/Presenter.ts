@@ -214,6 +214,14 @@ class Presenter {
     this.$pluginRootElem.append(this.view.$elem);
   }
 
+  private getPositionByValue(value: number): number {
+    return this.model.allowedPositions[this.model.allowedRealValues.indexOf(value)];
+  }
+
+  private getValueByPosition(position: number): number {
+    return this.model.allowedRealValues[this.model.allowedPositions.indexOf(position)];
+  }
+
   private modelEventListeners = {
     changeStepSize: (): void => {
       this.updateAllowedPositionsArr();
