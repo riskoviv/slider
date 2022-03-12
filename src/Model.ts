@@ -108,8 +108,28 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  private fixValue(value: number, num: 1 | 2): number {
-    const fixedValue = this.findClosestAllowedRealValue(value);
+  private fixValue(num: 1 | 2, value: number): number {
+    let fixedValue = value;
+    if (value > this.options.maxValue) fixedValue = this.options.maxValue;
+    else if (value < this.options.minValue) fixedValue = this.options.minValue;
+    else if (!this.allowedRealValues.includes(value)) {
+      fixedValue = this.findClosestAllowedRealValue(value);
+    }
+
+    if (this.options.isInterval) {
+      if (num === 1) {
+        if (fixedValue >= this.options.value2) {
+          fixedValue = this.allowedRealValues[
+            this.allowedRealValues.indexOf(this.options.value2) - 1
+          ];
+        }
+      } else if (fixedValue <= this.options.value1) {
+        fixedValue = this.allowedRealValues[
+          this.allowedRealValues.indexOf(this.options.value1) + 1
+        ];
+      }
+    }
+
     console.warn(`Note: value${num} (${value}) is changed to ${fixedValue} to fit to step size.`);
     return fixedValue;
   }
