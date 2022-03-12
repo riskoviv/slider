@@ -1,29 +1,39 @@
 class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on(evt: EventNames, listener: Function): this {
-    if (this.events[evt] === undefined) {
-      this.events[evt] = new Set<Function>();
+  on<argumentType>(event: EventName, handler: EventHandler<argumentType>): this {
+    if (this.events[event] === undefined) {
+      this.events[event] = new Set<EventHandler<argumentType>>();
     }
-    this.events[evt]?.add(listener);
+    this.events[event]?.add(handler);
     return this;
   }
 
-  protected emit(evt: EventNames, arg?: object | number | boolean): void {
-    try {
-      const emitError = new Error();
-      emitError.name = 'EmitError';
+  off<argumentType>(event: EventName, handler?: EventHandler<argumentType>): this {
+    if (handler !== undefined) {
+      this.events[event]?.delete(handler);
+    } else {
+      delete this.events[event];
+    }
+    return this;
+  }
 
-      if (this.events[evt] === undefined) {
-        emitError.message = `${evt} event is not registered. arg = ${
+  protected emit<argumentType>(event: EventName, arg?: argumentType): void {
+    try {
+      if (this.events[event] === undefined) {
+        const emitError = new Error();
+        emitError.name = 'EmitError';
+        emitError.message = `${event} event is not registered. arg = ${
           typeof arg === 'object'
-            ? `{ ${Object.entries(arg).map((entry) => `${entry[0]}: ${entry[1]}`).join(', ')} }`
+            ? `{ ${Object.entries(arg).map(
+              ([key, value]) => `${key}: ${value}`,
+            ).join(', ')} }`
             : arg
         }`;
         throw emitError;
       }
 
-      this.events[evt]?.forEach((lsn) => lsn(arg));
+      this.events[event]?.forEach((handler) => handler(arg));
     } catch (error) {
       console.error(error);
     }

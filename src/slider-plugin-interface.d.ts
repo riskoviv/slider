@@ -1,4 +1,5 @@
-interface ISliderPluginValueOptions {
+/* eslint-disable no-redeclare */
+interface IPluginValueOptions {
   stepSize: number,
   minValue: number,
   maxValue: number,
@@ -6,7 +7,7 @@ interface ISliderPluginValueOptions {
   value2: number,
 }
 
-interface ISliderPluginStateOptions {
+interface IPluginStateOptions {
   isVertical: boolean,
   isInterval: boolean,
   showTip: boolean,
@@ -14,96 +15,120 @@ interface ISliderPluginStateOptions {
   showProgressBar: boolean,
 }
 
-interface ISliderPluginOptions extends ISliderPluginValueOptions, ISliderPluginStateOptions {
-  [option: string],
+interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
+
+/**
+ * Returns type of values of object-like type
+ */
+type TypeOfValues<Obj> = Obj[keyof Obj];
+
+interface IPluginGlobalOptions {
+  options: IPluginOptions;
 }
 
-interface ISliderPluginGlobalOptions {
-  options: ISliderPluginOptions;
-}
-
-interface ISliderPluginFunction {
+interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
-  (options: Partial<ISliderPluginOptions>): JQuery | null;
+  (options: Partial<IPluginOptions>): JQuery | null;
 }
 
-interface ISliderPlugin extends ISliderPluginGlobalOptions, ISliderPluginFunction { }
+interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction {}
 
-interface ISliderPluginPublicMethods {
-  debug: { [methodName: string]: Function },
-  setStepSize: Function,
-  toggleVertical: Function,
-  setValue: Function,
+interface IPluginPublicMethods {
+  debug: { [methodName: string]: () => IPluginOptions },
+  setStepSize: (stepSize: number) => void,
+  setValue: (thumbNumber: 1 | 2, valueIndex: number) => void,
+  setVerticalState: (isVertical: boolean) => void,
+  setInterval(isInterval: boolean): void,
 }
 
-interface JQuery extends ISliderPluginPublicMethods {
+interface JQuery extends IPluginPublicMethods {
   sliderPlugin: ISliderPlugin;
 }
 
-type EventNames =
-  'stepSizeChanged' |
-  'handleValueChange' |
-  'valueChanged' |
-  'scaleValueSelect' |
-  'getOtherHandlePosition' |
-  'isVerticalChanged';
+type EventName = (
+  | 'sliderPointerDown'
+  | 'stepSizeChanged'
+  | 'valueChanged'
+  | 'scaleValueSelect'
+  | 'isVerticalChanged'
+  | 'isIntervalChanged'
+);
+
+type EventHandler<argumentType> = (arg: argumentType) => void;
 
 type EventsStorage = {
-  [event in EventNames]?: Set<Function>;
+  [event in EventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on(evt: EventNames, listener: Function): this;
+  on<argumentType>(evt: EventName, handler: EventHandler<argumentType>): this;
+  off<argumentType>(evt: EventName, handler?: EventHandler<argumentType>): this;
 }
 
-interface ISliderModel {
-  getOptions(): ISliderPluginOptions
-}
-
-interface ISliderHTMLElement extends IEventEmitter {
-  $elem: JQuery<HTMLElement>;
-}
-
-interface ISliderHandleView extends ISliderHTMLElement {
-  setPositionAndCurrentValue?: (allowedPosition: number, findClosest: boolean) => void;
-  otherHandlePosition?: number;
-}
-
-interface ISliderBaseView extends ISliderHTMLElement {}
-
-interface ISliderTipView extends ISliderHTMLElement {
-  setValue?(value: number): void;
-  setPosition?(position: number): void;
-}
-
-interface ISliderScaleView extends ISliderHTMLElement {}
-
-interface ISliderProgressView extends ISliderHTMLElement {
-  updateProgressSize?(handleNumber: number, handlePosition: number): void;
-}
-
-interface ISliderSubView extends
-  IEventEmitter,
-  ISliderHandleView,
-  ISliderBaseView,
-  ISliderTipView,
-  ISliderScaleView,
-  ISliderProgressView {}
-
-type HandleBounds = {
-  minValue: number,
-  maxValue: number,
-  stepSize: number,
-};
-
-type HandleParams = {
+type ViewValues = {
   positions: { 1: number, 2: number },
-  stepSizeInPercents: number,
-  halfStep: number,
-  allowedPositions: number[],
-  isInterval: boolean,
+  stepInPercents: number,
+  halfStepInPercents: number,
 };
 
-type SliderAxis = 'left' | 'top';
+interface IModel extends IEventEmitter {
+  options: IPluginOptions,
+  allowedRealValues: number[],
+  allowedPositions: number[],
+  viewValues: ViewValues,
+  getOptions(): IPluginOptions,
+  getStateOptions(): IPluginStateOptions,
+  getValueIndex(valueNumber: 1 | 2): number,
+  setStepSize(stepSize: number): void,
+  setValue(thumbNumber: 1 | 2, valueIndex: number): void,
+  setVerticalState(isVertical: boolean): void,
+  setInterval(isInterval: boolean): void,
+  publicMethods: IPluginPublicMethods,
+}
 
-type SliderDimension = 'width' | 'height';
+type Axis = 'left' | 'top';
+type Dimension = 'width' | 'height';
+
+interface ISubView extends IEventEmitter {
+  $elem: JQuery<HTMLElement>;
+  removeView(): void;
+}
+
+interface IScaleView extends ISubView {
+  updateScale(data: {
+    allowedPositions: number[],
+    allowedRealValues: number[],
+    dimension: Dimension,
+    axis: Axis,
+  }): void;
+}
+
+interface IThumbView extends ISubView {
+  setThumbThickness(thickness: number): void;
+}
+
+interface ITipView extends ISubView {
+  setValue(value: number): void;
+}
+
+interface IView extends IEventEmitter {
+  $elem: JQuery<HTMLElement>;
+  $controlContainer: JQuery<HTMLElement>;
+  controlContainerElem: HTMLDivElement;
+  toggleVertical(isVertical: boolean): void;
+  toggleInterval(isInterval: boolean): void;
+  setPosition(valueNumber: 1 | 2, position: number): void;
+}
+
+type ViewParams = {
+  parentElement?: JQuery<HTMLElement>,
+  elementNumber?: 1 | 2,
+};
+
+type ViewType = (
+  | 'base'
+  | 'thumb'
+  | 'progress'
+  | 'scale'
+  | 'tip'
+);
