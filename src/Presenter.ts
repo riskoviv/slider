@@ -94,10 +94,8 @@ class Presenter {
     const listeners = this.modelEventListeners;
     this.model.on('stepSizeChanged', listeners.changeStepSize)
       .on('isVerticalChanged', listeners.changeOrientation)
-      .on('isIntervalChanged', listeners.changeInterval);
-    if (this.options.showTip) {
-      this.model.on('valueChanged', listeners.changeTipValue);
-    }
+      .on('isIntervalChanged', listeners.changeInterval)
+      .on('valueChanged', listeners.setValueAndPosition);
   }
 
   private updateDimensionAndAxis() {
@@ -247,13 +245,14 @@ class Presenter {
       }
     },
 
-    changeTipValue: (options: { tipNumber: 1 | 2, value: number }): void => {
-      const { tipNumber, value } = options;
-      const tipName = tipNumber === 1 ? 'tip1' : 'tip2';
-      const tip = this.subViews[tipName];
-      if (tip instanceof TipView) {
-        tip.setValue(value);
+    setValueAndPosition: (options: { number: 1 | 2, value: number }): void => {
+      if (this.options.showTip) {
+        this.setTipValue(options);
       }
+
+      const { number, value } = options;
+      const position = this.getPositionByValue(value);
+      this.setPosition(number, position);
     },
   };
 
@@ -435,18 +434,35 @@ class Presenter {
     potentialPosition: number,
     findClosest: boolean
   }): void {
-    const { potentialPosition, findClosest } = options;
-    const { number } = options;
+    const { number, potentialPosition, findClosest } = options;
     const approvedPosition = findClosest
       ? this.findClosestAllowedPosition(potentialPosition)
       : potentialPosition;
-
-    this.view.setPosition(number, approvedPosition);
-    this.model.viewValues.positions[number] = approvedPosition;
-    this.model.setValue(
+    this.setPosition(number, approvedPosition);
+    this.saveValueInModel(number, approvedPosition);
+    this.setTipValue({
       number,
-      this.model.allowedPositions.indexOf(approvedPosition),
-    );
+      value: this.getValueByPosition(approvedPosition),
+    });
+  }
+
+  private setPosition(number: 1 | 2, position: number): void {
+    this.currentThumbData.currentPosition = position;
+    this.view.setPosition(number, position);
+    this.model.viewValues.positions[number] = position;
+  }
+
+  private saveValueInModel(number: 1 | 2, position: number): void {
+    this.model.options[`value${number}`] = this.getValueByPosition(position);
+  }
+
+  private setTipValue(options: { number: 1 | 2, value: number }): void {
+    const { number: tipNumber, value } = options;
+    const tipName = tipNumber === 1 ? 'tip1' : 'tip2';
+    const tip = this.subViews[tipName];
+    if (tip instanceof TipView) {
+      tip.setValue(value);
+    }
   }
 
   private findClosestThumb(valueIndex: number): 1 | 2 {
