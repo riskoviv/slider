@@ -114,13 +114,16 @@ class Model extends EventEmitter implements IModel {
     return fixedValue;
   }
 
-  private findClosestAllowedRealValue(position: number) {
-    return this.allowedRealValues.reduce((lastMinValue, currentValue) => {
-      if (Math.abs(position - currentValue) < Math.abs(position - lastMinValue)) {
-        return currentValue;
-      }
-      return lastMinValue;
-    });
+  private findClosestAllowedRealValue(value: number): number {
+    const valToRight = this.allowedRealValues.find((val) => val > value);
+    if (valToRight !== undefined) {
+      const valToRightIndex = this.allowedRealValues.indexOf(valToRight);
+      return (valToRight - value < this.options.stepSize / 2)
+        ? valToRight
+        : this.allowedRealValues[valToRightIndex - 1];
+    }
+
+    return value; // impossible to happen really
   }
 
   private identifyStepSizeFractionalPrecision(): number {
