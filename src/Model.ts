@@ -33,13 +33,13 @@ class Model extends EventEmitter implements IModel {
     return stateOptions;
   }
 
+  getValueIndex(valueNumber: 1 | 2): number {
+    return this.allowedRealValues.indexOf(this.options[`value${valueNumber}`]);
+  }
+
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
     this.emit('stepSizeChanged');
-  }
-
-  getValueIndex(valueNumber: 1 | 2): number {
-    return this.allowedRealValues.indexOf(this.options[`value${valueNumber}`]);
   }
 
   setValue(thumbNumber: 1 | 2, valueIndex: number): void {
