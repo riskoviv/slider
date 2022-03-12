@@ -230,6 +230,9 @@ class Presenter {
 
     changeOrientation: (isVertical: boolean): void => {
       this.updateDimensionAndAxis();
+      if (this.options.showScale) {
+        this.updateScaleView();
+      }
       this.view.toggleVertical(isVertical);
     },
 
@@ -238,11 +241,17 @@ class Presenter {
         this.createSubView('thumb', 2);
         if (this.options.showTip) {
           this.createSubView('tip', 2);
+          this.setTipValue({
+            number: 2,
+            value: this.model.options.value2,
+          });
         }
       } else {
         this.removeSubView('thumb2');
         this.removeSubView('tip2');
       }
+
+      this.view.toggleInterval(isInterval);
     },
 
     setValueAndPosition: (options: { number: 1 | 2, value: number }): void => {
