@@ -278,8 +278,8 @@ class Presenter {
     },
 
     fixIfOutOfRange: (position: number): number => {
-      if (position <= 0) return 0;
-      if (position >= 100) return 100;
+      if (position < 0) return 0;
+      if (position > 100) return 100;
       return position;
     },
   }
