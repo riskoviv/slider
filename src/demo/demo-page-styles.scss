@@ -28,6 +28,11 @@ body {
   span {
     font-weight: bold;
   }
+
+  @media (max-aspect-ratio: 1/1) {
+    left: unset;
+    right: 0;
+  }
 }
 
 .overscroll-container {
