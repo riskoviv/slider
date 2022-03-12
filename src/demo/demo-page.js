@@ -10,7 +10,7 @@ $(() => {
     value2: 31,
     // isVertical: true,
     // isInterval: false,
-    // showTip: true,
+    // showTip: false,
     // showScale: true,
     // showProgressBar: true,
   });

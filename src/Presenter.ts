@@ -435,7 +435,7 @@ class Presenter {
         : this.model.allowedPositions[posToRightIndex - 1];
     }
 
-    return position;
+    return position; // impossible to happen really
   }
 
   private setPositionAndCurrentValue(options: {
