@@ -102,6 +102,7 @@ class ScaleView extends SubView implements IScaleView {
   }
 
   private insertScaleValueElements(): ScaleView {
+    this.$elem.empty();
     this.$elem.append(this.scaleValueElements);
     return this;
   }
