@@ -36,8 +36,9 @@ interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction {}
 interface IPluginPublicMethods {
   debug: { [methodName: string]: () => IPluginOptions },
   setStepSize: (stepSize: number) => void,
-  setVerticalState: (isVertical: boolean) => void,
   setValue: (thumbNumber: 1 | 2, valueIndex: number) => void,
+  setVerticalState: (isVertical: boolean) => void,
+  setInterval(isInterval: boolean): void,
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -77,11 +78,11 @@ interface IModel extends IEventEmitter {
   viewValues: ViewValues,
   getOptions(): IPluginOptions,
   getStateOptions(): IPluginStateOptions,
-  setStepSize(stepSize: number): void,
   getValueIndex(valueNumber: 1 | 2): number,
+  setStepSize(stepSize: number): void,
   setValue(thumbNumber: 1 | 2, valueIndex: number): void,
   setVerticalState(isVertical: boolean): void,
-  setInterval(isInterval: boolean): void
+  setInterval(isInterval: boolean): void,
   publicMethods: IPluginPublicMethods,
 }
 

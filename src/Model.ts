@@ -59,7 +59,16 @@ class Model extends EventEmitter implements IModel {
 
   setInterval(isInterval: boolean): void {
     this.options.isInterval = isInterval;
+    this.fixValues();
     this.emit('isIntervalChanged', isInterval);
+    this.emit('valueChanged', {
+      number: 1,
+      value: this.options.value1,
+    });
+    this.emit('valueChanged', {
+      number: 2,
+      value: this.options.value2,
+    });
   }
 
   publicMethods: IPluginPublicMethods = {

@@ -29,8 +29,9 @@ $.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
     ({
       debug: $sliderElem.debug,
       setStepSize: $sliderElem.setStepSize,
-      setVerticalState: $sliderElem.setVerticalState,
       setValue: $sliderElem.setValue,
+      setVerticalState: $sliderElem.setVerticalState,
+      setInterval: $sliderElem.setInterval,
     } = model.publicMethods);
 
     return $sliderElem;
