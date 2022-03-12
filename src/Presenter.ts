@@ -322,7 +322,7 @@ class Presenter {
       this.setMonitorData({
         action: 'down',
         thumbNumber: this.currentThumbData.thumbNumber,
-        currentPosition: this.currentThumbData.currentPosition!,
+        currentPosition: this.currentThumbData.currentPosition,
       });
 
       this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
@@ -377,9 +377,7 @@ class Presenter {
       newPosition,
       movedHalfStep,
       onStepPosition,
-      // this is for debugging purposes
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      currentPosition: this.currentThumbData.currentPosition!,
+      currentPosition: this.currentThumbData.currentPosition,
     });
 
     if (movedHalfStep || onStepPosition) {
