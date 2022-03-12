@@ -43,14 +43,19 @@ class Model extends EventEmitter implements IModel {
     this.emit('stepSizeChanged');
   }
 
-  setValue(thumbNumber: 1 | 2, valueIndex: number): void {
-    this.options[`value${thumbNumber}`] = this.allowedRealValues[valueIndex];
-    if (this.options.showTip) {
-      this.emit('valueChanged', {
-        tipNumber: thumbNumber,
-        value: this.options[`value${thumbNumber}`],
-      });
+  setValue(number: 1 | 2, value: number): void {
+    const valueNumber: 'value1' | 'value2' = `value${number}`;
+    if (this.allowedRealValues.includes(value)) {
+      this.options[valueNumber] = value;
+    } else {
+      const closestValue = this.fixValue(number, value);
+      this.options[valueNumber] = closestValue;
     }
+
+    this.emit('valueChanged', {
+      number,
+      value: this.options[valueNumber],
+    });
   }
 
   setVerticalState(isVertical: boolean): void {
