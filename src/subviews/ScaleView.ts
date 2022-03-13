@@ -14,15 +14,8 @@ class ScaleView extends SubView implements IScaleView {
     dimension: Dimension,
     axis: Axis,
   }): void {
-    const {
-      allowedPositions, allowedRealValues, dimension, axis,
-    } = data;
-    this.createScaleValuesElements(
-      allowedPositions,
-      allowedRealValues,
-      dimension,
-      axis,
-    )
+    const { dimension, axis } = data;
+    this.createScaleValuesElements(data)
       .insertScaleValueElements()
       .optimizeValuesCount(axis, dimension);
 
@@ -31,12 +24,15 @@ class ScaleView extends SubView implements IScaleView {
     }).observe(this.$elem.get()[0]);
   }
 
-  private createScaleValuesElements(
+  private createScaleValuesElements(data: {
     allowedPositions: number[],
     allowedRealValues: number[],
     dimension: Dimension,
     axis: Axis,
-  ): ScaleView {
+  }): ScaleView {
+    const {
+      allowedPositions, allowedRealValues, dimension,
+    } = data;
     const scaleSize = this.$elem[dimension]() ?? 1;
     const quotient = Math.round((allowedPositions.length / scaleSize) * 3);
     const lastElemIndex = allowedPositions.length - 1;
