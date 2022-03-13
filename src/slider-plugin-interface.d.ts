@@ -101,6 +101,7 @@ interface IScaleView extends ISubView {
     dimension: Dimension,
     axis: Axis,
   }): void;
+  initResizeObserver(dimension: Dimension, axis: Axis): void;
 }
 
 interface IThumbView extends ISubView {

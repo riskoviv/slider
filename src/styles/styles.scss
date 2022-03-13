@@ -99,13 +99,13 @@
     &-block {
       position: absolute;
       top: 0;
+      left: var(--scale-block-position);
       height: 100%;
       transform: translateX(-50%);
 
       &::before {
         display: block;
         position: absolute;
-        // bottom: 110%;
         left: 50%;
         transform: translateX(-50%);
         content: '';
@@ -215,7 +215,7 @@
         margin: var(--slider-half-size) 0;
 
         &-block {
-          top: unset;
+          top: var(--scale-block-position);
           bottom: unset;
           left: var(--slider-half-size);
           width: 100%;

@@ -231,10 +231,10 @@ class Presenter {
 
     changeOrientation: (isVertical: boolean): void => {
       this.updateDimensionAndAxis();
-      if (this.options.showScale) {
-        this.updateScaleView();
-      }
       this.view.toggleVertical(isVertical);
+      if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
+        this.subViews.scale.initResizeObserver(this.dimension, this.axis);
+      }
     },
 
     changeInterval: (isInterval: boolean): void => {
