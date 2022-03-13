@@ -49,9 +49,10 @@ class Presenter {
     } = this.options;
 
     this.updateDimensionAndAxis();
-    this.view = new View({ isVertical, isInterval });
-    this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
     this.updateAllowedPositionsArr();
+    this.view = new View({ isVertical, isInterval });
+    this.view.setThumbThickness(this.model.viewValues.stepInPercents);
+    this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
     this.subViewCreationData = {
       base: {
         constructorClass: BaseView,

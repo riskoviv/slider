@@ -104,7 +104,6 @@ interface IScaleView extends ISubView {
 }
 
 interface IThumbView extends ISubView {
-  setThumbThickness(thickness: number): void;
 }
 
 interface ITipView extends ISubView {
@@ -118,6 +117,7 @@ interface IView extends IEventEmitter {
   toggleVertical(isVertical: boolean): void;
   toggleInterval(isInterval: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
+  setThumbThickness(thickness: number): void;
 }
 
 type ViewParams = {

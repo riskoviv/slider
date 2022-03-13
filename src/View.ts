@@ -45,6 +45,13 @@ class View extends EventEmitter implements IView {
     this.$controlContainer.css(`--value-${valueNumber}-position`, `${position}%`);
   }
 
+  setThumbThickness(thickness: number): void {
+    this.$controlContainer.css(
+      '--thumb-thickness',
+      `${thickness}%`,
+    );
+  }
+
   private bindEventListeners() {
     this.controlContainerElem.addEventListener('pointerdown', this.pointerDown);
     this.$controlContainer.on('contextmenu', this.preventContextMenu);
