@@ -12,6 +12,7 @@
   &__control-container {
     --value-1-position: 0%;
     --value-2-position: 100%;
+    --thumb-thickness: var(--slider-size);
     position: relative;
     height: var(--slider-size);
     margin: 0 var(--slider-half-size);
@@ -33,7 +34,6 @@
   }
 
   &__thumb {
-    --thumb-thickness: var(--slider-size);
     position: absolute;
     max-width: var(--slider-size);
     width: var(--thumb-thickness);
