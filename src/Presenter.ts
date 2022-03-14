@@ -107,7 +107,7 @@ class Presenter {
     if (scaleView instanceof ScaleView) {
       scaleView.updateScale({
         allowedPositions: this.model.allowedPositions,
-        allowedRealValues: this.model.allowedRealValues,
+        allowedValues: this.model.allowedValues,
         dimension: this.dimension,
         axis: this.axis,
       });
@@ -116,9 +116,9 @@ class Presenter {
 
   private passInitialValuesToSubViews(values: { value1: number, value2: number }): void {
     const { value1, value2 } = values;
-    const value1Index = this.model.allowedRealValues.indexOf(value1);
+    const value1Index = this.model.allowedValues.indexOf(value1);
     const position1 = this.model.allowedPositions[value1Index];
-    const value2Index = this.model.allowedRealValues.indexOf(value2);
+    const value2Index = this.model.allowedValues.indexOf(value2);
     const position2 = this.model.allowedPositions[value2Index];
     this.setPositionAndCurrentValue({
       number: 1,
@@ -210,11 +210,11 @@ class Presenter {
   }
 
   private getPositionByValue(value: number): number {
-    return this.model.allowedPositions[this.model.allowedRealValues.indexOf(value)];
+    return this.model.allowedPositions[this.model.allowedValues.indexOf(value)];
   }
 
   private getValueByPosition(position: number): number {
-    return this.model.allowedRealValues[this.model.allowedPositions.indexOf(position)];
+    return this.model.allowedValues[this.model.allowedPositions.indexOf(position)];
   }
 
   private modelEventListeners = {

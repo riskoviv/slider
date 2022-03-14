@@ -1,7 +1,7 @@
 import EventEmitter from './EventEmitter';
 
 class Model extends EventEmitter implements IModel {
-  allowedRealValues: number[] = [];
+  allowedValues: number[] = [];
 
   allowedPositions: number[] = [];
 
@@ -13,7 +13,7 @@ class Model extends EventEmitter implements IModel {
 
   constructor(public options: IPluginOptions) {
     super();
-    this.createAllowedRealValuesArr();
+    this.createAllowedValuesArr();
     this.fixValues();
   }
 
@@ -34,12 +34,12 @@ class Model extends EventEmitter implements IModel {
   }
 
   getValueIndex(valueNumber: 1 | 2): number {
-    return this.allowedRealValues.indexOf(this.options[`value${valueNumber}`]);
+    return this.allowedValues.indexOf(this.options[`value${valueNumber}`]);
   }
 
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
-    this.createAllowedRealValuesArr();
+    this.createAllowedValuesArr();
     this.emit('stepSizeChanged');
   }
 
@@ -83,12 +83,12 @@ class Model extends EventEmitter implements IModel {
   }
 
   private fixValues() {
-    if (!this.allowedRealValues.includes(this.options.value1)) {
+    if (!this.allowedValues.includes(this.options.value1)) {
       this.options.value1 = this.fixValue(1, this.options.value1);
     }
 
     if (this.options.isInterval) {
-      if (!this.allowedRealValues.includes(this.options.value2)) {
+      if (!this.allowedValues.includes(this.options.value2)) {
         this.options.value2 = this.fixValue(2, this.options.value2);
       }
 
@@ -97,14 +97,14 @@ class Model extends EventEmitter implements IModel {
         const warnMsgEnd = '\nPlease check values that you passed to plugin options.';
 
         if (this.options.value1 === this.options.maxValue) {
-          [this.options.value1] = this.allowedRealValues.slice(-2);
+          [this.options.value1] = this.allowedValues.slice(-2);
           console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
         } else if (this.options.value2 === this.options.minValue) {
-          [, this.options.value2] = this.allowedRealValues;
+          [, this.options.value2] = this.allowedValues;
           console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
         } else {
-          const value1Index = this.allowedRealValues.indexOf(this.options.value1);
-          this.options.value2 = this.allowedRealValues[value1Index + 1];
+          const value1Index = this.allowedValues.indexOf(this.options.value1);
+          this.options.value2 = this.allowedValues[value1Index + 1];
           console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
         }
       } else if (this.options.value2 < this.options.value1) {
@@ -122,20 +122,20 @@ class Model extends EventEmitter implements IModel {
     let fixedValue = value;
     if (value > this.options.maxValue) fixedValue = this.options.maxValue;
     else if (value < this.options.minValue) fixedValue = this.options.minValue;
-    else if (!this.allowedRealValues.includes(value)) {
-      fixedValue = this.findClosestAllowedRealValue(value);
+    else if (!this.allowedValues.includes(value)) {
+      fixedValue = this.findClosestAllowedValue(value);
     }
 
     if (this.options.isInterval) {
       if (num === 1) {
         if (fixedValue >= this.options.value2) {
-          fixedValue = this.allowedRealValues[
-            this.allowedRealValues.indexOf(this.options.value2) - 1
+          fixedValue = this.allowedValues[
+            this.allowedValues.indexOf(this.options.value2) - 1
           ];
         }
       } else if (fixedValue <= this.options.value1) {
-        fixedValue = this.allowedRealValues[
-          this.allowedRealValues.indexOf(this.options.value1) + 1
+        fixedValue = this.allowedValues[
+          this.allowedValues.indexOf(this.options.value1) + 1
         ];
       }
     }
@@ -144,13 +144,13 @@ class Model extends EventEmitter implements IModel {
     return fixedValue;
   }
 
-  private findClosestAllowedRealValue(value: number): number {
-    const valToRight = this.allowedRealValues.find((val) => val > value);
+  private findClosestAllowedValue(value: number): number {
+    const valToRight = this.allowedValues.find((val) => val > value);
     if (valToRight !== undefined) {
-      const valToRightIndex = this.allowedRealValues.indexOf(valToRight);
+      const valToRightIndex = this.allowedValues.indexOf(valToRight);
       return (valToRight - value < this.options.stepSize / 2)
         ? valToRight
-        : this.allowedRealValues[valToRightIndex - 1];
+        : this.allowedValues[valToRightIndex - 1];
     }
 
     return value; // impossible to happen really
@@ -162,29 +162,29 @@ class Model extends EventEmitter implements IModel {
     return stepAsString.split('.')[1].length;
   }
 
-  private createAllowedRealValuesArr(): void {
+  private createAllowedValuesArr(): void {
     const stepPrecision = this.identifyStepSizeFractionalPrecision();
 
-    this.allowedRealValues.length = 0;
+    this.allowedValues.length = 0;
 
     for (
       let stepValue = this.options.minValue;
       stepValue <= this.options.maxValue;
       stepValue += this.options.stepSize
     ) {
-      this.allowedRealValues.push(stepValue);
+      this.allowedValues.push(stepValue);
     }
 
     if (stepPrecision > 0) {
-      this.allowedRealValues = this.allowedRealValues.map((stepValue) => (
+      this.allowedValues = this.allowedValues.map((stepValue) => (
         Number(stepValue.toFixed(stepPrecision))
       ));
     }
 
-    const allowedRealValuesLastValue = this.allowedRealValues.slice(-1)[0];
+    const allowedValuesLastValue = this.allowedValues.slice(-1)[0];
 
-    if (allowedRealValuesLastValue < this.options.maxValue) {
-      this.allowedRealValues.push(this.options.maxValue);
+    if (allowedValuesLastValue < this.options.maxValue) {
+      this.allowedValues.push(this.options.maxValue);
     }
   }
 }

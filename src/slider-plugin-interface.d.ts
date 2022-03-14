@@ -73,7 +73,7 @@ type ViewValues = {
 
 interface IModel extends IEventEmitter {
   options: IPluginOptions,
-  allowedRealValues: number[],
+  allowedValues: number[],
   allowedPositions: number[],
   viewValues: ViewValues,
   getOptions(): IPluginOptions,
@@ -97,7 +97,7 @@ interface ISubView extends IEventEmitter {
 interface IScaleView extends ISubView {
   updateScale(data: {
     allowedPositions: number[],
-    allowedRealValues: number[],
+    allowedValues: number[],
     dimension: Dimension,
     axis: Axis,
   }): void;

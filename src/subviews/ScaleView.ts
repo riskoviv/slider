@@ -12,7 +12,7 @@ class ScaleView extends SubView implements IScaleView {
 
   updateScale(data: {
     allowedPositions: number[],
-    allowedRealValues: number[],
+    allowedValues: number[],
     dimension: Dimension,
     axis: Axis,
   }): void {
@@ -32,12 +32,12 @@ class ScaleView extends SubView implements IScaleView {
 
   private createScaleValuesElements(data: {
     allowedPositions: number[],
-    allowedRealValues: number[],
+    allowedValues: number[],
     dimension: Dimension,
     axis: Axis,
   }): ScaleView {
     const {
-      allowedPositions, allowedRealValues, dimension,
+      allowedPositions, allowedValues, dimension,
     } = data;
     const scaleSize = this.$elem[dimension]() ?? 1;
     const quotient = Math.round((allowedPositions.length / scaleSize) * 3);
@@ -48,7 +48,7 @@ class ScaleView extends SubView implements IScaleView {
     if (isEveryValueAllowed) {
       this.scaleValueElements = allowedPositions.map((value, index) => (
         this.makeNewScaleValueElement(
-          allowedRealValues,
+          allowedValues,
           index,
           value,
         )
@@ -56,7 +56,7 @@ class ScaleView extends SubView implements IScaleView {
     } else {
       for (let index = 0; index <= lastElemIndex; index += quotient) {
         this.scaleValueElements.push(this.makeNewScaleValueElement(
-          allowedRealValues,
+          allowedValues,
           index,
           allowedPositions[index],
         ));
@@ -68,7 +68,7 @@ class ScaleView extends SubView implements IScaleView {
       if (lastElemIsNotMaxValue) {
         this.scaleValueElements.push(
           this.makeNewScaleValueElement(
-            allowedRealValues,
+            allowedValues,
             lastElemIndex,
             100,
           ),
@@ -107,13 +107,13 @@ class ScaleView extends SubView implements IScaleView {
   }
 
   private makeNewScaleValueElement = (
-    allowedRealValues: number[],
+    allowedValues: number[],
     index: number,
     position: number,
   ): JQuery<HTMLDivElement> => (
     $(`
       <div class="slider__scale-block" data-index="${index}" style="--scale-block-position: ${position}%">
-        <span class="slider__scale-text">${allowedRealValues[index]}</span>
+        <span class="slider__scale-text">${allowedValues[index]}</span>
       </div>
     `)
   );
