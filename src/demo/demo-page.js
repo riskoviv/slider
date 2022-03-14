@@ -9,10 +9,10 @@ $(() => {
     value1: 10,
     value2: 31,
     // isVertical: true,
-    // isInterval: false,
-    // showTip: false,
-    // showScale: false,
-    // showProgressBar: false,
+    isInterval: true,
+    showTip: true,
+    showScale: true,
+    showProgressBar: true,
   });
 
   console.log('slider1.getOptions(): ', window.slider1.debug.getOptions());
