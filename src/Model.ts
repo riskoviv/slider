@@ -45,12 +45,7 @@ class Model extends EventEmitter implements IModel {
 
   setValue(number: 1 | 2, value: number): void {
     const valueNumber: 'value1' | 'value2' = `value${number}`;
-    if (this.allowedRealValues.includes(value)) {
-      this.options[valueNumber] = value;
-    } else {
-      const closestValue = this.fixValue(number, value);
-      this.options[valueNumber] = closestValue;
-    }
+    this.options[valueNumber] = this.fixValue(number, value);
 
     this.emit('valueChanged', {
       number,
