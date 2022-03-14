@@ -85,10 +85,6 @@ class Presenter {
       value1,
       value2,
     });
-    this.setMonitorData({
-      position1: this.model.viewValues.positions[1],
-      position2: this.model.viewValues.positions[2],
-    });
   }
 
   private bindModelEventListeners(): void {
@@ -336,12 +332,6 @@ class Presenter {
         }
       }
 
-      this.setMonitorData({
-        action: 'down',
-        thumbNumber: this.currentThumbData.thumbNumber,
-        currentPosition: this.currentThumbData.currentPosition,
-      });
-
       this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
       this.view.controlContainerElem.addEventListener('pointerup', this.sliderPointerUp, {
         once: true,
@@ -388,14 +378,6 @@ class Presenter {
     let newPosition = this.pixelsToPercentsOfBaseLength(e[this.offset]);
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
     const onStepPosition = this.thumbChecks.isCursorOnStepPosition(newPosition);
-
-    this.setMonitorData({
-      action: 'move',
-      newPosition,
-      movedHalfStep,
-      onStepPosition,
-      currentPosition: this.currentThumbData.currentPosition,
-    });
 
     if (movedHalfStep || onStepPosition) {
       newPosition = this.thumbChecks.fixIfOutOfRange(newPosition);
