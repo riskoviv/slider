@@ -15,6 +15,16 @@ body {
   margin: 0;
 }
 
+.panel {
+  display: flex;
+  justify-content: flex-end;
+
+  label {
+    user-select: none;
+    margin-left: 20px;
+  }
+}
+
 .data-monitor {
   position: fixed;
   bottom: 0;
