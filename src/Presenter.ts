@@ -319,7 +319,11 @@ class Presenter {
         const allowedPosition = this.findClosestAllowedPosition(position);
         if (allowedPosition !== undefined) {
           const allowedIndex = this.model.allowedPositions.indexOf(allowedPosition);
-          const chosenThumb = this.findClosestThumb(allowedIndex);
+          let chosenThumb: 1 | 2 = 1;
+          if (this.options.isInterval) {
+            chosenThumb = this.findClosestThumb(allowedIndex);
+          }
+
           this.currentThumbData = {
             thumbNumber: chosenThumb,
             currentPosition: allowedPosition,
