@@ -79,33 +79,6 @@ class ScaleView extends SubView implements IScaleView {
     return this;
   }
 
-  private optimizeValuesCount(axis: Axis, dimension: Dimension): void {
-    const $firstElem = this.scaleValueElements[0];
-    const $lastElem = this.scaleValueElements.slice(-1)[0];
-    let $currentElem = $firstElem;
-    let curElemEdgeBound = this.getElementEdgeBound($currentElem, axis, dimension);
-
-    this.scaleValueElements.slice(1).forEach(($elem) => {
-      if ($elem.position()[axis] - 5 <= curElemEdgeBound) {
-        if ($elem === $lastElem && $currentElem !== $firstElem) {
-          $currentElem.addClass('slider__scale-block_unnumbered');
-        } else if ($elem !== $lastElem) {
-          $elem.addClass('slider__scale-block_unnumbered');
-        }
-      } else {
-        $currentElem = $elem;
-        curElemEdgeBound = this.getElementEdgeBound($currentElem, axis, dimension);
-        $elem.removeClass('slider__scale-block_unnumbered');
-      }
-    });
-  }
-
-  private insertScaleValueElements(): ScaleView {
-    this.$elem.empty();
-    this.$elem.append(this.scaleValueElements);
-    return this;
-  }
-
   private makeNewScaleValueElement = (
     allowedValues: number[],
     index: number,
@@ -118,11 +91,41 @@ class ScaleView extends SubView implements IScaleView {
     `)
   );
 
+  private insertScaleValueElements(): ScaleView {
+    this.$elem.empty();
+    this.$elem.append(this.scaleValueElements);
+    return this;
+  }
+
+  private optimizeValuesCount(axis: Axis, dimension: Dimension): void {
+    const $firstElem = this.scaleValueElements[0];
+    const $lastElem = this.scaleValueElements.slice(-1)[0];
+    let $currentElem = $firstElem;
+    let curElemPosition = $currentElem.position()[axis];
+    let curElemEdgeBound = this.getElementEdgeBound($currentElem, curElemPosition, dimension);
+
+    this.scaleValueElements.slice(1).forEach(($elem) => {
+      const elemPosition = $elem.position()[axis];
+      if (elemPosition - 5 <= curElemEdgeBound) {
+        if ($elem === $lastElem && $currentElem !== $firstElem) {
+          $currentElem.addClass('slider__scale-block_unnumbered');
+        } else if ($elem !== $lastElem) {
+          $elem.addClass('slider__scale-block_unnumbered');
+        }
+      } else {
+        $currentElem = $elem;
+        curElemPosition = elemPosition;
+        curElemEdgeBound = this.getElementEdgeBound($elem, elemPosition, dimension);
+        $elem.removeClass('slider__scale-block_unnumbered');
+      }
+    });
+  }
+
   private getElementEdgeBound = (
     element: JQuery<HTMLSpanElement>,
-    axis: Axis,
+    position: number,
     dimension: Dimension,
-  ) => element.position()[axis] + (element[dimension]() ?? 1);
+  ) => position + (element[dimension]() ?? 1);
 
   private scaleValueClick = (e: JQuery.ClickEvent) => {
     const target: HTMLDivElement | undefined = e.target.closest('.slider__scale-text')?.parentNode;
