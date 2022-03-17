@@ -5,6 +5,7 @@ interface IPluginValueOptions {
   maxValue: number,
   value1: number,
   value2: number,
+  sliderSize: number,
 }
 
 interface IPluginStateOptions {
@@ -33,6 +34,7 @@ interface IPluginPublicMethods {
   setValue: (thumbNumber: 1 | 2, valueIndex: number) => void,
   setVerticalState: (isVertical: boolean) => void,
   setInterval(isInterval: boolean): void,
+  setSliderSize(size: number): void,
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -46,6 +48,7 @@ type EventName = (
   | 'scaleValueSelect'
   | 'isVerticalChanged'
   | 'isIntervalChanged'
+  | 'sliderSizeChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
@@ -66,18 +69,19 @@ type ViewValues = {
 };
 
 interface IModel extends IEventEmitter {
-  options: IPluginOptions,
-  allowedValues: number[],
-  allowedPositions: number[],
-  viewValues: ViewValues,
-  getOptions(): IPluginOptions,
-  getStateOptions(): IPluginStateOptions,
-  getValueIndex(valueNumber: 1 | 2): number,
-  setStepSize(stepSize: number): void,
-  setValue(thumbNumber: 1 | 2, valueIndex: number): void,
-  setVerticalState(isVertical: boolean): void,
-  setInterval(isInterval: boolean): void,
-  publicMethods: IPluginPublicMethods,
+  options: IPluginOptions;
+  allowedValues: number[];
+  allowedPositions: number[];
+  viewValues: ViewValues;
+  getOptions(): IPluginOptions;
+  getStateOptions(): IPluginStateOptions;
+  getValueIndex(valueNumber: 1 | 2): number;
+  setStepSize(stepSize: number): void;
+  setValue(thumbNumber: 1 | 2, valueIndex: number): void;
+  setVerticalState(isVertical: boolean): void;
+  setInterval(isInterval: boolean): void;
+  setSliderSize(size: number): void;
+  publicMethods: IPluginPublicMethods;
 }
 
 type Axis = 'left' | 'top';
@@ -113,6 +117,7 @@ interface IView extends IEventEmitter {
   toggleInterval(isInterval: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
   setThumbThickness(thickness: number): void;
+  setSliderSize(size: number): void
 }
 
 type ViewParams = {

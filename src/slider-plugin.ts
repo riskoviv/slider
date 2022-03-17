@@ -9,6 +9,7 @@ const defaultOptions: IPluginOptions = {
   maxValue: 100,
   value1: -50,
   value2: 50,
+  sliderSize: 30,
   isVertical: false,
   isInterval: false,
   showTip: false,
@@ -46,6 +47,7 @@ $.fn.sliderPlugin = function sliderPlugin(
     setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
+    setSliderSize: $sliderElem.setSliderSize,
   } = model.publicMethods);
 
   return $sliderElem;
@@ -110,6 +112,16 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
       } else if (typeof value !== typeof defaultOptions[key]) {
         console.warn(`Warning: option named ${key} has wrong value type (${typeof value}), but must be of type ${typeof defaultOptions[key]}`);
         delete checkedOptions[key];
+      } else if (typeof defaultOptions[key] === 'number') {
+        if (!Number.isFinite(value)) {
+          console.warn(`Warning: option named ${key} must be a number > 0, but value provided in options is not correct number`);
+          delete checkedOptions[key];
+        } else if (key === 'sliderSize' && value !== undefined) {
+          if (value <= 0) {
+            console.warn('Warning: sliderSize value must be more than 0');
+            delete checkedOptions[key];
+          }
+        }
       }
     },
   );
