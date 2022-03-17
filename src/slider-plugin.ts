@@ -3,54 +3,53 @@ import Presenter from './Presenter';
 import './styles/styles.scss';
 import utils from './utils';
 
+const defaultOptions: IPluginOptions = {
+  stepSize: 10,
+  minValue: -100,
+  maxValue: 100,
+  value1: -50,
+  value2: 50,
+  isVertical: false,
+  isInterval: false,
+  showTip: false,
+  showScale: false,
+  showProgressBar: false,
+};
 let containerHasProblems: (container: JQuery) => number;
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
 let fixCustomOptions: (options: Partial<IPluginOptions>) => null | Partial<IPluginOptions>;
 let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
 
-$.fn.sliderPlugin = Object.assign<IPluginFunction, IPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: Partial<IPluginOptions> = {}): JQuery | null {
-    if (containerHasProblems(this) > 0) {
-      return null;
-    }
+$.fn.sliderPlugin = function sliderPlugin(
+  this: JQuery,
+  options: Partial<IPluginOptions> = {},
+): JQuery | null {
+  if (containerHasProblems(this) > 0) {
+    return null;
+  }
 
-    cleanContainerIfNotEmpty(this);
+  cleanContainerIfNotEmpty(this);
 
-    const pluginOptions = checkOptionsValues($.extend(
-      {},
-      $.fn.sliderPlugin.options,
-      fixCustomOptions(options),
-    ));
+  const pluginOptions = checkOptionsValues($.extend(
+    {},
+    defaultOptions,
+    fixCustomOptions(options),
+  ));
 
-    const model = new Model(pluginOptions);
-    const presenter = new Presenter(this, model);
-    const $sliderElem = presenter.view.$elem;
+  const model = new Model(pluginOptions);
+  const presenter = new Presenter(this, model);
+  const $sliderElem = presenter.view.$elem;
 
-    ({
-      debug: $sliderElem.debug,
-      setStepSize: $sliderElem.setStepSize,
-      setValue: $sliderElem.setValue,
-      setVerticalState: $sliderElem.setVerticalState,
-      setInterval: $sliderElem.setInterval,
-    } = model.publicMethods);
+  ({
+    debug: $sliderElem.debug,
+    setStepSize: $sliderElem.setStepSize,
+    setValue: $sliderElem.setValue,
+    setVerticalState: $sliderElem.setVerticalState,
+    setInterval: $sliderElem.setInterval,
+  } = model.publicMethods);
 
-    return $sliderElem;
-  },
-  {
-    options: {
-      stepSize: 10,
-      minValue: -100,
-      maxValue: 100,
-      value1: -50,
-      value2: 50,
-      isVertical: false,
-      isInterval: false,
-      showTip: false,
-      showScale: false,
-      showProgressBar: false,
-    },
-  },
-);
+  return $sliderElem;
+};
 
 containerHasProblems = (container: JQuery): number => {
   type checkBlock = {
@@ -94,7 +93,6 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
     return null;
   }
 
-  const defaultOptions = $.fn.sliderPlugin.options;
   const checkedOptions = { ...options };
 
   type pluginOptionsEntry = [

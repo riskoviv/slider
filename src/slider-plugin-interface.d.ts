@@ -22,16 +22,10 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
  */
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
-interface IPluginGlobalOptions {
-  options: IPluginOptions;
-}
-
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
   (options: Partial<IPluginOptions>): JQuery | null;
 }
-
-interface ISliderPlugin extends IPluginGlobalOptions, IPluginFunction {}
 
 interface IPluginPublicMethods {
   debug: { [methodName: string]: () => IPluginOptions },
@@ -42,7 +36,7 @@ interface IPluginPublicMethods {
 }
 
 interface JQuery extends IPluginPublicMethods {
-  sliderPlugin: ISliderPlugin;
+  sliderPlugin: IPluginFunction;
 }
 
 type EventName = (
