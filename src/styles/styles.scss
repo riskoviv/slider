@@ -3,6 +3,7 @@
   --slider-half-size: calc(var(--slider-size) / 2);
   --green: rgb(47, 163, 12);
 
+  font-size: calc(var(--slider-size) * 0.6);
   min-height: var(--slider-size);
 
   * {
@@ -65,6 +66,7 @@
     bottom: var(--tip-margin);
     transform: translateX(-50%);
     pointer-events: none;
+    user-select: none;
 
     &::after {
       position: absolute;
@@ -138,6 +140,7 @@
       top: var(--slider-half-size);
       position: relative;
       cursor: pointer;
+      user-select: none;
     }
   }
 
