@@ -1,18 +1,18 @@
 /* eslint-disable no-redeclare */
 interface IPluginValueOptions {
-  stepSize: number,
-  minValue: number,
-  maxValue: number,
-  value1: number,
-  value2: number,
+  stepSize: number;
+  minValue: number;
+  maxValue: number;
+  value1: number;
+  value2: number;
 }
 
 interface IPluginStateOptions {
-  isVertical: boolean,
-  isInterval: boolean,
-  showTip: boolean,
-  showScale: boolean,
-  showProgressBar: boolean,
+  isVertical: boolean;
+  isInterval: boolean;
+  showTip: boolean;
+  showScale: boolean;
+  showProgressBar: boolean;
 }
 
 interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
@@ -28,11 +28,11 @@ interface IPluginFunction {
 }
 
 interface IPluginPublicMethods {
-  debug: { [methodName: string]: () => IPluginOptions },
-  setStepSize: (stepSize: number) => void,
-  setValue: (thumbNumber: 1 | 2, valueIndex: number) => void,
-  setVerticalState: (isVertical: boolean) => void,
-  setInterval(isInterval: boolean): void,
+  debug: { [methodName: string]: () => IPluginOptions };
+  setStepSize: (stepSize: number) => void;
+  setValue: (thumbNumber: 1 | 2, valueIndex: number) => void;
+  setVerticalState: (isVertical: boolean) => void;
+  setInterval(isInterval: boolean): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -66,18 +66,18 @@ type ViewValues = {
 };
 
 interface IModel extends IEventEmitter {
-  options: IPluginOptions,
-  allowedValues: number[],
-  allowedPositions: number[],
-  viewValues: ViewValues,
-  getOptions(): IPluginOptions,
-  getStateOptions(): IPluginStateOptions,
-  getValueIndex(valueNumber: 1 | 2): number,
-  setStepSize(stepSize: number): void,
-  setValue(thumbNumber: 1 | 2, valueIndex: number): void,
-  setVerticalState(isVertical: boolean): void,
-  setInterval(isInterval: boolean): void,
-  publicMethods: IPluginPublicMethods,
+  options: IPluginOptions;
+  allowedValues: number[];
+  allowedPositions: number[];
+  viewValues: ViewValues;
+  getOptions(): IPluginOptions;
+  getStateOptions(): IPluginStateOptions;
+  getValueIndex(valueNumber: 1 | 2): number;
+  setStepSize(stepSize: number): void;
+  setValue(thumbNumber: 1 | 2, valueIndex: number): void;
+  setVerticalState(isVertical: boolean): void;
+  setInterval(isInterval: boolean): void;
+  publicMethods: IPluginPublicMethods;
 }
 
 type Axis = 'left' | 'top';
