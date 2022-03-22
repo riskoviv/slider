@@ -9,7 +9,6 @@ const defaultOptions: IPluginOptions = {
   maxValue: 100,
   value1: -50,
   value2: 50,
-  sliderSize: 30,
   isVertical: false,
   isInterval: false,
   showTip: false,
@@ -47,7 +46,6 @@ $.fn.sliderPlugin = function sliderPlugin(
     setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
-    setSliderSize: $sliderElem.setSliderSize,
   } = model.publicMethods);
 
   return $sliderElem;

@@ -51,7 +51,7 @@ class Presenter {
     this.updateDimensionAndAxis();
     this.updateAllowedPositionsArr();
     this.view = new View({ isVertical, isInterval });
-    this.setViewValues();
+    this.view.setThumbThickness(this.model.viewValues.stepInPercents);
     this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
     this.subViewCreationData = {
       base: {
@@ -92,13 +92,7 @@ class Presenter {
     this.model.on('stepSizeChanged', listeners.changeStepSize)
       .on('isVerticalChanged', listeners.changeOrientation)
       .on('isIntervalChanged', listeners.changeInterval)
-      .on('valueChanged', listeners.setValueAndPosition)
-      .on('sliderSizeChanged', listeners.setSliderSize);
-  }
-
-  private setViewValues(): void {
-    this.view.setThumbThickness(this.model.viewValues.stepInPercents);
-    this.setSliderSize(this.options.sliderSize);
+      .on('valueChanged', listeners.setValueAndPosition);
   }
 
   private updateDimensionAndAxis() {
@@ -266,8 +260,6 @@ class Presenter {
       const position = this.getPositionByValue(value);
       this.setPosition(number, position);
     },
-
-    setSliderSize: this.setSliderSize,
   };
 
   private thumbChecks = {
@@ -467,10 +459,6 @@ class Presenter {
     if (tip instanceof TipView) {
       tip.setValue(value);
     }
-  }
-
-  private setSliderSize(size: number): void {
-    this.view.setSliderSize(size);
   }
 
   private findClosestThumb(valueIndex: number): 1 | 2 {

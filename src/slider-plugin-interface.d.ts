@@ -46,7 +46,6 @@ type EventName = (
   | 'scaleValueSelect'
   | 'isVerticalChanged'
   | 'isIntervalChanged'
-  | 'sliderSizeChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
@@ -114,7 +113,6 @@ interface IView extends IEventEmitter {
   toggleInterval(isInterval: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
   setThumbThickness(thickness: number): void;
-  setSliderSize(size: number): void
 }
 
 type ViewParams = {

@@ -52,10 +52,6 @@ class View extends EventEmitter implements IView {
     );
   }
 
-  setSliderSize(size: number): void {
-    this.$elem.css('--slider-size', `${size}px`);
-  }
-
   private bindEventListeners() {
     this.controlContainerElem.addEventListener('pointerdown', this.pointerDown);
     this.$controlContainer.on('contextmenu', this.preventContextMenu);

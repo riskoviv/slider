@@ -8,7 +8,6 @@ $(() => {
     maxValue: 175,
     value1: 10,
     value2: 31,
-    sliderSize: 15,
     // isVertical: true,
     isInterval: true,
     showTip: true,

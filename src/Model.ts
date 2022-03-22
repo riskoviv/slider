@@ -72,15 +72,6 @@ class Model extends EventEmitter implements IModel {
     });
   }
 
-  setSliderSize(size: number): void {
-    if (typeof size !== 'number' || !Number.isFinite(size)) {
-      console.warn('Provided size is not valid. Please provide correct number');
-      return;
-    }
-
-    this.emit('sliderSizeChanged', size);
-  }
-
   publicMethods: IPluginPublicMethods = {
     debug: {
       getOptions: this.getOptions.bind(this),
@@ -89,7 +80,6 @@ class Model extends EventEmitter implements IModel {
     setValue: this.setValue.bind(this),
     setVerticalState: this.setVerticalState.bind(this),
     setInterval: this.setInterval.bind(this),
-    setSliderSize: this.setSliderSize.bind(this),
   }
 
   private fixValues() {
