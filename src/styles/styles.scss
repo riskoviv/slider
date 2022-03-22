@@ -1,9 +1,11 @@
 .slider {
-  --slider-size: 30px;
+  --slider-size: 20px;
   --slider-half-size: calc(var(--slider-size) / 2);
-  --green: rgb(47, 163, 12);
+  --main-color: #4eb7a8;
 
   font-size: calc(var(--slider-size) * 0.6);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 700;
   min-height: var(--slider-size);
 
   * {
@@ -23,7 +25,7 @@
   }
 
   &__base {
-    --base-size: var(--slider-half-size);
+    --base-size: calc(var(--slider-half-size) / 2);
     --base-border-radius: calc(var(--base-size) / 2);
     position: relative;
     height: var(--base-size);
@@ -39,9 +41,8 @@
     max-width: var(--slider-size);
     width: var(--thumb-thickness);
     height: var(--slider-size);
-    background-color: var(--green);
+    background-color: var(--main-color);
     border-radius: 10px;
-    border: calc(var(--slider-size) / 10) solid white;
     top: 0;
     transform: translateX(-50%);
     cursor: pointer;
@@ -59,11 +60,12 @@
   &__tip {
     --tip-margin: calc(100% + 5px);
     position: absolute;
-    background-color: #aaa;
-    border: 1px solid white;
-    padding: 2px;
-    border-radius: 2px;
-    bottom: var(--tip-margin);
+    background-color: var(--main-color);
+    color: #fff;
+    font-size: 1.2em;
+    padding: 2px 10px;
+    border-radius: 5px;
+    bottom: calc(var(--tip-margin) + 5px);
     transform: translateX(-50%);
     pointer-events: none;
     user-select: none;
@@ -72,16 +74,13 @@
       position: absolute;
       display: block;
       content: '';
-      top: 100%;
+      bottom: 0;
       left: 50%;
-      transform: translateX(-50%);
-      width: 0px;
-      height: 0px;
-      background-color: transparent;
-      border-left: 4px solid transparent;
-      border-right: 4px solid transparent;
-      border-top: 5px solid white;
-      border-bottom-width: 0px;
+      transform: translate(-50%, 50%) rotate(45deg);
+      border-radius: 2px;
+      width: 8px;
+      height: 8px;
+      background-color: var(--main-color);
     }
 
     &_1 {
@@ -138,6 +137,7 @@
 
     &-text {
       top: var(--slider-half-size);
+      color: #666;
       position: relative;
       cursor: pointer;
       user-select: none;
@@ -146,7 +146,7 @@
 
   &__progress {
     position: absolute;
-    background-color: var(--green);
+    background-color: var(--main-color);
     height: var(--base-size);
     width: var(--value-1-position);
     left: 0%;
