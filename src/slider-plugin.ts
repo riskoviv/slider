@@ -110,6 +110,11 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
       } else if (typeof value !== typeof defaultOptions[key]) {
         console.warn(`Warning: option named ${key} has wrong value type (${typeof value}), but must be of type ${typeof defaultOptions[key]}`);
         delete checkedOptions[key];
+      } else if (typeof defaultOptions[key] === 'number') {
+        if (!Number.isFinite(value)) {
+          console.warn(`Warning: option named ${key} must be a number > 0, but value provided in options is not correct number`);
+          delete checkedOptions[key];
+        }
       }
     },
   );
