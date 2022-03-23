@@ -15,10 +15,10 @@ $(() => {
     showProgressBar: true,
   });
 
-  const $slider2 = $('#slider2');
-  window.slider2 = $slider2.sliderPlugin({
-    showScale: true,
-  });
+  // const $slider2 = $('#slider2');
+  // window.slider2 = $slider2.sliderPlugin({
+  //   showScale: true,
+  // });
 
   console.log('slider1.getOptions(): ', window.slider1.debug.getOptions());
   console.log('slider2.getOptions(): ', window.slider2.debug.getOptions());
