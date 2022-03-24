@@ -51,6 +51,7 @@ class Presenter {
     this.updateDimensionAndAxis();
     this.updateAllowedPositionsArr();
     this.view = new View({ isVertical, isInterval });
+    this.toggleContainerClass(isVertical);
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
     this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
     this.subViewCreationData = {
@@ -231,6 +232,7 @@ class Presenter {
       if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
         this.subViews.scale.initResizeObserver(this.dimension, this.axis);
       }
+      this.toggleContainerClass(isVertical);
     },
 
     changeInterval: (isInterval: boolean): void => {
@@ -363,7 +365,7 @@ class Presenter {
     },
   }
 
-  // debug tool
+  // debug tools
   private dataMonitor: JQuery<HTMLElement> = $('.data-monitor');
 
   private setMonitorData(elementsData: { [elementName: string]: string | number | boolean }): void {
@@ -371,6 +373,10 @@ class Presenter {
     Object.entries(elementsData).forEach(([elementName, elementText]) => {
       this.dataMonitor.append(`<p>${elementName}: <span>${elementText}</span></p>`);
     });
+  }
+
+  private toggleContainerClass(isVertical: boolean): void {
+    this.$pluginRootElem.toggleClass('slider-container_vertical', isVertical);
   }
 
   private currentThumbData: {
