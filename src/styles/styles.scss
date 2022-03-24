@@ -125,7 +125,7 @@
 
       &::before {
         content: '';
-        background-color: #777;
+        background-color: var(--main-color);
         width: 2px;
         height: 100%;
       }
@@ -231,7 +231,6 @@
       }
 
       &__scale {
-        width: calc(var(--slider-size) * 2);
         height: calc(100% - var(--slider-size));
         margin: var(--slider-half-size) 0;
 
@@ -242,11 +241,11 @@
           height: auto;
           transform: translateY(-50%);
           flex-direction: row;
+          justify-content: flex-start;
 
           &::before {
             width: calc(var(--slider-half-size) / 2);
             height: 2px;
-            margin-right: calc(var(--slider-half-size) / 4);
           }
 
           &_unnumbered {
@@ -258,6 +257,7 @@
 
         &-text {
           text-align: left;
+          margin-left: calc(var(--slider-half-size) / 4);
         }
       }
 
