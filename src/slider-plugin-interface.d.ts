@@ -98,9 +98,6 @@ interface IScaleView extends ISubView {
   initResizeObserver(dimension: Dimension, axis: Axis): void;
 }
 
-interface IThumbView extends ISubView {
-}
-
 interface ITipView extends ISubView {
   setValue(value: number): void;
 }
