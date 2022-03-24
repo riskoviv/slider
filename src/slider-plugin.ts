@@ -1,54 +1,55 @@
-import SliderModel from './SliderModel';
-import SliderPresenter from './SliderPresenter';
+import Model from './Model';
+import Presenter from './Presenter';
 import './styles/styles.scss';
+import utils from './utils';
 
-let containerHasProblems: Function;
-let cleanContainerIfNotEmpty: Function;
-let fixCustomOptions: Function;
-let checkOptionsValues: Function;
+const defaultOptions: IPluginOptions = {
+  stepSize: 10,
+  minValue: -100,
+  maxValue: 100,
+  value1: -50,
+  value2: 50,
+  isVertical: false,
+  isInterval: false,
+  showTip: false,
+  showScale: false,
+  showProgressBar: false,
+};
+let containerHasProblems: (container: JQuery) => number;
+let cleanContainerIfNotEmpty: (container: JQuery) => void;
+let fixCustomOptions: (options: Partial<IPluginOptions>) => null | Partial<IPluginOptions>;
+let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
 
-$.fn.sliderPlugin = Object.assign<ISliderPluginFunction, ISliderPluginGlobalOptions>(
-  function sliderPlugin(this: JQuery, options: Partial<ISliderPluginOptions> = {}): JQuery | null {
-    if (containerHasProblems(this) > 0) {
-      return null;
-    }
+$.fn.sliderPlugin = function sliderPlugin(
+  this: JQuery,
+  options: Partial<IPluginOptions> = {},
+): JQuery | null {
+  if (containerHasProblems(this) > 0) {
+    return null;
+  }
 
-    cleanContainerIfNotEmpty(this);
+  cleanContainerIfNotEmpty(this);
 
-    const pluginOptions = checkOptionsValues($.extend(
-      {},
-      $.fn.sliderPlugin.options,
-      fixCustomOptions(options),
-    ));
+  const pluginOptions = checkOptionsValues($.extend(
+    {},
+    defaultOptions,
+    fixCustomOptions(options),
+  ));
 
-    const model = new SliderModel(pluginOptions);
-    const presenter = new SliderPresenter(this, model);
-    const $sliderElem = presenter.$pluginElem;
+  const model = new Model(pluginOptions);
+  const presenter = new Presenter(this, model);
+  const $sliderElem = presenter.view.$elem;
 
-    ({
-      debug: $sliderElem.debug,
-      setStepSize: $sliderElem.setStepSize,
-      toggleVertical: $sliderElem.toggleVertical,
-      setValue: $sliderElem.setValue,
-    } = presenter.publicMethods);
+  ({
+    debug: $sliderElem.debug,
+    setStepSize: $sliderElem.setStepSize,
+    setValue: $sliderElem.setValue,
+    setVerticalState: $sliderElem.setVerticalState,
+    setInterval: $sliderElem.setInterval,
+  } = model.publicMethods);
 
-    return $sliderElem;
-  },
-  {
-    options: {
-      stepSize: 10,
-      minValue: -100,
-      maxValue: 100,
-      value1: -50,
-      value2: 50,
-      isVertical: false,
-      isInterval: true,
-      showTip: true,
-      showScale: true,
-      showProgressBar: true,
-    },
-  },
-);
+  return $sliderElem;
+};
 
 containerHasProblems = (container: JQuery): number => {
   type checkBlock = {
@@ -86,17 +87,21 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
   }
 };
 
-fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
-  if (typeof options !== 'object' || options.length !== undefined) {
+fixCustomOptions = (options: Partial<IPluginOptions>) => {
+  if (typeof options !== 'object' || Object.prototype.hasOwnProperty.call(options, 'length')) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
-    return {};
+    return null;
   }
 
-  const defaultOptions = $.fn.sliderPlugin.options;
   const checkedOptions = { ...options };
 
-  Object.entries(options).forEach(
-    (option: [keyof Partial<ISliderPluginOptions>, number | boolean]) => {
+  type pluginOptionsEntry = [
+    keyof Partial<IPluginOptions>,
+    TypeOfValues<Partial<IPluginOptions>>
+  ];
+
+  utils.getEntriesWithTypedKeys(options).forEach(
+    (option: pluginOptionsEntry) => {
       const [key, value] = option;
 
       if (defaultOptions[key] === undefined) {
@@ -105,6 +110,11 @@ fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
       } else if (typeof value !== typeof defaultOptions[key]) {
         console.warn(`Warning: option named ${key} has wrong value type (${typeof value}), but must be of type ${typeof defaultOptions[key]}`);
         delete checkedOptions[key];
+      } else if (typeof defaultOptions[key] === 'number') {
+        if (!Number.isFinite(value)) {
+          console.warn(`Warning: option named ${key} must be a number > 0, but value provided in options is not correct number`);
+          delete checkedOptions[key];
+        }
       }
     },
   );
@@ -112,7 +122,7 @@ fixCustomOptions = (options: Partial<ISliderPluginOptions>) => {
   return checkedOptions;
 };
 
-checkOptionsValues = (options: ISliderPluginOptions) => {
+checkOptionsValues = (options: IPluginOptions) => {
   const pluginOptions = { ...options };
   const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 

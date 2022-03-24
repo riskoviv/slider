@@ -1,10 +1,48 @@
+html {
+  --page-color: #ddd;
+
+  @media (prefers-color-scheme: dark) {
+    --page-color: #333;
+  }
+}
+
 html, body {
   height: 100%;
 }
 
 body {
-  background-color: #666;
+  background-color: var(--page-color);
   margin: 0;
+}
+
+.panel {
+  display: flex;
+  justify-content: flex-end;
+
+  label {
+    user-select: none;
+    margin-left: 20px;
+  }
+}
+
+.data-monitor {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(102, 102, 102, 0.699);
+  color: #ddd;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 2;
+
+  span {
+    font-weight: bold;
+  }
+
+  @media (max-aspect-ratio: 1/1) {
+    left: unset;
+    right: 0;
+  }
 }
 
 .overscroll-container {
@@ -18,4 +56,8 @@ body {
   margin: 0 50px;
   // width: 600px;
   height: 100%;
+
+  &_vertical {
+    margin-left: 150px;
+  }
 }

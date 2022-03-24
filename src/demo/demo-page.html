@@ -5,11 +5,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= htmlWebpackPlugin.options.title %></title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+  <!-- <div class="data-monitor"></div> -->
   <div class="overscroll-container">
-    <div class="slider-container" id="slider"></div>
+    <div class="slider-container" id="slider1"></div>
+    <!-- <div class="slider-container" id="slider2"></div> -->
+    <div class="panel" id="panel1">
+      <label>isInterval: <input class="panel__interval" type="checkbox" name="interval"></label>
+      <label>isVertical: <input class="panel__vertical" type="checkbox" name="vertical"></label>
+    </div>
   </div>
 </body>
 </html>
