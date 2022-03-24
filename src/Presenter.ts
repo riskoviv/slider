@@ -485,24 +485,29 @@ class Presenter {
     maxValue: number,
     stepSize: number,
   }) => {
+    const { allowedPositions } = this.model;
     const { maxValue, minValue, stepSize } = constraints;
     const totalSliderRange = maxValue - minValue;
-    const positionAccuracy = (totalSliderRange / stepSize).toFixed(0).length - 2;
 
-    const roundToAccuracy = function roundNumberToPositionAccuracy(num: number): number {
-      return Number(num.toFixed(positionAccuracy < 1 ? 1 : positionAccuracy));
-    };
-
-    this.model.viewValues.stepInPercents = roundToAccuracy((stepSize / totalSliderRange) * 100);
+    this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
-    this.model.allowedPositions.length = 0;
+    allowedPositions.length = 0;
 
     for (let i = 0; i <= 100; i += this.model.viewValues.stepInPercents) {
-      this.model.allowedPositions.push(roundToAccuracy(i));
+      allowedPositions.push(i);
     }
 
-    if (this.model.allowedPositions.slice(-1)[0] !== 100) {
-      this.model.allowedPositions.push(100);
+    const positionsLength = allowedPositions.length;
+    const valuesLength = this.model.allowedValues.length;
+    if (positionsLength === valuesLength - 1) {
+      allowedPositions.push(100);
+    } else if (positionsLength === valuesLength) {
+      const lastIndex = positionsLength - 1;
+      if (allowedPositions[lastIndex] !== 100) {
+        allowedPositions[lastIndex] = 100;
+      }
+    } else {
+      console.error('Error: positions can\'t be calculated with given parameters.');
     }
   }
 }
