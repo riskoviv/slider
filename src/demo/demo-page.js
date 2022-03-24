@@ -38,13 +38,20 @@ $(() => {
   }
 
   /**
-   * @this HTMLElement isInterval checkbox element
+   * @this HTMLInputElement isInterval checkbox element
    */
   function slider1ChangeIsInterval() {
-    const isInterval = this.value;
-    console.log('isInterval: ', isInterval);
-    window.slider1.setInterval(isInterval);
+    window.slider1.setInterval(this.checked);
   }
 
   $panel1Interval.on('change', slider1ChangeIsInterval);
+
+  /**
+   * @this HTMLInputElement isInterval checkbox element
+   */
+  function slider1ChangeIsVertical() {
+    window.slider1.setVerticalState(this.checked);
+  }
+
+  $panel1Vertical.on('change', slider1ChangeIsVertical);
 });
