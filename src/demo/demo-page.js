@@ -3,12 +3,12 @@ import './demo-page-styles.scss';
 $(() => {
   const $slider1 = $('#slider1');
   window.slider1 = $slider1.sliderPlugin({
-    stepSize: 10_000,
-    minValue: 120_000,
-    maxValue: 1_200_000,
-    value1: 100_000,
-    value2: 310_000,
-    // isVertical: true,
+    stepSize: 3,
+    minValue: 120,
+    maxValue: 400,
+    value1: 120,
+    value2: 310,
+    isVertical: true,
     isInterval: true,
     showTip: true,
     showScale: true,
@@ -47,7 +47,7 @@ $(() => {
   $panel1Interval.on('change', slider1ChangeIsInterval);
 
   /**
-   * @this HTMLInputElement isInterval checkbox element
+   * @this HTMLInputElement isVertical checkbox element
    */
   function slider1ChangeIsVertical() {
     window.slider1.setVerticalState(this.checked);
