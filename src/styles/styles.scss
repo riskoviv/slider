@@ -237,19 +237,16 @@
 
         &-block {
           top: var(--scale-block-position);
-          bottom: unset;
-          left: var(--slider-half-size);
-          width: 100%;
-          height: unset;
+          left: 0;
+          min-width: 100%;
+          height: auto;
           transform: translateY(-50%);
+          flex-direction: row;
 
           &::before {
-            bottom: unset;
-            top: 50%;
-            transform: translate(-100%, -50%);
-            left: 0;
-            width: var(--slider-half-size);
+            width: calc(var(--slider-half-size) / 2);
             height: 2px;
+            margin-right: calc(var(--slider-half-size) / 4);
           }
 
           &_unnumbered {
@@ -261,8 +258,6 @@
 
         &-text {
           text-align: left;
-          top: unset;
-          left: 5px;
         }
       }
 
