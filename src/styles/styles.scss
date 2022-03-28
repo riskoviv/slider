@@ -35,12 +35,11 @@
 
   &__base {
     --base-size: var(--slider-quarter-size);
-    --base-border-radius: calc(var(--base-size) / 2);
     position: relative;
     height: var(--base-size);
     width: 100%;
     background-color: var(--base-color);
-    border-radius: var(--base-border-radius);
+    border-radius: calc(var(--base-size) / 2);
     overflow: hidden;
     pointer-events: none;
   }
