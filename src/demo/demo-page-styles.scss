@@ -34,6 +34,7 @@ body {
   font-size: 13px;
   font-family: 'JetBrains Mono', monospace;
   z-index: 2;
+  backdrop-filter: blur(2px);
 
   span {
     font-weight: bold;
