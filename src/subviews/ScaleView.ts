@@ -7,7 +7,7 @@ class ScaleView extends SubView implements IScaleView {
 
   constructor() {
     super();
-    this.$elem.on('click', this.scaleValueClick);
+    this.bindClickListener();
   }
 
   updateScale(data: {
@@ -46,11 +46,11 @@ class ScaleView extends SubView implements IScaleView {
     this.scaleValueElements = [];
 
     if (isEveryValueAllowed) {
-      this.scaleValueElements = allowedPositions.map((value, index) => (
+      this.scaleValueElements = allowedPositions.map((position, index) => (
         this.makeNewScaleValueElement(
           allowedValues,
           index,
-          value,
+          position,
         )
       ));
     } else {
@@ -127,12 +127,19 @@ class ScaleView extends SubView implements IScaleView {
     dimension: Dimension,
   ) => position + (element[dimension]() ?? 1);
 
-  private scaleValueClick = (e: JQuery.ClickEvent) => {
-    const target: HTMLDivElement | undefined = e.target.closest('.slider__scale-text')?.parentNode;
-    if (target !== undefined) {
-      this.emit('scaleValueSelect', {
-        index: Number(target.dataset.index),
-      });
+  private bindClickListener() {
+    this.$elem.get()[0].addEventListener('pointerdown', this.scaleValueClick);
+  }
+
+  private scaleValueClick = (e: PointerEvent) => {
+    const { target } = e;
+    if (target instanceof HTMLSpanElement) {
+      const scaleBlock = target.parentElement;
+      if (scaleBlock instanceof HTMLDivElement) {
+        this.emit('scaleValueSelect', {
+          index: Number(scaleBlock.dataset.index),
+        });
+      }
     }
   }
 }

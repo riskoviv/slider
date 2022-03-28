@@ -1,6 +1,7 @@
 .slider {
   --slider-size: 20px;
   --slider-half-size: calc(var(--slider-size) / 2);
+  --slider-quarter-size: calc(var(--slider-half-size) / 2);
   --main-color: #4eb7a8;
   --base-color: #9e9e9e;
   --scale-text-color: #666;
@@ -29,16 +30,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    touch-action: none;
   }
 
   &__base {
-    --base-size: calc(var(--slider-half-size) / 2);
-    --base-border-radius: calc(var(--base-size) / 2);
+    --base-size: var(--slider-quarter-size);
     position: relative;
     height: var(--base-size);
     width: 100%;
     background-color: var(--base-color);
-    border-radius: var(--base-border-radius);
+    border-radius: calc(var(--base-size) / 2);
     overflow: hidden;
     pointer-events: none;
   }
@@ -108,7 +109,6 @@
   }
 
   &__scale {
-    height: var(--slider-size);
     margin: 0 var(--slider-half-size);
     position: relative;
 
@@ -120,14 +120,14 @@
       position: absolute;
       top: 0;
       left: var(--scale-block-position);
-      height: 100%;
+      height: fit-content;
       transform: translateX(-50%);
 
       &::before {
         content: '';
         background-color: var(--main-color);
         width: 2px;
-        height: 100%;
+        height: var(--slider-quarter-size);
       }
 
       &_unnumbered {
@@ -150,10 +150,7 @@
     }
 
     &-text {
-      // top: var(--slider-half-size);
-      // bottom: 0;
       color: var(--scale-text-color);
-      // position: relative;
       cursor: pointer;
       user-select: none;
     }
@@ -175,7 +172,7 @@
   &_vertical {
     height: 100%;
     display: flex;
-    width: fit-content;
+    width: var(--slider-size);
 
     .slider {
 
@@ -244,7 +241,7 @@
           justify-content: flex-start;
 
           &::before {
-            width: calc(var(--slider-half-size) / 2);
+            width: var(--slider-quarter-size);
             height: 2px;
           }
 
@@ -257,7 +254,7 @@
 
         &-text {
           text-align: left;
-          margin-left: calc(var(--slider-half-size) / 4);
+          margin-left: calc(var(--slider-quarter-size) / 2);
         }
       }
 
