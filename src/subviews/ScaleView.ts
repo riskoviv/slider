@@ -46,11 +46,11 @@ class ScaleView extends SubView implements IScaleView {
     this.scaleValueElements = [];
 
     if (isEveryValueAllowed) {
-      this.scaleValueElements = allowedPositions.map((value, index) => (
+      this.scaleValueElements = allowedPositions.map((position, index) => (
         this.makeNewScaleValueElement(
           allowedValues,
           index,
-          value,
+          position,
         )
       ));
     } else {
