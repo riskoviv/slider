@@ -8,7 +8,7 @@ $(() => {
     maxValue: 400,
     value1: 120,
     value2: 310,
-    isVertical: true,
+    // isVertical: true,
     isInterval: true,
     showTip: true,
     showScale: true,
