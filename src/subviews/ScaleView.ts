@@ -19,8 +19,7 @@ class ScaleView extends SubView implements IScaleView {
     const { dimension, axis } = data;
     this.createScaleValuesElements(data)
       .insertScaleValueElements()
-      .optimizeValuesCount(axis, dimension);
-    this.initResizeObserver(dimension, axis);
+      .initResizeObserver(dimension, axis);
   }
 
   initResizeObserver(dimension: Dimension, axis: Axis): void {
