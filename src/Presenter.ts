@@ -97,9 +97,15 @@ class Presenter {
   }
 
   private updateDimensionAndAxis() {
-    this.dimension = this.options.isVertical ? 'height' : 'width';
-    this.axis = this.options.isVertical ? 'top' : 'left';
-    this.offset = this.options.isVertical ? 'offsetY' : 'offsetX';
+    if (this.options.isVertical) {
+      this.dimension = 'height';
+      this.axis = 'top';
+      this.offset = 'offsetY';
+    } else {
+      this.dimension = 'width';
+      this.axis = 'left';
+      this.offset = 'offsetX';
+    }
   }
 
   private updateScaleView() {
