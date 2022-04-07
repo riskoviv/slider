@@ -109,7 +109,6 @@ class Presenter {
   }
 
   private updateScaleView() {
-    this.updateDimensionAndAxis();
     const scaleView = this.subViews.scale;
     if (scaleView instanceof ScaleView) {
       scaleView.updateScale({
@@ -384,6 +383,8 @@ class Presenter {
   private toggleContainerClass(isVertical: boolean): void {
     this.$pluginRootElem.toggleClass('slider-container_vertical', isVertical);
   }
+
+  // end of debug tools
 
   private currentThumbData: {
     thumbNumber: 1 | 2,
