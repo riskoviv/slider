@@ -1,6 +1,8 @@
 import SubView from '../SubView';
 
 class ScaleView extends SubView implements IScaleView {
+  private allowedValues: number[] = [];
+
   private scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
   private scaleResizeObserver: ResizeObserver | undefined;
@@ -16,10 +18,10 @@ class ScaleView extends SubView implements IScaleView {
     dimension: Dimension,
     axis: Axis,
   }): void {
-    const { dimension, axis } = data;
+    this.allowedValues = data.allowedValues;
     this.createScaleValuesElements(data)
       .insertScaleValueElements()
-      .initResizeObserver(dimension, axis);
+      .initResizeObserver(data.dimension, data.axis);
   }
 
   initResizeObserver(dimension: Dimension, axis: Axis): void {
@@ -31,12 +33,10 @@ class ScaleView extends SubView implements IScaleView {
 
   private createScaleValuesElements(data: {
     allowedPositions: number[],
-    allowedValues: number[],
     dimension: Dimension,
-    axis: Axis,
   }): ScaleView {
     const {
-      allowedPositions, allowedValues, dimension,
+      allowedPositions, dimension,
     } = data;
     const scaleSize = this.$elem[dimension]() ?? 1;
     const quotient = Math.round((allowedPositions.length / scaleSize) * 3);
@@ -47,7 +47,6 @@ class ScaleView extends SubView implements IScaleView {
     if (isEveryValueAllowed) {
       this.scaleValueElements = allowedPositions.map((position, index) => (
         this.makeNewScaleValueElement(
-          allowedValues,
           index,
           position,
         )
@@ -55,7 +54,6 @@ class ScaleView extends SubView implements IScaleView {
     } else {
       for (let index = 0; index <= lastElemIndex; index += quotient) {
         this.scaleValueElements.push(this.makeNewScaleValueElement(
-          allowedValues,
           index,
           allowedPositions[index],
         ));
@@ -67,7 +65,6 @@ class ScaleView extends SubView implements IScaleView {
       if (lastElemIsNotMaxValue) {
         this.scaleValueElements.push(
           this.makeNewScaleValueElement(
-            allowedValues,
             lastElemIndex,
             100,
           ),
@@ -79,13 +76,12 @@ class ScaleView extends SubView implements IScaleView {
   }
 
   private makeNewScaleValueElement = (
-    allowedValues: number[],
     index: number,
     position: number,
   ): JQuery<HTMLDivElement> => (
     $(`
       <div class="slider__scale-block" data-index="${index}" style="--scale-block-position: ${position}%">
-        <span class="slider__scale-text">${allowedValues[index]}</span>
+        <span class="slider__scale-text">${this.allowedValues[index]}</span>
       </div>
     `)
   );
@@ -97,8 +93,8 @@ class ScaleView extends SubView implements IScaleView {
   }
 
   private optimizeValuesCount(axis: Axis, dimension: Dimension): void {
-    const $firstElem = this.scaleValueElements[0];
-    const $lastElem = this.scaleValueElements.slice(-1)[0];
+    const [$firstElem] = this.scaleValueElements;
+    const [$lastElem] = this.scaleValueElements.slice(-1);
     let $currentElem = $firstElem;
     let curElemPosition = $currentElem.position()[axis];
     let curElemEdgeBound = this.getElementEdgeBound($currentElem, curElemPosition, dimension);
