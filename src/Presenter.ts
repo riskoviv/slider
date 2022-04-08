@@ -35,6 +35,8 @@ class Presenter {
 
   private subViewCreationData: subViewsData;
 
+  private sliderResizeObserver: ResizeObserver | undefined;
+
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -49,7 +51,7 @@ class Presenter {
     } = this.options;
 
     this.updateDimensionAndAxis();
-    this.updateAllowedPositionsArr();
+    this.defineViewValues();
     this.view = new View({ isVertical, isInterval });
     this.toggleContainerClass(isVertical);
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
@@ -81,7 +83,7 @@ class Presenter {
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
-    if (this.options.showScale) this.updateScaleView();
+    if (this.options.showScale) this.updateScale();
     this.passInitialValuesToSubViews({
       value1,
       value2,
@@ -96,6 +98,15 @@ class Presenter {
       .on('valueChanged', listeners.setValueAndPosition);
   }
 
+  private initResizeObserver(): void {
+    this.sliderResizeObserver = new ResizeObserver(() => {
+      if (this.subViews.scale instanceof ScaleView) {
+        this.subViews.scale.optimizeValuesCount(this.axis, this.dimension);
+      }
+    });
+    this.sliderResizeObserver.observe(this.view.$elem.get()[0]);
+  }
+
   private updateDimensionAndAxis() {
     if (this.options.isVertical) {
       this.dimension = 'height';
@@ -108,24 +119,10 @@ class Presenter {
     }
   }
 
-  private updateScaleView() {
-    const scaleView = this.subViews.scale;
-    if (scaleView instanceof ScaleView) {
-      scaleView.updateScale({
-        allowedPositions: this.model.allowedPositions,
-        allowedValues: this.model.allowedValues,
-        dimension: this.dimension,
-        axis: this.axis,
-      });
-    }
-  }
-
   private passInitialValuesToSubViews(values: { value1: number, value2: number }): void {
     const { value1, value2 } = values;
-    const value1Index = this.model.allowedValues.indexOf(value1);
-    const position1 = this.model.allowedPositions[value1Index];
-    const value2Index = this.model.allowedValues.indexOf(value2);
-    const position2 = this.model.allowedPositions[value2Index];
+    const position1 = this.getPositionByValue(value1);
+    const position2 = this.getPositionByValue(value2);
     this.setPositionAndCurrentValue({
       number: 1,
       potentialPosition: position1,
@@ -283,18 +280,32 @@ class Presenter {
   }
 
   private getPositionByValue(value: number): number {
-    return this.model.allowedPositions[this.model.allowedValues.indexOf(value)];
+    const index = this.model.getIndexByValue(value);
+    return this.model.viewValues.stepInPercents * index;
+  }
+
+  private getIndexByPosition(position: number): number {
+    return Math.round(position / this.model.viewValues.stepInPercents);
+  }
+
+  private getPositionByIndex(index: number): number {
+    return this.model.viewValues.stepInPercents * index;
   }
 
   private getValueByPosition(position: number): number {
-    return this.model.allowedValues[this.model.allowedPositions.indexOf(position)];
+    const index = this.getIndexByPosition(position);
+    return this.model.getValueByIndex(index);
+  }
+
+  private isPositionAllowed(position: number): boolean {
+    return position % this.model.viewValues.stepInPercents === 0;
   }
 
   private modelEventListeners = {
     changeStepSize: (): void => {
-      this.updateAllowedPositionsArr();
+      this.defineViewValues();
       if (this.options.showScale) {
-        this.updateScaleView();
+        this.updateScale();
       }
     },
 
@@ -302,7 +313,7 @@ class Presenter {
       this.updateDimensionAndAxis();
       this.view.toggleVertical(isVertical);
       if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
-        this.subViews.scale.initResizeObserver(this.dimension, this.axis);
+        this.initResizeObserver();
       }
       this.toggleContainerClass(isVertical);
     },
@@ -343,7 +354,7 @@ class Presenter {
     ),
 
     isCursorOnStepPosition: (position: number): boolean => (
-      this.model.allowedPositions.includes(position)
+      this.isPositionAllowed(position)
         && position !== this.currentThumbData.currentPosition
     ),
 
@@ -391,23 +402,21 @@ class Presenter {
           data[this.offset],
         );
         const allowedPosition = this.findClosestAllowedPosition(position);
-        if (allowedPosition !== undefined) {
-          const allowedIndex = this.model.allowedPositions.indexOf(allowedPosition);
-          let chosenThumb: 1 | 2 = 1;
-          if (this.options.isInterval) {
-            chosenThumb = this.findClosestThumb(allowedIndex);
-          }
-
-          this.currentThumbData = {
-            thumbNumber: chosenThumb,
-            currentPosition: allowedPosition,
-          };
-          this.setPositionAndCurrentValue({
-            number: chosenThumb,
-            potentialPosition: this.model.allowedPositions[allowedIndex],
-            findClosest: false,
-          });
+        const allowedValue = this.getValueByPosition(allowedPosition);
+        let chosenThumb: 1 | 2 = 1;
+        if (this.options.isInterval) {
+          chosenThumb = this.findClosestThumb(allowedValue);
         }
+
+        this.currentThumbData = {
+          thumbNumber: chosenThumb,
+          currentPosition: allowedPosition,
+        };
+        this.setPositionAndCurrentValue({
+          number: chosenThumb,
+          potentialPosition: allowedPosition,
+          findClosest: false,
+        });
       }
 
       this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
@@ -493,15 +502,8 @@ class Presenter {
   }
 
   private findClosestAllowedPosition(position: number): number {
-    const posToRight = this.model.allowedPositions.find((pos) => pos > position);
-    if (posToRight !== undefined) {
-      const posToRightIndex = this.model.allowedPositions.indexOf(posToRight);
-      return (posToRight - position < this.model.viewValues.halfStepInPercents)
-        ? posToRight
-        : this.model.allowedPositions[posToRightIndex - 1];
-    }
-
-    return position; // impossible to happen really
+    const step = this.model.viewValues.stepInPercents;
+    return Math.round(position / step) * step;
   }
 
   private setPositionAndCurrentValue(options: {
@@ -540,54 +542,20 @@ class Presenter {
     }
   }
 
-  private findClosestThumb(valueIndex: number): 1 | 2 {
-    const thumb1Index = this.model.getValueIndex(1);
-    const thumb2Index = this.model.getValueIndex(2);
-
-    if (Math.abs(valueIndex - thumb1Index) > Math.abs(valueIndex - thumb2Index)) {
+  private findClosestThumb(value: number): 1 | 2 {
+    const { value1, value2 } = this.options;
+    if (Math.abs(value - value1) > Math.abs(value - value2)) {
       return 2;
     }
+
     return 1;
   }
 
-  private updateAllowedPositionsArr(): void {
+  private defineViewValues(): void {
     const { minValue, maxValue, stepSize } = this.options;
-    this.fillAllowedPositionsArr({
-      minValue,
-      maxValue,
-      stepSize,
-    });
-  }
-
-  private fillAllowedPositionsArr = (constraints: {
-    minValue: number,
-    maxValue: number,
-    stepSize: number,
-  }) => {
-    const { allowedPositions } = this.model;
-    const { maxValue, minValue, stepSize } = constraints;
     const totalSliderRange = maxValue - minValue;
-
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
-    allowedPositions.length = 0;
-
-    for (let i = 0; i <= 100; i += this.model.viewValues.stepInPercents) {
-      allowedPositions.push(i);
-    }
-
-    const positionsLength = allowedPositions.length;
-    const valuesLength = this.model.allowedValues.length;
-    if (positionsLength === valuesLength - 1) {
-      allowedPositions.push(100);
-    } else if (positionsLength === valuesLength) {
-      const lastIndex = positionsLength - 1;
-      if (allowedPositions[lastIndex] !== 100) {
-        allowedPositions[lastIndex] = 100;
-      }
-    } else {
-      console.error('Error: positions can\'t be calculated with given parameters.');
-    }
   }
 }
 
