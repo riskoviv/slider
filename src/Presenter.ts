@@ -196,6 +196,73 @@ class Presenter {
     }
   }
 
+  // **************************************
+  // *
+  // * scale values creation methods start
+  // *
+  // **************************************
+  private updateScale(): void {
+    const { scale } = this.subViews;
+    if (scale instanceof ScaleView) {
+      this.createScaleValuesElements(scale);
+      scale.insertScaleValueElements();
+      this.initResizeObserver();
+    }
+  }
+
+  private createScaleValuesElements(scaleView: ScaleView): void {
+    const scale = scaleView;
+    const scaleSize = scale.$elem[this.dimension]() ?? 1;
+    const { allowedValuesCount } = this.model;
+    const quotient = Math.round((allowedValuesCount / scaleSize) * 3);
+    const lastElemIndex = allowedValuesCount - 1;
+    const isEveryValueAllowed = [0, 1].includes(quotient);
+    const { stepSize } = this.options;
+    scale.scaleValueElements.length = 0;
+
+    if (isEveryValueAllowed) {
+      for (let position = 0, index = 0; position <= 100; position = stepSize * index, index += 1) {
+        const value = this.model.getValueByIndex(index);
+        scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
+      }
+    } else {
+      for (let index = 0; index <= lastElemIndex; index += quotient) {
+        scale.scaleValueElements.push(this.makeNewScaleValueElement(
+          this.model.getValueByIndex(index),
+          this.getPositionByIndex(index),
+        ));
+      }
+
+      const lastElemIsNotMaxValue = scale.scaleValueElements
+        .slice(-1)[0]
+        .get()[0]
+        .style.getPropertyValue('--scale-block-position')
+        .trim() !== '100%';
+      if (lastElemIsNotMaxValue) {
+        scale.scaleValueElements.push(
+          this.makeNewScaleValueElement(
+            this.options.maxValue,
+            100,
+          ),
+        );
+      }
+    }
+  }
+
+  private makeNewScaleValueElement = (
+    value: number,
+    position: number,
+  ): JQuery<HTMLDivElement> => (
+    $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
+      <span class="slider__scale-text">${value.toFixed(this.model.stepPrecision)}</span>
+    </div>`)
+  );
+  // ***********************************
+  // *
+  // * scale values creation methods end
+  // *
+  // ***********************************
+
   private subViewExists(subViewName: string): boolean {
     return this.subViews[subViewName] !== undefined;
   }
