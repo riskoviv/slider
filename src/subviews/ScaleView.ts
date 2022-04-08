@@ -126,15 +126,10 @@ class ScaleView extends SubView implements IScaleView {
     this.$elem.get()[0].addEventListener('pointerdown', this.scaleValueClick);
   }
 
-  private scaleValueClick = (e: PointerEvent) => {
+  private scaleValueClick = (e: PointerEvent): void => {
     const { target } = e;
     if (target instanceof HTMLSpanElement) {
-      const scaleBlock = target.parentElement;
-      if (scaleBlock instanceof HTMLDivElement) {
-        this.emit('scaleValueSelect', {
-          index: Number(scaleBlock.dataset.index),
-        });
-      }
+      this.emit('scaleValueSelect', Number(target.innerText));
     }
   }
 }

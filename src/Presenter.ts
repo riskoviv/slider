@@ -349,12 +349,11 @@ class Presenter {
       });
     },
 
-    scaleValueSelect: (options: { index: number }): void => {
-      const { index } = options;
-      const position = this.model.allowedPositions[index];
+    scaleValueSelect: (value: number): void => {
+      const position = this.getPositionByValue(value);
       let thumbNumber: 1 | 2 = 1;
       if (this.options.isInterval) {
-        thumbNumber = this.findClosestThumb(index);
+        thumbNumber = this.findClosestThumb(value);
       }
 
       this.currentThumbData = {
