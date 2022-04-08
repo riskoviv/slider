@@ -67,12 +67,12 @@ type ViewValues = {
 
 interface IModel extends IEventEmitter {
   options: IPluginOptions;
-  allowedValues: number[];
   allowedPositions: number[];
   viewValues: ViewValues;
   getOptions(): IPluginOptions;
   getStateOptions(): IPluginStateOptions;
-  getValueIndex(valueNumber: 1 | 2): number;
+  getIndexByValueNumber(valueNumber: 1 | 2): number;
+  getIndexByValue(value: number): number;
   setStepSize(stepSize: number): void;
   setValue(thumbNumber: 1 | 2, valueIndex: number): void;
   setVerticalState(isVertical: boolean): void;
