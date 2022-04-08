@@ -89,13 +89,9 @@ interface ISubView extends IEventEmitter {
 }
 
 interface IScaleView extends ISubView {
-  updateScale(data: {
-    allowedPositions: number[],
-    allowedValues: number[],
-    dimension: Dimension,
-    axis: Axis,
-  }): void;
-  initResizeObserver(dimension: Dimension, axis: Axis): void;
+  scaleValueElements: JQuery<HTMLDivElement>[];
+  insertScaleValueElements(): void;
+  optimizeValuesCount(axis: Axis, dimension: Dimension): void;
 }
 
 interface ITipView extends ISubView {

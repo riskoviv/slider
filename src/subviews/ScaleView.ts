@@ -1,11 +1,7 @@
 import SubView from '../SubView';
 
 class ScaleView extends SubView implements IScaleView {
-  private allowedValues: number[] = [];
-
-  private scaleValueElements: JQuery<HTMLDivElement>[] = [];
-
-  private scaleResizeObserver: ResizeObserver | undefined;
+  scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
   constructor() {
     super();
@@ -15,10 +11,9 @@ class ScaleView extends SubView implements IScaleView {
   insertScaleValueElements(): void {
     this.$elem.empty();
     this.$elem.append(this.scaleValueElements);
-    return this;
   }
 
-  private optimizeValuesCount(axis: Axis, dimension: Dimension): void {
+  optimizeValuesCount(axis: Axis, dimension: Dimension): void {
     const [$firstElem] = this.scaleValueElements;
     const [$lastElem] = this.scaleValueElements.slice(-1);
     let $currentElem = $firstElem;
