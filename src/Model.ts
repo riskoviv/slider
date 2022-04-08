@@ -1,9 +1,9 @@
 import EventEmitter from './EventEmitter';
 
 class Model extends EventEmitter implements IModel {
-  private allowedValuesCount: number;
+  allowedValuesCount: number;
 
-  allowedPositions: number[] = [];
+  stepPrecision: number;
 
   viewValues: ViewValues = {
     positions: { 1: 0, 2: 100 },
@@ -17,6 +17,7 @@ class Model extends EventEmitter implements IModel {
       (options.maxValue - options.minValue) / options.stepSize,
     ) + 1;
     this.fixValues();
+    this.stepPrecision = this.identifyStepSizeFractionalPrecision();
   }
 
   // debug method
@@ -41,6 +42,10 @@ class Model extends EventEmitter implements IModel {
 
   getIndexByValue(value: number): number {
     return (value - this.options.minValue) / this.options.stepSize;
+  }
+
+  getValueByIndex(index: number): number {
+    return this.options.minValue + this.options.stepSize * index;
   }
 
   setStepSize(stepSize: number): void {
@@ -97,10 +102,6 @@ class Model extends EventEmitter implements IModel {
 
   private getSecondValue(): number {
     return this.options.minValue + this.options.stepSize;
-  }
-
-  private getValueByIndex(index: number): number {
-    return this.options.minValue + this.options.stepSize * index;
   }
 
   private fixValues() {
