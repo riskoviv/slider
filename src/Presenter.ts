@@ -472,11 +472,9 @@ class Presenter {
   private sliderPointerMove = (e: PointerEvent): void => {
     let newPosition = this.pixelsToPercentsOfBaseLength(e[this.offset]);
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
-    const onStepPosition = this.thumbChecks.isCursorOnStepPosition(newPosition);
-
-    if (movedHalfStep || onStepPosition) {
-      newPosition = this.thumbChecks.fixIfOutOfRange(newPosition);
-      const isHandleAwayFromOtherHandle = this.options.isInterval
+    if (movedHalfStep) {
+      newPosition = this.findClosestAllowedPosition(this.thumbChecks.fixIfOutOfRange(newPosition));
+      const isThumbAwayFromOtherThumb = this.options.isInterval
         ? this.thumbChecks.isThumbKeepsDistance(newPosition)
         : true;
       const value = this.fixValue(this.getValueByPosition(newPosition));
