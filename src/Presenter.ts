@@ -294,6 +294,7 @@ class Presenter {
   }
 
   private getValueByPosition(position: number): number {
+    if (position === 100) return this.options.maxValue;
     const index = this.getIndexByPosition(position);
     return this.model.getValueByIndex(index);
   }
