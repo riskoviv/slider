@@ -250,12 +250,9 @@ class Presenter {
     }
   }
 
-  private makeNewScaleValueElement = (
-    value: number,
-    position: number,
-  ): JQuery<HTMLDivElement> => (
+  private makeNewScaleValueElement = (value: number, position: number): JQuery<HTMLDivElement> => (
     $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
-      <span class="slider__scale-text">${value.toFixed(this.model.stepPrecision)}</span>
+      <span class="slider__scale-text">${this.fixValue(value)}</span>
     </div>`)
   );
   // ***********************************
