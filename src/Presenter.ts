@@ -35,6 +35,8 @@ class Presenter {
 
   private subViewCreationData: subViewsData;
 
+  private sliderResizeObserver: ResizeObserver | undefined;
+
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -49,7 +51,7 @@ class Presenter {
     } = this.options;
 
     this.updateDimensionAndAxis();
-    this.updateAllowedPositionsArr();
+    this.defineViewValues();
     this.view = new View({ isVertical, isInterval });
     this.toggleContainerClass(isVertical);
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
@@ -81,7 +83,7 @@ class Presenter {
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
-    if (this.options.showScale) this.updateScaleView();
+    if (this.options.showScale) this.updateScale();
     this.passInitialValuesToSubViews({
       value1,
       value2,
@@ -96,6 +98,15 @@ class Presenter {
       .on('valueChanged', listeners.setValueAndPosition);
   }
 
+  private initResizeObserver(): void {
+    this.sliderResizeObserver = new ResizeObserver(() => {
+      if (this.subViews.scale instanceof ScaleView) {
+        this.subViews.scale.optimizeValuesCount(this.axis, this.dimension);
+      }
+    });
+    this.sliderResizeObserver.observe(this.view.$elem.get()[0]);
+  }
+
   private updateDimensionAndAxis() {
     if (this.options.isVertical) {
       this.dimension = 'height';
@@ -108,34 +119,20 @@ class Presenter {
     }
   }
 
-  private updateScaleView() {
-    const scaleView = this.subViews.scale;
-    if (scaleView instanceof ScaleView) {
-      scaleView.updateScale({
-        allowedPositions: this.model.allowedPositions,
-        allowedValues: this.model.allowedValues,
-        dimension: this.dimension,
-        axis: this.axis,
-      });
-    }
-  }
-
   private passInitialValuesToSubViews(values: { value1: number, value2: number }): void {
     const { value1, value2 } = values;
-    const value1Index = this.model.allowedValues.indexOf(value1);
-    const position1 = this.model.allowedPositions[value1Index];
-    const value2Index = this.model.allowedValues.indexOf(value2);
-    const position2 = this.model.allowedPositions[value2Index];
+    const position1 = this.getPositionByValue(value1);
+    const position2 = this.getPositionByValue(value2);
     this.setPositionAndCurrentValue({
       number: 1,
-      potentialPosition: position1,
-      findClosest: false,
+      position: position1,
+      value: value1,
     });
     if (this.options.isInterval) {
       this.setPositionAndCurrentValue({
         number: 2,
-        potentialPosition: position2,
-        findClosest: false,
+        position: position2,
+        value: value2,
       });
     }
   }
@@ -196,6 +193,74 @@ class Presenter {
     }
   }
 
+  // **************************************
+  // *
+  // * scale values creation methods start
+  // *
+  // **************************************
+  private updateScale(): void {
+    const { scale } = this.subViews;
+    if (scale instanceof ScaleView) {
+      this.createScaleValuesElements(scale);
+      scale.insertScaleValueElements();
+      this.initResizeObserver();
+    }
+  }
+
+  private createScaleValuesElements(scaleView: ScaleView): void {
+    const scale = scaleView;
+    const scaleSize = scale.$elem[this.dimension]() ?? 1;
+    const { allowedValuesCount } = this.model;
+    const quotient = Math.round((allowedValuesCount / scaleSize) * 3);
+    const lastElemIndex = allowedValuesCount - 1;
+    const isEveryValueAllowed = [0, 1].includes(quotient);
+    const { stepInPercents } = this.model.viewValues;
+    scale.scaleValueElements.length = 0;
+
+    if (isEveryValueAllowed) {
+      for (
+        let position = 0, index = 0;
+        position <= 100;
+        index += 1, position = stepInPercents * index
+      ) {
+        const value = this.model.getValueByIndex(index);
+        scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
+      }
+    } else {
+      for (let index = 0; index <= lastElemIndex; index += quotient) {
+        scale.scaleValueElements.push(this.makeNewScaleValueElement(
+          this.model.getValueByIndex(index),
+          this.getPositionByIndex(index),
+        ));
+      }
+    }
+
+    const lastElemIsNotMaxValue = scale.scaleValueElements
+      .slice(-1)[0]
+      .get()[0]
+      .style.getPropertyValue('--scale-block-position')
+      .trim() !== '100%';
+    if (lastElemIsNotMaxValue) {
+      scale.scaleValueElements.push(
+        this.makeNewScaleValueElement(
+          this.options.maxValue,
+          100,
+        ),
+      );
+    }
+  }
+
+  private makeNewScaleValueElement = (value: number, position: number): JQuery<HTMLDivElement> => (
+    $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
+      <span class="slider__scale-text">${this.fixValue(value)}</span>
+    </div>`)
+  );
+  // ***********************************
+  // *
+  // * scale values creation methods end
+  // *
+  // ***********************************
+
   private subViewExists(subViewName: string): boolean {
     return this.subViews[subViewName] !== undefined;
   }
@@ -216,18 +281,39 @@ class Presenter {
   }
 
   private getPositionByValue(value: number): number {
-    return this.model.allowedPositions[this.model.allowedValues.indexOf(value)];
+    const index = this.model.getIndexByValue(value);
+    return this.model.viewValues.stepInPercents * index;
+  }
+
+  private getIndexByPosition(position: number): number {
+    return Math.round(position / this.model.viewValues.stepInPercents);
+  }
+
+  private getPositionByIndex(index: number): number {
+    return this.model.viewValues.stepInPercents * index;
   }
 
   private getValueByPosition(position: number): number {
-    return this.model.allowedValues[this.model.allowedPositions.indexOf(position)];
+    if (position === 100) return this.options.maxValue;
+    const index = this.getIndexByPosition(position);
+    return this.model.getValueByIndex(index);
+  }
+
+  private fixValue(value: number): number {
+    const { fractionalPrecision } = this.model;
+    const fixedValue = Number.parseFloat(value.toFixed(fractionalPrecision));
+    return fixedValue;
+  }
+
+  private isPositionAllowed(position: number): boolean {
+    return Number.isInteger(position / this.model.viewValues.stepInPercents);
   }
 
   private modelEventListeners = {
     changeStepSize: (): void => {
-      this.updateAllowedPositionsArr();
+      this.defineViewValues();
       if (this.options.showScale) {
-        this.updateScaleView();
+        this.updateScale();
       }
     },
 
@@ -235,7 +321,7 @@ class Presenter {
       this.updateDimensionAndAxis();
       this.view.toggleVertical(isVertical);
       if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
-        this.subViews.scale.initResizeObserver(this.dimension, this.axis);
+        this.initResizeObserver();
       }
       this.toggleContainerClass(isVertical);
     },
@@ -276,25 +362,21 @@ class Presenter {
     ),
 
     isCursorOnStepPosition: (position: number): boolean => (
-      this.model.allowedPositions.includes(position)
+      this.isPositionAllowed(position)
         && position !== this.currentThumbData.currentPosition
     ),
 
     isThumbKeepsDistance: (newPosition: number): boolean => {
       const { thumbNumber } = this.currentThumbData;
       if (thumbNumber === 1) {
-        return (
-          newPosition <= (
-            this.model.viewValues.positions[2] - this.model.viewValues.stepInPercents
-          )
-        );
+        const thumb1NewIndex = this.getIndexByPosition(newPosition);
+        const thumb2Index = this.getIndexByPosition(this.model.viewValues.positions[2]);
+        return thumb1NewIndex < thumb2Index;
       }
 
-      return (
-        newPosition >= (
-          this.model.viewValues.positions[1] + this.model.viewValues.stepInPercents
-        )
-      );
+      const thumb2NewIndex = this.getIndexByPosition(newPosition);
+      const thumb1Index = this.getIndexByPosition(this.model.viewValues.positions[1]);
+      return thumb2NewIndex > thumb1Index;
     },
 
     fixIfOutOfRange: (position: number): number => {
@@ -324,23 +406,20 @@ class Presenter {
           data[this.offset],
         );
         const allowedPosition = this.findClosestAllowedPosition(position);
-        if (allowedPosition !== undefined) {
-          const allowedIndex = this.model.allowedPositions.indexOf(allowedPosition);
-          let chosenThumb: 1 | 2 = 1;
-          if (this.options.isInterval) {
-            chosenThumb = this.findClosestThumb(allowedIndex);
-          }
+        const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
+        const chosenThumb = this.options.isInterval
+          ? this.findClosestThumbByPosition(position)
+          : 1;
 
-          this.currentThumbData = {
-            thumbNumber: chosenThumb,
-            currentPosition: allowedPosition,
-          };
-          this.setPositionAndCurrentValue({
-            number: chosenThumb,
-            potentialPosition: this.model.allowedPositions[allowedIndex],
-            findClosest: false,
-          });
-        }
+        this.currentThumbData = {
+          thumbNumber: chosenThumb,
+          currentPosition: allowedPosition,
+        };
+        this.setPositionAndCurrentValue({
+          number: chosenThumb,
+          position: allowedPosition,
+          value: allowedValue,
+        });
       }
 
       this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
@@ -349,12 +428,11 @@ class Presenter {
       });
     },
 
-    scaleValueSelect: (options: { index: number }): void => {
-      const { index } = options;
-      const position = this.model.allowedPositions[index];
+    scaleValueSelect: (value: number): void => {
+      const position = this.getPositionByValue(value);
       let thumbNumber: 1 | 2 = 1;
       if (this.options.isInterval) {
-        thumbNumber = this.findClosestThumb(index);
+        thumbNumber = this.findClosestThumbByValue(value);
       }
 
       this.currentThumbData = {
@@ -364,8 +442,8 @@ class Presenter {
 
       this.setPositionAndCurrentValue({
         number: thumbNumber,
-        potentialPosition: position,
-        findClosest: false,
+        position,
+        value,
       });
     },
   }
@@ -394,19 +472,17 @@ class Presenter {
   private sliderPointerMove = (e: PointerEvent): void => {
     let newPosition = this.pixelsToPercentsOfBaseLength(e[this.offset]);
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
-    const onStepPosition = this.thumbChecks.isCursorOnStepPosition(newPosition);
-
-    if (movedHalfStep || onStepPosition) {
-      newPosition = this.thumbChecks.fixIfOutOfRange(newPosition);
-      const isHandleAwayFromOtherHandle = this.options.isInterval
+    if (movedHalfStep) {
+      newPosition = this.findClosestAllowedPosition(this.thumbChecks.fixIfOutOfRange(newPosition));
+      const isThumbAwayFromOtherThumb = this.options.isInterval
         ? this.thumbChecks.isThumbKeepsDistance(newPosition)
         : true;
-
-      if (isHandleAwayFromOtherHandle) {
+      const value = this.fixValue(this.getValueByPosition(newPosition));
+      if (isThumbAwayFromOtherThumb) {
         this.setPositionAndCurrentValue({
           number: this.currentThumbData.thumbNumber,
-          potentialPosition: newPosition,
-          findClosest: movedHalfStep,
+          position: newPosition,
+          value,
         });
       }
     }
@@ -427,32 +503,25 @@ class Presenter {
   }
 
   private findClosestAllowedPosition(position: number): number {
-    const posToRight = this.model.allowedPositions.find((pos) => pos > position);
-    if (posToRight !== undefined) {
-      const posToRightIndex = this.model.allowedPositions.indexOf(posToRight);
-      return (posToRight - position < this.model.viewValues.halfStepInPercents)
-        ? posToRight
-        : this.model.allowedPositions[posToRightIndex - 1];
-    }
-
-    return position; // impossible to happen really
+    if (position === 100) return 100;
+    const step = this.model.viewValues.stepInPercents;
+    return this.thumbChecks.fixIfOutOfRange(Math.round(position / step) * step);
   }
 
   private setPositionAndCurrentValue(options: {
     number: 1 | 2,
-    potentialPosition: number,
-    findClosest: boolean
+    position: number,
+    value: number,
   }): void {
-    const { number, potentialPosition, findClosest } = options;
-    const approvedPosition = findClosest
-      ? this.findClosestAllowedPosition(potentialPosition)
-      : potentialPosition;
-    this.setPosition(number, approvedPosition);
-    this.saveValueInModel(number, approvedPosition);
-    this.setTipValue({
+    const {
       number,
-      value: this.getValueByPosition(approvedPosition),
-    });
+      position,
+      value,
+    } = options;
+
+    this.setPosition(number, position);
+    this.saveValueInModel(number, value);
+    this.setTipValue({ number, value });
   }
 
   private setPosition(number: 1 | 2, position: number): void {
@@ -461,8 +530,8 @@ class Presenter {
     this.model.viewValues.positions[number] = position;
   }
 
-  private saveValueInModel(number: 1 | 2, position: number): void {
-    this.model.options[`value${number}`] = this.getValueByPosition(position);
+  private saveValueInModel(number: 1 | 2, value: number): void {
+    this.model.options[`value${number}`] = value;
   }
 
   private setTipValue(options: { number: 1 | 2, value: number }): void {
@@ -474,54 +543,27 @@ class Presenter {
     }
   }
 
-  private findClosestThumb(valueIndex: number): 1 | 2 {
-    const thumb1Index = this.model.getValueIndex(1);
-    const thumb2Index = this.model.getValueIndex(2);
-
-    if (Math.abs(valueIndex - thumb1Index) > Math.abs(valueIndex - thumb2Index)) {
+  private findClosestThumbByValue(value: number): 1 | 2 {
+    const { value1, value2 } = this.options;
+    if (Math.abs(value - value1) > Math.abs(value - value2)) {
       return 2;
     }
+
     return 1;
   }
 
-  private updateAllowedPositionsArr(): void {
-    const { minValue, maxValue, stepSize } = this.options;
-    this.fillAllowedPositionsArr({
-      minValue,
-      maxValue,
-      stepSize,
-    });
+  private findClosestThumbByPosition(position: number): 1 | 2 {
+    const { 1: position1, 2: position2 } = this.model.viewValues.positions;
+    const position1Diff = Math.abs(position1 - position);
+    const position2Diff = Math.abs(position2 - position);
+    return position1Diff <= position2Diff ? 1 : 2;
   }
 
-  private fillAllowedPositionsArr = (constraints: {
-    minValue: number,
-    maxValue: number,
-    stepSize: number,
-  }) => {
-    const { allowedPositions } = this.model;
-    const { maxValue, minValue, stepSize } = constraints;
+  private defineViewValues(): void {
+    const { minValue, maxValue, stepSize } = this.options;
     const totalSliderRange = maxValue - minValue;
-
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
-    allowedPositions.length = 0;
-
-    for (let i = 0; i <= 100; i += this.model.viewValues.stepInPercents) {
-      allowedPositions.push(i);
-    }
-
-    const positionsLength = allowedPositions.length;
-    const valuesLength = this.model.allowedValues.length;
-    if (positionsLength === valuesLength - 1) {
-      allowedPositions.push(100);
-    } else if (positionsLength === valuesLength) {
-      const lastIndex = positionsLength - 1;
-      if (allowedPositions[lastIndex] !== 100) {
-        allowedPositions[lastIndex] = 100;
-      }
-    } else {
-      console.error('Error: positions can\'t be calculated with given parameters.');
-    }
   }
 }
 
