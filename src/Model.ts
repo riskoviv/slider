@@ -157,6 +157,7 @@ class Model extends EventEmitter implements IModel {
       }
     }
 
+    fixedValue = Number.parseFloat(fixedValue.toFixed(this.fractionalPrecision));
     console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} to fit to step size.`);
     return fixedValue;
   }
