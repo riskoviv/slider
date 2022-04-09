@@ -552,6 +552,13 @@ class Presenter {
     return 1;
   }
 
+  private findClosestThumbByPosition(position: number): 1 | 2 {
+    const { 1: position1, 2: position2 } = this.model.viewValues.positions;
+    const position1Diff = Math.abs(position1 - position);
+    const position2Diff = Math.abs(position2 - position);
+    return position1Diff <= position2Diff ? 1 : 2;
+  }
+
   private defineViewValues(): void {
     const { minValue, maxValue, stepSize } = this.options;
     const totalSliderRange = maxValue - minValue;
