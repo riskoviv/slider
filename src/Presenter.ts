@@ -214,11 +214,15 @@ class Presenter {
     const quotient = Math.round((allowedValuesCount / scaleSize) * 3);
     const lastElemIndex = allowedValuesCount - 1;
     const isEveryValueAllowed = [0, 1].includes(quotient);
-    const { stepSize } = this.options;
+    const { stepInPercents } = this.model.viewValues;
     scale.scaleValueElements.length = 0;
 
     if (isEveryValueAllowed) {
-      for (let position = 0, index = 0; position <= 100; position = stepSize * index, index += 1) {
+      for (
+        let position = 0, index = 0;
+        position <= 100;
+        index += 1, position = stepInPercents * index
+      ) {
         const value = this.model.getValueByIndex(index);
         scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
       }
