@@ -1,9 +1,9 @@
 import EventEmitter from './EventEmitter';
 
 class Model extends EventEmitter implements IModel {
-  allowedValues: number[] = [];
+  allowedValuesCount: number;
 
-  allowedPositions: number[] = [];
+  fractionalPrecision: number;
 
   viewValues: ViewValues = {
     positions: { 1: 0, 2: 100 },
@@ -13,7 +13,10 @@ class Model extends EventEmitter implements IModel {
 
   constructor(public options: IPluginOptions) {
     super();
-    this.createAllowedValuesArr();
+    this.allowedValuesCount = Math.ceil(
+      (options.maxValue - options.minValue) / options.stepSize,
+    ) + 1;
+    this.fractionalPrecision = this.identifyMaxFractionalPrecision();
     this.fixValues();
   }
 
@@ -33,13 +36,20 @@ class Model extends EventEmitter implements IModel {
     return stateOptions;
   }
 
-  getValueIndex(valueNumber: 1 | 2): number {
-    return this.allowedValues.indexOf(this.options[`value${valueNumber}`]);
+  getIndexByValueNumber(valueNumber: 1 | 2): number {
+    return (this.options[`value${valueNumber}`] - this.options.minValue) / this.options.stepSize;
+  }
+
+  getIndexByValue(value: number): number {
+    return (value - this.options.minValue) / this.options.stepSize;
+  }
+
+  getValueByIndex(index: number): number {
+    return this.keepValueInRange(this.options.minValue + this.options.stepSize * index);
   }
 
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
-    this.createAllowedValuesArr();
     this.emit('stepSizeChanged');
   }
 
@@ -82,13 +92,25 @@ class Model extends EventEmitter implements IModel {
     setInterval: this.setInterval.bind(this),
   }
 
+  private isValueAllowed(value: number): boolean {
+    return Number.isInteger((value - this.options.minValue) / this.options.stepSize);
+  }
+
+  private getPenultimateValue(): number {
+    return this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2);
+  }
+
+  private getSecondValue(): number {
+    return this.options.minValue + this.options.stepSize;
+  }
+
   private fixValues() {
-    if (!this.allowedValues.includes(this.options.value1)) {
+    if (!this.isValueAllowed(this.options.value1)) {
       this.options.value1 = this.fixValue(1, this.options.value1);
     }
 
     if (this.options.isInterval) {
-      if (!this.allowedValues.includes(this.options.value2)) {
+      if (!this.isValueAllowed(this.options.value2)) {
         this.options.value2 = this.fixValue(2, this.options.value2);
       }
 
@@ -97,14 +119,14 @@ class Model extends EventEmitter implements IModel {
         const warnMsgEnd = '\nPlease check values that you passed to plugin options.';
 
         if (this.options.value1 === this.options.maxValue) {
-          [this.options.value1] = this.allowedValues.slice(-2);
+          this.options.value1 = this.getPenultimateValue();
           console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
         } else if (this.options.value2 === this.options.minValue) {
-          [, this.options.value2] = this.allowedValues;
+          this.options.value2 = this.getSecondValue();
           console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
         } else {
-          const value1Index = this.allowedValues.indexOf(this.options.value1);
-          this.options.value2 = this.allowedValues[value1Index + 1];
+          const value1Index = this.getIndexByValueNumber(1);
+          this.options.value2 = this.getValueByIndex(value1Index + 1);
           console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
         }
       } else if (this.options.value2 < this.options.value1) {
@@ -118,74 +140,51 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  private fixValue(num: 1 | 2, value: number): number {
+  private fixValue(number: 1 | 2, value: number): number {
     let fixedValue = value;
-    if (value > this.options.maxValue) fixedValue = this.options.maxValue;
-    else if (value < this.options.minValue) fixedValue = this.options.minValue;
-    else if (!this.allowedValues.includes(value)) {
+    this.keepValueInRange(fixedValue);
+    if (!this.isValueAllowed(value)) {
       fixedValue = this.findClosestAllowedValue(value);
     }
 
     if (this.options.isInterval) {
-      if (num === 1) {
+      if (number === 1) {
         if (fixedValue >= this.options.value2) {
-          fixedValue = this.allowedValues[
-            this.allowedValues.indexOf(this.options.value2) - 1
-          ];
+          fixedValue = this.getValueByIndex(this.getIndexByValueNumber(2) - 1);
         }
       } else if (fixedValue <= this.options.value1) {
-        fixedValue = this.allowedValues[
-          this.allowedValues.indexOf(this.options.value1) + 1
-        ];
+        fixedValue = this.getValueByIndex(this.getIndexByValueNumber(1) + 1);
       }
     }
 
-    console.warn(`Note: value${num} (${value}) is changed to ${fixedValue} to fit to step size.`);
+    fixedValue = Number.parseFloat(fixedValue.toFixed(this.fractionalPrecision));
+    console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} to fit to step size.`);
     return fixedValue;
   }
 
-  private findClosestAllowedValue(value: number): number {
-    const valToRight = this.allowedValues.find((val) => val > value);
-    if (valToRight !== undefined) {
-      const valToRightIndex = this.allowedValues.indexOf(valToRight);
-      return (valToRight - value < this.options.stepSize / 2)
-        ? valToRight
-        : this.allowedValues[valToRightIndex - 1];
-    }
-
-    return value; // impossible to happen really
+  private keepValueInRange(value: number): number {
+    if (value > this.options.maxValue) return this.options.maxValue;
+    if (value < this.options.minValue) return this.options.minValue;
+    return value;
   }
 
-  private identifyStepSizeFractionalPrecision(): number {
-    const stepAsString = String(this.options.stepSize);
-    if (!stepAsString.includes('.')) return 0;
-    return stepAsString.split('.')[1].length;
+  private findClosestAllowedValue(initialValue: number): number {
+    const min = this.options.minValue;
+    const step = this.options.stepSize;
+    const index = Math.round((initialValue - min) / step);
+    return index * step + min;
   }
 
-  private createAllowedValuesArr(): void {
-    const stepPrecision = this.identifyStepSizeFractionalPrecision();
-
-    this.allowedValues.length = 0;
-
-    for (
-      let stepValue = this.options.minValue;
-      stepValue <= this.options.maxValue;
-      stepValue += this.options.stepSize
-    ) {
-      this.allowedValues.push(stepValue);
-    }
-
-    if (stepPrecision > 0) {
-      this.allowedValues = this.allowedValues.map((stepValue) => (
-        Number(stepValue.toFixed(stepPrecision))
-      ));
-    }
-
-    const allowedValuesLastValue = this.allowedValues.slice(-1)[0];
-
-    if (allowedValuesLastValue < this.options.maxValue) {
-      this.allowedValues.push(this.options.maxValue);
-    }
+  private identifyMaxFractionalPrecision(): number {
+    const fractionSizes = [
+      this.options.stepSize,
+      this.options.minValue,
+      this.options.maxValue,
+    ].map((value) => {
+      const precision = Number(String(value).split('.')[1]?.length);
+      return Number.isNaN(precision) ? 0 : precision;
+    });
+    return Math.max(...fractionSizes);
   }
 }
 
