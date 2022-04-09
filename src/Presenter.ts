@@ -125,14 +125,14 @@ class Presenter {
     const position2 = this.getPositionByValue(value2);
     this.setPositionAndCurrentValue({
       number: 1,
-      potentialPosition: position1,
-      findClosest: false,
+      position: position1,
+      value: value1,
     });
     if (this.options.isInterval) {
       this.setPositionAndCurrentValue({
         number: 2,
-        potentialPosition: position2,
-        findClosest: false,
+        position: position2,
+        value: value2,
       });
     }
   }
@@ -297,6 +297,12 @@ class Presenter {
     return this.model.getValueByIndex(index);
   }
 
+  private fixValue(value: number): number {
+    const { fractionalPrecision } = this.model;
+    const fixedValue = Number.parseFloat(value.toFixed(fractionalPrecision));
+    return fixedValue;
+  }
+
   private isPositionAllowed(position: number): boolean {
     return Number.isInteger(position / this.model.viewValues.stepInPercents);
   }
@@ -402,11 +408,10 @@ class Presenter {
           data[this.offset],
         );
         const allowedPosition = this.findClosestAllowedPosition(position);
-        const allowedValue = this.getValueByPosition(allowedPosition);
-        let chosenThumb: 1 | 2 = 1;
-        if (this.options.isInterval) {
-          chosenThumb = this.findClosestThumb(allowedValue);
-        }
+        const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
+        const chosenThumb = this.options.isInterval
+          ? this.findClosestThumbByPosition(position)
+          : 1;
 
         this.currentThumbData = {
           thumbNumber: chosenThumb,
@@ -414,8 +419,8 @@ class Presenter {
         };
         this.setPositionAndCurrentValue({
           number: chosenThumb,
-          potentialPosition: allowedPosition,
-          findClosest: false,
+          position: allowedPosition,
+          value: allowedValue,
         });
       }
 
@@ -439,8 +444,8 @@ class Presenter {
 
       this.setPositionAndCurrentValue({
         number: thumbNumber,
-        potentialPosition: position,
-        findClosest: false,
+        position,
+        value,
       });
     },
   }
@@ -476,12 +481,12 @@ class Presenter {
       const isHandleAwayFromOtherHandle = this.options.isInterval
         ? this.thumbChecks.isThumbKeepsDistance(newPosition)
         : true;
-
-      if (isHandleAwayFromOtherHandle) {
+      const value = this.fixValue(this.getValueByPosition(newPosition));
+      if (isThumbAwayFromOtherThumb) {
         this.setPositionAndCurrentValue({
           number: this.currentThumbData.thumbNumber,
-          potentialPosition: newPosition,
-          findClosest: movedHalfStep,
+          position: newPosition,
+          value,
         });
       }
     }
@@ -508,19 +513,18 @@ class Presenter {
 
   private setPositionAndCurrentValue(options: {
     number: 1 | 2,
-    potentialPosition: number,
-    findClosest: boolean
+    position: number,
+    value: number,
   }): void {
-    const { number, potentialPosition, findClosest } = options;
-    const approvedPosition = findClosest
-      ? this.findClosestAllowedPosition(potentialPosition)
-      : potentialPosition;
-    this.setPosition(number, approvedPosition);
-    this.saveValueInModel(number, approvedPosition);
-    this.setTipValue({
+    const {
       number,
-      value: this.getValueByPosition(approvedPosition),
-    });
+      position,
+      value,
+    } = options;
+
+    this.setPosition(number, position);
+    this.saveValueInModel(number, value);
+    this.setTipValue({ number, value });
   }
 
   private setPosition(number: 1 | 2, position: number): void {
