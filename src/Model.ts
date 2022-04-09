@@ -45,7 +45,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   getValueByIndex(index: number): number {
-    return this.options.minValue + this.options.stepSize * index;
+    return this.keepValueInRange(this.options.minValue + this.options.stepSize * index);
   }
 
   setStepSize(stepSize: number): void {
@@ -142,9 +142,8 @@ class Model extends EventEmitter implements IModel {
 
   private fixValue(number: 1 | 2, value: number): number {
     let fixedValue = value;
-    if (value > this.options.maxValue) fixedValue = this.options.maxValue;
-    else if (value < this.options.minValue) fixedValue = this.options.minValue;
-    else if (!this.isValueAllowed(value)) {
+    this.keepValueInRange(fixedValue);
+    if (!this.isValueAllowed(value)) {
       fixedValue = this.findClosestAllowedValue(value);
     }
 
@@ -160,6 +159,12 @@ class Model extends EventEmitter implements IModel {
 
     console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} to fit to step size.`);
     return fixedValue;
+  }
+
+  private keepValueInRange(value: number): number {
+    if (value > this.options.maxValue) return this.options.maxValue;
+    if (value < this.options.minValue) return this.options.minValue;
+    return value;
   }
 
   private findClosestAllowedValue(initialValue: number): number {
