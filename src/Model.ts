@@ -3,7 +3,7 @@ import EventEmitter from './EventEmitter';
 class Model extends EventEmitter implements IModel {
   allowedValuesCount: number;
 
-  stepPrecision: number;
+  fractionalPrecision: number;
 
   viewValues: ViewValues = {
     positions: { 1: 0, 2: 100 },
@@ -16,8 +16,8 @@ class Model extends EventEmitter implements IModel {
     this.allowedValuesCount = Math.ceil(
       (options.maxValue - options.minValue) / options.stepSize,
     ) + 1;
+    this.fractionalPrecision = this.identifyMaxFractionalPrecision();
     this.fixValues();
-    this.stepPrecision = this.identifyStepSizeFractionalPrecision();
   }
 
   // debug method
@@ -169,10 +169,16 @@ class Model extends EventEmitter implements IModel {
     return index * step + min;
   }
 
-  private identifyStepSizeFractionalPrecision(): number {
-    const stepAsString = String(this.options.stepSize);
-    if (!stepAsString.includes('.')) return 0;
-    return stepAsString.split('.')[1].length;
+  private identifyMaxFractionalPrecision(): number {
+    const fractionSizes = [
+      this.options.stepSize,
+      this.options.minValue,
+      this.options.maxValue,
+    ].map((value) => {
+      const precision = Number(String(value).split('.')[1]?.length);
+      return Number.isNaN(precision) ? 0 : precision;
+    });
+    return Math.max(...fractionSizes);
   }
 }
 

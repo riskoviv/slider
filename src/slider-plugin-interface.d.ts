@@ -68,7 +68,7 @@ type ViewValues = {
 interface IModel extends IEventEmitter {
   options: IPluginOptions;
   allowedValuesCount: number;
-  stepPrecision: number;
+  fractionalPrecision: number;
   viewValues: ViewValues;
   getOptions(): IPluginOptions;
   getStateOptions(): IPluginStateOptions;
