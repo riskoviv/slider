@@ -233,20 +233,20 @@ class Presenter {
           this.getPositionByIndex(index),
         ));
       }
+    }
 
-      const lastElemIsNotMaxValue = scale.scaleValueElements
-        .slice(-1)[0]
-        .get()[0]
-        .style.getPropertyValue('--scale-block-position')
-        .trim() !== '100%';
-      if (lastElemIsNotMaxValue) {
-        scale.scaleValueElements.push(
-          this.makeNewScaleValueElement(
-            this.options.maxValue,
-            100,
-          ),
-        );
-      }
+    const lastElemIsNotMaxValue = scale.scaleValueElements
+      .slice(-1)[0]
+      .get()[0]
+      .style.getPropertyValue('--scale-block-position')
+      .trim() !== '100%';
+    if (lastElemIsNotMaxValue) {
+      scale.scaleValueElements.push(
+        this.makeNewScaleValueElement(
+          this.options.maxValue,
+          100,
+        ),
+      );
     }
   }
 
