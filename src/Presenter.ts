@@ -298,7 +298,7 @@ class Presenter {
   }
 
   private isPositionAllowed(position: number): boolean {
-    return position % this.model.viewValues.stepInPercents === 0;
+    return Number.isInteger(position / this.model.viewValues.stepInPercents);
   }
 
   private modelEventListeners = {

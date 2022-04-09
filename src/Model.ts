@@ -93,7 +93,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   private isValueAllowed(value: number): boolean {
-    return (value - this.options.minValue) % this.options.stepSize === 0;
+    return Number.isInteger((value - this.options.minValue) / this.options.stepSize);
   }
 
   private getPenultimateValue(): number {
