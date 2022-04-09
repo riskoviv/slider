@@ -529,8 +529,8 @@ class Presenter {
     this.model.viewValues.positions[number] = position;
   }
 
-  private saveValueInModel(number: 1 | 2, position: number): void {
-    this.model.options[`value${number}`] = this.getValueByPosition(position);
+  private saveValueInModel(number: 1 | 2, value: number): void {
+    this.model.options[`value${number}`] = value;
   }
 
   private setTipValue(options: { number: 1 | 2, value: number }): void {
