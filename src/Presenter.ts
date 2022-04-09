@@ -369,18 +369,14 @@ class Presenter {
     isThumbKeepsDistance: (newPosition: number): boolean => {
       const { thumbNumber } = this.currentThumbData;
       if (thumbNumber === 1) {
-        return (
-          newPosition <= (
-            this.model.viewValues.positions[2] - this.model.viewValues.stepInPercents
-          )
-        );
+        const thumb1NewIndex = this.getIndexByPosition(newPosition);
+        const thumb2Index = this.getIndexByPosition(this.model.viewValues.positions[2]);
+        return thumb1NewIndex < thumb2Index;
       }
 
-      return (
-        newPosition >= (
-          this.model.viewValues.positions[1] + this.model.viewValues.stepInPercents
-        )
-      );
+      const thumb2NewIndex = this.getIndexByPosition(newPosition);
+      const thumb1Index = this.getIndexByPosition(this.model.viewValues.positions[1]);
+      return thumb2NewIndex > thumb1Index;
     },
 
     fixIfOutOfRange: (position: number): number => {
