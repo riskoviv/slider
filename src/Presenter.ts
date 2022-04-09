@@ -432,7 +432,7 @@ class Presenter {
       const position = this.getPositionByValue(value);
       let thumbNumber: 1 | 2 = 1;
       if (this.options.isInterval) {
-        thumbNumber = this.findClosestThumb(value);
+        thumbNumber = this.findClosestThumbByValue(value);
       }
 
       this.currentThumbData = {
@@ -543,7 +543,7 @@ class Presenter {
     }
   }
 
-  private findClosestThumb(value: number): 1 | 2 {
+  private findClosestThumbByValue(value: number): 1 | 2 {
     const { value1, value2 } = this.options;
     if (Math.abs(value - value1) > Math.abs(value - value2)) {
       return 2;
