@@ -503,8 +503,9 @@ class Presenter {
   }
 
   private findClosestAllowedPosition(position: number): number {
+    if (position === 100) return 100;
     const step = this.model.viewValues.stepInPercents;
-    return Math.round(position / step) * step;
+    return this.thumbChecks.fixIfOutOfRange(Math.round(position / step) * step);
   }
 
   private setPositionAndCurrentValue(options: {
