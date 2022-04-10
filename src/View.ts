@@ -3,6 +3,7 @@ import EventEmitter from './EventEmitter';
 type SliderViewOptions = {
   isVertical: boolean,
   isInterval: boolean,
+  showProgressBar: boolean,
 };
 
 class View extends EventEmitter implements IView {
@@ -21,14 +22,18 @@ class View extends EventEmitter implements IView {
     this.bindEventListeners();
   }
 
-  protected render(
-    options: SliderViewOptions = { isVertical: false, isInterval: false },
-  ): JQuery<HTMLElement> {
+  protected render(options: SliderViewOptions = {
+    isVertical: false,
+    isInterval: false,
+    showProgressBar: false,
+  }): JQuery<HTMLElement> {
     return $(
       `<div class="slider${
         options.isVertical ? ' slider_vertical' : ''
       }${
         options.isInterval ? ' slider_interval' : ''
+      }${
+        options.showProgressBar ? ' slider_show-progress' : ''
       }"></div>`,
     ).append(this.$controlContainer);
   }

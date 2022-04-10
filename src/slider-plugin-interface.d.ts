@@ -116,9 +116,8 @@ type ViewParams = {
 };
 
 type ViewType = (
-  | 'base'
+  | 'track'
   | 'thumb'
-  | 'progress'
   | 'scale'
   | 'tip'
 );
