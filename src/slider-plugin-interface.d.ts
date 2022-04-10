@@ -67,12 +67,14 @@ type ViewValues = {
 
 interface IModel extends IEventEmitter {
   options: IPluginOptions;
-  allowedValues: number[];
-  allowedPositions: number[];
+  allowedValuesCount: number;
+  fractionalPrecision: number;
   viewValues: ViewValues;
   getOptions(): IPluginOptions;
   getStateOptions(): IPluginStateOptions;
-  getValueIndex(valueNumber: 1 | 2): number;
+  getIndexByValueNumber(valueNumber: 1 | 2): number;
+  getIndexByValue(value: number): number;
+  getValueByIndex(index: number): number;
   setStepSize(stepSize: number): void;
   setValue(thumbNumber: 1 | 2, valueIndex: number): void;
   setVerticalState(isVertical: boolean): void;
@@ -89,13 +91,9 @@ interface ISubView extends IEventEmitter {
 }
 
 interface IScaleView extends ISubView {
-  updateScale(data: {
-    allowedPositions: number[],
-    allowedValues: number[],
-    dimension: Dimension,
-    axis: Axis,
-  }): void;
-  initResizeObserver(dimension: Dimension, axis: Axis): void;
+  scaleValueElements: JQuery<HTMLDivElement>[];
+  insertScaleValueElements(): void;
+  optimizeValuesCount(axis: Axis, dimension: Dimension): void;
 }
 
 interface ITipView extends ISubView {
