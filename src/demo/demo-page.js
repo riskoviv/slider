@@ -3,11 +3,11 @@ import './demo-page-styles.scss';
 $(() => {
   const $slider1 = $('#slider1');
   window.slider1 = $slider1.sliderPlugin({
-    stepSize: 3,
-    minValue: 120,
-    maxValue: 400,
-    value1: 120,
-    value2: 310,
+    stepSize: 500,
+    minValue: 5_000,
+    maxValue: 100_000,
+    value1: 40_000,
+    value2: 60_000,
     // isVertical: true,
     isInterval: true,
     showTip: true,
