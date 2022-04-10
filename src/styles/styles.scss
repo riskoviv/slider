@@ -10,11 +10,11 @@
   --slider-half-size: calc(var(--slider-size) / 2);
   --slider-quarter-size: calc(var(--slider-half-size) / 2);
   --main-color: #4eb7a8;
-  --base-color: #9e9e9e;
+  --track-color: #9e9e9e;
   --scale-text-color: #666;
 
   @media (prefers-color-scheme: dark) {
-    --base-color: #666666;
+    --track-color: #666666;
     --scale-text-color: #999;
   }
 
@@ -40,13 +40,13 @@
     touch-action: none;
   }
 
-  &__base {
-    --base-size: var(--slider-quarter-size);
+  &__track {
+    --track-size: var(--slider-quarter-size);
     position: relative;
-    height: var(--base-size);
+    height: var(--track-size);
     width: 100%;
-    background-color: var(--base-color);
-    border-radius: calc(var(--base-size) / 2);
+    background-color: var(--track-color);
+    border-radius: calc(var(--track-size) / 2);
     overflow: hidden;
     pointer-events: none;
   }
@@ -167,7 +167,7 @@
   &__progress {
     position: absolute;
     background-color: var(--main-color);
-    height: var(--base-size);
+    height: var(--track-size);
     width: var(--value-1-position);
     left: 0%;
     top: unset;
@@ -190,9 +190,9 @@
         margin: var(--slider-half-size) 0;
       }
 
-      &__base {
+      &__track {
         height: 100%;
-        width: var(--base-size);
+        width: var(--track-size);
       }
 
       &__thumb {
@@ -268,7 +268,7 @@
 
       &__progress {
         height: var(--value-1-position);
-        width: var(--base-size);
+        width: var(--track-size);
         top: 0%;
         left: unset;
       }
@@ -290,7 +290,7 @@
   &_interval.slider_vertical {
 
     .slider__progress {
-      width: var(--base-size);
+      width: var(--track-size);
       left: unset;
       top: var(--value-1-position);
       height: calc(var(--value-2-position) - var(--value-1-position));

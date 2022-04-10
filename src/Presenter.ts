@@ -1,4 +1,4 @@
-import BaseView from './subviews/BaseView';
+import TrackView from './subviews/TrackView';
 import ThumbView from './subviews/ThumbView';
 import ProgressView from './subviews/ProgressView';
 import ScaleView from './subviews/ScaleView';
@@ -6,7 +6,7 @@ import View from './View';
 import TipView from './subviews/TipView';
 
 type subViewClass = (
-  | typeof BaseView
+  | typeof TrackView
   | typeof ThumbView
   | typeof ProgressView
   | typeof ScaleView
@@ -57,8 +57,8 @@ class Presenter {
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
     this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
     this.subViewCreationData = {
-      base: {
-        constructorClass: BaseView,
+      track: {
+        constructorClass: TrackView,
         parentElement: this.view.$controlContainer,
       },
       thumb: {
@@ -138,8 +138,8 @@ class Presenter {
   }
 
   private createInitialSubViews() {
-    this.createSubView('base');
-    this.subViewCreationData.progress.parentElement = this.subViews.base.$elem;
+    this.createSubView('track');
+    this.subViewCreationData.progress.parentElement = this.subViews.track.$elem;
 
     const subViewsCreationData: [ViewType, (1 | 2)?][] = [
       ['thumb', 1],
@@ -402,7 +402,7 @@ class Presenter {
           };
         }
       } else if (target === this.view.controlContainerElem) {
-        const position = this.pixelsToPercentsOfBaseLength(
+        const position = this.pixelsToPercentsOfSliderLength(
           data[this.offset],
         );
         const allowedPosition = this.findClosestAllowedPosition(position);
@@ -470,7 +470,7 @@ class Presenter {
   } = { thumbNumber: 1, currentPosition: 0 };
 
   private sliderPointerMove = (e: PointerEvent): void => {
-    let newPosition = this.pixelsToPercentsOfBaseLength(e[this.offset]);
+    let newPosition = this.pixelsToPercentsOfSliderLength(e[this.offset]);
     const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
     if (movedHalfStep) {
       newPosition = this.findClosestAllowedPosition(this.thumbChecks.fixIfOutOfRange(newPosition));
@@ -496,10 +496,10 @@ class Presenter {
     this.view.controlContainerElem.removeEventListener('pointermove', this.sliderPointerMove);
   }
 
-  private pixelsToPercentsOfBaseLength(pixels: number): number {
+  private pixelsToPercentsOfSliderLength(pixels: number): number {
     const offset = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    const baseLength = this.view.$controlContainer.get()[0][offset];
-    return Number(((pixels / baseLength) * 100).toFixed(1));
+    const sliderLength = this.view.$controlContainer.get()[0][offset];
+    return Number(((pixels / sliderLength) * 100).toFixed(1));
   }
 
   private findClosestAllowedPosition(position: number): number {
