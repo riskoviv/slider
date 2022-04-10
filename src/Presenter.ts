@@ -1,6 +1,5 @@
 import TrackView from './subviews/TrackView';
 import ThumbView from './subviews/ThumbView';
-import ProgressView from './subviews/ProgressView';
 import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
@@ -8,7 +7,6 @@ import TipView from './subviews/TipView';
 type subViewClass = (
   | typeof TrackView
   | typeof ThumbView
-  | typeof ProgressView
   | typeof ScaleView
   | typeof TipView
 );
@@ -48,11 +46,12 @@ class Presenter {
       value2,
       isVertical,
       isInterval,
+      showProgressBar,
     } = this.options;
 
     this.updateDimensionAndAxis();
     this.defineViewValues();
-    this.view = new View({ isVertical, isInterval });
+    this.view = new View({ isVertical, isInterval, showProgressBar });
     this.toggleContainerClass(isVertical);
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
     this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
@@ -63,12 +62,6 @@ class Presenter {
       },
       thumb: {
         constructorClass: ThumbView,
-        parentElement: this.view.$controlContainer,
-      },
-      progress: {
-        constructorClass: ProgressView,
-        // temporarily set this parentElement because BaseView isn't created at this moment yet
-        // and base cannot be created before initialization on this object
         parentElement: this.view.$controlContainer,
       },
       scale: {
@@ -139,7 +132,6 @@ class Presenter {
 
   private createInitialSubViews() {
     this.createSubView('track');
-    this.subViewCreationData.progress.parentElement = this.subViews.track.$elem;
 
     const subViewsCreationData: [ViewType, (1 | 2)?][] = [
       ['thumb', 1],
@@ -158,10 +150,6 @@ class Presenter {
 
     if (this.options.showScale) {
       subViewsCreationData.push(['scale']);
-    }
-
-    if (this.options.showProgressBar) {
-      subViewsCreationData.push(['progress']);
     }
 
     subViewsCreationData.forEach(([subViewName, number]) => {

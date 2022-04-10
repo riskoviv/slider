@@ -118,7 +118,6 @@ type ViewParams = {
 type ViewType = (
   | 'track'
   | 'thumb'
-  | 'progress'
   | 'scale'
   | 'tip'
 );

@@ -164,19 +164,30 @@
     }
   }
 
-  &__progress {
-    position: absolute;
-    background-color: var(--main-color);
-    height: var(--track-size);
-    width: var(--value-1-position);
-    left: 0%;
-    top: unset;
-    pointer-events: none;
+  &_show-progress {
+
+    .slider__track {
+      background-image: linear-gradient(
+        to right,
+        var(--main-color) var(--value-1-position),
+        transparent 0%
+      );
+    }
+
+    &.slider_interval {
+
+      .slider__track {
+        background-image: linear-gradient(
+          to right,
+          transparent var(--value-1-position),
+          var(--main-color) var(--value-1-position),
+          var(--main-color) var(--value-2-position),
+          transparent var(--value-1-position)
+        );
+      }
+    }
   }
 
-  /**********************
-    SLIDER VERTICAL VIEW
-    *********************/
   &_vertical {
     height: 100%;
     display: flex;
@@ -266,34 +277,29 @@
         }
       }
 
-      &__progress {
-        height: var(--value-1-position);
-        width: var(--track-size);
-        top: 0%;
-        left: unset;
+    }
+    &.slider_show-progress {
+
+      .slider__track {
+        background-image: linear-gradient(
+          to bottom,
+          var(--main-color) var(--value-1-position),
+          transparent 0%
+        );
       }
-    }
-  }
 
-  /************************
-      SLIDER INTERVAL VIEW
-  ************************/
-  &_interval {
+      &.slider_interval {
 
-    .slider__progress {
-      width: calc(var(--value-2-position) - var(--value-1-position));
-      left: var(--value-1-position);
-      top: unset;
-    }
-  }
-
-  &_interval.slider_vertical {
-
-    .slider__progress {
-      width: var(--track-size);
-      left: unset;
-      top: var(--value-1-position);
-      height: calc(var(--value-2-position) - var(--value-1-position));
+        .slider__track {
+          background-image: linear-gradient(
+            to bottom,
+            transparent var(--value-1-position),
+            var(--main-color) var(--value-1-position),
+            var(--main-color) var(--value-2-position),
+            transparent var(--value-1-position)
+          );
+        }
+      }
     }
   }
 }
