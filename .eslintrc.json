@@ -37,7 +37,8 @@
     "ViewType": "readonly"
   },
   "ignorePatterns": [
-    "dist"
+    "dist",
+    "jest.config.ts"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
