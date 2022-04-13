@@ -52,6 +52,7 @@ module.exports = {
       logo: './src/demo/favicon.png',
       outputPath: './demo/assets',
       publicPath: 'demo',
+      mode: 'light',
     }),
     new webpack.ProvidePlugin({
       $: 'jquery',
