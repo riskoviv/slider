@@ -4,7 +4,7 @@ class ScaleView extends SubView implements IScaleView {
   scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
   constructor() {
-    super();
+    super('scale');
     this.bindClickListener();
   }
 
