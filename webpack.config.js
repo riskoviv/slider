@@ -1,16 +1,23 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+import webpack from 'webpack';
+import path from 'path';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const filename = (ext) => (isDev ? `[name].[fullhash:7].${ext}` : `[name].${ext}`);
-const filepath = (pathdata, ext) => (pathdata.chunk.name === 'demo-page' ? `demo/${filename(ext)}` : filename(ext));
+const filename = (ext) => (
+  isDev
+    ? `[name].[fullhash:7].${ext}`
+    : `[name].${ext}`
+);
+const filepath = (pathdata, ext) => (
+  pathdata.chunk.name === 'demo-page'
+    ? `demo/${filename(ext)}`
+    : filename(ext)
+);
 
-module.exports = {
+export default {
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
@@ -18,7 +25,7 @@ module.exports = {
   },
   output: {
     filename: (pathdata) => filepath(pathdata, 'js'),
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('dist'),
     clean: true,
   },
   module: {
