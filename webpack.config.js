@@ -33,7 +33,10 @@ export default {
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: [
+          /node_modules/,
+          /\.test\.ts$/,
+        ],
       },
       {
         test: /\.scss$/,
