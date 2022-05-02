@@ -24,6 +24,7 @@ export default {
     'demo-page': './src/demo/demo-page.js',
   },
   output: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     filename: (pathdata) => filepath(pathdata, 'js'),
     path: path.resolve('dist'),
     clean: true,
