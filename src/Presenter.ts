@@ -358,12 +358,12 @@ class Presenter {
       const { thumbNumber } = this.currentThumbData;
       if (thumbNumber === 1) {
         const thumb1NewIndex = this.getIndexByPosition(newPosition);
-        const thumb2Index = this.getIndexByPosition(this.model.viewValues.positions[2]);
+        const thumb2Index = this.model.getIndexByValueNumber(2);
         return thumb1NewIndex < thumb2Index;
       }
 
       const thumb2NewIndex = this.getIndexByPosition(newPosition);
-      const thumb1Index = this.getIndexByPosition(this.model.viewValues.positions[1]);
+      const thumb1Index = this.model.getIndexByValueNumber(1);
       return thumb2NewIndex > thumb1Index;
     },
 
