@@ -51,6 +51,10 @@ class Model extends EventEmitter implements IModel {
     return this.keepValueInRange(this.options.minValue + this.options.stepSize * index);
   }
 
+  getPenultimateValue(): number {
+    return this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2);
+  }
+
   setStepSize(stepSize: number): void {
     this.options.stepSize = stepSize;
     this.emit('stepSizeChanged');
@@ -98,10 +102,6 @@ class Model extends EventEmitter implements IModel {
   private isValueAllowed(value: number): boolean {
     if (value === this.options.maxValue || value === this.options.minValue) return true;
     return Number.isInteger((value - this.options.minValue) / this.options.stepSize);
-  }
-
-  private getPenultimateValue(): number {
-    return this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2);
   }
 
   private getSecondValue(): number {
