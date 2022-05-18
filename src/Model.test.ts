@@ -30,13 +30,13 @@ describe('Model', () => {
       expect(model.fractionalPrecision).toEqual(0);
     });
 
-    test('getOptions returns the same object as options (not by content)', () => {
+    test('getOptions returns the same object as defaultOptions (by content)', () => {
       const modelOptions = model.getOptions();
 
-      expect(modelOptions).toBe(defaultOptions);
+      expect(modelOptions).toEqual(defaultOptions);
     });
 
-    test('getStateOptions returns the same state options as they was passed on init', () => {
+    test('getStateOptions returns the same state options as they were passed on init', () => {
       const stateOptions: IPluginStateOptions = {
         isInterval: defaultOptions.isInterval,
         isVertical: defaultOptions.isVertical,
@@ -77,24 +77,7 @@ describe('Model', () => {
         expect(model.getValueByIndex(index)).toBe(value);
       });
     });
-  });
 
-  describe('initialized with default + some custom options', () => {
-    describe('sets Model.fractionalPrecision to size of fractional part of options:', () => {
-      test.each`
-        option        | value      | precision
-        ${'stepSize'} | ${10.5}    | ${1}
-        ${'minValue'} | ${-100.55} | ${2}
-        ${'maxValue'} | ${100.535} | ${3}
-      `('if $option is $value, set to $precision', ({ option, value, precision }) => {
-        model = new Model({ ...defaultOptions, [option]: value });
-
-        expect(model.fractionalPrecision).toEqual(precision);
-      });
-    });
-  });
-
-  describe('setters set new values to options', () => {
     describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
       const setStepSizeCallbackSpy = jest.fn();
 
@@ -127,8 +110,8 @@ describe('Model', () => {
         model.on('valueChanged', setValueCallbackSpy);
       });
 
-      afterEach(() => {
-        setValueCallbackSpy.mockReset();
+      afterAll(() => {
+        model.off('valueChanged', setValueCallbackSpy);
       });
 
       test('sets 1st value to 0', () => {
@@ -138,20 +121,57 @@ describe('Model', () => {
         expect(setValueCallbackSpy).toBeCalled();
       });
 
-      test('sets 2nd value to 40', () => {
-        model.setValue(2, 40);
+      test('sets 2nd value to -40 (don\'t consider value1)', () => {
+        model.setValue(2, -40);
 
-        expect(model.options.value2).toEqual(40);
+        expect(model.options.value2).toEqual(-40);
         expect(setValueCallbackSpy).toBeCalled();
       });
+    });
+  });
 
-      describe('value2 can\'t be set to less than value1, so it:', () => {
-        test('sets to value1 + stepSize if maxValue - value1 > stepSize', () => {
-          model.setValue(2, -10);
+  describe('initialized with default + some custom options', () => {
+    describe('sets Model.fractionalPrecision to size of fractional part of options:', () => {
+      test.each`
+        option        | value      | precision
+        ${'stepSize'} | ${10.5}    | ${1}
+        ${'minValue'} | ${-100.55} | ${2}
+        ${'maxValue'} | ${100.535} | ${3}
+      `('if $option is $value, set to $precision', ({ option, value, precision }) => {
+        model = new Model({ ...defaultOptions, [option]: value });
 
-          expect(model.options.value2).toEqual(20);
-          expect(setValueCallbackSpy).toBeCalled();
-        });
+        expect(model.fractionalPrecision).toEqual(precision);
+      });
+    });
+
+    describe('if isInterval is true, setValue() should consider value1 or value2', () => {
+      let setValueCallbackSpy: jest.Mock;
+      beforeAll(() => {
+        model = new Model({ ...defaultOptions, isInterval: true });
+        setValueCallbackSpy = jest.fn();
+        model.on('valueChanged', setValueCallbackSpy);
+      });
+
+      afterAll(() => {
+        model.off('valueChanged', setValueCallbackSpy);
+      });
+
+      test('if value2 intent to set to less than value1, set value2 to value1 + stepSize', () => {
+        model.setValue(1, 0);
+        model.setValue(2, -10);
+
+        expect(model.options.value1).toEqual(0);
+        expect(model.options.value2).toEqual(10);
+        expect(setValueCallbackSpy).toBeCalledTimes(2);
+      });
+
+      test('if value1 intent to set to more than value2, set value1 to value2 - stepSize', () => {
+        model.setValue(2, 10);
+        model.setValue(1, 20);
+
+        expect(model.options.value2).toEqual(10);
+        expect(model.options.value1).toEqual(0);
+        expect(setValueCallbackSpy).toBeCalledTimes(2);
       });
     });
   });
