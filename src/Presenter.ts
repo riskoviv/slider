@@ -457,21 +457,61 @@ class Presenter {
     currentPosition: number,
   } = { thumbNumber: 1, currentPosition: 0 };
 
+  private currentValueIsPenultimateValue() {
+    console.log('/==========start===========/');
+    const valueOfCurrentThumb = this.options[`value${this.currentThumbData.thumbNumber}`];
+    console.log('valueOfCurrentThumb: ', valueOfCurrentThumb);
+    const penultimateValue = this.fixValue(this.model.getPenultimateValue());
+    console.log('penultimateValue: ', penultimateValue);
+    console.log('/===========end============/');
+    return valueOfCurrentThumb === penultimateValue;
+    // TODO: make penultimateValue & penultimatePosition not be computed every time on pointerMove
+  }
+
+  private getPenultimatePosition() {
+    return this.model.viewValues.stepInPercents * this.model.allowedValuesCount - 2;
+  }
+
   private sliderPointerMove = (e: PointerEvent): void => {
     let newPosition = this.pixelsToPercentsOfSliderLength(e[this.offset]);
-    const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
-    if (movedHalfStep) {
-      newPosition = this.findClosestAllowedPosition(this.thumbChecks.fixIfOutOfRange(newPosition));
-      const isThumbAwayFromOtherThumb = this.options.isInterval
-        ? this.thumbChecks.isThumbKeepsDistance(newPosition)
-        : true;
-      const value = this.fixValue(this.getValueByPosition(newPosition));
-      if (isThumbAwayFromOtherThumb) {
+    const { currentPosition, thumbNumber } = this.currentThumbData;
+    const penultimatePosition = this.getPenultimatePosition();
+    const halfStepFromPenultimateToMax = (100 - penultimatePosition) / 2;
+    if (this.currentValueIsPenultimateValue()
+      && newPosition > currentPosition + halfStepFromPenultimateToMax) {
+      console.log('penultimate & half step+ to right');
+      if (!(this.options.isInterval && thumbNumber === 1)) {
         this.setPositionAndCurrentValue({
-          number: this.currentThumbData.thumbNumber,
-          position: newPosition,
-          value,
+          number: thumbNumber,
+          position: 100,
+          value: this.options.maxValue,
         });
+      }
+    } else if (currentPosition === 100
+      && newPosition < currentPosition - halfStepFromPenultimateToMax) {
+      console.log('maxValue & half step+ to left');
+      this.setPositionAndCurrentValue({
+        number: thumbNumber,
+        position: penultimatePosition,
+        value: this.fixValue(this.model.getPenultimateValue()),
+      });
+    } else {
+      const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
+      if (movedHalfStep) {
+        newPosition = this.findClosestAllowedPosition(
+          this.thumbChecks.fixIfOutOfRange(newPosition),
+        );
+        const isThumbAwayFromOtherThumb = this.options.isInterval
+          ? this.thumbChecks.isThumbKeepsDistance(newPosition)
+          : true;
+        const newValue = this.fixValue(this.getValueByPosition(newPosition));
+        if (isThumbAwayFromOtherThumb) {
+          this.setPositionAndCurrentValue({
+            number: thumbNumber,
+            position: newPosition,
+            value: newValue,
+          });
+        }
       }
     }
   }
