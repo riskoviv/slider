@@ -96,6 +96,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   private isValueAllowed(value: number): boolean {
+    if (value === this.options.maxValue || value === this.options.minValue) return true;
     return Number.isInteger((value - this.options.minValue) / this.options.stepSize);
   }
 
