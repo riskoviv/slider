@@ -1,6 +1,8 @@
 import EventEmitter from './EventEmitter';
 
 class Model extends EventEmitter implements IModel {
+  options: IPluginOptions;
+
   allowedValuesCount: number;
 
   fractionalPrecision: number;
@@ -11,8 +13,9 @@ class Model extends EventEmitter implements IModel {
     halfStepInPercents: 5,
   };
 
-  constructor(public options: IPluginOptions) {
+  constructor(options: IPluginOptions) {
     super();
+    this.options = { ...options };
     this.allowedValuesCount = Math.ceil(
       (options.maxValue - options.minValue) / options.stepSize,
     ) + 1;
