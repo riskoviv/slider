@@ -61,14 +61,17 @@ interface IEventEmitter {
 
 type ViewValues = {
   positions: { 1: number, 2: number },
+  penultimatePosition: number,
   stepInPercents: number,
   halfStepInPercents: number,
+  halfStepFromPenultimateToMax: number,
 };
 
 interface IModel extends IEventEmitter {
   options: IPluginOptions;
   allowedValuesCount: number;
   fractionalPrecision: number;
+  penultimateValue: number;
   viewValues: ViewValues;
   getOptions(): IPluginOptions;
   getStateOptions(): IPluginStateOptions;
