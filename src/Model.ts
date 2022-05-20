@@ -10,9 +10,9 @@ class Model extends EventEmitter implements IModel {
   penultimateValue: number;
 
   viewValues: ViewValues = {
-    positions: { 1: 0, 2: 100 },
-    stepInPercents: 10,
-    halfStepInPercents: 5,
+    positions: { 1: NaN, 2: NaN },
+    stepInPercents: NaN,
+    halfStepInPercents: NaN,
     penultimatePosition: NaN,
     halfStepFromPenultimateToMax: NaN,
   };
