@@ -449,13 +449,7 @@ class Presenter {
   } = { thumbNumber: 1, currentPosition: 0 };
 
   private currentValueIsPenultimateValue() {
-    console.log('/==========start===========/');
-    const valueOfCurrentThumb = this.options[`value${this.currentThumbData.thumbNumber}`];
-    console.log('valueOfCurrentThumb: ', valueOfCurrentThumb);
-    console.log('penultimateValue: ', penultimateValue);
-    console.log('/===========end============/');
-    return valueOfCurrentThumb === penultimateValue;
-    // TODO: make penultimateValue & penultimatePosition not be computed every time on pointerMove
+    return this.currentThumbData.currentValue === this.model.penultimateValue;
   }
 
   private getPenultimatePosition() {
