@@ -453,7 +453,7 @@ class Presenter {
   }
 
   private getPenultimatePosition() {
-    return this.model.viewValues.stepInPercents * this.model.allowedValuesCount - 2;
+    return this.model.viewValues.stepInPercents * (this.model.allowedValuesCount - 2);
   }
 
   private sliderPointerMove = (e: PointerEvent): void => {
