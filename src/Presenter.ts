@@ -345,11 +345,6 @@ class Presenter {
         > this.model.viewValues.halfStepInPercents
     ),
 
-    isCursorOnStepPosition: (position: number): boolean => (
-      this.isPositionAllowed(position)
-        && position !== this.currentThumbData.currentPosition
-    ),
-
     isThumbKeepsDistance: (newPosition: number): boolean => {
       const { thumbNumber } = this.currentThumbData;
       if (thumbNumber === 1) {
