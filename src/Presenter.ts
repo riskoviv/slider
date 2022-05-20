@@ -378,6 +378,7 @@ class Presenter {
           this.currentThumbData = {
             thumbNumber,
             currentPosition: this.model.viewValues.positions[thumbNumber],
+            currentValue: this.options[`value${thumbNumber}`],
           };
         }
       } else if (target === this.view.controlContainerElem) {
@@ -390,10 +391,6 @@ class Presenter {
           ? this.findClosestThumbByPosition(position)
           : 1;
 
-        this.currentThumbData = {
-          thumbNumber: chosenThumb,
-          currentPosition: allowedPosition,
-        };
         this.setPositionAndCurrentValue({
           number: chosenThumb,
           position: allowedPosition,
@@ -413,11 +410,6 @@ class Presenter {
       if (this.options.isInterval) {
         thumbNumber = this.findClosestThumbByValue(value);
       }
-
-      this.currentThumbData = {
-        thumbNumber,
-        currentPosition: position,
-      };
 
       this.setPositionAndCurrentValue({
         number: thumbNumber,
@@ -532,6 +524,7 @@ class Presenter {
       value,
     } = options;
 
+    this.currentThumbData.thumbNumber = number;
     this.setPosition(number, position);
     this.saveCurrentValue(number, value);
     this.setTipValue({ number, value });
