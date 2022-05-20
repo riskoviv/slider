@@ -52,7 +52,9 @@ class Model extends EventEmitter implements IModel {
   }
 
   getPenultimateValue(): number {
-    return this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2);
+    return this.options.minValue + this.fixValueToPrecision(
+      this.options.stepSize * (this.allowedValuesCount - 2),
+    );
   }
 
   setStepSize(stepSize: number): void {
@@ -87,6 +89,10 @@ class Model extends EventEmitter implements IModel {
       number: 2,
       value: this.options.value2,
     });
+  }
+
+  fixValueToPrecision(value: number): number {
+    return Number.parseFloat(value.toFixed(this.fractionalPrecision));
   }
 
   publicMethods: IPluginPublicMethods = {
@@ -161,7 +167,7 @@ class Model extends EventEmitter implements IModel {
       }
     }
 
-    fixedValue = Number.parseFloat(fixedValue.toFixed(this.fractionalPrecision));
+    fixedValue = this.fixValueToPrecision(fixedValue);
     console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} to fit to step size.`);
     return fixedValue;
   }

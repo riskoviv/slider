@@ -80,6 +80,7 @@ interface IModel extends IEventEmitter {
   setValue(thumbNumber: 1 | 2, valueIndex: number): void;
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
+  fixValueToPrecision(value: number): number;
   publicMethods: IPluginPublicMethods;
 }
 

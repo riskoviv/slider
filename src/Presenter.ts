@@ -35,6 +35,8 @@ class Presenter {
 
   private sliderResizeObserver: ResizeObserver | undefined;
 
+  private fixValue = this.model.fixValueToPrecision.bind(this.model);
+
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -285,12 +287,6 @@ class Presenter {
     if (position === 100) return this.options.maxValue;
     const index = this.getIndexByPosition(position);
     return this.model.getValueByIndex(index);
-  }
-
-  private fixValue(value: number): number {
-    const { fractionalPrecision } = this.model;
-    const fixedValue = Number.parseFloat(value.toFixed(fractionalPrecision));
-    return fixedValue;
   }
 
   private isPositionAllowed(position: number): boolean {
