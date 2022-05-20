@@ -63,7 +63,15 @@ class Model extends EventEmitter implements IModel {
   }
 
   setStepSize(stepSize: number): void {
-    this.options.stepSize = stepSize;
+    if (stepSize > this.options.maxValue - this.options.minValue) return;
+    if (stepSize === 0) return;
+    if (!Number.isFinite(stepSize)) return;
+    if (stepSize < 0) {
+      this.options.stepSize = -stepSize;
+    } else {
+      this.options.stepSize = stepSize;
+    }
+
     this.emit('stepSizeChanged');
   }
 
