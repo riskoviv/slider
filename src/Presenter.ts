@@ -533,7 +533,7 @@ class Presenter {
     } = options;
 
     this.setPosition(number, position);
-    this.saveValueInModel(number, value);
+    this.saveCurrentValue(number, value);
     this.setTipValue({ number, value });
   }
 
@@ -543,7 +543,8 @@ class Presenter {
     this.model.viewValues.positions[number] = position;
   }
 
-  private saveValueInModel(number: 1 | 2, value: number): void {
+  private saveCurrentValue(number: 1 | 2, value: number): void {
+    this.currentThumbData.currentValue = value;
     this.model.options[`value${number}`] = value;
   }
 
