@@ -449,14 +449,21 @@ class Presenter {
     return this.model.viewValues.stepInPercents * (this.model.allowedValuesCount - 2);
   }
 
+  private thumbDraggedOverHalfStepFromPenultimateToMax(newPosition: number) {
+    return this.currentValueIsPenultimateValue()
+      && newPosition > this.currentThumbData.currentPosition
+      + this.model.viewValues.halfStepFromPenultimateToMax;
+  }
+
+  private thumbDraggedOverHalfStepFromMaxToPenultimate(newPosition: number) {
+    return this.currentThumbData.currentPosition === 100
+      && newPosition < 100 - this.model.viewValues.halfStepFromPenultimateToMax;
+  }
+
   private sliderPointerMove = (e: PointerEvent): void => {
     let newPosition = this.pixelsToPercentsOfSliderLength(e[this.offset]);
-    const { currentPosition, thumbNumber } = this.currentThumbData;
-    const penultimatePosition = this.getPenultimatePosition();
-    const halfStepFromPenultimateToMax = (100 - penultimatePosition) / 2;
-    if (this.currentValueIsPenultimateValue()
-      && newPosition > currentPosition + halfStepFromPenultimateToMax) {
-      console.log('penultimate & half step+ to right');
+    const { thumbNumber } = this.currentThumbData;
+    if (this.thumbDraggedOverHalfStepFromPenultimateToMax(newPosition)) {
       if (!(this.options.isInterval && thumbNumber === 1)) {
         this.setPositionAndCurrentValue({
           number: thumbNumber,
@@ -464,13 +471,11 @@ class Presenter {
           value: this.options.maxValue,
         });
       }
-    } else if (currentPosition === 100
-      && newPosition < currentPosition - halfStepFromPenultimateToMax) {
-      console.log('maxValue & half step+ to left');
+    } else if (this.thumbDraggedOverHalfStepFromMaxToPenultimate(newPosition)) {
       this.setPositionAndCurrentValue({
         number: thumbNumber,
-        position: penultimatePosition,
-        value: this.fixValue(this.model.getPenultimateValue()),
+        position: this.model.viewValues.penultimatePosition,
+        value: this.model.penultimateValue,
       });
     } else {
       const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
