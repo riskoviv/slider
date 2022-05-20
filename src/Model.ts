@@ -7,6 +7,8 @@ class Model extends EventEmitter implements IModel {
 
   fractionalPrecision: number;
 
+  penultimateValue: number;
+
   viewValues: ViewValues = {
     positions: { 1: 0, 2: 100 },
     stepInPercents: 10,
@@ -20,6 +22,7 @@ class Model extends EventEmitter implements IModel {
       (options.maxValue - options.minValue) / options.stepSize,
     ) + 1;
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
+    this.penultimateValue = this.getPenultimateValue();
     this.fixValues();
   }
 

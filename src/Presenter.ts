@@ -457,7 +457,6 @@ class Presenter {
     console.log('/==========start===========/');
     const valueOfCurrentThumb = this.options[`value${this.currentThumbData.thumbNumber}`];
     console.log('valueOfCurrentThumb: ', valueOfCurrentThumb);
-    const penultimateValue = this.fixValue(this.model.getPenultimateValue());
     console.log('penultimateValue: ', penultimateValue);
     console.log('/===========end============/');
     return valueOfCurrentThumb === penultimateValue;
