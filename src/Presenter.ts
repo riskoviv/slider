@@ -587,6 +587,10 @@ class Presenter {
     const totalSliderRange = maxValue - minValue;
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
+    this.model.viewValues.penultimatePosition = this.getPenultimatePosition();
+    this.model.viewValues.halfStepFromPenultimateToMax = (
+      100 - this.model.viewValues.penultimatePosition
+    ) / 2;
   }
 }
 

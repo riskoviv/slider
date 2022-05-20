@@ -13,6 +13,8 @@ class Model extends EventEmitter implements IModel {
     positions: { 1: 0, 2: 100 },
     stepInPercents: 10,
     halfStepInPercents: 5,
+    penultimatePosition: NaN,
+    halfStepFromPenultimateToMax: NaN,
   };
 
   constructor(options: IPluginOptions) {
