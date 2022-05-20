@@ -81,25 +81,55 @@ describe('Model', () => {
     describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
       const setStepSizeCallbackSpy = jest.fn();
 
-      beforeEach(() => {
+      beforeAll(() => {
         initModelWithDefaultOptions();
         model.on('stepSizeChanged', setStepSizeCallbackSpy);
       });
 
-      afterEach(() => {
-        setStepSizeCallbackSpy.mockReset();
-      });
-
-      test('sets positive integer that is less than range', () => {
+      test('should set positive integer that is less than range', () => {
         model.setStepSize(20);
 
         expect(model.options.stepSize).toEqual(20);
         expect(setStepSizeCallbackSpy).toBeCalled();
       });
 
-      test.todo('sets positive float that is less than range');
-      test.todo('don\'t allow to set any negative value');
-      test.todo('don\'t allow to set value that is more than range');
+      test('should set positive float that is less than range', () => {
+        model.setStepSize(15.5);
+
+        expect(model.options.stepSize).toBeCloseTo(15.5);
+        expect(setStepSizeCallbackSpy).toBeCalled();
+      });
+
+      test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
+        const negativeStepSize = -20;
+
+        model.setStepSize(negativeStepSize);
+
+        expect(model.options.stepSize).toEqual(-negativeStepSize);
+        expect(model.options.stepSize).not.toEqual(negativeStepSize);
+        expect(setStepSizeCallbackSpy).toBeCalled();
+      });
+
+      test('shouldn\'t allow to set value that is more than range', () => {
+        const currentStepSize = model.options.stepSize;
+        const range = model.options.maxValue - model.options.minValue;
+        const stepMoreThanRange = range + 10;
+
+        model.setStepSize(stepMoreThanRange);
+
+        expect(model.options.stepSize).toEqual(currentStepSize);
+        expect(model.options.stepSize).not.toEqual(stepMoreThanRange);
+        expect(setStepSizeCallbackSpy).not.toBeCalled();
+      });
+
+      test('should not set any non-finite value', () => {
+        const currentStepSize = model.options.stepSize;
+
+        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
+
+        expect(model.options.stepSize).toEqual(currentStepSize);
+        expect(setStepSizeCallbackSpy).not.toBeCalled();
+      });
     });
 
     describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
