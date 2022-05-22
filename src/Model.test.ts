@@ -135,7 +135,7 @@ describe('Model', () => {
     describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
       const setValueCallbackSpy = jest.fn();
 
-      beforeEach(() => {
+      beforeAll(() => {
         initModelWithDefaultOptions();
         model.on('valueChanged', setValueCallbackSpy);
       });
@@ -144,19 +144,68 @@ describe('Model', () => {
         model.off('valueChanged', setValueCallbackSpy);
       });
 
-      test('sets 1st value to 0', () => {
+      test('should set 1st value to 0', () => {
         model.setValue(1, 0);
 
         expect(model.options.value1).toEqual(0);
         expect(setValueCallbackSpy).toBeCalled();
       });
 
-      test('sets 2nd value to -40 (don\'t consider value1)', () => {
+      test('should set 2nd value to -40 (don\'t consider value1)', () => {
         model.setValue(2, -40);
 
         expect(model.options.value2).toEqual(-40);
         expect(setValueCallbackSpy).toBeCalled();
       });
+
+      test('should set value1 to minValue if passed value < minValue', () => {
+        model.setValue(1, defaultOptions.minValue - 1);
+
+        expect(model.options.value1).toEqual(defaultOptions.minValue);
+        expect(setValueCallbackSpy).toBeCalled();
+      });
+
+      test('should set value1 to maxValue if passed value > maxValue', () => {
+        model.setValue(1, defaultOptions.maxValue + 1);
+
+        expect(model.options.value1).toEqual(defaultOptions.maxValue);
+        expect(setValueCallbackSpy).toBeCalled();
+      });
+    });
+
+    describe('setVerticalState()', () => {
+      const setVerticalStateCallbackSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('isVerticalChanged', setVerticalStateCallbackSpy);
+      });
+
+      test('should change state to vertical if true passed', () => {
+        model.setVerticalState(true);
+
+        expect(model.options.isVertical).toEqual(true);
+        expect(setVerticalStateCallbackSpy).toBeCalled();
+      });
+
+      test('should change state to not vertical if false passed', () => {
+        model.setVerticalState(false);
+
+        expect(model.options.isVertical).toEqual(false);
+        expect(setVerticalStateCallbackSpy).toBeCalled();
+      });
+    });
+
+    describe('setInterval()', () => {
+      const setIntervalCallbackSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('isIntervalChanged', setIntervalCallbackSpy);
+      });
+
+      test.todo('should set interval if passed true');
+      test.todo('should set to not interval if passed false');
     });
   });
 
