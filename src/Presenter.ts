@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import TrackView from './subviews/TrackView';
 import ThumbView from './subviews/ThumbView';
 import ScaleView from './subviews/ScaleView';
