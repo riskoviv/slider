@@ -30,11 +30,10 @@ $.fn.sliderPlugin = function sliderPlugin(
 
   cleanContainerIfNotEmpty(this);
 
-  const pluginOptions = checkOptionsValues($.extend(
-    {},
-    defaultOptions,
-    fixCustomOptions(options),
-  ));
+  const pluginOptions = checkOptionsValues({
+    ...defaultOptions,
+    ...fixCustomOptions(options),
+  });
 
   const model = new Model(pluginOptions);
   const presenter = new Presenter(this, model);
