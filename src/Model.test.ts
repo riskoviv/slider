@@ -79,25 +79,25 @@ describe('Model', () => {
     });
 
     describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
-      const setStepSizeCallbackSpy = jest.fn();
+      const stepSizeChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('stepSizeChanged', setStepSizeCallbackSpy);
+        model.on('stepSizeChanged', stepSizeChangedSpy);
       });
 
       test('should set positive integer that is less than range', () => {
         model.setStepSize(20);
 
         expect(model.options.stepSize).toEqual(20);
-        expect(setStepSizeCallbackSpy).toBeCalled();
+        expect(stepSizeChangedSpy).toBeCalled();
       });
 
       test('should set positive float that is less than range', () => {
         model.setStepSize(15.5);
 
         expect(model.options.stepSize).toBeCloseTo(15.5);
-        expect(setStepSizeCallbackSpy).toBeCalled();
+        expect(stepSizeChangedSpy).toBeCalled();
       });
 
       test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
@@ -107,7 +107,7 @@ describe('Model', () => {
 
         expect(model.options.stepSize).toEqual(-negativeStepSize);
         expect(model.options.stepSize).not.toEqual(negativeStepSize);
-        expect(setStepSizeCallbackSpy).toBeCalled();
+        expect(stepSizeChangedSpy).toBeCalled();
       });
 
       test('shouldn\'t allow to set value that is more than range', () => {
@@ -119,7 +119,7 @@ describe('Model', () => {
 
         expect(model.options.stepSize).toEqual(currentStepSize);
         expect(model.options.stepSize).not.toEqual(stepMoreThanRange);
-        expect(setStepSizeCallbackSpy).not.toBeCalled();
+        expect(stepSizeChangedSpy).not.toBeCalled();
       });
 
       test('should not set any non-finite value', () => {
@@ -128,80 +128,80 @@ describe('Model', () => {
         [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
 
         expect(model.options.stepSize).toEqual(currentStepSize);
-        expect(setStepSizeCallbackSpy).not.toBeCalled();
+        expect(stepSizeChangedSpy).not.toBeCalled();
       });
     });
 
     describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
-      const setValueCallbackSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('valueChanged', setValueCallbackSpy);
+        model.on('valueChanged', valueChangedSpy);
       });
 
       afterAll(() => {
-        model.off('valueChanged', setValueCallbackSpy);
+        model.off('valueChanged', valueChangedSpy);
       });
 
       test('should set 1st value to 0', () => {
         model.setValue(1, 0);
 
         expect(model.options.value1).toEqual(0);
-        expect(setValueCallbackSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
       });
 
       test('should set 2nd value to -40 (don\'t consider value1)', () => {
         model.setValue(2, -40);
 
         expect(model.options.value2).toEqual(-40);
-        expect(setValueCallbackSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
       });
 
       test('should set value1 to minValue if passed value < minValue', () => {
         model.setValue(1, defaultOptions.minValue - 1);
 
         expect(model.options.value1).toEqual(defaultOptions.minValue);
-        expect(setValueCallbackSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
       });
 
       test('should set value1 to maxValue if passed value > maxValue', () => {
         model.setValue(1, defaultOptions.maxValue + 1);
 
         expect(model.options.value1).toEqual(defaultOptions.maxValue);
-        expect(setValueCallbackSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
       });
     });
 
     describe('setVerticalState()', () => {
-      const setVerticalStateCallbackSpy = jest.fn();
+      const isVerticalChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('isVerticalChanged', setVerticalStateCallbackSpy);
+        model.on('isVerticalChanged', isVerticalChangedSpy);
       });
 
-      test('should change state to vertical if true passed', () => {
+      test('should set isVertical to true if true passed', () => {
         model.setVerticalState(true);
 
         expect(model.options.isVertical).toEqual(true);
-        expect(setVerticalStateCallbackSpy).toBeCalled();
+        expect(isVerticalChangedSpy).toBeCalled();
       });
 
-      test('should change state to not vertical if false passed', () => {
+      test('should set isVertical to false if false passed', () => {
         model.setVerticalState(false);
 
         expect(model.options.isVertical).toEqual(false);
-        expect(setVerticalStateCallbackSpy).toBeCalled();
+        expect(isVerticalChangedSpy).toBeCalled();
       });
     });
 
     describe('setInterval()', () => {
-      const setIntervalCallbackSpy = jest.fn();
+      const isIntervalChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('isIntervalChanged', setIntervalCallbackSpy);
+        model.on('isIntervalChanged', isIntervalChangedSpy);
       });
 
       test.todo('should set interval if passed true');
@@ -224,15 +224,15 @@ describe('Model', () => {
     });
 
     describe('if isInterval is true, setValue() should consider value1 or value2', () => {
-      let setValueCallbackSpy: jest.Mock;
+      let valueChangedSpy: jest.Mock;
       beforeAll(() => {
         model = new Model({ ...defaultOptions, isInterval: true });
-        setValueCallbackSpy = jest.fn();
-        model.on('valueChanged', setValueCallbackSpy);
+        valueChangedSpy = jest.fn();
+        model.on('valueChanged', valueChangedSpy);
       });
 
       afterAll(() => {
-        model.off('valueChanged', setValueCallbackSpy);
+        model.off('valueChanged', valueChangedSpy);
       });
 
       test('if value2 intent to set to less than value1, set value2 to value1 + stepSize', () => {
@@ -241,7 +241,7 @@ describe('Model', () => {
 
         expect(model.options.value1).toEqual(0);
         expect(model.options.value2).toEqual(10);
-        expect(setValueCallbackSpy).toBeCalledTimes(2);
+        expect(valueChangedSpy).toBeCalledTimes(2);
       });
 
       test('if value1 intent to set to more than value2, set value1 to value2 - stepSize', () => {
@@ -250,7 +250,7 @@ describe('Model', () => {
 
         expect(model.options.value2).toEqual(10);
         expect(model.options.value1).toEqual(0);
-        expect(setValueCallbackSpy).toBeCalledTimes(2);
+        expect(valueChangedSpy).toBeCalledTimes(2);
       });
     });
   });
