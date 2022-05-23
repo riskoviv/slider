@@ -46,6 +46,10 @@ class View extends EventEmitter implements IView {
     this.$elem.toggleClass('slider_interval', isInterval);
   }
 
+  toggleProgressBar(showProgress: boolean): void {
+    this.$elem.toggleClass('slider_show-progress', showProgress);
+  }
+
   setPosition(valueNumber: 1 | 2, position: number): void {
     this.$controlContainer.css(`--value-${valueNumber}-position`, `${position}%`);
   }

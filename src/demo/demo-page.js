@@ -25,6 +25,7 @@ $(() => {
   const $panel1 = $('#panel1');
   const $panel1Interval = $('.panel__interval', $panel1);
   const $panel1Vertical = $('.panel__vertical', $panel1);
+  const $panel1Progress = $('.panel__progress', $panel1);
 
   const slider1Options = window.slider1.debug.getOptions();
   console.log('slider1.getOptions(): ', slider1Options);
@@ -35,6 +36,10 @@ $(() => {
 
   if (slider1Options.isVertical) {
     $panel1Vertical.attr('checked', true);
+  }
+
+  if (slider1Options.showProgressBar) {
+    $panel1Progress.attr('checked', true);
   }
 
   /**
@@ -54,4 +59,13 @@ $(() => {
   }
 
   $panel1Vertical.on('change', slider1ChangeIsVertical);
+
+  /**
+   * @this HTMLInputElement showProgress checkbox element
+   */
+  function slider1ChangeShowProgress() {
+    window.slider1.setShowProgress(this.checked);
+  }
+
+  $panel1Progress.on('change', slider1ChangeShowProgress);
 });

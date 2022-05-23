@@ -104,6 +104,11 @@ class Model extends EventEmitter implements IModel {
     });
   }
 
+  setShowProgress(showProgressBar: boolean): void {
+    this.options.showProgressBar = showProgressBar;
+    this.emit('showProgressChanged', showProgressBar);
+  }
+
   fixValueToPrecision(value: number): number {
     return Number.parseFloat(value.toFixed(this.fractionalPrecision));
   }
@@ -116,6 +121,7 @@ class Model extends EventEmitter implements IModel {
     setValue: this.setValue.bind(this),
     setVerticalState: this.setVerticalState.bind(this),
     setInterval: this.setInterval.bind(this),
+    setShowProgress: this.setShowProgress.bind(this),
   }
 
   private isValueAllowed(value: number): boolean {

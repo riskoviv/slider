@@ -33,6 +33,7 @@ interface IPluginPublicMethods {
   setValue: (thumbNumber: 1 | 2, valueIndex: number) => void;
   setVerticalState: (isVertical: boolean) => void;
   setInterval(isInterval: boolean): void;
+  setShowProgress(showProgressBar: boolean): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -46,6 +47,7 @@ type EventName = (
   | 'scaleValueSelect'
   | 'isVerticalChanged'
   | 'isIntervalChanged'
+  | 'showProgressChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
@@ -111,6 +113,7 @@ interface IView extends IEventEmitter {
   controlContainerElem: HTMLDivElement;
   toggleVertical(isVertical: boolean): void;
   toggleInterval(isInterval: boolean): void;
+  toggleProgressBar(showProgress: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
   setThumbThickness(thickness: number): void;
 }

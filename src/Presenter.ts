@@ -90,7 +90,8 @@ class Presenter {
     this.model.on('stepSizeChanged', listeners.changeStepSize)
       .on('isVerticalChanged', listeners.changeOrientation)
       .on('isIntervalChanged', listeners.changeInterval)
-      .on('valueChanged', listeners.setValueAndPosition);
+      .on('valueChanged', listeners.setValueAndPosition)
+      .on('showProgressChanged', listeners.changeShowProgress);
   }
 
   private initResizeObserver(): void {
@@ -336,6 +337,10 @@ class Presenter {
       const { number, value } = options;
       const position = this.getPositionByValue(value);
       this.setPosition(number, position);
+    },
+
+    changeShowProgress: (showProgress: boolean): void => {
+      this.view.toggleProgressBar(showProgress);
     },
   };
 

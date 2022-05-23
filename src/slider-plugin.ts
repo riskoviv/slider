@@ -46,6 +46,7 @@ $.fn.sliderPlugin = function sliderPlugin(
     setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
+    setShowProgress: $sliderElem.setShowProgress,
   } = model.publicMethods);
 
   return $sliderElem;
