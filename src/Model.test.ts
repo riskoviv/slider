@@ -19,222 +19,28 @@ const initModelWithDefaultOptions = () => {
 };
 
 describe('Model', () => {
-  describe('initialized with all default options', () => {
+  beforeAll(() => {
     initModelWithDefaultOptions();
+  });
 
-    test('sets allowedValuesCount property to 21', () => {
+  describe('on initialization', () => {
+    test('should set options property to equal passed options object by content but not be the same object', () => {
+      expect(model.options).toEqual(defaultOptions);
+      expect(model.options).not.toBe(defaultOptions);
+    });
+
+    test('should set allowedValuesCount to 21', () => {
       expect(model.allowedValuesCount).toEqual(21);
     });
 
-    test('sets fractionalPrecision property to 0', () => {
+    test('should set fractionalPrecision to 0', () => {
       expect(model.fractionalPrecision).toEqual(0);
     });
 
-    test('getOptions returns the same object as defaultOptions (by content)', () => {
-      const modelOptions = model.getOptions();
-
-      expect(modelOptions).toEqual(defaultOptions);
+    test('should set penultimateValue to 90', () => {
+      expect(model.penultimateValue).toEqual(90);
     });
 
-    test('getStateOptions returns the same state options as they were passed on init', () => {
-      const stateOptions: IPluginStateOptions = {
-        isInterval: defaultOptions.isInterval,
-        isVertical: defaultOptions.isVertical,
-        showTip: defaultOptions.showTip,
-        showScale: defaultOptions.showScale,
-        showProgressBar: defaultOptions.showProgressBar,
-      };
-
-      const modelStateOptions = model.getStateOptions();
-
-      expect(modelStateOptions).toEqual(stateOptions);
-    });
-
-    describe('getIndexByValueNumber(valueNumber: 1 | 2)', () => {
-      test.each<[1 | 2, number]>([
-        [1, 5],
-        [2, 15],
-      ])('returns index of value%i: %i', (number, index) => {
-        expect(model.getIndexByValueNumber(number)).toBe(index);
-      });
-    });
-
-    describe('getIndexByValue(value: number) returns index of value from range considering step', () => {
-      test.each([
-        [-100, 0],
-        [-90, 1],
-        [-50, 5],
-      ])('if value is %i, returns %i', (value, index) => {
-        expect(model.getIndexByValue(value)).toBe(index);
-      });
-    });
-
-    describe('getValueByIndex() returns value from range by index of that value', () => {
-      test.each([
-        [0, -100],
-        [1, -90],
-      ])('if index is %i, return %i', (index, value) => {
-        expect(model.getValueByIndex(index)).toBe(value);
-      });
-    });
-
-    describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
-      const stepSizeChangedSpy = jest.fn();
-
-      beforeAll(() => {
-        initModelWithDefaultOptions();
-        model.on('stepSizeChanged', stepSizeChangedSpy);
-      });
-
-      test('should set positive integer that is less than range', () => {
-        model.setStepSize(20);
-
-        expect(model.options.stepSize).toEqual(20);
-        expect(stepSizeChangedSpy).toBeCalled();
-      });
-
-      test('should set positive float that is less than range', () => {
-        model.setStepSize(15.5);
-
-        expect(model.options.stepSize).toBeCloseTo(15.5);
-        expect(stepSizeChangedSpy).toBeCalled();
-      });
-
-      test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
-        const negativeStepSize = -20;
-
-        model.setStepSize(negativeStepSize);
-
-        expect(model.options.stepSize).toEqual(-negativeStepSize);
-        expect(model.options.stepSize).not.toEqual(negativeStepSize);
-        expect(stepSizeChangedSpy).toBeCalled();
-      });
-
-      test('shouldn\'t allow to set value that is more than range', () => {
-        const currentStepSize = model.options.stepSize;
-        const range = model.options.maxValue - model.options.minValue;
-        const stepMoreThanRange = range + 10;
-
-        model.setStepSize(stepMoreThanRange);
-
-        expect(model.options.stepSize).toEqual(currentStepSize);
-        expect(model.options.stepSize).not.toEqual(stepMoreThanRange);
-        expect(stepSizeChangedSpy).not.toBeCalled();
-      });
-
-      test('should not set any non-finite value', () => {
-        const currentStepSize = model.options.stepSize;
-
-        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
-
-        expect(model.options.stepSize).toEqual(currentStepSize);
-        expect(stepSizeChangedSpy).not.toBeCalled();
-      });
-    });
-
-    describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
-      const valueChangedSpy = jest.fn();
-
-      beforeEach(() => {
-        initModelWithDefaultOptions();
-        model.on('valueChanged', valueChangedSpy);
-      });
-
-      afterEach(() => {
-        model.off('valueChanged', valueChangedSpy);
-      });
-
-      test('should set 1st value to 0', () => {
-        model.setValue(1, 0);
-
-        expect(model.options.value1).toEqual(0);
-        expect(valueChangedSpy).toBeCalled();
-      });
-
-      test('should set 2nd value to -40 (don\'t consider value1)', () => {
-        model.setValue(2, -40);
-
-        expect(model.options.value2).toEqual(-40);
-        expect(valueChangedSpy).toBeCalled();
-      });
-
-      test.each`
-        valueName     | condition   | limitValue                 | passedValue
-        ${'minValue'} | ${'<'}      | ${defaultOptions.minValue} | ${-1}
-        ${'maxValue'} | ${'>'}      | ${defaultOptions.maxValue} | ${1}
-      `('should set value1 to $valueName if passed value $condition $valueName', ({
-        limitValue, passedValue,
-      }) => {
-        model.setValue(1, limitValue + passedValue);
-
-        expect(model.options.value1).toEqual(limitValue);
-        expect(valueChangedSpy).toBeCalled();
-      });
-
-      test.each`
-        valueName     | value
-        ${'minValue'} | ${defaultOptions.minValue}
-        ${'maxValue'} | ${defaultOptions.maxValue}
-      `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
-        model.setValue(1, value);
-
-        expect(model.options.value1).toEqual(value);
-        expect(valueChangedSpy).toBeCalled();
-      });
-    });
-
-    describe('setVerticalState()', () => {
-      const isVerticalChangedSpy = jest.fn();
-
-      beforeAll(() => {
-        initModelWithDefaultOptions();
-        model.on('isVerticalChanged', isVerticalChangedSpy);
-      });
-
-      test('should set isVertical to true if true passed', () => {
-        model.setVerticalState(true);
-
-        expect(model.options.isVertical).toEqual(true);
-        expect(isVerticalChangedSpy).toBeCalled();
-      });
-
-      test('should set isVertical to false if false passed', () => {
-        model.setVerticalState(false);
-
-        expect(model.options.isVertical).toEqual(false);
-        expect(isVerticalChangedSpy).toBeCalled();
-      });
-    });
-
-    describe('setInterval()', () => {
-      const isIntervalChangedSpy = jest.fn();
-      const valueChangedSpy = jest.fn();
-
-      beforeAll(() => {
-        initModelWithDefaultOptions();
-        model.on('isIntervalChanged', isIntervalChangedSpy);
-        model.on('valueChanged', valueChangedSpy);
-      });
-
-      test('should set isInterval to true if true passed', () => {
-        model.setInterval(true);
-
-        expect(model.options.isInterval).toEqual(true);
-        expect(isIntervalChangedSpy).toBeCalled();
-        expect(valueChangedSpy).toBeCalled();
-      });
-
-      test('should set isInterval to false if false passed', () => {
-        model.setInterval(false);
-
-        expect(model.options.isInterval).toEqual(false);
-        expect(isIntervalChangedSpy).toBeCalled();
-        expect(valueChangedSpy).toBeCalled();
-      });
-    });
-  });
-
-  describe('initialized with default + some custom options', () => {
     describe('sets Model.fractionalPrecision to size of fractional part of options:', () => {
       test.each`
         option        | value      | precision
@@ -242,41 +48,245 @@ describe('Model', () => {
         ${'minValue'} | ${-100.55} | ${2}
         ${'maxValue'} | ${100.535} | ${3}
       `('if $option is $value, set to $precision', ({ option, value, precision }) => {
-        model = new Model({ ...defaultOptions, [option]: value });
+        const customModel = new Model({ ...defaultOptions, [option]: value });
 
-        expect(model.fractionalPrecision).toEqual(precision);
+        expect(customModel.fractionalPrecision).toEqual(precision);
       });
+    });
+  });
+
+  test('getOptions returns the same object as defaultOptions (by content)', () => {
+    const modelOptions = model.getOptions();
+
+    expect(modelOptions).toEqual(defaultOptions);
+    expect(modelOptions).not.toBe(model.options);
+  });
+
+  test('getStateOptions returns the same state options as they were passed on init', () => {
+    const stateOptions: IPluginStateOptions = {
+      isInterval: defaultOptions.isInterval,
+      isVertical: defaultOptions.isVertical,
+      showTip: defaultOptions.showTip,
+      showScale: defaultOptions.showScale,
+      showProgressBar: defaultOptions.showProgressBar,
+    };
+
+    const modelStateOptions = model.getStateOptions();
+
+    expect(modelStateOptions).toEqual(stateOptions);
+  });
+
+  describe('getIndexByValueNumber(valueNumber: 1 | 2)', () => {
+    test.each<[1 | 2, number]>([
+      [1, 5],
+      [2, 15],
+    ])('returns index of value%i: %i', (number, index) => {
+      expect(model.getIndexByValueNumber(number)).toBe(index);
+    });
+  });
+
+  describe('getIndexByValue(value: number) returns index of value from range considering step', () => {
+    test.each([
+      [-100, 0],
+      [-90, 1],
+      [-50, 5],
+    ])('if value is %i, returns %i', (value, index) => {
+      expect(model.getIndexByValue(value)).toBe(index);
+    });
+  });
+
+  describe('getValueByIndex() returns value from range by index of that value', () => {
+    test.each([
+      [0, -100],
+      [1, -90],
+    ])('if index is %i, return %i', (index, value) => {
+      expect(model.getValueByIndex(index)).toBe(value);
+    });
+  });
+
+  describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
+    const stepSizeChangedSpy = jest.fn();
+
+    beforeAll(() => {
+      initModelWithDefaultOptions();
+      model.on('stepSizeChanged', stepSizeChangedSpy);
+    });
+
+    test('should set positive integer that is less than range', () => {
+      model.setStepSize(20);
+
+      expect(model.options.stepSize).toEqual(20);
+      expect(stepSizeChangedSpy).toBeCalled();
+    });
+
+    test('should set positive float that is less than range', () => {
+      model.setStepSize(15.5);
+
+      expect(model.options.stepSize).toBeCloseTo(15.5);
+      expect(stepSizeChangedSpy).toBeCalled();
+    });
+
+    test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
+      const negativeStepSize = -20;
+
+      model.setStepSize(negativeStepSize);
+
+      expect(model.options.stepSize).toEqual(-negativeStepSize);
+      expect(model.options.stepSize).not.toEqual(negativeStepSize);
+      expect(stepSizeChangedSpy).toBeCalled();
+    });
+
+    test('shouldn\'t allow to set value that is more than range', () => {
+      const currentStepSize = model.options.stepSize;
+      const range = model.options.maxValue - model.options.minValue;
+      const stepMoreThanRange = range + 10;
+
+      model.setStepSize(stepMoreThanRange);
+
+      expect(model.options.stepSize).toEqual(currentStepSize);
+      expect(model.options.stepSize).not.toEqual(stepMoreThanRange);
+      expect(stepSizeChangedSpy).not.toBeCalled();
+    });
+
+    test('should not set any non-finite value', () => {
+      const currentStepSize = model.options.stepSize;
+
+      [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
+
+      expect(model.options.stepSize).toEqual(currentStepSize);
+      expect(stepSizeChangedSpy).not.toBeCalled();
+    });
+  });
+
+  describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
+    const valueChangedSpy = jest.fn();
+
+    beforeEach(() => {
+      initModelWithDefaultOptions();
+      model.on('valueChanged', valueChangedSpy);
+    });
+
+    afterEach(() => {
+      model.off('valueChanged', valueChangedSpy);
+    });
+
+    test('should set 1st value to 0', () => {
+      model.setValue(1, 0);
+
+      expect(model.options.value1).toEqual(0);
+      expect(valueChangedSpy).toBeCalled();
+    });
+
+    test('should set 2nd value to -40 (don\'t consider value1)', () => {
+      model.setValue(2, -40);
+
+      expect(model.options.value2).toEqual(-40);
+      expect(valueChangedSpy).toBeCalled();
+    });
+
+    test.each`
+      valueName     | condition   | limitValue                 | passedValue
+      ${'minValue'} | ${'<'}      | ${defaultOptions.minValue} | ${-1}
+      ${'maxValue'} | ${'>'}      | ${defaultOptions.maxValue} | ${1}
+    `('should set value1 to $valueName if passed value $condition $valueName', ({
+      limitValue, passedValue,
+    }) => {
+      model.setValue(1, limitValue + passedValue);
+
+      expect(model.options.value1).toEqual(limitValue);
+      expect(valueChangedSpy).toBeCalled();
+    });
+
+    test.each`
+      valueName     | value
+      ${'minValue'} | ${defaultOptions.minValue}
+      ${'maxValue'} | ${defaultOptions.maxValue}
+    `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
+      model.setValue(1, value);
+
+      expect(model.options.value1).toEqual(value);
+      expect(valueChangedSpy).toBeCalled();
     });
 
     describe('if isInterval is true, setValue() should consider value1 or value2', () => {
-      let valueChangedSpy: jest.Mock;
+      let customModel: Model;
+
       beforeAll(() => {
-        model = new Model({ ...defaultOptions, isInterval: true });
-        valueChangedSpy = jest.fn();
-        model.on('valueChanged', valueChangedSpy);
+        customModel = new Model({ ...defaultOptions, isInterval: true });
+        customModel.on('valueChanged', valueChangedSpy);
       });
 
       afterAll(() => {
-        model.off('valueChanged', valueChangedSpy);
+        customModel.off('valueChanged', valueChangedSpy);
       });
 
       test('if value2 intent to set to less than value1, set value2 to value1 + stepSize', () => {
-        model.setValue(1, 0);
-        model.setValue(2, -10);
+        customModel.setValue(1, 0);
+        customModel.setValue(2, -10);
 
-        expect(model.options.value1).toEqual(0);
-        expect(model.options.value2).toEqual(10);
+        expect(customModel.options.value1).toEqual(0);
+        expect(customModel.options.value2).toEqual(10);
         expect(valueChangedSpy).toBeCalledTimes(2);
       });
 
       test('if value1 intent to set to more than value2, set value1 to value2 - stepSize', () => {
-        model.setValue(2, 10);
-        model.setValue(1, 20);
+        customModel.setValue(2, 10);
+        customModel.setValue(1, 20);
 
-        expect(model.options.value2).toEqual(10);
-        expect(model.options.value1).toEqual(0);
+        expect(customModel.options.value2).toEqual(10);
+        expect(customModel.options.value1).toEqual(0);
         expect(valueChangedSpy).toBeCalledTimes(2);
       });
+    });
+  });
+
+  describe('setVerticalState()', () => {
+    const isVerticalChangedSpy = jest.fn();
+
+    beforeAll(() => {
+      initModelWithDefaultOptions();
+      model.on('isVerticalChanged', isVerticalChangedSpy);
+    });
+
+    test('should set isVertical to true if true passed', () => {
+      model.setVerticalState(true);
+
+      expect(model.options.isVertical).toEqual(true);
+      expect(isVerticalChangedSpy).toBeCalled();
+    });
+
+    test('should set isVertical to false if false passed', () => {
+      model.setVerticalState(false);
+
+      expect(model.options.isVertical).toEqual(false);
+      expect(isVerticalChangedSpy).toBeCalled();
+    });
+  });
+
+  describe('setInterval()', () => {
+    const isIntervalChangedSpy = jest.fn();
+    const valueChangedSpy = jest.fn();
+
+    beforeAll(() => {
+      initModelWithDefaultOptions();
+      model.on('isIntervalChanged', isIntervalChangedSpy);
+      model.on('valueChanged', valueChangedSpy);
+    });
+
+    test('should set isInterval to true if true passed', () => {
+      model.setInterval(true);
+
+      expect(model.options.isInterval).toEqual(true);
+      expect(isIntervalChangedSpy).toBeCalled();
+      expect(valueChangedSpy).toBeCalled();
+    });
+
+    test('should set isInterval to false if false passed', () => {
+      model.setInterval(false);
+
+      expect(model.options.isInterval).toEqual(false);
+      expect(isIntervalChangedSpy).toBeCalled();
+      expect(valueChangedSpy).toBeCalled();
     });
   });
 });
