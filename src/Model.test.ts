@@ -171,7 +171,14 @@ describe('Model', () => {
         expect(valueChangedSpy).toBeCalled();
       });
 
+      test.each`
+        valueName     | value
+        ${'minValue'} | ${defaultOptions.minValue}
+        ${'maxValue'} | ${defaultOptions.maxValue}
+      `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
+        model.setValue(1, value);
 
+        expect(model.options.value1).toEqual(value);
         expect(valueChangedSpy).toBeCalled();
       });
     });
@@ -201,14 +208,29 @@ describe('Model', () => {
 
     describe('setInterval()', () => {
       const isIntervalChangedSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
         model.on('isIntervalChanged', isIntervalChangedSpy);
+        model.on('valueChanged', valueChangedSpy);
       });
 
-      test.todo('should set interval if passed true');
-      test.todo('should set to not interval if passed false');
+      test('should set isInterval to true if true passed', () => {
+        model.setInterval(true);
+
+        expect(model.options.isInterval).toEqual(true);
+        expect(isIntervalChangedSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
+      });
+
+      test('should set isInterval to false if false passed', () => {
+        model.setInterval(false);
+
+        expect(model.options.isInterval).toEqual(false);
+        expect(isIntervalChangedSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
+      });
     });
   });
 
