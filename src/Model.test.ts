@@ -158,17 +158,20 @@ describe('Model', () => {
         expect(valueChangedSpy).toBeCalled();
       });
 
-      test('should set value1 to minValue if passed value < minValue', () => {
-        model.setValue(1, defaultOptions.minValue - 1);
+      test.each`
+        valueName     | condition   | limitValue                 | passedValue
+        ${'minValue'} | ${'<'}      | ${defaultOptions.minValue} | ${-1}
+        ${'maxValue'} | ${'>'}      | ${defaultOptions.maxValue} | ${1}
+      `('should set value1 to $valueName if passed value $condition $valueName', ({
+        limitValue, passedValue,
+      }) => {
+        model.setValue(1, limitValue + passedValue);
 
-        expect(model.options.value1).toEqual(defaultOptions.minValue);
+        expect(model.options.value1).toEqual(limitValue);
         expect(valueChangedSpy).toBeCalled();
       });
 
-      test('should set value1 to maxValue if passed value > maxValue', () => {
-        model.setValue(1, defaultOptions.maxValue + 1);
 
-        expect(model.options.value1).toEqual(defaultOptions.maxValue);
         expect(valueChangedSpy).toBeCalled();
       });
     });
