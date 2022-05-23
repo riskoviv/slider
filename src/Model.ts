@@ -30,7 +30,7 @@ class Model extends EventEmitter implements IModel {
 
   // debug method
   getOptions(): IPluginOptions {
-    return this.options;
+    return { ...this.options };
   }
 
   getStateOptions(): IPluginStateOptions {
