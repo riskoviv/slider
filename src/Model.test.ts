@@ -41,16 +41,54 @@ describe('Model', () => {
       expect(model.penultimateValue).toEqual(90);
     });
 
-    describe('sets Model.fractionalPrecision to size of fractional part of options:', () => {
+    describe('if one of following options is not integer', () => {
       test.each`
         option        | value      | precision
         ${'stepSize'} | ${10.5}    | ${1}
         ${'minValue'} | ${-100.55} | ${2}
         ${'maxValue'} | ${100.535} | ${3}
-      `('if $option is $value, set to $precision', ({ option, value, precision }) => {
+      `('if $option is $value, should set fractionalPrecision to $precision', ({ option, value, precision }) => {
         const customModel = new Model({ ...defaultOptions, [option]: value });
 
         expect(customModel.fractionalPrecision).toEqual(precision);
+      });
+    });
+
+    describe('if isInterval is true & one or two of values is not allowed', () => {
+      let customModel: Model;
+
+      test.each`
+        value                | sourceValues                  | expectedValues
+        ${'value1'}          | ${{ value1: -74 }}            | ${[[1, -70]]}
+        ${'value2'}          | ${{ value2: 55 }}             | ${[[2, 60]]}
+        ${'value1 & value2'} | ${{ value1: -1, value2: 19 }} | ${[[1, 0], [2, 20]]}
+      `(
+        'should find closest $value that satisfies stepSize',
+        ({ sourceValues, expectedValues }) => {
+          customModel = new Model({
+            ...defaultOptions,
+            isInterval: true,
+            ...sourceValues,
+          });
+
+          expectedValues.forEach(([number, value]: [1 | 2, number]) => {
+            expect(customModel.options[`value${number}`]).toEqual(value);
+          });
+        },
+      );
+    });
+
+    describe('if isInterval is true & value1 === value2', () => {
+      test('should set value2 = value1 + stepSize', () => {
+        const customModel = new Model({
+          ...defaultOptions,
+          isInterval: true,
+          value1: 10,
+          value2: 10,
+        });
+
+        expect(customModel.options.value1).toEqual(10);
+        expect(customModel.options.value2).toEqual(20);
       });
     });
   });
@@ -229,6 +267,8 @@ describe('Model', () => {
         expect(valueChangedSpy).toBeCalledTimes(2);
       });
 
+      // TODO join tests by 'each'
+
       test('if value1 intent to set to more than value2, set value1 to value2 - stepSize', () => {
         customModel.setValue(2, 10);
         customModel.setValue(1, 20);
@@ -273,20 +313,33 @@ describe('Model', () => {
       model.on('valueChanged', valueChangedSpy);
     });
 
-    test('should set isInterval to true if true passed', () => {
-      model.setInterval(true);
+    test.each([
+      ['enable', true],
+      ['disable', false],
+    ])('should %s interval if %s passed', (state, booleanValue) => {
+      model.setInterval(booleanValue);
 
-      expect(model.options.isInterval).toEqual(true);
+      expect(model.options.isInterval).toEqual(booleanValue);
       expect(isIntervalChangedSpy).toBeCalled();
       expect(valueChangedSpy).toBeCalled();
     });
+  });
 
-    test('should set isInterval to false if false passed', () => {
-      model.setInterval(false);
+  describe('setShowProgress()', () => {
+    const showProgressChangedSpy = jest.fn();
 
-      expect(model.options.isInterval).toEqual(false);
-      expect(isIntervalChangedSpy).toBeCalled();
-      expect(valueChangedSpy).toBeCalled();
+    beforeAll(() => {
+      initModelWithDefaultOptions();
+      model.on('showProgressChanged', showProgressChangedSpy);
+    });
+
+    test.each([
+      ['enable', true],
+      ['disable', false],
+    ])('should %s progressBar if %s passed', (state, booleanValue) => {
+      model.setShowProgress(booleanValue);
+
+      expect(model.options.showProgressBar).toEqual(booleanValue);
     });
   });
 });
