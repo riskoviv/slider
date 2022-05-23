@@ -135,12 +135,12 @@ describe('Model', () => {
     describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
       const valueChangedSpy = jest.fn();
 
-      beforeAll(() => {
+      beforeEach(() => {
         initModelWithDefaultOptions();
         model.on('valueChanged', valueChangedSpy);
       });
 
-      afterAll(() => {
+      afterEach(() => {
         model.off('valueChanged', valueChangedSpy);
       });
 
