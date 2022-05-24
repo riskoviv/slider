@@ -545,7 +545,9 @@ class Presenter {
     this.currentThumbData.thumbNumber = number;
     this.setPosition(number, position);
     this.saveCurrentValue(number, value);
-    this.setTipValue({ number, value });
+    if (this.options.showTip) {
+      this.setTipValue({ number, value });
+    }
   }
 
   private setPosition(number: 1 | 2, position: number): void {
