@@ -372,13 +372,14 @@ describe('Model', () => {
     test.each([
       ['enable', true],
       ['disable', false],
-    ])('should %s interval if %s passed', (state, booleanValue) => {
+    ])('should %s isInterval if %s passed', (state, booleanValue) => {
       model.setInterval(booleanValue);
 
       expect(model.options.isInterval).toEqual(booleanValue);
       expect(isIntervalChangedSpy).toBeCalled();
-      expect(valueChangedSpy).toBeCalled();
     });
+
+    test.todo('should emit valueChanged if value(s) was(were) changed in fixValues()');
   });
 
   describe('setShowProgress()', () => {
