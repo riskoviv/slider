@@ -96,16 +96,22 @@ class Model extends EventEmitter implements IModel {
 
   setInterval(isInterval: boolean): void {
     this.options.isInterval = isInterval;
-    this.fixValues();
+    const { value1Fixed, value2Fixed } = this.fixValues();
     this.emit('isIntervalChanged', isInterval);
-    this.emit('valueChanged', {
-      number: 1,
-      value: this.options.value1,
-    });
-    this.emit('valueChanged', {
-      number: 2,
-      value: this.options.value2,
-    });
+
+    if (value1Fixed) {
+      this.emit('valueChanged', {
+        number: 1,
+        value: this.options.value1,
+      });
+    }
+
+    if (value2Fixed) {
+      this.emit('valueChanged', {
+        number: 2,
+        value: this.options.value2,
+      });
+    }
   }
 
   setShowProgress(showProgressBar: boolean): void {
@@ -138,6 +144,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   private fixValues() {
+    const { value1, value2 } = this.options;
     if (!this.isValueAllowed(this.options.value1)) {
       this.options.value1 = this.fixValue(1, this.options.value1);
     }
@@ -167,6 +174,11 @@ class Model extends EventEmitter implements IModel {
         console.warn('value1 & value2 were swapped');
       }
     }
+
+    return {
+      value1Fixed: value1 !== this.options.value1,
+      value2Fixed: value2 !== this.options.value2,
+    };
   }
 
   private fixValue(number: 1 | 2, value: number): number {
