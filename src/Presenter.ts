@@ -364,6 +364,16 @@ class Presenter {
       return thumb2NewIndex > thumb1Index;
     },
 
+    isSetToMaxPositionAllowed: (newPosition: number) => (
+      this.currentThumbData.currentPosition !== 100
+      && this.isPointerLessThanHalfStepAwayFromMax(newPosition)
+    ),
+
+    isSetToPenultimatePositionAllowed: (newPosition: number) => (
+      this.currentThumbData.currentPosition !== this.model.viewValues.penultimatePosition
+      && this.isPointerLessThanHalfStepAwayFromPenultimate(newPosition)
+    ),
+
     fixIfOutOfRange: (position: number): number => {
       if (position < 0) return 0;
       if (position > 100) return 100;
