@@ -498,8 +498,6 @@ class Presenter {
     currentValue: number,
   } = { thumbNumber: 1, currentPosition: NaN, currentValue: NaN };
 
-  private currentValueIsPenultimateValue() {
-    return this.currentThumbData.currentValue === this.model.penultimateValue;
   }
 
   private getPenultimatePosition() {
