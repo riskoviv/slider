@@ -258,25 +258,24 @@ describe('Model', () => {
         customModel.off('valueChanged', valueChangedSpy);
       });
 
-      test('if value2 intent to set to less than value1, set value2 to value1 + stepSize', () => {
-        customModel.setValue(1, 0);
-        customModel.setValue(2, -10);
+      test.each`
+        primaryValue                | secondaryValue                                      | valueChange
+        ${{ number: 1, value: 0 }}  | ${{ number: 2, sourceValue: -10, resultValue: 10 }} | ${{ side: 'less', sign: '+' }}
+        ${{ number: 2, value: 10 }} | ${{ number: 1, sourceValue: 20, resultValue: 0 }}   | ${{ side: 'more', sign: '-' }}
+      `(
+        'if value$secondaryValue.number intent to set to $valueChange.side than value$primaryValue.number, set value$secondaryValue.number to value$primaryValue.number $valueChange.sign stepSize',
+        ({ primaryValue, secondaryValue }: {
+          primaryValue: { number: 1 | 2, value: number },
+          secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number }
+        }) => {
+          customModel.setValue(primaryValue.number, primaryValue.value);
+          customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
 
-        expect(customModel.options.value1).toEqual(0);
-        expect(customModel.options.value2).toEqual(10);
-        expect(valueChangedSpy).toBeCalledTimes(2);
-      });
-
-      // TODO join tests by 'each'
-
-      test('if value1 intent to set to more than value2, set value1 to value2 - stepSize', () => {
-        customModel.setValue(2, 10);
-        customModel.setValue(1, 20);
-
-        expect(customModel.options.value2).toEqual(10);
-        expect(customModel.options.value1).toEqual(0);
-        expect(valueChangedSpy).toBeCalledTimes(2);
-      });
+          expect(customModel.options[`value${primaryValue.number}`]).toEqual(primaryValue.value);
+          expect(customModel.options[`value${secondaryValue.number}`]).toEqual(secondaryValue.resultValue);
+          expect(valueChangedSpy).toBeCalledTimes(2);
+        },
+      );
     });
   });
 
