@@ -23,7 +23,7 @@ class View extends EventEmitter implements IView {
     this.bindEventListeners();
   }
 
-  protected render(options: SliderViewOptions = {
+  private render(options: SliderViewOptions = {
     isVertical: false,
     isInterval: false,
     showProgressBar: false,
