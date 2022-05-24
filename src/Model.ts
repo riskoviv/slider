@@ -159,12 +159,8 @@ class Model extends EventEmitter implements IModel {
           console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
         }
       } else if (this.options.value2 < this.options.value1) {
-        if (this.options.value1 === this.options.maxValue) {
-          this.options.value2 = this.options.maxValue;
-          this.options.value1 = this.fixValue(1, this.options.value1);
-        } else {
-          this.options.value2 = this.fixValue(2, this.options.value2);
-        }
+        [this.options.value1, this.options.value2] = [this.options.value2, this.options.value1];
+        console.warn('value1 & value2 were swapped');
       }
     }
   }
