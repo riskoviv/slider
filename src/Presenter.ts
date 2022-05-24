@@ -274,7 +274,7 @@ class Presenter {
 
   private getPositionByValue(value: number): number {
     const index = this.model.getIndexByValue(value);
-    return this.model.viewValues.stepInPercents * index;
+    return this.thumbChecks.fixIfOutOfRange(this.model.viewValues.stepInPercents * index);
   }
 
   private getIndexByPosition(position: number): number {
