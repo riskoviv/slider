@@ -394,21 +394,30 @@ class Presenter {
           this.saveCurrentThumbData(thumbNumber);
         }
       } else if (target === this.view.controlContainerElem) {
-        const position = this.pixelsToPercentsOfSliderLength(
-          data[this.offset],
-        );
-        const allowedPosition = this.findClosestAllowedPosition(position);
-        const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
-        const chosenThumb = this.options.isInterval
+        const position = this.pixelsToPercentsOfSliderLength(data[this.offset]);
+        const closestThumb = this.options.isInterval
           ? this.findClosestThumbByPosition(position)
           : 1;
 
-        this.setPositionAndCurrentValue({
-          number: chosenThumb,
-          position: allowedPosition,
-          value: allowedValue,
-        });
         this.saveCurrentThumbData(closestThumb);
+        if (this.isPointerLessThanHalfStepAwayFromMax(position)) {
+          if (!(this.options.isInterval && closestThumb === 1)) {
+            this.setPositionAndCurrentValue({
+              number: closestThumb,
+              position: 100,
+              value: this.options.maxValue,
+            });
+          }
+        } else {
+          const allowedPosition = this.findClosestAllowedPosition(position);
+          const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
+
+          this.setPositionAndCurrentValue({
+            number: closestThumb,
+            position: allowedPosition,
+            value: allowedValue,
+          });
+        }
       }
 
       this.view.controlContainerElem.addEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
