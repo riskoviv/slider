@@ -404,8 +404,8 @@ class Presenter {
         });
       }
 
-      this.view.controlContainerElem.addEventListener('pointermove', this.sliderPointerMove);
-      this.view.controlContainerElem.addEventListener('pointerup', this.sliderPointerUp, {
+      this.view.controlContainerElem.addEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
+      this.view.controlContainerElem.addEventListener('pointerup', this.viewEventHandlers.sliderPointerUp, {
         once: true,
       });
     },
