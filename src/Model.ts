@@ -58,7 +58,9 @@ class Model extends EventEmitter implements IModel {
   }
 
   getValueByIndex(index: number): number {
-    return this.keepValueInRange(this.options.minValue + this.options.stepSize * index);
+    const value = this.keepValueInRange(this.options.minValue + this.options.stepSize * index);
+    const fixedValue = this.fixValueToPrecision(value);
+    return fixedValue;
   }
 
   getPenultimateValue(): number {
