@@ -506,17 +506,14 @@ class Presenter {
     return this.model.viewValues.stepInPercents * (this.model.allowedValuesCount - 2);
   }
 
-  private thumbDraggedOverHalfStepFromPenultimateToMax(newPosition: number) {
-    return this.currentValueIsPenultimateValue()
-      && newPosition > this.currentThumbData.currentPosition
+  private isPointerLessThanHalfStepAwayFromMax(newPosition: number) {
+    return newPosition > this.model.viewValues.penultimatePosition
       + this.model.viewValues.halfStepFromPenultimateToMax;
   }
 
-  private thumbDraggedOverHalfStepFromMaxToPenultimate(newPosition: number) {
-    return this.currentThumbData.currentPosition === 100
-      && newPosition < 100 - this.model.viewValues.halfStepFromPenultimateToMax;
-  }
-
+  private isPointerLessThanHalfStepAwayFromPenultimate(newPosition: number) {
+    return newPosition < 100 - this.model.viewValues.halfStepFromPenultimateToMax
+      && newPosition > this.model.viewValues.penultimatePosition;
   }
 
   private pixelsToPercentsOfSliderLength(pixels: number): number {
