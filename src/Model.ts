@@ -185,7 +185,11 @@ class Model extends EventEmitter implements IModel {
     if (this.options.isInterval) {
       if (number === 1) {
         if (fixedValue >= this.options.value2) {
-          fixedValue = this.getValueByIndex(this.getIndexByValueNumber(2) - 1);
+          if (this.options.value2 === this.options.maxValue) {
+            fixedValue = this.getPenultimateValue();
+          } else {
+            fixedValue = this.getValueByIndex(this.getIndexByValueNumber(2) - 1);
+          }
           warnMsgEnd.push(' to make it less than value2');
         }
       } else if (fixedValue <= this.options.value1) {
