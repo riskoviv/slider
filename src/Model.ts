@@ -53,6 +53,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   getIndexByValue(value: number): number {
+    if (value === this.options.maxValue) return this.allowedValuesCount - 1;
     return (value - this.options.minValue) / this.options.stepSize;
   }
 
