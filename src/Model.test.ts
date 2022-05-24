@@ -54,41 +54,98 @@ describe('Model', () => {
       });
     });
 
-    describe('if isInterval is true & one or two of values is not allowed', () => {
-      let customModel: Model;
+    describe('if isInterval is true', () => {
+      describe('and one or two of values is not allowed', () => {
+        test.each`
+          value                | sourceValues                  | expectedValues
+          ${'value1'}          | ${{ value1: -74 }}            | ${[[1, -70]]}
+          ${'value2'}          | ${{ value2: 55 }}             | ${[[2, 60]]}
+          ${'value1 & value2'} | ${{ value1: -1, value2: 19 }} | ${[[1, 0], [2, 20]]}
+        `(
+          'should find closest $value that satisfies stepSize',
+          ({ sourceValues, expectedValues }) => {
+            const customModel = new Model({
+              ...defaultOptions,
+              isInterval: true,
+              ...sourceValues,
+            });
 
-      test.each`
-        value                | sourceValues                  | expectedValues
-        ${'value1'}          | ${{ value1: -74 }}            | ${[[1, -70]]}
-        ${'value2'}          | ${{ value2: 55 }}             | ${[[2, 60]]}
-        ${'value1 & value2'} | ${{ value1: -1, value2: 19 }} | ${[[1, 0], [2, 20]]}
-      `(
-        'should find closest $value that satisfies stepSize',
-        ({ sourceValues, expectedValues }) => {
-          customModel = new Model({
+            expectedValues.forEach(([number, value]: [1 | 2, number]) => {
+              expect(customModel.options[`value${number}`]).toEqual(value);
+            });
+          },
+        );
+      });
+
+      describe('and both value1 & value2 === maxValue', () => {
+        test('should set value1 to penultimate value', () => {
+          const customModel = new Model({
             ...defaultOptions,
             isInterval: true,
-            ...sourceValues,
+            value1: defaultOptions.maxValue,
+            value2: defaultOptions.maxValue,
           });
 
-          expectedValues.forEach(([number, value]: [1 | 2, number]) => {
-            expect(customModel.options[`value${number}`]).toEqual(value);
-          });
-        },
-      );
-    });
-
-    describe('if isInterval is true & value1 === value2', () => {
-      test('should set value2 = value1 + stepSize', () => {
-        const customModel = new Model({
-          ...defaultOptions,
-          isInterval: true,
-          value1: 10,
-          value2: 10,
+          expect(customModel.options.value1).toEqual(90);
+          expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
         });
+      });
 
-        expect(customModel.options.value1).toEqual(10);
-        expect(customModel.options.value2).toEqual(20);
+      describe('and both value1 & value2 === minValue', () => {
+        test('should set value2 to second value', () => {
+          const customModel = new Model({
+            ...defaultOptions,
+            isInterval: true,
+            value1: defaultOptions.minValue,
+            value2: defaultOptions.minValue,
+          });
+
+          expect(customModel.options.value1).toEqual(defaultOptions.minValue);
+          expect(customModel.options.value2)
+            .toEqual(defaultOptions.minValue + defaultOptions.stepSize);
+        });
+      });
+
+      describe('and value1 === value2', () => {
+        test('should set value2 = value1 + stepSize', () => {
+          const customModel = new Model({
+            ...defaultOptions,
+            isInterval: true,
+            value1: 10,
+            value2: 10,
+          });
+
+          expect(customModel.options.value1).toEqual(10);
+          expect(customModel.options.value2).toEqual(20);
+        });
+      });
+
+      describe('and value2 < value1 and value1 === maxValue', () => {
+        test('should set value2 to maxValue and value1 1 step back from value2', () => {
+          const customModel = new Model({
+            ...defaultOptions,
+            isInterval: true,
+            value1: defaultOptions.maxValue,
+            value2: defaultOptions.minValue,
+          });
+
+          expect(customModel.options.value1).toEqual(90);
+          expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
+        });
+      });
+
+      describe('and value2 < value1', () => {
+        test('should set value2 1 step forward from value1', () => {
+          const customModel = new Model({
+            ...defaultOptions,
+            isInterval: true,
+            value1: 40,
+            value2: 30,
+          });
+
+          expect(customModel.options.value1).toEqual(40);
+          expect(customModel.options.value2).toEqual(50);
+        });
       });
     });
   });
