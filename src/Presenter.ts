@@ -381,11 +381,7 @@ class Presenter {
       if (target.classList.contains('slider__thumb')) {
         const thumbNumber = Number(target.dataset.number);
         if (thumbNumber === 1 || thumbNumber === 2) {
-          this.currentThumbData = {
-            thumbNumber,
-            currentPosition: this.model.viewValues.positions[thumbNumber],
-            currentValue: this.options[`value${thumbNumber}`],
-          };
+          this.saveCurrentThumbData(thumbNumber);
         }
       } else if (target === this.view.controlContainerElem) {
         const position = this.pixelsToPercentsOfSliderLength(
@@ -402,6 +398,7 @@ class Presenter {
           position: allowedPosition,
           value: allowedValue,
         });
+        this.saveCurrentThumbData(closestThumb);
       }
 
       this.view.controlContainerElem.addEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
@@ -498,6 +495,12 @@ class Presenter {
     currentValue: number,
   } = { thumbNumber: 1, currentPosition: NaN, currentValue: NaN };
 
+  private saveCurrentThumbData(thumbNumber: 1 | 2) {
+    this.currentThumbData = {
+      thumbNumber,
+      currentPosition: this.model.viewValues.positions[thumbNumber],
+      currentValue: this.options[`value${thumbNumber}`],
+    };
   }
 
   private getPenultimatePosition() {
