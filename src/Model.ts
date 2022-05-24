@@ -170,8 +170,13 @@ class Model extends EventEmitter implements IModel {
   }
 
   private fixValue(number: 1 | 2, value: number): number {
-    let fixedValue = this.keepValueInRange(value);
     const warnMsgEnd = [];
+    let fixedValue = value;
+    if (!this.isValueInRange(fixedValue)) {
+      fixedValue = this.keepValueInRange(fixedValue);
+      warnMsgEnd.push(' to keep it in range');
+    }
+
     if (!this.isValueAllowed(fixedValue)) {
       fixedValue = this.findClosestAllowedValue(fixedValue);
       warnMsgEnd.push(' to satisfy stepSize');
@@ -195,6 +200,10 @@ class Model extends EventEmitter implements IModel {
       console.warn(`Note: value${number} (${value}) is changed to ${fixedValue}${warnMsgEnd.join(' and')}.`);
     }
     return fixedValue;
+  }
+
+  private isValueInRange(value: number): boolean {
+    return value >= this.options.minValue && value <= this.options.maxValue;
   }
 
   private keepValueInRange(value: number): number {
