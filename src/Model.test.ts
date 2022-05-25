@@ -134,7 +134,7 @@ describe('Model', () => {
       });
 
       describe('and value2 < value1 and value1 === maxValue', () => {
-        test('should set value2 to maxValue and value1 1 step back from value2', () => {
+        test('if value1 is maxValue & value2 is minValue, should swap them', () => {
           const customModel = new Model({
             ...defaultOptions,
             isInterval: true,
@@ -142,13 +142,13 @@ describe('Model', () => {
             value2: defaultOptions.minValue,
           });
 
-          expect(customModel.options.value1).toEqual(90);
+          expect(customModel.options.value1).toEqual(defaultOptions.minValue);
           expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
         });
       });
 
       describe('and value2 < value1', () => {
-        test('should set value2 1 step forward from value1', () => {
+        test('should swap values', () => {
           const customModel = new Model({
             ...defaultOptions,
             isInterval: true,
@@ -156,8 +156,8 @@ describe('Model', () => {
             value2: 30,
           });
 
-          expect(customModel.options.value1).toEqual(40);
-          expect(customModel.options.value2).toEqual(50);
+          expect(customModel.options.value1).toEqual(30);
+          expect(customModel.options.value2).toEqual(40);
         });
       });
     });
