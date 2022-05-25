@@ -1,7 +1,7 @@
 import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
-import utils from './utils';
+import { getEntriesWithTypedKeys } from './utils';
 
 const defaultOptions: IPluginOptions = {
   stepSize: 10,
@@ -100,7 +100,7 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
     TypeOfValues<Partial<IPluginOptions>>
   ];
 
-  utils.getEntriesWithTypedKeys(options).forEach(
+  getEntriesWithTypedKeys(options).forEach(
     (option: pluginOptionsEntry) => {
       const [key, value] = option;
 
