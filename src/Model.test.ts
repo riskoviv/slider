@@ -78,7 +78,7 @@ describe('Model', () => {
       });
 
       describe('and both value1 & value2 === maxValue', () => {
-        test('should set value1 to penultimate value', () => {
+        test('should set value1 to penultimate value if maxValue satisfies stepSize', () => {
           const customModel = new Model({
             ...defaultOptions,
             isInterval: true,
@@ -87,6 +87,19 @@ describe('Model', () => {
           });
 
           expect(customModel.options.value1).toEqual(90);
+          expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
+        });
+
+        test('should set value1 to penultimate value if maxValue not satisfies stepSize', () => {
+          const customModel = new Model({
+            ...defaultOptions,
+            isInterval: true,
+            stepSize: 3,
+            value1: defaultOptions.maxValue,
+            value2: defaultOptions.maxValue,
+          });
+
+          expect(customModel.options.value1).toEqual(98);
           expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
         });
       });
