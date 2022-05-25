@@ -339,17 +339,17 @@ describe('Model', () => {
       test.each<{
         primaryValue: { number: 1 | 2, value: number },
         secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number },
-        valueChange: { side: string, solution: string },
+        valueChange: { side: string, result: string },
       }>([
         {
           primaryValue: { number: 1, value: 0 },
           secondaryValue: { number: 2, sourceValue: -10, resultValue: 10 },
-          valueChange: { side: 'less than', solution: 'value1 + stepSize' },
+          valueChange: { side: 'less than', result: 'value1 + stepSize' },
         },
         {
           primaryValue: { number: 2, value: 10 },
           secondaryValue: { number: 1, sourceValue: 20, resultValue: 0 },
-          valueChange: { side: 'more than', solution: 'value2 - stepSize' },
+          valueChange: { side: 'more than', result: 'value2 - stepSize' },
         },
         {
           primaryValue: { number: 2, value: defaultOptions.maxValue },
@@ -360,11 +360,11 @@ describe('Model', () => {
           },
           valueChange: {
             side: 'more or equal to maxValue that set to',
-            solution: 'penultimate value',
+            result: 'penultimate value',
           },
         },
       ])(
-        'if value$secondaryValue.number intent to set to $valueChange.side value$primaryValue.number, set value$secondaryValue.number to $valueChange.solution',
+        'if value$secondaryValue.number intent to set to $valueChange.side value$primaryValue.number, set value$secondaryValue.number to $valueChange.result',
         ({ primaryValue, secondaryValue }) => {
           customModel.setValue(primaryValue.number, primaryValue.value);
           customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
