@@ -192,6 +192,12 @@ describe('Model', () => {
     ])('returns index of value%i: %i', (number, index) => {
       expect(model.getIndexByValueNumber(number)).toBe(index);
     });
+
+    test('should return index of value2 === maxValue that is 20', () => {
+      model.options.value2 = defaultOptions.maxValue;
+
+      expect(model.getIndexByValueNumber(2)).toEqual(20);
+    });
   });
 
   describe('getIndexByValue(value: number) returns index of value from range considering step', () => {
@@ -199,6 +205,7 @@ describe('Model', () => {
       [-100, 0],
       [-90, 1],
       [-50, 5],
+      [defaultOptions.maxValue, 20],
     ])('if value is %i, returns %i', (value, index) => {
       expect(model.getIndexByValue(value)).toBe(index);
     });
