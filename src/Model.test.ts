@@ -328,16 +328,36 @@ describe('Model', () => {
         customModel.off('valueChanged', valueChangedSpy);
       });
 
-      test.each`
-        primaryValue                | secondaryValue                                      | valueChange
-        ${{ number: 1, value: 0 }}  | ${{ number: 2, sourceValue: -10, resultValue: 10 }} | ${{ side: 'less', sign: '+' }}
-        ${{ number: 2, value: 10 }} | ${{ number: 1, sourceValue: 20, resultValue: 0 }}   | ${{ side: 'more', sign: '-' }}
-      `(
-        'if value$secondaryValue.number intent to set to $valueChange.side than value$primaryValue.number, set value$secondaryValue.number to value$primaryValue.number $valueChange.sign stepSize',
-        ({ primaryValue, secondaryValue }: {
-          primaryValue: { number: 1 | 2, value: number },
-          secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number }
-        }) => {
+      test.each<{
+        primaryValue: { number: 1 | 2, value: number },
+        secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number },
+        valueChange: { side: string, solution: string },
+      }>([
+        {
+          primaryValue: { number: 1, value: 0 },
+          secondaryValue: { number: 2, sourceValue: -10, resultValue: 10 },
+          valueChange: { side: 'less than', solution: 'value1 + stepSize' },
+        },
+        {
+          primaryValue: { number: 2, value: 10 },
+          secondaryValue: { number: 1, sourceValue: 20, resultValue: 0 },
+          valueChange: { side: 'more than', solution: 'value2 - stepSize' },
+        },
+        {
+          primaryValue: { number: 2, value: defaultOptions.maxValue },
+          secondaryValue: {
+            number: 1,
+            sourceValue: defaultOptions.maxValue,
+            resultValue: 90,
+          },
+          valueChange: {
+            side: 'more or equal to maxValue that set to',
+            solution: 'penultimate value',
+          },
+        },
+      ])(
+        'if value$secondaryValue.number intent to set to $valueChange.side value$primaryValue.number, set value$secondaryValue.number to $valueChange.solution',
+        ({ primaryValue, secondaryValue }) => {
           customModel.setValue(primaryValue.number, primaryValue.value);
           customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
 
