@@ -385,17 +385,13 @@ describe('Model', () => {
       model.on('isVerticalChanged', isVerticalChangedSpy);
     });
 
-    test('should set isVertical to true if true passed', () => {
-      model.setVerticalState(true);
+    test.each([
+      ['enable', true],
+      ['disable', false],
+    ])('should %s isVertical if %s passed', (state, booleanValue) => {
+      model.setVerticalState(booleanValue);
 
-      expect(model.options.isVertical).toEqual(true);
-      expect(isVerticalChangedSpy).toBeCalled();
-    });
-
-    test('should set isVertical to false if false passed', () => {
-      model.setVerticalState(false);
-
-      expect(model.options.isVertical).toEqual(false);
+      expect(model.options.isVertical).toEqual(booleanValue);
       expect(isVerticalChangedSpy).toBeCalled();
     });
   });
