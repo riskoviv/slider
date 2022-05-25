@@ -406,14 +406,39 @@ describe('Model', () => {
     test.each([
       ['enable', true],
       ['disable', false],
-    ])('should %s isInterval if %s passed', (state, booleanValue) => {
+    ])('should %s isInterval and not emit valueChanged if %s passed and values were not changed by fixValues()', (state, booleanValue) => {
       model.setInterval(booleanValue);
 
       expect(model.options.isInterval).toEqual(booleanValue);
       expect(isIntervalChangedSpy).toBeCalled();
+      expect(valueChangedSpy).not.toBeCalled();
     });
 
-    test.todo('should emit valueChanged if value(s) was(were) changed in fixValues()');
+    test.each<[string, [number, number], { value1?: number, value2?: number }]>([
+      ['value1', [defaultOptions.maxValue, defaultOptions.maxValue], { value1: 90 }],
+      ['value2', [defaultOptions.minValue, defaultOptions.minValue], { value2: -90 }],
+      ['value1 & value2', [10, -10], { value1: -10, value2: 10 }],
+    ])(
+      'should emit valueChanged if %s was changed in fixValues()',
+      (valuesNames, [value1, value2], resultValues) => {
+        const customModel = new Model({
+          ...defaultOptions,
+          value1,
+          value2,
+        });
+        customModel.on('isIntervalChanged', isIntervalChangedSpy);
+        customModel.on('valueChanged', valueChangedSpy);
+
+        customModel.setInterval(true);
+
+        expect(isIntervalChangedSpy).toBeCalled();
+        getEntriesWithTypedKeys(resultValues).forEach(([name, value]) => {
+          expect(customModel.options[name]).toEqual(value);
+          const number = Number(name.slice(-1));
+          expect(valueChangedSpy).toBeCalledWith({ number, value });
+        });
+      },
+    );
   });
 
   describe('setShowProgress()', () => {
