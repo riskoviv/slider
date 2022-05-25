@@ -2,9 +2,9 @@ import $ from 'jquery';
 import EventEmitter from './EventEmitter';
 
 type SliderViewOptions = {
-  isVertical: boolean,
-  isInterval: boolean,
-  showProgressBar: boolean,
+  isVertical?: boolean,
+  isInterval?: boolean,
+  showProgressBar?: boolean,
 };
 
 class View extends EventEmitter implements IView {
@@ -16,7 +16,7 @@ class View extends EventEmitter implements IView {
 
   readonly controlContainerElem: HTMLDivElement;
 
-  constructor(options?: SliderViewOptions) {
+  constructor(options: SliderViewOptions = {}) {
     super();
     this.$elem = this.render(options);
     [this.controlContainerElem] = this.$controlContainer.get();
