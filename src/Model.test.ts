@@ -105,62 +105,24 @@ describe('Model', () => {
         });
       });
 
-      describe('and both value1 & value2 === minValue', () => {
-        test('should set value2 to second value', () => {
+      test.each`
+        source      | result      | relation | resultDescription
+        ${[10, 10]} | ${[10, 20]} | '==='    | 'set value2 as next after value1'
+        ${[40, 30]} | ${[30, 40]} | '>'      | 'swap values'
+      `(
+        'if value1 $relation value2, should $resultDescription',
+        ({ source, result }) => {
           const customModel = new Model({
             ...defaultOptions,
             isInterval: true,
-            value1: defaultOptions.minValue,
-            value2: defaultOptions.minValue,
+            value1: source[0],
+            value2: source[1],
           });
 
-          expect(customModel.options.value1).toEqual(defaultOptions.minValue);
-          expect(customModel.options.value2)
-            .toEqual(defaultOptions.minValue + defaultOptions.stepSize);
-        });
-      });
-
-      describe('and value1 === value2', () => {
-        test('should set value2 = value1 + stepSize', () => {
-          const customModel = new Model({
-            ...defaultOptions,
-            isInterval: true,
-            value1: 10,
-            value2: 10,
-          });
-
-          expect(customModel.options.value1).toEqual(10);
-          expect(customModel.options.value2).toEqual(20);
-        });
-      });
-
-      describe('and value2 < value1 and value1 === maxValue', () => {
-        test('if value1 is maxValue & value2 is minValue, should swap them', () => {
-          const customModel = new Model({
-            ...defaultOptions,
-            isInterval: true,
-            value1: defaultOptions.maxValue,
-            value2: defaultOptions.minValue,
-          });
-
-          expect(customModel.options.value1).toEqual(defaultOptions.minValue);
-          expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
-        });
-      });
-
-      describe('and value2 < value1', () => {
-        test('should swap values', () => {
-          const customModel = new Model({
-            ...defaultOptions,
-            isInterval: true,
-            value1: 40,
-            value2: 30,
-          });
-
-          expect(customModel.options.value1).toEqual(30);
-          expect(customModel.options.value2).toEqual(40);
-        });
-      });
+          expect(customModel.options.value1).toEqual(result[0]);
+          expect(customModel.options.value2).toEqual(result[1]);
+        },
+      );
     });
   });
 
