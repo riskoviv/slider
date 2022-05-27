@@ -412,13 +412,15 @@ class Presenter {
           const allowedPosition = this.findClosestAllowedPosition(position);
           const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
 
-          this.setPositionAndCurrentValue({
-            number: closestThumb,
-            position: allowedPosition,
-            value: allowedValue,
-          });
           if (allowedPosition !== this.currentThumbData.currentPosition
               && allowedValue !== this.currentThumbData.currentValue) {
+            if (this.thumbChecks.isThumbKeepsDistance(allowedPosition)) {
+              this.setPositionAndCurrentValue({
+                number: closestThumb,
+                position: allowedPosition,
+                value: allowedValue,
+              });
+            }
           }
         }
       }
