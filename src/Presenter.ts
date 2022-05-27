@@ -134,33 +134,22 @@ class Presenter {
 
   private createInitialSubViews() {
     this.createSubView('track');
-
-    const subViewsCreationData: [ViewType, (1 | 2)?][] = [
-      ['thumb', 1],
-    ];
+    this.createSubView('thumb', 1);
 
     if (this.options.showTip) {
-      subViewsCreationData.push(['tip', 1]);
+      this.createSubView('tip', 1);
     }
 
     if (this.options.isInterval) {
-      subViewsCreationData.push(['thumb', 2]);
+      this.createSubView('thumb', 2);
       if (this.options.showTip) {
-        subViewsCreationData.push(['tip', 2]);
+        this.createSubView('tip', 2);
       }
     }
 
     if (this.options.showScale) {
-      subViewsCreationData.push(['scale']);
+      this.createSubView('scale');
     }
-
-    subViewsCreationData.forEach(([subViewName, number]) => {
-      if (number === undefined) {
-        this.createSubView(subViewName);
-      } else {
-        this.createSubView(subViewName, number);
-      }
-    });
   }
 
   private createSubView(subViewName: ViewType, number?: 1 | 2): void {
