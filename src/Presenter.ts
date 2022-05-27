@@ -120,17 +120,15 @@ class Presenter {
     const { value1, value2 } = values;
     const position1 = this.getPositionByValue(value1);
     const position2 = this.getPositionByValue(value2);
-    this.setPositionAndCurrentValue({
-      number: 1,
-      position: position1,
-      value: value1,
-    });
+    this.setPosition(1, position1);
+    if (this.options.showTip) {
+      this.setTipValue({ number: 1, value: value1 });
+    }
     if (this.options.isInterval) {
-      this.setPositionAndCurrentValue({
-        number: 2,
-        position: position2,
-        value: value2,
-      });
+      this.setPosition(2, position2);
+      if (this.options.showTip) {
+        this.setTipValue({ number: 2, value: value2 });
+      }
     }
   }
 
