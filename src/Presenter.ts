@@ -400,7 +400,7 @@ class Presenter {
           : 1;
 
         this.saveCurrentThumbData(closestThumb);
-        if (this.isPointerLessThanHalfStepAwayFromMax(position)) {
+        if (this.thumbChecks.isSetToMaxPositionAllowed(position)) {
           if (!(this.options.isInterval && closestThumb === 1)) {
             this.setPositionAndCurrentValue({
               number: closestThumb,
@@ -408,7 +408,7 @@ class Presenter {
               value: this.options.maxValue,
             });
           }
-        } else {
+        } else if (!this.isPointerLessThanHalfStepAwayFromMax(position)) {
           const allowedPosition = this.findClosestAllowedPosition(position);
           const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
 
@@ -417,6 +417,9 @@ class Presenter {
             position: allowedPosition,
             value: allowedValue,
           });
+          if (allowedPosition !== this.currentThumbData.currentPosition
+              && allowedValue !== this.currentThumbData.currentValue) {
+          }
         }
       }
 
@@ -484,11 +487,13 @@ class Presenter {
         thumbNumber = this.findClosestThumbByValue(value);
       }
 
-      this.setPositionAndCurrentValue({
-        number: thumbNumber,
-        position,
-        value,
-      });
+      if (this.options[`value${thumbNumber}`] !== value) {
+        this.setPositionAndCurrentValue({
+          number: thumbNumber,
+          position,
+          value,
+        });
+      }
     },
   }
 
