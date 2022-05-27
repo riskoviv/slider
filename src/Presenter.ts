@@ -201,7 +201,7 @@ class Presenter {
     const scale = scaleView;
     const scaleSize = scale.$elem[this.dimension]() ?? 1;
     const { allowedValuesCount } = this.model;
-    const quotient = Math.round((allowedValuesCount / scaleSize) * 3);
+    const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
     const isEveryValueAllowed = [0, 1].includes(quotient);
     const { stepInPercents } = this.model.viewValues;
