@@ -6,7 +6,9 @@ class TipView extends SubView implements ITipView {
   }
 
   setValue(value: number): void {
-    this.$elem.text(value);
+    if (Number.isFinite(value)) {
+      this.$elem.text(value);
+    }
   }
 }
 
