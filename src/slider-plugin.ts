@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
