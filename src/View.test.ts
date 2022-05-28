@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import $ from 'jquery';
+// import $ from 'jquery';
 import View from './View';
 import { getEntriesWithTypedKeys } from './utils';
 
@@ -23,7 +23,7 @@ describe('View', () => {
     });
 
     test('$elem should contain $controlContainer', () => {
-      expect($controlContainer.parent()).toStrictEqual($viewElem);
+      expect($controlContainer.parent()[0]).toBe($viewElem[0]);
     });
 
     test('$elem should have class \'slider\'', () => {
