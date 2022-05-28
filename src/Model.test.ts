@@ -209,7 +209,6 @@ describe('Model', () => {
 
       model.setStepSize(negativeStepSize);
 
-      expect(model.options.stepSize).not.toEqual(negativeStepSize);
       expect(model.options.stepSize).toBe(-negativeStepSize);
       expect(stepSizeChangedSpy).toBeCalled();
     });
