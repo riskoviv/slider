@@ -27,13 +27,13 @@ describe('View', () => {
     });
 
     test('$elem should have class \'slider\'', () => {
-      expect($viewElem.hasClass('slider')).toEqual(true);
+      expect($viewElem.hasClass('slider')).toBe(true);
     });
 
     test.each(['slider_vertical', 'slider_interval', 'slider_show-progress'])(
       'slider element should not contain a class %s',
       (className) => {
-        expect($viewElem.hasClass(className)).toEqual(false);
+        expect($viewElem.hasClass(className)).toBe(false);
       },
     );
   });
@@ -47,9 +47,9 @@ describe('View', () => {
       view = new View({ [option]: true });
       $viewElem = view.$elem;
 
-      expect($viewElem.hasClass('slider_vertical')).toEqual(classes[0]);
-      expect($viewElem.hasClass('slider_interval')).toEqual(classes[1]);
-      expect($viewElem.hasClass('slider_show-progress')).toEqual(classes[2]);
+      expect($viewElem.hasClass('slider_vertical')).toBe(classes[0]);
+      expect($viewElem.hasClass('slider_interval')).toBe(classes[1]);
+      expect($viewElem.hasClass('slider_show-progress')).toBe(classes[2]);
     });
   });
 
@@ -65,11 +65,11 @@ describe('View', () => {
       ['toggleInterval', 'interval'],
       ['toggleProgressBar', 'show-progress'],
     ] as const)('%s method should toggle modifier class slider_%s', (method, modifier) => {
-      expect(view.$elem.hasClass(`slider_${modifier}`)).toEqual(false);
+      expect(view.$elem.hasClass(`slider_${modifier}`)).toBe(false);
 
       view[method](true);
 
-      expect(view.$elem.hasClass(`slider_${modifier}`)).toEqual(true);
+      expect(view.$elem.hasClass(`slider_${modifier}`)).toBe(true);
     });
 
     test('setPosition method should set custom css property --value-1|2-position for $controlContainer', () => {
@@ -77,19 +77,19 @@ describe('View', () => {
 
       getEntriesWithTypedKeys(positions).forEach(([number, position]) => {
         expect($controlContainer.css(`--value-${number}-position`))
-          .not.toEqual(`${position}%`);
+          .not.toBe(`${position}%`);
 
         view.setPosition(number, position);
 
         expect($controlContainer.css(`--value-${number}-position`))
-          .toEqual(`${position}%`);
+          .toBe(`${position}%`);
       });
     });
 
     test('setThumbThickness method should set custom css property --thumb-thickness for $controlContainer', () => {
       view.setThumbThickness(20);
 
-      expect($controlContainer.css('--thumb-thickness')).toEqual('20%');
+      expect($controlContainer.css('--thumb-thickness')).toBe('20%');
     });
   });
 
@@ -113,7 +113,7 @@ describe('View', () => {
 
       $controlContainer.trigger('contextmenu');
 
-      expect(eventResult).toStrictEqual(false);
+      expect(eventResult).toBe(false);
     });
 
     describe('pointerdown event', () => {

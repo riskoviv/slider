@@ -31,15 +31,15 @@ describe('Model', () => {
     });
 
     test('should set allowedValuesCount to 21', () => {
-      expect(model.allowedValuesCount).toEqual(21);
+      expect(model.allowedValuesCount).toBe(21);
     });
 
     test('should set fractionalPrecision to 0', () => {
-      expect(model.fractionalPrecision).toEqual(0);
+      expect(model.fractionalPrecision).toBe(0);
     });
 
     test('should set penultimateValue to 90', () => {
-      expect(model.penultimateValue).toEqual(90);
+      expect(model.penultimateValue).toBe(90);
     });
 
     describe('if one of following options is not integer', () => {
@@ -51,7 +51,7 @@ describe('Model', () => {
       `('if $option is $value, should set fractionalPrecision to $precision', ({ option, value, precision }) => {
         const customModel = new Model({ ...defaultOptions, [option]: value });
 
-        expect(customModel.fractionalPrecision).toEqual(precision);
+        expect(customModel.fractionalPrecision).toBe(precision);
       });
     });
 
@@ -72,7 +72,7 @@ describe('Model', () => {
             });
 
             expectedValues.forEach(([number, value]: [1 | 2, number]) => {
-              expect(customModel.options[`value${number}`]).toEqual(value);
+              expect(customModel.options[`value${number}`]).toBe(value);
             });
           },
         );
@@ -87,8 +87,8 @@ describe('Model', () => {
             value2: defaultOptions.maxValue,
           });
 
-          expect(customModel.options.value1).toEqual(90);
-          expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
+          expect(customModel.options.value1).toBe(90);
+          expect(customModel.options.value2).toBe(defaultOptions.maxValue);
         });
 
         test('should set value1 to penultimate value if maxValue not satisfies stepSize', () => {
@@ -100,8 +100,8 @@ describe('Model', () => {
             value2: defaultOptions.maxValue,
           });
 
-          expect(customModel.options.value1).toEqual(98);
-          expect(customModel.options.value2).toEqual(defaultOptions.maxValue);
+          expect(customModel.options.value1).toBe(98);
+          expect(customModel.options.value2).toBe(defaultOptions.maxValue);
         });
       });
 
@@ -119,8 +119,8 @@ describe('Model', () => {
             value2: source[1],
           });
 
-          expect(customModel.options.value1).toEqual(result[0]);
-          expect(customModel.options.value2).toEqual(result[1]);
+          expect(customModel.options.value1).toBe(result[0]);
+          expect(customModel.options.value2).toBe(result[1]);
         },
       );
     });
@@ -158,7 +158,7 @@ describe('Model', () => {
     test('should return index of value2 === maxValue that is 20', () => {
       model.options.value2 = defaultOptions.maxValue;
 
-      expect(model.getIndexByValueNumber(2)).toEqual(20);
+      expect(model.getIndexByValueNumber(2)).toBe(20);
     });
   });
 
@@ -193,7 +193,7 @@ describe('Model', () => {
     test('should set positive integer that is less than range', () => {
       model.setStepSize(20);
 
-      expect(model.options.stepSize).toEqual(20);
+      expect(model.options.stepSize).toBe(20);
       expect(stepSizeChangedSpy).toBeCalled();
     });
 
@@ -209,8 +209,8 @@ describe('Model', () => {
 
       model.setStepSize(negativeStepSize);
 
-      expect(model.options.stepSize).toEqual(-negativeStepSize);
       expect(model.options.stepSize).not.toEqual(negativeStepSize);
+      expect(model.options.stepSize).toBe(-negativeStepSize);
       expect(stepSizeChangedSpy).toBeCalled();
     });
 
@@ -221,8 +221,8 @@ describe('Model', () => {
 
       model.setStepSize(stepMoreThanRange);
 
-      expect(model.options.stepSize).toEqual(currentStepSize);
-      expect(model.options.stepSize).not.toEqual(stepMoreThanRange);
+      expect(model.options.stepSize).toBe(currentStepSize);
+      expect(model.options.stepSize).not.toBe(stepMoreThanRange);
       expect(stepSizeChangedSpy).not.toBeCalled();
     });
 
@@ -231,7 +231,7 @@ describe('Model', () => {
 
       [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
 
-      expect(model.options.stepSize).toEqual(currentStepSize);
+      expect(model.options.stepSize).toBe(currentStepSize);
       expect(stepSizeChangedSpy).not.toBeCalled();
     });
   });
@@ -251,14 +251,14 @@ describe('Model', () => {
     test('should set 1st value to 0', () => {
       model.setValue(1, 0);
 
-      expect(model.options.value1).toEqual(0);
+      expect(model.options.value1).toBe(0);
       expect(valueChangedSpy).toBeCalled();
     });
 
     test('should set 2nd value to -40 (don\'t consider value1)', () => {
       model.setValue(2, -40);
 
-      expect(model.options.value2).toEqual(-40);
+      expect(model.options.value2).toBe(-40);
       expect(valueChangedSpy).toBeCalled();
     });
 
@@ -271,7 +271,7 @@ describe('Model', () => {
     }) => {
       model.setValue(1, limitValue + passedValue);
 
-      expect(model.options.value1).toEqual(limitValue);
+      expect(model.options.value1).toBe(limitValue);
       expect(valueChangedSpy).toBeCalled();
     });
 
@@ -282,7 +282,7 @@ describe('Model', () => {
     `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
       model.setValue(1, value);
 
-      expect(model.options.value1).toEqual(value);
+      expect(model.options.value1).toBe(value);
       expect(valueChangedSpy).toBeCalled();
     });
 
@@ -331,8 +331,8 @@ describe('Model', () => {
           customModel.setValue(primaryValue.number, primaryValue.value);
           customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
 
-          expect(customModel.options[`value${primaryValue.number}`]).toEqual(primaryValue.value);
-          expect(customModel.options[`value${secondaryValue.number}`]).toEqual(secondaryValue.resultValue);
+          expect(customModel.options[`value${primaryValue.number}`]).toBe(primaryValue.value);
+          expect(customModel.options[`value${secondaryValue.number}`]).toBe(secondaryValue.resultValue);
           expect(valueChangedSpy).toBeCalledTimes(2);
         },
       );
@@ -353,7 +353,7 @@ describe('Model', () => {
     ])('should %s isVertical if %s passed', (state, booleanValue) => {
       model.setVerticalState(booleanValue);
 
-      expect(model.options.isVertical).toEqual(booleanValue);
+      expect(model.options.isVertical).toBe(booleanValue);
       expect(isVerticalChangedSpy).toBeCalled();
     });
   });
@@ -374,7 +374,7 @@ describe('Model', () => {
     ])('should %s isInterval and not emit valueChanged if %s passed and values were not changed by fixValues()', (state, booleanValue) => {
       model.setInterval(booleanValue);
 
-      expect(model.options.isInterval).toEqual(booleanValue);
+      expect(model.options.isInterval).toBe(booleanValue);
       expect(isIntervalChangedSpy).toBeCalled();
       expect(valueChangedSpy).not.toBeCalled();
     });
@@ -398,7 +398,7 @@ describe('Model', () => {
 
         expect(isIntervalChangedSpy).toBeCalled();
         getEntriesWithTypedKeys(resultValues).forEach(([name, value]) => {
-          expect(customModel.options[name]).toEqual(value);
+          expect(customModel.options[name]).toBe(value);
           const number = Number(name.slice(-1));
           expect(valueChangedSpy).toBeCalledWith({ number, value });
         });
@@ -420,7 +420,7 @@ describe('Model', () => {
     ])('should %s progressBar if %s passed', (state, booleanValue) => {
       model.setShowProgress(booleanValue);
 
-      expect(model.options.showProgressBar).toEqual(booleanValue);
+      expect(model.options.showProgressBar).toBe(booleanValue);
     });
   });
 });
