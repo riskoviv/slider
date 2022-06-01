@@ -107,8 +107,8 @@ describe('Model', () => {
 
       test.each`
         source      | result      | relation | resultDescription
-        ${[10, 10]} | ${[10, 20]} | '==='    | 'set value2 as next after value1'
-        ${[40, 30]} | ${[30, 40]} | '>'      | 'swap values'
+        ${[10, 10]} | ${[10, 20]} | ${'==='} | ${'set value2 as next after value1'}
+        ${[40, 30]} | ${[30, 40]} | ${'>'}   | ${'swap values'}
       `(
         'if value1 $relation value2, should $resultDescription',
         ({ source, result }) => {
