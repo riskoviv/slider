@@ -49,7 +49,7 @@ class ScaleView extends SubView implements IScaleView {
 
   private scaleValueClick = (e: PointerEvent): void => {
     const { target } = e;
-    if (target instanceof HTMLSpanElement) {
+    if (target instanceof HTMLSpanElement && e.button === 0) {
       this.emit('scaleValueSelect', Number(target.innerText));
     }
   }
