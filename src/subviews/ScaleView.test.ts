@@ -5,6 +5,13 @@ import $ from 'jquery';
 import '@testing-library/jest-dom';
 import ScaleView from './ScaleView';
 
+const makeNewScaleValueElement = (value: number): JQuery<HTMLDivElement> => (
+  $(`<div class="slider__scale-block">
+    <span class="slider__scale-text">${value}</span>
+  </div>`)
+);
+const unnumberedClass = 'slider__scale-block_unnumbered';
+
 describe('ScaleView', () => {
   let scale: ScaleView;
   let scaleElement: HTMLDivElement;
@@ -52,12 +59,69 @@ describe('ScaleView', () => {
     });
   });
 
-  describe('optimizeValuesCount()', () => {
-    test('should optimize count of elements that has visible span element containing corresponding value, i.e. hide scale-text elements that located less than 5 px away from scale-text element of adjacent scale value element', () => {
-      // TODO: define dimensions through styles for scale element
-      // TODO: add more value elements
-      // TODO: check if there are elements w/ hidden numbers (__scale-text)
-      expect(false).toBe(true);
+  describe('optimizeValuesCount() should add unnumberedClass to scale-block elements that located less than 5px away from adjacent scale-block element', () => {
+    describe('in horizontal state (isVertical: false)', () => {
+      test.each([
+        {
+          values: [0, 100, 200, 300, 400, 500],
+          positionsAndSizes: [
+            [0, 6.8], [20, 20.6], [40, 20.6], [60, 20.6], [80, 20.6], [100, 20.6],
+          ],
+          visibilityStates: [false, false, true, false, true, false],
+        },
+      ])(
+        'if scale width is 120px, should make values invisible as in array: $visibilityStates',
+        ({ values, positionsAndSizes, visibilityStates }) => {
+          scale.scaleValueElements = values.map(
+            (value) => makeNewScaleValueElement(value),
+          );
+          positionsAndSizes.forEach(
+            ([position, size], index) => {
+              jest.spyOn(scale.scaleValueElements[index], 'position')
+                .mockReturnValue({ left: position, top: 0 });
+              jest.spyOn(scale.scaleValueElements[index], 'width')
+                .mockReturnValue(size);
+            },
+          );
+          scale.insertScaleValueElements();
+          scale.optimizeValuesCount('left', 'width');
+
+          visibilityStates.forEach((state, i) => {
+            expect(scale.scaleValueElements[i].hasClass(unnumberedClass)).toBe(state);
+          });
+        },
+      );
+    });
+
+    describe('in vertical state (isVertical: true)', () => {
+      test.each([
+        {
+          values: [0, 100, 200, 300, 400, 500],
+          positions: [0, 20, 40, 60, 80, 100],
+          visibilityStates: [false, true, false, true, true, false],
+        },
+      ])(
+        'if scale height is 110px, should make values invisible as in array: $visibilityStates',
+        ({ values, positions, visibilityStates }) => {
+          scale.scaleValueElements = values.map(
+            (value) => makeNewScaleValueElement(value),
+          );
+          positions.forEach(
+            (position, index) => {
+              jest.spyOn(scale.scaleValueElements[index], 'position')
+                .mockReturnValue({ left: 0, top: position });
+              jest.spyOn(scale.scaleValueElements[index], 'height')
+                .mockReturnValue(18);
+            },
+          );
+          scale.insertScaleValueElements();
+          scale.optimizeValuesCount('top', 'height');
+
+          visibilityStates.forEach((state, i) => {
+            expect(scale.scaleValueElements[i].hasClass(unnumberedClass)).toBe(state);
+          });
+        },
+      );
     });
   });
 });
