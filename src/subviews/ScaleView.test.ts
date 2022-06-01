@@ -124,4 +124,33 @@ describe('ScaleView', () => {
       );
     });
   });
+
+  describe('pointerdown event', () => {
+    let scaleValueSelectSpy: jest.Mock;
+
+    beforeAll(() => {
+      scaleValueSelectSpy = jest.fn();
+      scale.on('scaleValueSelect', scaleValueSelectSpy);
+    });
+
+    test('if e.button === 0 (LMB) & e.target is span (.slider__scale-text) element, should emit scaleValueSelect event', () => {
+      const scaleTextElement = scaleElement.querySelector('.slider__scale-text');
+      const pointerDownEvent = new MouseEvent('pointerdown', { button: 0 });
+      Object.defineProperty(pointerDownEvent, 'target', {
+        value: scaleTextElement,
+      });
+
+      scaleElement.dispatchEvent(pointerDownEvent);
+
+      expect(scaleValueSelectSpy).toBeCalled();
+    });
+
+    test('if e.target is not span.slider__scale-text element, should not emit scaleValueSelect event', () => {
+      const pointerDownEvent = new MouseEvent('pointerdown', { button: 0 });
+
+      scaleElement.dispatchEvent(pointerDownEvent);
+
+      expect(scaleValueSelectSpy).not.toBeCalled();
+    });
+  });
 });
