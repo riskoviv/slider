@@ -24,7 +24,7 @@ type TypeOfValues<Obj> = Obj[keyof Obj];
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
-  (options: Partial<IPluginOptions>): JQuery | null;
+  (options: Partial<IPluginOptions> = {}): JQuery;
 }
 
 interface IPluginPublicMethods {
