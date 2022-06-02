@@ -188,7 +188,8 @@ class Presenter {
 
   private createScaleValuesElements(scaleView: ScaleView): void {
     const scale = scaleView;
-    const scaleSize = scale.$elem[this.dimension]() ?? 1;
+    const scaleSize = scale.$elem.get()[0].offsetWidth;
+    console.log('scaleSize: ', scaleSize);
     const { allowedValuesCount } = this.model;
     const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
