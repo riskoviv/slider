@@ -11,6 +11,11 @@ const makeNewScaleValueElement = (value: number): JQuery<HTMLDivElement> => (
   </div>`)
 );
 const unnumberedClass = 'slider__scale-block_unnumbered';
+const getScaleElementsWithValues = (valuesArray: number[]) => (
+  valuesArray.map(
+    (value) => makeNewScaleValueElement(value),
+  )
+);
 
 describe('ScaleView', () => {
   let scale: ScaleView;
@@ -72,9 +77,7 @@ describe('ScaleView', () => {
       ])(
         'if scale width is 120px, should make values invisible as in array: $visibilityStates',
         ({ values, positionsAndSizes, visibilityStates }) => {
-          scale.scaleValueElements = values.map(
-            (value) => makeNewScaleValueElement(value),
-          );
+          scale.scaleValueElements = getScaleElementsWithValues(values);
           positionsAndSizes.forEach(
             ([position, size], index) => {
               jest.spyOn(scale.scaleValueElements[index], 'position')
@@ -103,9 +106,7 @@ describe('ScaleView', () => {
       ])(
         'if scale height is 110px, should make values invisible as in array: $visibilityStates',
         ({ values, positions, visibilityStates }) => {
-          scale.scaleValueElements = values.map(
-            (value) => makeNewScaleValueElement(value),
-          );
+          scale.scaleValueElements = getScaleElementsWithValues(values);
           positions.forEach(
             (position, index) => {
               jest.spyOn(scale.scaleValueElements[index], 'position')
@@ -131,10 +132,12 @@ describe('ScaleView', () => {
     beforeAll(() => {
       scaleValueSelectSpy = jest.fn();
       scale.on('scaleValueSelect', scaleValueSelectSpy);
+      scale.scaleValueElements = getScaleElementsWithValues([0, 100, 200, 300, 400, 500]);
+      scale.insertScaleValueElements();
     });
 
-    test('if e.button === 0 (LMB) & e.target is span (.slider__scale-text) element, should emit scaleValueSelect event', () => {
-      const scaleTextElement = scaleElement.querySelector('.slider__scale-text');
+    test('if e.button === 0 (LMB) & e.target is span (.slider__scale-text) element, should emit scaleValueSelect event with value of that element as argument (100)', () => {
+      const scaleTextElement = scaleElement.querySelector('.slider__scale-block:nth-child(2) > .slider__scale-text');
       const pointerDownEvent = new MouseEvent('pointerdown', { button: 0 });
       Object.defineProperty(pointerDownEvent, 'target', {
         value: scaleTextElement,
@@ -142,7 +145,7 @@ describe('ScaleView', () => {
 
       scaleElement.dispatchEvent(pointerDownEvent);
 
-      expect(scaleValueSelectSpy).toBeCalled();
+      expect(scaleValueSelectSpy).toBeCalledWith(100);
     });
 
     test('if e.target is not span.slider__scale-text element, should not emit scaleValueSelect event', () => {
