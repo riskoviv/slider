@@ -44,39 +44,36 @@ describe('slider-plugin', () => {
   });
 
   describe('if called w/ custom state options that creates all possible subViews', () => {
-    test('slider should have all needed elements', () => {
-      const sliderContainerElem = $sliderContainer.get()[0];
-      // const observer = new MutationObserver((mutations) => {
-      //   mutations.forEach((mutation) => {
-      //     if (mutation.type === 'childList') {
-      //       console.log('mutated childList', ...mutation.addedNodes);
+    let $scaleElem: JQuery;
 
-      //       [...mutation.addedNodes].forEach((node) => {
-      //         if (node instanceof HTMLDivElement && node.className === 'slider__scale') {
-      //           Object.defineProperty(node, 'offsetWidth', { value: 600 });
-      //           console.log('mutated scale!');
-      //         }
-      //       });
-      //     }
-      //   });
-      // });
-      // observer.observe(sliderContainerElem, { childList: true, subtree: true });
-      const styleElem = document.createElement('style');
-      styleElem.innerHTML = '.slider-scale { width: 600px; }';
-      document.head.append(styleElem);
-      document.body.append(sliderContainerElem);
+    beforeAll(() => {
+      const sliderContainerElem = $sliderContainer.get()[0];
+      Object.defineProperty(sliderContainerElem, 'offsetWidth', { value: 700 });
       $sliderInstance = $sliderContainer.sliderPlugin({
         isInterval: true,
         showTip: true,
         showScale: true,
         showProgressBar: true,
       });
+      $scaleElem = $sliderInstance.find('.slider__scale');
+    });
 
+    test('slider should have all needed elements', () => {
       const childElements = ['control-container', 'track', 'thumb_1', 'thumb_2', 'tip_1', 'tip_2', 'scale'];
       expect(countOfChildrenInContainer($sliderInstance, childElements))
         .toBe(childElements.length);
-      expect($sliderInstance.find('.slider__scale').children().length).toBe(21);
-      // expect($sliderInstance.find('.slider__scale').get()[0].offsetWidth).toBe(600);
+      expect($scaleElem.children().length).toBe(21);
+    });
+
+    test('scale elements should have these style values and be at 0 position', () => {
+      $scaleElem.children().each((idx, sliderElem) => {
+        expect(sliderElem.style.getPropertyValue('--scale-block-position'))
+          .toBe(`${idx * 5}%`);
+        expect(sliderElem.textContent?.trim()).toBe(String(-100 + (10 * idx)));
+        expect(sliderElem.offsetLeft).toBe(0);
+        expect($(sliderElem).width()).toBe(0);
+        expect($(sliderElem).position().left).toBe(0);
+      });
     });
   });
 });
