@@ -10,6 +10,19 @@ window.ResizeObserver = jest.fn(() => ({
   disconnect: jest.fn(),
 }));
 
+const defaultOptions: IPluginOptions = {
+  stepSize: 10,
+  minValue: -100,
+  maxValue: 100,
+  value1: -50,
+  value2: 50,
+  isVertical: false,
+  isInterval: false,
+  showTip: false,
+  showScale: false,
+  showProgressBar: false,
+};
+
 const countOfChildrenInContainer = (container: JQuery, children: string[]) => (
   children.reduce((childCount, childClass) => (
     childCount + container.find(`.slider__${childClass}`).length
@@ -65,15 +78,21 @@ describe('slider-plugin', () => {
       expect($scaleElem.children().length).toBe(21);
     });
 
-    test('scale elements should have these style values and be at 0 position', () => {
+    test('scale elements should have these style values and textContents', () => {
       $scaleElem.children().each((idx, sliderElem) => {
         expect(sliderElem.style.getPropertyValue('--scale-block-position'))
           .toBe(`${idx * 5}%`);
         expect(sliderElem.textContent?.trim()).toBe(String(-100 + (10 * idx)));
-        expect(sliderElem.offsetLeft).toBe(0);
-        expect($(sliderElem).width()).toBe(0);
-        expect($(sliderElem).position().left).toBe(0);
       });
+    });
+  });
+
+  describe('if options arg passed to plugin is not an object or if it is an array (object that has length property)', () => {
+    test.each([
+      42, 'fail', [123, 'stepSize'], 321n, Symbol('symbol'),
+    ])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
+      $sliderInstance = $sliderContainer.sliderPlugin(arg);
+      expect($sliderInstance.debug.getOptions()).toStrictEqual(defaultOptions);
     });
   });
 });
