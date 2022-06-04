@@ -3,6 +3,7 @@
  */
 import $ from 'jquery';
 import './slider-plugin';
+import { getTypedKeys } from './utils';
 
 window.ResizeObserver = jest.fn(() => ({
   observe: jest.fn(),
@@ -92,7 +93,86 @@ describe('slider-plugin', () => {
       42, 'fail', [123, 'stepSize'], 321n, Symbol('symbol'),
     ])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
       $sliderInstance = $sliderContainer.sliderPlugin(arg);
+
       expect($sliderInstance.debug.getOptions()).toStrictEqual(defaultOptions);
     });
   });
+
+  describe('fixCustomOptions() should exclude wrong custom options from object that will be passed to Model', () => {
+    test('should not include those properties in resulting options object that then passed to Model', () => {
+      const falseOptions: Record<string, unknown> & Partial<IPluginOptions> = {
+        test: 123,
+      };
+
+      $sliderInstance = $sliderContainer.sliderPlugin(falseOptions);
+
+      expect($sliderInstance.debug.getOptions()).not.toHaveProperty('test');
+    });
+
+    test('should not consider options that are of wrong type', () => {
+      const falseOptions: Record<string, unknown> = {
+        stepSize: 'test',
+      };
+
+      $sliderInstance = $sliderContainer.sliderPlugin(falseOptions);
+
+      expect($sliderInstance.debug.getOptions().stepSize).toBe(defaultOptions.stepSize);
+    });
+
+    test('should not consider options of type number that have non-finite values', () => {
+      const options = {
+        minValue: NaN,
+        maxValue: Infinity,
+        stepSize: -Infinity,
+        value1: NaN,
+        value2: Infinity,
+      };
+
+      $sliderInstance = $sliderContainer.sliderPlugin(options);
+
+      getTypedKeys(options).forEach((option) => {
+        expect($sliderInstance.debug.getOptions()[option])
+          .toBe(defaultOptions[option]);
+      });
+    });
+  });
+
+  describe('checkOptionsValues() should check numeric values and correct them so plugin can work properly', () => {
+    const dO = defaultOptions;
+    test.concurrent
+      .each<[(keyof IPluginValueOptions)[], number[], number[], boolean?]>([
+        [['stepSize'], [-5], [5]],
+        [['stepSize'], [0], [dO.stepSize]],
+        [['minValue', 'maxValue'], [150, -70], [-70, 150]],
+        [['minValue', 'maxValue'], [10, 10], [10, 10 + dO.stepSize]],
+        [['value1', 'value2'], [40, -10], [-10, 40], true],
+        [['value1'], [-200], [dO.minValue]],
+        [['value1'], [200], [dO.maxValue - dO.stepSize], true],
+        [['value1'], [200], [dO.maxValue]],
+        [['value2'], [-200], [dO.minValue + dO.stepSize], true],
+        [['value2'], [130], [dO.maxValue], true],
+        [['stepSize'], [220], [1]],
+      ])(
+        'should correct wrong %p from %p to %p',
+        async (parameters, wrong, right, isInterval) => {
+          const wrongOptions: Partial<IPluginValueOptions> = {};
+          parameters.forEach((parameter, idx) => {
+            wrongOptions[parameter] = wrong[idx];
+          });
+
+          $sliderInstance = $sliderContainer.sliderPlugin({
+            ...wrongOptions,
+            ...{ isInterval },
+          });
+
+          const pluginOptions = $sliderInstance.debug.getOptions();
+          parameters.forEach((parameter, idx) => {
+            expect(pluginOptions[parameter] = right[idx]);
+          });
+        },
+      );
+  });
+
+  // TODO: make some actions on DOM slider elements
+  // TODO: but before it imitate their sizes & positions
 });
