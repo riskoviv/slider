@@ -5,10 +5,10 @@
   "main": "slider-plugin.ts",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack serve",
-    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules npx jest",
-    "dev": "cross-env NODE_ENV=development webpack --mode development",
-    "build": "cross-env NODE_ENV=production webpack --mode production"
+    "start": "webpack serve",
+    "test": "jest",
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production"
   },
   "keywords": [
     "slider",
@@ -30,7 +30,6 @@
     "@types/jquery": "^3.5.13",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "cross-env": "^7.0.3",
     "css-loader": "^5.2.7",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
