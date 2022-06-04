@@ -1,4 +1,4 @@
-class EventEmitter implements IEventEmitter {
+abstract class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
   on<argumentType>(event: EventName, handler: EventHandler<argumentType>): this {
