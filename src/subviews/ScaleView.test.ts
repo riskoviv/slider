@@ -82,12 +82,15 @@ describe('ScaleView', () => {
             ([position, size], index) => {
               jest.spyOn(scale.scaleValueElements[index], 'position')
                 .mockReturnValue({ left: position, top: 0 });
-              jest.spyOn(scale.scaleValueElements[index], 'width')
-                .mockReturnValue(size);
+              Object.defineProperty(
+                scale.scaleValueElements[index].get()[0],
+                'offsetWidth',
+                { value: size },
+              );
             },
           );
           scale.insertScaleValueElements();
-          scale.optimizeValuesCount('left', 'width');
+          scale.optimizeValuesCount('left', 'offsetWidth');
 
           visibilityStates.forEach((state, i) => {
             expect(scale.scaleValueElements[i].hasClass(unnumberedClass)).toBe(state);
@@ -111,12 +114,15 @@ describe('ScaleView', () => {
             (position, index) => {
               jest.spyOn(scale.scaleValueElements[index], 'position')
                 .mockReturnValue({ left: 0, top: position });
-              jest.spyOn(scale.scaleValueElements[index], 'height')
-                .mockReturnValue(18);
+              Object.defineProperty(
+                scale.scaleValueElements[index].get()[0],
+                'offsetHeight',
+                { value: 18 },
+              );
             },
           );
           scale.insertScaleValueElements();
-          scale.optimizeValuesCount('top', 'height');
+          scale.optimizeValuesCount('top', 'offsetHeight');
 
           visibilityStates.forEach((state, i) => {
             expect(scale.scaleValueElements[i].hasClass(unnumberedClass)).toBe(state);

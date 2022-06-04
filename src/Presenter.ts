@@ -26,9 +26,9 @@ class Presenter {
 
   private subViews: { [viewName: string]: InstanceType<subViewClass> } = {};
 
-  private dimension: Dimension = 'width';
+  private sizeDimension: SizeDimension = 'offsetWidth';
 
-  private axis: Axis = 'left';
+  private positionAxis: PositionAxis = 'left';
 
   private offset: 'offsetX' | 'offsetY' = 'offsetX';
 
@@ -98,7 +98,7 @@ class Presenter {
   private initResizeObserver(): void {
     this.sliderResizeObserver = new ResizeObserver(() => {
       if (this.subViews.scale instanceof ScaleView) {
-        this.subViews.scale.optimizeValuesCount(this.axis, this.dimension);
+        this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
       }
     });
     this.sliderResizeObserver.observe(this.view.$elem.get()[0]);
@@ -106,12 +106,12 @@ class Presenter {
 
   private updateDimensionAndAxis() {
     if (this.options.isVertical) {
-      this.dimension = 'height';
-      this.axis = 'top';
+      this.sizeDimension = 'offsetHeight';
+      this.positionAxis = 'top';
       this.offset = 'offsetY';
     } else {
-      this.dimension = 'width';
-      this.axis = 'left';
+      this.sizeDimension = 'offsetWidth';
+      this.positionAxis = 'left';
       this.offset = 'offsetX';
     }
   }

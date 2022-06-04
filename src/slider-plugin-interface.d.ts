@@ -89,8 +89,8 @@ interface IModel extends IEventEmitter {
   publicMethods: IPluginPublicMethods;
 }
 
-type Axis = 'left' | 'top';
-type Dimension = 'width' | 'height';
+type PositionAxis = 'left' | 'top';
+type SizeDimension = 'offsetWidth' | 'offsetHeight';
 
 interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
@@ -100,7 +100,7 @@ interface ISubView extends IEventEmitter {
 interface IScaleView extends ISubView {
   scaleValueElements: JQuery<HTMLDivElement>[];
   insertScaleValueElements(): void;
-  optimizeValuesCount(axis: Axis, dimension: Dimension): void;
+  optimizeValuesCount(axis: PositionAxis, offsetSize: SizeDimension): void;
 }
 
 interface ITipView extends ISubView {
