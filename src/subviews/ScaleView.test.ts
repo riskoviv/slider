@@ -23,7 +23,7 @@ describe('ScaleView', () => {
 
   beforeAll(() => {
     scale = new ScaleView();
-    [scaleElement] = scale.$elem.get();
+    [scaleElement] = scale.$elem;
   });
 
   test('constructor should create instance of ScaleView that has $elem property that is $DIV element w/ class slider__scale', () => {

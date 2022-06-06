@@ -8,7 +8,7 @@ describe('TipView', () => {
   let tipElement: HTMLElement;
   beforeAll(() => {
     tip = new TipView();
-    [tipElement] = tip.$elem.get();
+    [tipElement] = tip.$elem;
   });
 
   test('should create instance of class TipView', () => {

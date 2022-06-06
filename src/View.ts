@@ -19,7 +19,7 @@ class View extends EventEmitter implements IView {
   constructor(options: SliderViewOptions = {}) {
     super();
     this.$elem = this.render(options);
-    [this.controlContainerElem] = this.$controlContainer.get();
+    [this.controlContainerElem] = this.$controlContainer;
     this.bindEventListeners();
   }
 
@@ -74,6 +74,8 @@ class View extends EventEmitter implements IView {
 
     e.preventDefault();
     this.controlContainerElem.setPointerCapture(e.pointerId);
+
+    console.log(e.offsetX);
 
     const { target } = e;
     if (target instanceof HTMLDivElement) {
