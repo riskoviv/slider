@@ -26,7 +26,7 @@ describe('TipView', () => {
     test('$elem should contain HTML element w/ class slider__tip and slider__tip_2', () => {
       const tip2 = new TipView(2);
 
-      expect(tip2.$elem.get()[0].className).toBe('slider__tip slider__tip_2');
+      expect(tip2.$elem[0].className).toBe('slider__tip slider__tip_2');
     });
   });
 

@@ -101,7 +101,7 @@ class Presenter {
         this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
       }
     });
-    this.sliderResizeObserver.observe(this.view.$elem.get()[0]);
+    this.sliderResizeObserver.observe(this.view.$elem[0]);
   }
 
   private updateDimensionAndAxis() {
@@ -189,7 +189,7 @@ class Presenter {
   private createScaleValuesElements(scaleView: ScaleView): void {
     const scale = scaleView;
     const offset = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    const scaleSize = this.$pluginRootElem.get()[0][offset];
+    const scaleSize = this.$pluginRootElem[0][offset];
     const { allowedValuesCount } = this.model;
     const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
@@ -216,8 +216,7 @@ class Presenter {
     }
 
     const lastElemIsNotMaxValue = scale.scaleValueElements
-      .slice(-1)[0]
-      .get()[0]
+      .slice(-1)[0][0]
       .style.getPropertyValue('--scale-block-position')
       .trim() !== '100%';
     if (lastElemIsNotMaxValue) {
@@ -531,7 +530,7 @@ class Presenter {
 
   private pixelsToPercentsOfSliderLength(pixels: number): number {
     const offset = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    const sliderLength = this.view.$controlContainer.get()[0][offset];
+    const sliderLength = this.view.$controlContainer[0][offset];
     return Number(((pixels / sliderLength) * 100).toFixed(1));
   }
 

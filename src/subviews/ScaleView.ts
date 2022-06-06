@@ -41,10 +41,10 @@ class ScaleView extends SubView implements IScaleView {
     element: JQuery<HTMLSpanElement>,
     position: number,
     sizeDimension: SizeDimension,
-  ) => position + (element.get()[0][sizeDimension]);
+  ) => position + (element[0][sizeDimension]);
 
   private bindClickListener() {
-    this.$elem.get()[0].addEventListener('pointerdown', this.scaleValueClick);
+    this.$elem[0].addEventListener('pointerdown', this.scaleValueClick);
   }
 
   private scaleValueClick = (e: PointerEvent): void => {

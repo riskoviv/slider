@@ -61,7 +61,7 @@ describe('slider-plugin', () => {
     let $scaleElem: JQuery;
 
     beforeAll(() => {
-      const sliderContainerElem = $sliderContainer.get()[0];
+      const [sliderContainerElem] = $sliderContainer;
       Object.defineProperty(sliderContainerElem, 'offsetWidth', { value: 700 });
       $sliderInstance = $sliderContainer.sliderPlugin({
         isInterval: true,

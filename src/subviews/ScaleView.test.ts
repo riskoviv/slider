@@ -29,8 +29,8 @@ describe('ScaleView', () => {
   test('constructor should create instance of ScaleView that has $elem property that is $DIV element w/ class slider__scale', () => {
     expect(scale).toBeInstanceOf(ScaleView);
     expect(scale).toHaveProperty('$elem');
-    expect(scale.$elem.get(0)?.tagName).toBe('DIV');
-    expect(scale.$elem.get(0)?.className).toBe('slider__scale');
+    expect(scale.$elem[0].tagName).toBe('DIV');
+    expect(scale.$elem[0].className).toBe('slider__scale');
   });
 
   test('should contain property scaleValueElements that contains empty array', () => {
@@ -48,8 +48,8 @@ describe('ScaleView', () => {
     test('if scaleValueElements array contains $DIV elements, method should append these elements to slider.$elem', () => {
       const $scaleValueElements = getScaleElementsWithValues([0, 10]);
       scale.scaleValueElements = $scaleValueElements;
-      const scaleValueElement1 = $scaleValueElements[0].get()[0];
-      const scaleValueElement2 = $scaleValueElements[1].get()[0];
+      const [scaleValueElement1] = $scaleValueElements[0];
+      const [scaleValueElement2] = $scaleValueElements[1];
 
       scale.insertScaleValueElements();
 
@@ -78,7 +78,7 @@ describe('ScaleView', () => {
               jest.spyOn(scale.scaleValueElements[index], 'position')
                 .mockReturnValue({ left: position, top: 0 });
               Object.defineProperty(
-                scale.scaleValueElements[index].get()[0],
+                scale.scaleValueElements[index][0],
                 'offsetWidth',
                 { value: size },
               );
@@ -110,7 +110,7 @@ describe('ScaleView', () => {
               jest.spyOn(scale.scaleValueElements[index], 'position')
                 .mockReturnValue({ left: 0, top: position });
               Object.defineProperty(
-                scale.scaleValueElements[index].get()[0],
+                scale.scaleValueElements[index][0],
                 'offsetHeight',
                 { value: 18 },
               );
