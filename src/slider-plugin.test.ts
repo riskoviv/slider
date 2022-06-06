@@ -154,7 +154,7 @@ describe('slider-plugin', () => {
         [['stepSize'], [220], [1]],
       ])(
         'should correct wrong %p from %p to %p',
-        async (parameters, wrong, right, isInterval) => {
+        async (parameters, wrong, right, isInterval = false) => {
           const wrongOptions: Partial<IPluginValueOptions> = {};
           parameters.forEach((parameter, idx) => {
             wrongOptions[parameter] = wrong[idx];
