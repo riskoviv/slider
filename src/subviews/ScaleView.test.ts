@@ -46,15 +46,10 @@ describe('ScaleView', () => {
     });
 
     test('if scaleValueElements array contains $DIV elements, method should append these elements to slider.$elem', () => {
-      const $scaleValueElement1: JQuery<HTMLDivElement> = $(`<div class="slider__scale-block" style="--scale-block-position: 0%">
-          <span class="slider__scale-text">0</span>
-        </div>`);
-      const $scaleValueElement2: JQuery<HTMLDivElement> = $(`<div class="slider__scale-block" style="--scale-block-position: 10%">
-          <span class="slider__scale-text">10</span>
-        </div>`);
-      scale.scaleValueElements = [$scaleValueElement1, $scaleValueElement2];
-      const scaleValueElement1 = $scaleValueElement1.get()[0];
-      const scaleValueElement2 = $scaleValueElement2.get()[0];
+      const $scaleValueElements = getScaleElementsWithValues([0, 10]);
+      scale.scaleValueElements = $scaleValueElements;
+      const scaleValueElement1 = $scaleValueElements[0].get()[0];
+      const scaleValueElement2 = $scaleValueElements[1].get()[0];
 
       scale.insertScaleValueElements();
 
