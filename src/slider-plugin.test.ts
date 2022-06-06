@@ -175,4 +175,29 @@ describe('slider-plugin', () => {
 
   // TODO: make some actions on DOM slider elements
   // TODO: but before it imitate their sizes & positions
+  describe('DOM interaction with slider plugin', () => {
+    beforeAll(() => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+    });
+
+    test('should move thumb1 after pointerdown event on controlContainer', () => {
+      const controlContainer = $sliderInstance.find('.slider__control-container')[0];
+      const pointerDownEvent = new MouseEvent('pointerdown', { button: 0 });
+      const pointerDownSpy = jest.fn();
+      Object.defineProperty(controlContainer, 'offsetWidth', { value: 680 });
+      controlContainer.addEventListener('pointerdown', pointerDownSpy);
+      Object.defineProperty(controlContainer, 'setPointerCapture', { value: jest.fn() });
+      Object.defineProperties(pointerDownEvent, {
+        offsetX: { value: 102 },
+        pointerId: { value: 1 },
+      });
+
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+
+      controlContainer.dispatchEvent(pointerDownEvent);
+
+      expect(pointerDownSpy).toBeCalled();
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('15%');
+    });
+  });
 });
