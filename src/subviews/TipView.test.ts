@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import $ from 'jquery';
 import TipView from './TipView';
 
 describe('TipView', () => {

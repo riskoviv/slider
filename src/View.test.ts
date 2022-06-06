@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-// import $ from 'jquery';
 import View from './View';
 import { getEntriesWithTypedKeys } from './utils';
 
