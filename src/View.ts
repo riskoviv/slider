@@ -75,8 +75,6 @@ class View extends EventEmitter implements IView {
     e.preventDefault();
     this.controlContainerElem.setPointerCapture(e.pointerId);
 
-    console.log(e.offsetX);
-
     const { target } = e;
     if (target instanceof HTMLDivElement) {
       this.emit('sliderPointerDown', {
