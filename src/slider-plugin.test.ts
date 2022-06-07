@@ -174,8 +174,6 @@ describe('slider-plugin', () => {
       );
   });
 
-  // TODO: make some actions on DOM slider elements
-  // TODO: but before it imitate their sizes & positions
   describe('DOM interaction with slider plugin', () => {
     beforeAll(() => {
       $sliderInstance = $sliderContainer.sliderPlugin();
