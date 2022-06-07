@@ -179,24 +179,24 @@ describe('slider-plugin', () => {
       $sliderInstance = $sliderContainer.sliderPlugin();
     });
 
-    test('should move thumb1 after pointerdown event on controlContainer', () => {
+    test('should set new value to --value-1-position (call View.setPosition()) after pointerdown event on controlContainer', () => {
       const controlContainer = $sliderInstance.find('.slider__control-container')[0];
-      const pointerDownEvent = new MouseEvent('pointerdown', { button: 0 });
-      const pointerDownSpy = jest.fn();
-      Object.defineProperty(controlContainer, 'offsetWidth', { value: 680 });
-      controlContainer.addEventListener('pointerdown', pointerDownSpy);
-      Object.defineProperty(controlContainer, 'setPointerCapture', { value: jest.fn() });
-      Object.defineProperties(pointerDownEvent, {
-        offsetX: { value: 102 },
-        pointerId: { value: 1 },
+      const pointerDownEvent = new MouseEvent('pointerdown');
+      const pointerUpEvent = new MouseEvent('pointerup');
+      Object.defineProperties(controlContainer, {
+        offsetWidth: { value: 680 },
+        setPointerCapture: { value: jest.fn() },
       });
+      Object.defineProperty(pointerDownEvent, 'pointerId', { value: 1 });
 
       expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
 
-      controlContainer.dispatchEvent(pointerDownEvent);
-
-      expect(pointerDownSpy).toBeCalled();
-      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('15%');
+      [[102, 15], [219, 30], [-10, 0], [730, 100]].forEach(([offsetX, position]) => {
+        Object.defineProperty(pointerDownEvent, 'offsetX', { value: offsetX, writable: true });
+        controlContainer.dispatchEvent(pointerDownEvent);
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe(`${position}%`);
+        controlContainer.dispatchEvent(pointerUpEvent);
+      });
     });
   });
 });
