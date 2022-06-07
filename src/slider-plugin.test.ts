@@ -35,6 +35,10 @@ describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   let $sliderInstance: JQuery<HTMLElement>;
 
+  beforeAll(() => {
+    Object.defineProperty($sliderContainer[0], 'offsetWidth', { value: 700 });
+  });
+
   describe('if called w/o options', () => {
     beforeAll(() => {
       $sliderInstance = $sliderContainer.sliderPlugin();
@@ -61,8 +65,6 @@ describe('slider-plugin', () => {
     let $scaleElem: JQuery;
 
     beforeAll(() => {
-      const [sliderContainerElem] = $sliderContainer;
-      Object.defineProperty(sliderContainerElem, 'offsetWidth', { value: 700 });
       $sliderInstance = $sliderContainer.sliderPlugin({
         isInterval: true,
         showTip: true,
