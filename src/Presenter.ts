@@ -399,7 +399,10 @@ class Presenter {
 
           if (allowedPosition !== this.currentThumbData.currentPosition
               && allowedValue !== this.currentThumbData.currentValue) {
-            if (this.thumbChecks.isThumbKeepsDistance(allowedPosition)) {
+            const isFirstThumbAwayFromSecondThumb = this.options.isInterval
+              ? this.thumbChecks.isThumbKeepsDistance(allowedPosition)
+              : true;
+            if (isFirstThumbAwayFromSecondThumb) {
               this.setPositionAndCurrentValue({
                 number: closestThumb,
                 position: allowedPosition,
