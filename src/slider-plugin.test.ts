@@ -24,11 +24,12 @@ const defaultOptions: IPluginOptions = {
   showProgressBar: false,
 };
 
-const countOfChildrenInContainer = (container: JQuery, children: string[]) => (
-  children.reduce((childCount, childClass) => (
-    childCount + container.find(`.slider__${childClass}`).length
-  ), 0)
-);
+const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
+  const childrenCountInParent = children.reduce((childCount, childClass) => (
+    childCount + parent.find(`.slider__${childClass}`).length
+  ), 0);
+  return childrenCountInParent === children.length;
+};
 
 describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
@@ -52,8 +53,7 @@ describe('slider-plugin', () => {
     test('should have controlContainer element that has 2 subViews', () => {
       const $controlContainer = $('.slider__control-container', $sliderInstance);
       const childClasses = ['track', 'thumb'];
-      expect(countOfChildrenInContainer($controlContainer, childClasses))
-        .toBe(childClasses.length);
+      expect(parentHaveAllChildren($controlContainer, childClasses)).toBe(true);
     });
   });
 
@@ -74,8 +74,7 @@ describe('slider-plugin', () => {
 
     test('slider should have all needed elements', () => {
       const childElements = ['control-container', 'track', 'thumb_1', 'thumb_2', 'tip_1', 'tip_2', 'scale'];
-      expect(countOfChildrenInContainer($sliderInstance, childElements))
-        .toBe(childElements.length);
+      expect(parentHaveAllChildren($sliderInstance, childElements)).toBe(true);
       expect($scaleElem.children().length).toBe(21);
     });
 
