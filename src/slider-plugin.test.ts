@@ -201,5 +201,39 @@ describe('slider-plugin', () => {
         controlContainer.dispatchEvent(pointerUpEvent);
       });
     });
+
+    // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
+    test.only('should set new value to --value-1-position (call View.setPosition()) after pointerdown & pointermove event on controlContainer w/ .slider__thumb as a target', async () => {
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+      const startPoint = 170;
+      const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
+      Object.defineProperties(pointerDownEvent, {
+        offsetX: { value: startPoint, writable: true },
+        target: { value: thumbElem, writable: true },
+      });
+      controlContainer.dispatchEvent(pointerDownEvent);
+
+      const pointerMoveEvent = new MouseEvent('pointermove');
+
+      let pixelShift = 1;
+
+      const moveInterval = setInterval(() => {
+        if (pixelShift < 19) {
+          Object.defineProperty(
+            pointerMoveEvent,
+            'offsetX',
+            { value: startPoint + pixelShift, writable: true },
+          );
+          controlContainer.dispatchEvent(pointerMoveEvent);
+          pixelShift += 2;
+        } else {
+          clearInterval(moveInterval);
+        }
+      }, 20);
+
+      controlContainer.dispatchEvent(pointerUpEvent);
+
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('30%');
+    });
   });
 });
