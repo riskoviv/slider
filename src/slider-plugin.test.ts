@@ -175,20 +175,23 @@ describe('slider-plugin', () => {
   });
 
   describe('DOM interaction with slider plugin', () => {
-    beforeAll(() => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
-    });
+    let controlContainer: HTMLElement;
+    let pointerDownEvent: MouseEvent;
+    let pointerUpEvent: MouseEvent;
 
-    test('should set new value to --value-1-position (call View.setPosition()) after pointerdown event on controlContainer', () => {
-      const controlContainer = $sliderInstance.find('.slider__control-container')[0];
-      const pointerDownEvent = new MouseEvent('pointerdown');
-      const pointerUpEvent = new MouseEvent('pointerup');
+    beforeEach(() => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      [controlContainer] = $sliderInstance.find('.slider__control-container');
       Object.defineProperties(controlContainer, {
         offsetWidth: { value: 680 },
         setPointerCapture: { value: jest.fn() },
       });
+      pointerDownEvent = new MouseEvent('pointerdown');
       Object.defineProperty(pointerDownEvent, 'pointerId', { value: 1 });
+      pointerUpEvent = new MouseEvent('pointerup');
+    });
 
+    test('should set new value to --value-1-position (call View.setPosition()) after pointerdown event on controlContainer', () => {
       expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
 
       [[102, 15], [219, 30], [-10, 0], [730, 100]].forEach(([offsetX, position]) => {
