@@ -203,7 +203,8 @@ describe('slider-plugin', () => {
     });
 
     // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
-    test.only('should set new value to --value-1-position (call View.setPosition()) after pointerdown & pointermove event on controlContainer w/ .slider__thumb as a target', async () => {
+    test.only('should set new value to --value-1-position (call View.setPosition()) after pointerdown & pointermove event on controlContainer w/ .slider__thumb as a target moving it by half of stepSize (in pixels) to the value on the right', () => {
+      expect.assertions(2);
       expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
       const startPoint = 170;
       const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
@@ -216,24 +217,35 @@ describe('slider-plugin', () => {
       const pointerMoveEvent = new MouseEvent('pointermove');
 
       let pixelShift = 1;
+      const pixelsMoveCount = 19;
+      const moveInterval = 20;
 
-      const moveInterval = setInterval(() => {
-        if (pixelShift < 19) {
-          Object.defineProperty(
-            pointerMoveEvent,
-            'offsetX',
-            { value: startPoint + pixelShift, writable: true },
-          );
-          controlContainer.dispatchEvent(pointerMoveEvent);
-          pixelShift += 2;
-        } else {
-          clearInterval(moveInterval);
-        }
-      }, 20);
+      jest.useFakeTimers();
+      new Promise<void>((resolve) => {
+        const moveIntervalId = setInterval(() => {
+          if (pixelShift < pixelsMoveCount) {
+            Object.defineProperty(
+              pointerMoveEvent,
+              'offsetX',
+              { value: startPoint + pixelShift, writable: true },
+            );
+            controlContainer.dispatchEvent(pointerMoveEvent);
+            pixelShift += 1;
+          } else {
+            clearInterval(moveIntervalId);
+            resolve();
+          }
+        }, moveInterval);
+        jest.runAllTimers();
+      }).then(() => {
+        controlContainer.dispatchEvent(pointerUpEvent);
+      }).then(() => {
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('30%');
+      });
+    });
 
-      controlContainer.dispatchEvent(pointerUpEvent);
-
-      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('30%');
+    afterEach(() => {
+      jest.useRealTimers();
     });
   });
 });
