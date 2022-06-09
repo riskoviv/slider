@@ -24,12 +24,15 @@
     "jquery": "^3.6.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.18.2",
     "@testing-library/dom": "^8.13.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@types/jest": "^27.4.1",
     "@types/jquery": "^3.5.13",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
+    "babel-jest": "^28.1.1",
     "css-loader": "^5.2.7",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
