@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable fsd/no-function-declaration-in-event-listener */
 import $ from 'jquery';
 import './slider-plugin';
 import { getTypedKeys } from './utils';
@@ -174,9 +175,48 @@ describe('slider-plugin', () => {
       );
   });
 
-  describe('DOM interaction with slider plugin', () => {
+  const makePointerdown = (
+    element: HTMLElement,
+    offsetX: number,
+    target?: HTMLElement,
+  ) => {
+    const pointerdownEvent = new MouseEvent('pointerdown');
+    Object.defineProperties(pointerdownEvent, {
+      pointerId: { value: 1 },
+      offsetX: { value: offsetX },
+      target: { value: target ?? element },
+    });
+    element.dispatchEvent(pointerdownEvent);
+  };
+
+  const makePointermove = async (
+    targetElement: HTMLElement,
+    startPoint: number,
+    endPoint: number,
+  ) => {
+    const pointermoveEvent = new MouseEvent('pointermove');
+    let cursorOffset = startPoint;
+    jest.useFakeTimers();
+    await new Promise<void>((resolve) => {
+      const moveIntervalId = setInterval(() => {
+        cursorOffset += (cursorOffset < endPoint ? 1 : -1);
+        Object.defineProperty(pointermoveEvent, 'offsetX', {
+          value: cursorOffset,
+          writable: true,
+        });
+        targetElement.dispatchEvent(pointermoveEvent);
+        if (cursorOffset === endPoint) {
+          clearInterval(moveIntervalId);
+          resolve();
+        }
+      }, 20);
+      jest.runAllTimers();
+      jest.useRealTimers();
+    });
+  };
+
+  describe('DOM interaction with slider plugin on default options', () => {
     let controlContainer: HTMLElement;
-    let pointerDownEvent: MouseEvent;
     let pointerUpEvent: MouseEvent;
 
     beforeEach(() => {
@@ -186,8 +226,6 @@ describe('slider-plugin', () => {
         offsetWidth: { value: 680 },
         setPointerCapture: { value: jest.fn() },
       });
-      pointerDownEvent = new MouseEvent('pointerdown');
-      Object.defineProperty(pointerDownEvent, 'pointerId', { value: 1 });
       pointerUpEvent = new MouseEvent('pointerup');
     });
 
@@ -195,57 +233,29 @@ describe('slider-plugin', () => {
       expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
 
       [[102, 15], [219, 30], [-10, 0], [730, 100]].forEach(([offsetX, position]) => {
-        Object.defineProperty(pointerDownEvent, 'offsetX', { value: offsetX, writable: true });
-        controlContainer.dispatchEvent(pointerDownEvent);
-        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe(`${position}%`);
+        makePointerdown(controlContainer, offsetX);
+        expect(controlContainer.style.getPropertyValue('--value-1-position'))
+          .toBe(`${position}%`);
         controlContainer.dispatchEvent(pointerUpEvent);
       });
     });
 
-    // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
-    test.only('should set new value to --value-1-position (call View.setPosition()) after pointerdown & pointermove event on controlContainer w/ .slider__thumb as a target moving it by half of stepSize (in pixels) to the value on the right', () => {
-      expect.assertions(2);
-      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
-      const startPoint = 170;
-      const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
-      Object.defineProperties(pointerDownEvent, {
-        offsetX: { value: startPoint, writable: true },
-        target: { value: thumbElem, writable: true },
-      });
-      controlContainer.dispatchEvent(pointerDownEvent);
+    test.only.each([
+      [170, 188, 30],
+      [170, 152, 20],
+    ])(
+      'should move thumb by pressing on it and moving from %d pixels offset to %d and set --value-1-position to %d%%',
+      async (startPoint, endPoint, expectedPosition) => {
+        const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
 
-      const pointerMoveEvent = new MouseEvent('pointermove');
-
-      let pixelShift = 1;
-      const pixelsMoveCount = 19;
-      const moveInterval = 20;
-
-      jest.useFakeTimers();
-      new Promise<void>((resolve) => {
-        const moveIntervalId = setInterval(() => {
-          if (pixelShift < pixelsMoveCount) {
-            Object.defineProperty(
-              pointerMoveEvent,
-              'offsetX',
-              { value: startPoint + pixelShift, writable: true },
-            );
-            controlContainer.dispatchEvent(pointerMoveEvent);
-            pixelShift += 1;
-          } else {
-            clearInterval(moveIntervalId);
-            resolve();
-          }
-        }, moveInterval);
-        jest.runAllTimers();
-      }).then(() => {
+        expect.assertions(2);
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+        makePointerdown(controlContainer, startPoint, thumbElem);
+        await makePointermove(controlContainer, startPoint, endPoint);
         controlContainer.dispatchEvent(pointerUpEvent);
-      }).then(() => {
-        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('30%');
-      });
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
+        expect(controlContainer.style.getPropertyValue('--value-1-position'))
+          .toBe(`${expectedPosition}%`);
+      },
+    );
   });
 });
