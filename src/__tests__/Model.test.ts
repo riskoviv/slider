@@ -1,5 +1,5 @@
-import Model from './Model';
-import { getEntriesWithTypedKeys } from './utils';
+import Model from '../Model';
+import { getEntriesWithTypedKeys } from '../utils';
 
 const defaultOptions: IPluginOptions = {
   stepSize: 10,

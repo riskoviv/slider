@@ -3,8 +3,8 @@
  */
 
 import $ from 'jquery';
-import Presenter from './Presenter';
-import Model from './Model';
+import Presenter from '../Presenter';
+import Model from '../Model';
 
 window.ResizeObserver = jest.fn(() => ({
   observe: jest.fn(),

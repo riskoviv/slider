@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import TipView from './TipView';
+import TipView from '../subviews/TipView';
 
 describe('TipView', () => {
   let tip: TipView;

@@ -3,8 +3,8 @@
  */
 /* eslint-disable fsd/no-function-declaration-in-event-listener */
 import $ from 'jquery';
-import './slider-plugin';
-import { getTypedKeys } from './utils';
+import '../slider-plugin';
+import { getTypedKeys } from '../utils';
 
 window.ResizeObserver = jest.fn(() => ({
   observe: jest.fn(),
@@ -240,7 +240,7 @@ describe('slider-plugin', () => {
       });
     });
 
-    test.only.each([
+    test.each([
       [170, 188, 30],
       [170, 152, 20],
     ])(

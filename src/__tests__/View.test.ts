@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-import View from './View';
-import { getEntriesWithTypedKeys } from './utils';
+import View from '../View';
+import { getEntriesWithTypedKeys } from '../utils';
 
 describe('View', () => {
   let view: View;
