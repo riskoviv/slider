@@ -32,8 +32,16 @@ const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   return childrenCountInParent === children.length;
 };
 
+const definePropertiesForControlContainer = (controlContainer: HTMLElement) => {
+  Object.defineProperties(controlContainer, {
+    offsetWidth: { value: 680 },
+    setPointerCapture: { value: jest.fn() },
+  });
+};
+
 describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
+  const pointerupEvent = new MouseEvent('pointerup');
   let $sliderInstance: JQuery<HTMLElement>;
 
   beforeAll(() => {
@@ -215,18 +223,13 @@ describe('slider-plugin', () => {
     });
   };
 
-  describe('DOM interaction with slider plugin on default options', () => {
+  describe('DOM interaction with default options', () => {
     let controlContainer: HTMLElement;
-    let pointerUpEvent: MouseEvent;
 
     beforeEach(() => {
       $sliderInstance = $sliderContainer.sliderPlugin();
       [controlContainer] = $sliderInstance.find('.slider__control-container');
-      Object.defineProperties(controlContainer, {
-        offsetWidth: { value: 680 },
-        setPointerCapture: { value: jest.fn() },
-      });
-      pointerUpEvent = new MouseEvent('pointerup');
+      definePropertiesForControlContainer(controlContainer);
     });
 
     test('should set new value to --value-1-position (call View.setPosition()) after pointerdown event on controlContainer', () => {
@@ -236,7 +239,7 @@ describe('slider-plugin', () => {
         makePointerdown(controlContainer, offsetX);
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${position}%`);
-        controlContainer.dispatchEvent(pointerUpEvent);
+        controlContainer.dispatchEvent(pointerupEvent);
       });
     });
 
@@ -250,7 +253,7 @@ describe('slider-plugin', () => {
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
         makePointerdown(controlContainer, startPoint, thumbElem);
         await makePointermove(controlContainer, startPoint, endPoint);
-        controlContainer.dispatchEvent(pointerUpEvent);
+        controlContainer.dispatchEvent(pointerupEvent);
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${expectedPosition}%`);
       },
