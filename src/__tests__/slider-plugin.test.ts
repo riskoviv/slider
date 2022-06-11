@@ -275,7 +275,7 @@ describe('slider-plugin', () => {
       $sliderInstance.setValue(2, defaultOptions.value2);
     });
 
-    test.only.each([
+    test.each([
       [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
     ])(
       'should move thumb%d located closer to click point %d and move it to %d%% position',
@@ -312,9 +312,5 @@ describe('slider-plugin', () => {
           .toBe(`${expectedPosition}%`);
       },
     );
-
-    test.todo('should not set thumb1 position > thumb2 position by pointerdown');
-
-    test.todo('should not set thumb2 position < thumb1 position by pointerdown');
   });
 });
