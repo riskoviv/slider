@@ -490,10 +490,13 @@ class Presenter {
   // debug tools
   private dataMonitor: JQuery<HTMLElement> = $('.data-monitor');
 
-  private setMonitorData(elementsData: { [elementName: string]: string | number | boolean }): void {
+  private setMonitorData(data: { [description: string]: string | number | boolean }): void {
     this.dataMonitor.html('');
-    Object.entries(elementsData).forEach(([elementName, elementText]) => {
-      this.dataMonitor.append(`<p>${elementName}: <span>${elementText}</span></p>`);
+    Object.entries(data).forEach(([description, value]) => {
+      const htmlStr = value === ''
+        ? `<p>${description}</p>`
+        : `<p>${description}: <span>${value}</span></p>`;
+      this.dataMonitor.append(htmlStr);
     });
   }
 
