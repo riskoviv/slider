@@ -240,13 +240,11 @@ describe('slider-plugin', () => {
       });
     });
 
-    test.each([
-      [170, 188, 30],
-      [170, 152, 20],
-    ])(
-      'should move thumb by pressing on it and moving from %d pixels offset to %d and set --value-1-position to %d%%',
-      async (startPoint, endPoint, expectedPosition) => {
+    test.each([[188, 30], [152, 20], [-30, 0], [700, 100]])(
+      'should move thumb by pressing on it and moving from 170 pixels offset to %d and set --value-1-position to %d%%',
+      async (endPoint, expectedPosition) => {
         const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
+        const startPoint = 170;
 
         expect.assertions(2);
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
