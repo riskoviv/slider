@@ -259,4 +259,62 @@ describe('slider-plugin', () => {
       },
     );
   });
+
+  describe('DOM interaction with isInterval: true', () => {
+    let controlContainer: HTMLElement;
+
+    beforeAll(() => {
+      $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true });
+      [controlContainer] = $sliderInstance.find('.slider__control-container');
+      definePropertiesForControlContainer(controlContainer);
+    });
+
+    afterEach(() => {
+      // set default values
+      $sliderInstance.setValue(1, defaultOptions.value1);
+      $sliderInstance.setValue(2, defaultOptions.value2);
+    });
+
+    test.only.each([
+      [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
+    ])(
+      'should move thumb%d located closer to click point %d and move it to %d%% position',
+      (number, offsetX, position) => {
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+        expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+
+        makePointerdown(controlContainer, offsetX);
+        expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
+          .toBe(`${position}%`);
+      },
+    );
+
+    test.each`
+      activeThumb | startPoint | passiveThumbPoint | activeThumbExcess | expectedPosition
+      ${'1'}      | ${170}     | ${510}            | ${15}             | ${70}
+      ${'2'}      | ${510}     | ${170}            | ${-15}            | ${30}
+    `(
+      'should not set active thumb position beyond passive thumb position by pointermove',
+      async ({
+        activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition,
+      }) => {
+        expect.assertions(3);
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+        expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+
+        const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
+        const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
+        makePointerdown(controlContainer, startPoint, activeThumbElem);
+        await makePointermove(controlContainer, startPoint, activeThumbEndPoint);
+        controlContainer.dispatchEvent(pointerupEvent);
+
+        expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
+          .toBe(`${expectedPosition}%`);
+      },
+    );
+
+    test.todo('should not set thumb1 position > thumb2 position by pointerdown');
+
+    test.todo('should not set thumb2 position < thumb1 position by pointerdown');
+  });
 });
