@@ -116,8 +116,7 @@ class Presenter {
     }
   }
 
-  private passInitialValuesToSubViews(values: { value1: number, value2: number }): void {
-    const { value1, value2 } = values;
+  private passInitialValuesToSubViews({ value1, value2 }: { value1: number, value2: number }) {
     const position1 = this.getPositionByValue(value1);
     const position2 = this.getPositionByValue(value2);
     this.setPosition(1, position1);
