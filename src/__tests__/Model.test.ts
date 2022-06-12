@@ -370,12 +370,14 @@ describe('Model', () => {
     test.each([
       ['enable', true],
       ['disable', false],
-    ])('should %s isInterval and not emit valueChanged if %s passed and values were not changed by fixValues()', (state, booleanValue) => {
+    ])('if values were not fixed by fixValues(), should %s isInterval and emit valueChanged only if isInterval is changed to true and position[2] was NaN before enabling isInterval', (state, booleanValue) => {
+      const valueChangedCallsCount = booleanValue && Number.isNaN(model.viewValues.positions[2])
+        ? 1 : 0;
       model.setInterval(booleanValue);
 
       expect(model.options.isInterval).toBe(booleanValue);
       expect(isIntervalChangedSpy).toBeCalled();
-      expect(valueChangedSpy).not.toBeCalled();
+      expect(valueChangedSpy).toBeCalledTimes(valueChangedCallsCount);
     });
 
     test.each<[string, [number, number], { value1?: number, value2?: number }]>([
