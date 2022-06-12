@@ -398,10 +398,12 @@ describe('Model', () => {
         customModel.setInterval(true);
 
         expect(isIntervalChangedSpy).toBeCalled();
-        getEntriesWithTypedKeys(resultValues).forEach(([name, value]) => {
-          expect(customModel.options[name]).toBe(value);
-          const number = Number(name.slice(-1));
-          expect(valueChangedSpy).toBeCalledWith({ number, value });
+        getEntriesWithTypedKeys(resultValues).forEach(([valueName, value], index) => {
+          expect(customModel.options[valueName]).toBe(value);
+          const number = Number(valueName.slice(-1));
+          const changeTipValue = number === 1;
+          expect(valueChangedSpy.mock.calls[index])
+            .toContainEqual({ number, value, changeTipValue });
         });
       },
     );

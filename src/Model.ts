@@ -89,6 +89,7 @@ class Model extends EventEmitter implements IModel {
     this.emit('valueChanged', {
       number,
       value: this.options[valueNumber],
+      changeTipValue: true,
     });
   }
 
@@ -106,6 +107,7 @@ class Model extends EventEmitter implements IModel {
       this.emit('valueChanged', {
         number: 1,
         value: this.options.value1,
+        changeTipValue: true,
       });
     }
 
@@ -114,6 +116,7 @@ class Model extends EventEmitter implements IModel {
         this.emit('valueChanged', {
           number: 2,
           value: this.options.value2,
+          changeTipValue: false,
         });
       }
     }
