@@ -264,59 +264,61 @@ describe('slider-plugin', () => {
 
   describe.each([
     false, true,
-  ])('DOM interaction with isInterval: true, isVertical: %s', (isVertical) => {
+  ])('if isVertical: %s', (isVertical) => {
     let controlContainer: HTMLElement;
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
 
-    beforeAll(() => {
-      $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true, isVertical });
-      [controlContainer] = $sliderInstance.find('.slider__control-container');
-      definePropertiesForControlContainer(controlContainer, offsetDimension);
+    describe('DOM interaction with isInterval: true', () => {
+      beforeAll(() => {
+        $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true, isVertical });
+        [controlContainer] = $sliderInstance.find('.slider__control-container');
+        definePropertiesForControlContainer(controlContainer, offsetDimension);
+      });
+
+      afterEach(() => {
+        // set default values
+        $sliderInstance.setValue(1, defaultOptions.value1);
+        $sliderInstance.setValue(2, defaultOptions.value2);
+      });
+
+      test.each([
+        [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
+      ])(
+        'should move thumb%d located closer to click point %dpx and move it to %d%% position',
+        (number, offset, position) => {
+          expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+          expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+
+          makePointerdown(controlContainer, offsetAxis, offset);
+          expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
+            .toBe(`${position}%`);
+        },
+      );
+
+      test.each`
+        activeThumb | startPoint | passiveThumbPoint | activeThumbExcess | expectedPosition
+        ${'1'}      | ${170}     | ${510}            | ${15}             | ${70}
+        ${'2'}      | ${510}     | ${170}            | ${-15}            | ${30}
+      `(
+        'should not set active thumb ($activeThumb) position beyond passive thumb position by pointermove',
+        async ({
+          activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition,
+        }) => {
+          expect.assertions(3);
+          expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+          expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+
+          const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
+          const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
+          makePointerdown(controlContainer, offsetAxis, startPoint, activeThumbElem);
+          await makePointermove(controlContainer, offsetAxis, startPoint, activeThumbEndPoint);
+          controlContainer.dispatchEvent(pointerupEvent);
+
+          expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
+            .toBe(`${expectedPosition}%`);
+        },
+      );
     });
-
-    afterEach(() => {
-      // set default values
-      $sliderInstance.setValue(1, defaultOptions.value1);
-      $sliderInstance.setValue(2, defaultOptions.value2);
-    });
-
-    test.each([
-      [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
-    ])(
-      'should move thumb%d located closer to click point %dpx and move it to %d%% position',
-      (number, offset, position) => {
-        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
-        expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
-
-        makePointerdown(controlContainer, offsetAxis, offset);
-        expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
-          .toBe(`${position}%`);
-      },
-    );
-
-    test.each`
-      activeThumb | startPoint | passiveThumbPoint | activeThumbExcess | expectedPosition
-      ${'1'}      | ${170}     | ${510}            | ${15}             | ${70}
-      ${'2'}      | ${510}     | ${170}            | ${-15}            | ${30}
-    `(
-      'should not set active thumb ($activeThumb) position beyond passive thumb position by pointermove',
-      async ({
-        activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition,
-      }) => {
-        expect.assertions(3);
-        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
-        expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
-
-        const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
-        const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
-        makePointerdown(controlContainer, offsetAxis, startPoint, activeThumbElem);
-        await makePointermove(controlContainer, offsetAxis, startPoint, activeThumbEndPoint);
-        controlContainer.dispatchEvent(pointerupEvent);
-
-        expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
-          .toBe(`${expectedPosition}%`);
-      },
-    );
   });
 });
