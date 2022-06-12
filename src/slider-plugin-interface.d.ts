@@ -24,7 +24,7 @@ type TypeOfValues<Obj> = Obj[keyof Obj];
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
-  (options: Partial<IPluginOptions>): JQuery | null;
+  (options: Partial<IPluginOptions> = {}): JQuery;
 }
 
 interface IPluginPublicMethods {
@@ -33,6 +33,7 @@ interface IPluginPublicMethods {
   setValue: (thumbNumber: 1 | 2, valueIndex: number) => void;
   setVerticalState: (isVertical: boolean) => void;
   setInterval(isInterval: boolean): void;
+  setShowProgress(showProgressBar: boolean): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -46,6 +47,7 @@ type EventName = (
   | 'scaleValueSelect'
   | 'isVerticalChanged'
   | 'isIntervalChanged'
+  | 'showProgressChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
@@ -61,29 +63,34 @@ interface IEventEmitter {
 
 type ViewValues = {
   positions: { 1: number, 2: number },
+  penultimatePosition: number,
   stepInPercents: number,
   halfStepInPercents: number,
+  halfStepFromPenultimateToMax: number,
 };
 
 interface IModel extends IEventEmitter {
   options: IPluginOptions;
   allowedValuesCount: number;
   fractionalPrecision: number;
+  penultimateValue: number;
   viewValues: ViewValues;
   getOptions(): IPluginOptions;
   getStateOptions(): IPluginStateOptions;
   getIndexByValueNumber(valueNumber: 1 | 2): number;
   getIndexByValue(value: number): number;
   getValueByIndex(index: number): number;
+  getPenultimateValue(): number;
   setStepSize(stepSize: number): void;
   setValue(thumbNumber: 1 | 2, valueIndex: number): void;
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
+  fixValueToPrecision(value: number): number;
   publicMethods: IPluginPublicMethods;
 }
 
-type Axis = 'left' | 'top';
-type Dimension = 'width' | 'height';
+type PositionAxis = 'left' | 'top';
+type SizeDimension = 'offsetWidth' | 'offsetHeight';
 
 interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;
@@ -93,7 +100,7 @@ interface ISubView extends IEventEmitter {
 interface IScaleView extends ISubView {
   scaleValueElements: JQuery<HTMLDivElement>[];
   insertScaleValueElements(): void;
-  optimizeValuesCount(axis: Axis, dimension: Dimension): void;
+  optimizeValuesCount(axis: PositionAxis, offsetSize: SizeDimension): void;
 }
 
 interface ITipView extends ISubView {
@@ -106,6 +113,7 @@ interface IView extends IEventEmitter {
   controlContainerElem: HTMLDivElement;
   toggleVertical(isVertical: boolean): void;
   toggleInterval(isInterval: boolean): void;
+  toggleProgressBar(showProgress: boolean): void;
   setPosition(valueNumber: 1 | 2, position: number): void;
   setThumbThickness(thickness: number): void;
 }

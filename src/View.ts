@@ -1,9 +1,10 @@
+import $ from 'jquery';
 import EventEmitter from './EventEmitter';
 
 type SliderViewOptions = {
-  isVertical: boolean,
-  isInterval: boolean,
-  showProgressBar: boolean,
+  isVertical?: boolean,
+  isInterval?: boolean,
+  showProgressBar?: boolean,
 };
 
 class View extends EventEmitter implements IView {
@@ -15,14 +16,14 @@ class View extends EventEmitter implements IView {
 
   readonly controlContainerElem: HTMLDivElement;
 
-  constructor(options?: SliderViewOptions) {
+  constructor(options: SliderViewOptions = {}) {
     super();
     this.$elem = this.render(options);
-    [this.controlContainerElem] = this.$controlContainer.get();
+    [this.controlContainerElem] = this.$controlContainer;
     this.bindEventListeners();
   }
 
-  protected render(options: SliderViewOptions = {
+  private render(options: SliderViewOptions = {
     isVertical: false,
     isInterval: false,
     showProgressBar: false,
@@ -44,6 +45,10 @@ class View extends EventEmitter implements IView {
 
   toggleInterval(isInterval: boolean): void {
     this.$elem.toggleClass('slider_interval', isInterval);
+  }
+
+  toggleProgressBar(showProgress: boolean): void {
+    this.$elem.toggleClass('slider_show-progress', showProgress);
   }
 
   setPosition(valueNumber: 1 | 2, position: number): void {

@@ -4,7 +4,7 @@ class ScaleView extends SubView implements IScaleView {
   scaleValueElements: JQuery<HTMLDivElement>[] = [];
 
   constructor() {
-    super();
+    super('scale');
     this.bindClickListener();
   }
 
@@ -13,15 +13,15 @@ class ScaleView extends SubView implements IScaleView {
     this.$elem.append(this.scaleValueElements);
   }
 
-  optimizeValuesCount(axis: Axis, dimension: Dimension): void {
+  optimizeValuesCount(positionAxis: PositionAxis, sizeDimension: SizeDimension): void {
     const [$firstElem] = this.scaleValueElements;
     const [$lastElem] = this.scaleValueElements.slice(-1);
     let $currentElem = $firstElem;
-    let curElemPosition = $currentElem.position()[axis];
-    let curElemEdgeBound = this.getElementEdgeBound($currentElem, curElemPosition, dimension);
+    let curElemPosition = $currentElem.position()[positionAxis];
+    let curElemEdgeBound = this.getElementEdgeBound($currentElem, curElemPosition, sizeDimension);
 
     this.scaleValueElements.slice(1).forEach(($elem) => {
-      const elemPosition = $elem.position()[axis];
+      const elemPosition = $elem.position()[positionAxis];
       if (elemPosition - 5 <= curElemEdgeBound) {
         if ($elem === $lastElem && $currentElem !== $firstElem) {
           $currentElem.addClass('slider__scale-block_unnumbered');
@@ -31,7 +31,7 @@ class ScaleView extends SubView implements IScaleView {
       } else {
         $currentElem = $elem;
         curElemPosition = elemPosition;
-        curElemEdgeBound = this.getElementEdgeBound($elem, elemPosition, dimension);
+        curElemEdgeBound = this.getElementEdgeBound($elem, elemPosition, sizeDimension);
         $elem.removeClass('slider__scale-block_unnumbered');
       }
     });
@@ -40,17 +40,17 @@ class ScaleView extends SubView implements IScaleView {
   private getElementEdgeBound = (
     element: JQuery<HTMLSpanElement>,
     position: number,
-    dimension: Dimension,
-  ) => position + (element[dimension]() ?? 1);
+    sizeDimension: SizeDimension,
+  ) => position + (element[0][sizeDimension]);
 
   private bindClickListener() {
-    this.$elem.get()[0].addEventListener('pointerdown', this.scaleValueClick);
+    this.$elem[0].addEventListener('pointerdown', this.scaleValueClick);
   }
 
   private scaleValueClick = (e: PointerEvent): void => {
     const { target } = e;
-    if (target instanceof HTMLSpanElement) {
-      this.emit('scaleValueSelect', Number(target.innerText));
+    if (target instanceof HTMLSpanElement && e.button === 0) {
+      this.emit('scaleValueSelect', Number(target.textContent));
     }
   }
 }

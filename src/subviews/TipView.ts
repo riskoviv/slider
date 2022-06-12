@@ -1,12 +1,14 @@
 import SubView from '../SubView';
 
 class TipView extends SubView implements ITipView {
-  constructor(protected readonly elementNumber: 1 | 2 = 1) {
-    super(elementNumber);
+  constructor(elementNumber: 1 | 2 = 1) {
+    super('tip', elementNumber);
   }
 
   setValue(value: number): void {
-    this.$elem.text(value);
+    if (Number.isFinite(value)) {
+      this.$elem.text(value);
+    }
   }
 }
 

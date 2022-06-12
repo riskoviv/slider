@@ -1,7 +1,8 @@
+import $ from 'jquery';
 import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
-import utils from './utils';
+import { getEntriesWithTypedKeys } from './utils';
 
 const defaultOptions: IPluginOptions = {
   stepSize: 10,
@@ -15,7 +16,6 @@ const defaultOptions: IPluginOptions = {
   showScale: false,
   showProgressBar: false,
 };
-let containerHasProblems: (container: JQuery) => number;
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
 let fixCustomOptions: (options: Partial<IPluginOptions>) => null | Partial<IPluginOptions>;
 let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
@@ -23,18 +23,13 @@ let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
 $.fn.sliderPlugin = function sliderPlugin(
   this: JQuery,
   options: Partial<IPluginOptions> = {},
-): JQuery | null {
-  if (containerHasProblems(this) > 0) {
-    return null;
-  }
-
+): JQuery {
   cleanContainerIfNotEmpty(this);
 
-  const pluginOptions = checkOptionsValues($.extend(
-    {},
-    defaultOptions,
-    fixCustomOptions(options),
-  ));
+  const pluginOptions = checkOptionsValues({
+    ...defaultOptions,
+    ...fixCustomOptions(options),
+  });
 
   const model = new Model(pluginOptions);
   const presenter = new Presenter(this, model);
@@ -46,44 +41,16 @@ $.fn.sliderPlugin = function sliderPlugin(
     setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
+    setShowProgress: $sliderElem.setShowProgress,
   } = model.publicMethods);
 
   return $sliderElem;
 };
 
-containerHasProblems = (container: JQuery): number => {
-  type checkBlock = {
-    condition: (elem: JQuery) => boolean,
-    error: () => void
-  };
-  const checks: checkBlock[] = [
-    {
-      condition: (elem: JQuery) => elem.length === 0,
-      error: () => console.error('Error: Container element does not exist!'),
-    },
-    {
-      condition: (elem: JQuery) => elem.has('.slider').length > 0,
-      error: () => console.error('Error: Container already contains slider! You can\'t make more than one slider on one HTML element. So new slider wasn\'t created.'),
-    },
-    {
-      condition: (elem: JQuery) => elem.closest('.slider').length > 0,
-      error: () => console.error('Error: Container is located inside other slider plugin. New slider plugin cannot be created here.'),
-    },
-  ];
-
-  return checks.reduce((result: number, check: checkBlock) => {
-    if (check.condition(container)) {
-      check.error();
-      return result + 1;
-    }
-    return result;
-  }, 0);
-};
-
 cleanContainerIfNotEmpty = (container: JQuery): void => {
   if (container.not(':empty').length > 0) {
     container.empty();
-    console.warn('Warning: An element where you intended to initialize the plugin contained something. It was cleared and now has only the slider-plugin\'s elements.');
+    console.warn('Warning: The element where you intended to initialize the plugin has contained something. It was cleared and now has only the new slider-plugin instance.');
   }
 };
 
@@ -93,6 +60,10 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
     return null;
   }
 
+  if (Object.keys(options).length === 0) {
+    return {};
+  }
+
   const checkedOptions = { ...options };
 
   type pluginOptionsEntry = [
@@ -100,7 +71,7 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
     TypeOfValues<Partial<IPluginOptions>>
   ];
 
-  utils.getEntriesWithTypedKeys(options).forEach(
+  getEntriesWithTypedKeys(options).forEach(
     (option: pluginOptionsEntry) => {
       const [key, value] = option;
 
