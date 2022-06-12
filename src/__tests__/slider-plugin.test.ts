@@ -278,7 +278,7 @@ describe('slider-plugin', () => {
     test.each([
       [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
     ])(
-      'should move thumb%d located closer to click point %d and move it to %d%% position',
+      'should move thumb%d located closer to click point %dpx and move it to %d%% position',
       (number, offsetX, position) => {
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
         expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
@@ -294,7 +294,7 @@ describe('slider-plugin', () => {
       ${'1'}      | ${170}     | ${510}            | ${15}             | ${70}
       ${'2'}      | ${510}     | ${170}            | ${-15}            | ${30}
     `(
-      'should not set active thumb position beyond passive thumb position by pointermove',
+      'should not set active thumb ($activeThumb) position beyond passive thumb position by pointermove',
       async ({
         activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition,
       }) => {
