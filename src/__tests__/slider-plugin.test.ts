@@ -32,9 +32,9 @@ const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   return childrenCountInParent === children.length;
 };
 
-const definePropertiesForControlContainer = (controlContainer: HTMLElement) => {
+const definePropertiesForControlContainer = (controlContainer: HTMLElement, offsetDimension: 'offsetWidth' | 'offsetHeight') => {
   Object.defineProperties(controlContainer, {
-    offsetWidth: { value: 680 },
+    [offsetDimension]: { value: 680 },
     setPointerCapture: { value: jest.fn() },
   });
 };
@@ -185,13 +185,14 @@ describe('slider-plugin', () => {
 
   const makePointerdown = (
     element: HTMLElement,
-    offsetX: number,
+    offsetAxis: 'offsetX' | 'offsetY',
+    offset: number,
     target?: HTMLElement,
   ) => {
     const pointerdownEvent = new MouseEvent('pointerdown');
     Object.defineProperties(pointerdownEvent, {
       pointerId: { value: 1 },
-      offsetX: { value: offsetX },
+      [offsetAxis]: { value: offset },
       target: { value: target ?? element },
     });
     element.dispatchEvent(pointerdownEvent);
@@ -199,6 +200,7 @@ describe('slider-plugin', () => {
 
   const makePointermove = async (
     targetElement: HTMLElement,
+    offsetAxis: 'offsetX' | 'offsetY',
     startPoint: number,
     endPoint: number,
   ) => {
@@ -208,7 +210,7 @@ describe('slider-plugin', () => {
     await new Promise<void>((resolve) => {
       const moveIntervalId = setInterval(() => {
         cursorOffset += (cursorOffset < endPoint ? 1 : -1);
-        Object.defineProperty(pointermoveEvent, 'offsetX', {
+        Object.defineProperty(pointermoveEvent, offsetAxis, {
           value: cursorOffset,
           writable: true,
         });
@@ -229,14 +231,14 @@ describe('slider-plugin', () => {
     beforeEach(() => {
       $sliderInstance = $sliderContainer.sliderPlugin();
       [controlContainer] = $sliderInstance.find('.slider__control-container');
-      definePropertiesForControlContainer(controlContainer);
+      definePropertiesForControlContainer(controlContainer, 'offsetWidth');
     });
 
     test('should set new value to --value-1-position (call View.setPosition()) after pointerdown event on controlContainer', () => {
       expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
 
       [[102, 15], [219, 30], [-10, 0], [730, 100]].forEach(([offsetX, position]) => {
-        makePointerdown(controlContainer, offsetX);
+        makePointerdown(controlContainer, 'offsetX', offsetX);
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${position}%`);
         controlContainer.dispatchEvent(pointerupEvent);
@@ -251,8 +253,8 @@ describe('slider-plugin', () => {
 
         expect.assertions(2);
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
-        makePointerdown(controlContainer, startPoint, thumbElem);
-        await makePointermove(controlContainer, startPoint, endPoint);
+        makePointerdown(controlContainer, 'offsetX', startPoint, thumbElem);
+        await makePointermove(controlContainer, 'offsetX', startPoint, endPoint);
         controlContainer.dispatchEvent(pointerupEvent);
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${expectedPosition}%`);
@@ -260,13 +262,17 @@ describe('slider-plugin', () => {
     );
   });
 
-  describe('DOM interaction with isInterval: true', () => {
+  describe.each([
+    false, true,
+  ])('DOM interaction with isInterval: true, isVertical: %s', (isVertical) => {
     let controlContainer: HTMLElement;
+    const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
+    const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
 
     beforeAll(() => {
-      $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true });
+      $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true, isVertical });
       [controlContainer] = $sliderInstance.find('.slider__control-container');
-      definePropertiesForControlContainer(controlContainer);
+      definePropertiesForControlContainer(controlContainer, offsetDimension);
     });
 
     afterEach(() => {
@@ -279,11 +285,11 @@ describe('slider-plugin', () => {
       [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
     ])(
       'should move thumb%d located closer to click point %dpx and move it to %d%% position',
-      (number, offsetX, position) => {
+      (number, offset, position) => {
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
         expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
 
-        makePointerdown(controlContainer, offsetX);
+        makePointerdown(controlContainer, offsetAxis, offset);
         expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
           .toBe(`${position}%`);
       },
@@ -304,8 +310,8 @@ describe('slider-plugin', () => {
 
         const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
         const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
-        makePointerdown(controlContainer, startPoint, activeThumbElem);
-        await makePointermove(controlContainer, startPoint, activeThumbEndPoint);
+        makePointerdown(controlContainer, offsetAxis, startPoint, activeThumbElem);
+        await makePointermove(controlContainer, offsetAxis, startPoint, activeThumbEndPoint);
         controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
