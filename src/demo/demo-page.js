@@ -3,16 +3,16 @@ import './demo-page-styles.scss';
 $(() => {
   const $slider1 = $('#slider1');
   window.slider1 = $slider1.sliderPlugin({
-    stepSize: 0.3,
-    minValue: 0,
-    maxValue: 1,
-    value1: 0,
-    value2: 1,
+    // stepSize: 100,
+    // minValue: 0,
+    // maxValue: 500,
+    // value1: 50,
+    // value2: 92,
     // isVertical: true,
-    isInterval: true,
-    showTip: true,
-    showScale: true,
-    showProgressBar: true,
+    // isInterval: true,
+    // showTip: true,
+    // showScale: true,
+    // showProgressBar: true,
   });
 
   // const $slider2 = $('#slider2');
