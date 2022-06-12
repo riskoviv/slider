@@ -109,11 +109,13 @@ class Model extends EventEmitter implements IModel {
       });
     }
 
-    if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
-      this.emit('valueChanged', {
-        number: 2,
-        value: this.options.value2,
-      });
+    if (isInterval) {
+      if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
+        this.emit('valueChanged', {
+          number: 2,
+          value: this.options.value2,
+        });
+      }
     }
   }
 
