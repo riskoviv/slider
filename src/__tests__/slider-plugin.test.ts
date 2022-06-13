@@ -45,7 +45,10 @@ describe('slider-plugin', () => {
   let $sliderInstance: JQuery<HTMLElement>;
 
   beforeAll(() => {
-    Object.defineProperty($sliderContainer[0], 'offsetWidth', { value: 700 });
+    Object.defineProperties($sliderContainer[0], {
+      offsetWidth: { value: 700 },
+      offsetHeight: { value: 700 },
+    });
   });
 
   describe('if called w/o options', () => {
