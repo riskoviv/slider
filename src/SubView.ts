@@ -20,13 +20,13 @@ abstract class SubView extends EventEmitter implements ISubView {
       numberDataAttr = ` data-number="${this.elementNumber}"`;
     }
 
-    const elem: JQuery<HTMLDivElement> = $(`
+    const $elem: JQuery<HTMLDivElement> = $(`
       <div
         class="slider__${this.viewType}${numberModifier}"
         ${numberDataAttr}
       ></div>
     `);
-    return elem;
+    return $elem;
   }
 
   removeView(): void {
