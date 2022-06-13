@@ -274,6 +274,74 @@ describe('slider-plugin', () => {
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
 
     describe('DOM interaction with isInterval: true', () => {
+    describe('DOM interaction on control-container with isInterval: false, showTip: true', () => {
+      let tipElem: HTMLElement;
+
+      beforeEach(() => {
+        $sliderInstance = $sliderContainer.sliderPlugin(
+          { isInterval: false, isVertical, showTip: true },
+        );
+        [controlContainer] = $sliderInstance.find('.slider__control-container');
+        [tipElem] = $sliderInstance.find('.slider__tip_1');
+        definePropertiesForControlContainer(controlContainer, offsetDimension);
+      });
+
+      test('should set new value to --value-1-position (call View.setPosition()) after pointerdown event on controlContainer', () => {
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+        expect(tipElem.textContent).toBe('-50');
+
+        [[359, 55, 10], [101, 15, -70], [16, 0, -100], [665, 100, 100]]
+          .forEach(([offset, position, value]) => {
+            makePointerdown(controlContainer, offsetAxis, offset);
+            controlContainer.dispatchEvent(pointerupEvent);
+
+            expect(controlContainer.style.getPropertyValue('--value-1-position'))
+              .toBe(`${position}%`);
+            expect(tipElem.textContent).toBe(`${value}`);
+          });
+      });
+
+      test.each([
+        [152, 20, -60], [297, 45, -10], [-30, 0, -100], [700, 100, 100],
+      ])(
+        'should move thumb by pressing on it and moving from 170 pixels offset to %d and set --value-1-position to %d%% and set value for tipElem to %d',
+        async (endPoint, expectedPosition, value) => {
+          const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
+          const startPoint = 170;
+          expect.assertions(4);
+          expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+          expect(tipElem.textContent).toBe('-50');
+
+          makePointerdown(controlContainer, offsetAxis, startPoint, thumbElem);
+          await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
+          controlContainer.dispatchEvent(pointerupEvent);
+
+          expect(controlContainer.style.getPropertyValue('--value-1-position'))
+            .toBe(`${expectedPosition}%`);
+          expect(tipElem.textContent).toBe(`${value}`);
+        },
+      );
+
+      test.each([
+        [324, 112, 15, -70], [22, 189, 30, -40], [623, 711, 100, 100], [412, -23, 0, -100],
+      ])(
+        'should move thumb by pressing on control-container and moving from %dpx offset to %dpx and set --value-1-position to %d%% and set value for tipElem to %d',
+        async (startPoint, endPoint, expectedPosition, value) => {
+          expect.assertions(4);
+          expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+          expect(tipElem.textContent).toBe('-50');
+
+          makePointerdown(controlContainer, offsetAxis, startPoint);
+          await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
+          controlContainer.dispatchEvent(pointerupEvent);
+
+          expect(controlContainer.style.getPropertyValue('--value-1-position'))
+            .toBe(`${expectedPosition}%`);
+          expect(tipElem.textContent).toBe(`${value}`);
+        },
+      );
+    });
+
       beforeAll(() => {
         $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true, isVertical });
         [controlContainer] = $sliderInstance.find('.slider__control-container');
