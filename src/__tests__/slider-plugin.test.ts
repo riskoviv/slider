@@ -4,6 +4,7 @@
 /* eslint-disable fsd/no-function-declaration-in-event-listener */
 import $ from 'jquery';
 import '../slider-plugin';
+import { getByText } from '@testing-library/dom';
 import { getTypedKeys } from '../utils';
 
 window.ResizeObserver = jest.fn(() => ({
@@ -320,6 +321,57 @@ describe('slider-plugin', () => {
             .toBe(`${expectedPosition}%`);
         },
       );
+    });
+
+    describe('DOM interaction w/ slider__scale, ', () => {
+      let scaleElem: HTMLElement;
+      let pointerdownEvent: MouseEvent;
+
+      const initForScale = (isInterval: boolean) => {
+        $sliderInstance = $sliderContainer.sliderPlugin(
+          { showScale: true, isVertical, isInterval },
+        );
+        [controlContainer] = $sliderInstance.find('.slider__control-container');
+        definePropertiesForControlContainer(controlContainer, offsetDimension);
+        [scaleElem] = $sliderInstance.find('.slider__scale');
+        pointerdownEvent = new MouseEvent('pointerdown');
+      };
+
+      test('if isInterval: false, should set thumb1 on every clicked scale value position', () => {
+        initForScale(false);
+
+        [...scaleElem.children].forEach((scaleValueElem) => {
+          if (scaleValueElem instanceof HTMLDivElement) {
+            Object.defineProperty(pointerdownEvent, 'target', {
+              value: scaleValueElem.firstElementChild, writable: true,
+            });
+            scaleElem.dispatchEvent(pointerdownEvent);
+            scaleElem.dispatchEvent(pointerupEvent);
+
+            const scaleBlockPosition = scaleValueElem.style.getPropertyValue('--scale-block-position');
+            expect(controlContainer.style.getPropertyValue('--value-1-position'))
+              .toBe(scaleBlockPosition);
+          }
+        });
+      });
+
+      test('if isInterval: true, should move closest thumb to position of clicked scale value', () => {
+        initForScale(true);
+
+        [[0, 1], [30, 2], [-40, 1], [70, 2]].forEach(([scaleValue, number]) => {
+          const scaleTextElem = getByText(scaleElem, String(scaleValue));
+          Object.defineProperty(pointerdownEvent, 'target', {
+            value: scaleTextElem, writable: true,
+          });
+          scaleElem.dispatchEvent(pointerdownEvent);
+          scaleElem.dispatchEvent(pointerupEvent);
+
+          const scaleBlockPosition = scaleTextElem?.parentElement?.style
+            .getPropertyValue('--scale-block-position');
+          expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
+            .toBe(scaleBlockPosition);
+        });
+      });
     });
   });
 });
