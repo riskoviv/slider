@@ -243,9 +243,10 @@ describe('slider-plugin', () => {
 
       [[102, 15], [219, 30], [-10, 0], [730, 100]].forEach(([offsetX, position]) => {
         makePointerdown(controlContainer, 'offsetX', offsetX);
+        controlContainer.dispatchEvent(pointerupEvent);
+
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${position}%`);
-        controlContainer.dispatchEvent(pointerupEvent);
       });
     });
 
@@ -254,12 +255,13 @@ describe('slider-plugin', () => {
       async (endPoint, expectedPosition) => {
         const [thumbElem] = $sliderInstance.find('.slider__thumb_1');
         const startPoint = 170;
-
         expect.assertions(2);
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
+
         makePointerdown(controlContainer, 'offsetX', startPoint, thumbElem);
         await makePointermove(controlContainer, 'offsetX', startPoint, endPoint);
         controlContainer.dispatchEvent(pointerupEvent);
+
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${expectedPosition}%`);
       },
@@ -313,6 +315,7 @@ describe('slider-plugin', () => {
 
           const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
           const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
+
           makePointerdown(controlContainer, offsetAxis, startPoint, activeThumbElem);
           await makePointermove(controlContainer, offsetAxis, startPoint, activeThumbEndPoint);
           controlContainer.dispatchEvent(pointerupEvent);
