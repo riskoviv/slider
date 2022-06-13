@@ -305,7 +305,7 @@ class Presenter {
           this.createSubView('tip', 2);
           this.setTipValue({
             number: 2,
-            value: this.model.options.value2,
+            value: this.options.value2,
           });
         }
       } else {
@@ -317,10 +317,9 @@ class Presenter {
     },
 
     setValueAndPosition: (
-      options: { number: 1 | 2, value: number, changeTipValue: boolean },
+      { number, value, changeTipValue }: { number: 1 | 2, value: number, changeTipValue: boolean },
     ): void => {
-      const { number, value } = options;
-      if (this.options.showTip && options.changeTipValue) {
+      if (this.options.showTip && changeTipValue) {
         this.setTipValue({ number, value });
       }
 
@@ -574,7 +573,7 @@ class Presenter {
 
   private saveCurrentValue(number: 1 | 2, value: number): void {
     this.currentThumbData.currentValue = value;
-    this.model.options[`value${number}`] = value;
+    this.options[`value${number}`] = value;
   }
 
   private setTipValue(options: { number: 1 | 2, value: number }): void {
