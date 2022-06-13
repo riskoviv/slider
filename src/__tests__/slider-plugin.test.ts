@@ -273,7 +273,6 @@ describe('slider-plugin', () => {
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
 
-    describe('DOM interaction with isInterval: true', () => {
     describe('DOM interaction on control-container with isInterval: false, showTip: true', () => {
       let tipElem: HTMLElement;
 
@@ -342,9 +341,16 @@ describe('slider-plugin', () => {
       );
     });
 
+    describe('DOM interaction on control-container with isInterval: true', () => {
+      const tipElements: HTMLElement[] = [];
+
       beforeAll(() => {
-        $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true, isVertical });
+        $sliderInstance = $sliderContainer.sliderPlugin(
+          { isInterval: true, isVertical, showTip: true },
+        );
         [controlContainer] = $sliderInstance.find('.slider__control-container');
+        [tipElements[1]] = $sliderInstance.find('.slider__tip_1');
+        [tipElements[2]] = $sliderInstance.find('.slider__tip_2');
         definePropertiesForControlContainer(controlContainer, offsetDimension);
       });
 
@@ -355,32 +361,36 @@ describe('slider-plugin', () => {
       });
 
       test.each([
-        [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
+        [1, 303, 45, -10], [2, 381, 55, 10], [1, 13, 0, -100], [2, 668, 100, 100],
       ])(
-        'should move thumb%d located closer to click point %dpx and move it to %d%% position by pointerdown',
-        (number, offset, position) => {
+        'should move thumb%d located closer to click point %dpx and move it to %d%% position by pointerdown and set %d value to tipElem',
+        (number, offset, position, value) => {
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+          expect(tipElements[1].textContent).toBe('-50');
+          expect(tipElements[2].textContent).toBe('50');
 
           makePointerdown(controlContainer, offsetAxis, offset);
           expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
             .toBe(`${position}%`);
+          expect(tipElements[number].textContent).toBe(`${value}`);
         },
       );
 
       test.each`
-        activeThumb | startPoint | passiveThumbPoint | activeThumbExcess | expectedPosition
-        ${'1'}      | ${170}     | ${510}            | ${15}             | ${70}
-        ${'2'}      | ${510}     | ${170}            | ${-15}            | ${30}
+        activeThumb | startPoint | passiveThumbPoint | activeThumbExcess | expectedPosition | tipValue
+        ${1}        | ${170}     | ${510}            | ${15}             | ${70}            | ${40}
+        ${2}        | ${510}     | ${170}            | ${-15}            | ${30}            | ${-40}
       `(
         'should not set active thumb ($activeThumb) position beyond passive thumb position by pointermove',
         async ({
-          activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition,
+          activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition, tipValue,
         }) => {
-          expect.assertions(3);
+          expect.assertions(6);
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
-
+          expect(tipElements[1].textContent).toBe('-50');
+          expect(tipElements[2].textContent).toBe('50');
           const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
           const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
 
@@ -390,28 +400,32 @@ describe('slider-plugin', () => {
 
           expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
             .toBe(`${expectedPosition}%`);
+          expect(tipElements[activeThumb].textContent).toBe(`${tipValue}`);
         },
       );
     });
 
-    describe('DOM interaction w/ slider__scale, ', () => {
+    describe('DOM interaction w/ slider__scale', () => {
       let scaleElem: HTMLElement;
       let pointerdownEvent: MouseEvent;
+      const tipElements: HTMLElement[] = [];
 
       const initForScale = (isInterval: boolean) => {
-        $sliderInstance = $sliderContainer.sliderPlugin(
-          { showScale: true, isVertical, isInterval },
-        );
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          showScale: true, isVertical, isInterval, showTip: true,
+        });
         [controlContainer] = $sliderInstance.find('.slider__control-container');
         definePropertiesForControlContainer(controlContainer, offsetDimension);
         [scaleElem] = $sliderInstance.find('.slider__scale');
+        [tipElements[1]] = $sliderInstance.find('.slider__tip_1');
+        if (isInterval) [tipElements[2]] = $sliderInstance.find('.slider__tip_2');
         pointerdownEvent = new MouseEvent('pointerdown');
       };
 
-      test('if isInterval: false, should set thumb1 on every clicked scale value position', () => {
+      test('if isInterval: false, should set thumb1 on every clicked scale value position and set value for tip1', () => {
         initForScale(false);
 
-        [...scaleElem.children].forEach((scaleValueElem) => {
+        [...scaleElem.children].forEach((scaleValueElem, index) => {
           if (scaleValueElem instanceof HTMLDivElement) {
             Object.defineProperty(pointerdownEvent, 'target', {
               value: scaleValueElem.firstElementChild, writable: true,
@@ -422,6 +436,8 @@ describe('slider-plugin', () => {
             const scaleBlockPosition = scaleValueElem.style.getPropertyValue('--scale-block-position');
             expect(controlContainer.style.getPropertyValue('--value-1-position'))
               .toBe(scaleBlockPosition);
+            expect(tipElements[1].textContent)
+              .toBe(String(defaultOptions.minValue + defaultOptions.stepSize * index));
           }
         });
       });
@@ -441,6 +457,7 @@ describe('slider-plugin', () => {
             .getPropertyValue('--scale-block-position');
           expect(controlContainer.style.getPropertyValue(`--value-${number}-position`))
             .toBe(scaleBlockPosition);
+          expect(tipElements[number].textContent).toBe(String(scaleValue));
         });
       });
     });
