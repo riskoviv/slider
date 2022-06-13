@@ -265,9 +265,7 @@ describe('slider-plugin', () => {
     );
   });
 
-  describe.each([
-    false, true,
-  ])('if isVertical: %s', (isVertical) => {
+  describe.each([false, true])('if isVertical: %s', (isVertical) => {
     let controlContainer: HTMLElement;
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
@@ -288,7 +286,7 @@ describe('slider-plugin', () => {
       test.each([
         [1, 303, 45], [2, 381, 55], [1, 13, 0], [2, 668, 100],
       ])(
-        'should move thumb%d located closer to click point %dpx and move it to %d%% position',
+        'should move thumb%d located closer to click point %dpx and move it to %d%% position by pointerdown',
         (number, offset, position) => {
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
