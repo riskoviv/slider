@@ -20,9 +20,7 @@ class Model extends EventEmitter implements IModel {
   constructor(options: IPluginOptions) {
     super();
     this.options = { ...options };
-    this.allowedValuesCount = Math.ceil(
-      (options.maxValue - options.minValue) / options.stepSize,
-    ) + 1;
+    this.allowedValuesCount = this.getAllowedValuesCount();
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
     this.penultimateValue = this.getPenultimateValue();
     this.fixValues();
@@ -67,6 +65,12 @@ class Model extends EventEmitter implements IModel {
     return this.options.minValue + this.fixValueToPrecision(
       this.options.stepSize * (this.allowedValuesCount - 2),
     );
+  }
+
+  getAllowedValuesCount(): number {
+    return Math.ceil(
+      (this.options.maxValue - this.options.minValue) / this.options.stepSize,
+    ) + 1;
   }
 
   setStepSize(stepSize: number): void {

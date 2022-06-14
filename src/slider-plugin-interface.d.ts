@@ -81,6 +81,7 @@ interface IModel extends IEventEmitter {
   getIndexByValue(value: number): number;
   getValueByIndex(index: number): number;
   getPenultimateValue(): number;
+  getAllowedValuesCount(): number;
   setStepSize(stepSize: number): void;
   setValue(thumbNumber: 1 | 2, valueIndex: number): void;
   setVerticalState(isVertical: boolean): void;
