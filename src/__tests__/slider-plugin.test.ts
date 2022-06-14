@@ -495,7 +495,7 @@ describe('slider-plugin', () => {
       if (showTip) {
         $tipElements = $sliderInstance.find('.slider__tip');
         expect($tipElements.length).toBe(1);
-        expect($tipElements[0].classList).toContain('slider__tip_1');
+        expect($tipElements.hasClass('slider__tip_1')).toBe(true);
       }
     });
 
