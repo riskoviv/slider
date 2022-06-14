@@ -465,7 +465,7 @@ describe('slider-plugin', () => {
     test.todo('check thumb move from penultimate position to max, and vice versa, by pointerdown & pointermove in conditions where distance between penultimate and max is less than between other couples');
   });
 
-  describe.only('customizations through API', () => {
+  describe('customizations through API', () => {
     test.each([false, true])('if called setInterval(true), should: add class slider__interval, create thumb2 and set position to it; if showTip: true, create tip2 and set a value to it; calling setInterval(false) should delete thumb2 and if showTip: true, delete it too', (showTip) => {
       $sliderInstance = $sliderContainer.sliderPlugin({ showTip });
       const [controlContainer] = $sliderInstance.find('.slider__control-container');
