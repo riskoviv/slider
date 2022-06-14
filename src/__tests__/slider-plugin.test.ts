@@ -462,7 +462,54 @@ describe('slider-plugin', () => {
       });
     });
 
-    test.todo('check thumb move from penultimate position to max, and vice versa, by pointerdown & pointermove in conditions where distance between penultimate and max is less than between other couples');
+    describe('thumb moving from penultimate position to max and vice versa', () => {
+      beforeAll(() => {
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          showTip: true, value1: 80, stepSize: 30, isVertical,
+        });
+        [controlContainer] = $sliderInstance.find('.slider__control-container');
+        definePropertiesForControlContainer(controlContainer, offsetDimension);
+      });
+
+      test('should move thumb from penultimate position to max and vice versa by pointerdown on controlContainer, pressing over halfStepFromPenultimateToMax from penultimate position', () => {
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
+        const tipElem = controlContainer.querySelector('.slider__tip_1');
+        expect(tipElem?.textContent).toBe('80');
+
+        makePointerdown(controlContainer, offsetAxis, 648);
+        controlContainer.dispatchEvent(pointerupEvent);
+
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('100%');
+        expect(tipElem?.textContent).toBe('100');
+
+        makePointerdown(controlContainer, offsetAxis, 645);
+        controlContainer.dispatchEvent(pointerupEvent);
+
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
+        expect(tipElem?.textContent).toBe('80');
+      });
+
+      test.only('should move thumb from penultimate position to max and vice versa by pointermove, dragging over halfStepFromPenultimateToMax from penultimate position', async () => {
+        expect.assertions(6);
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
+        const tipElem = controlContainer.querySelector('.slider__tip_1');
+        expect(tipElem?.textContent).toBe('80');
+
+        makePointerdown(controlContainer, offsetAxis, 612);
+        await makePointermove(controlContainer, offsetAxis, 612, 648);
+        controlContainer.dispatchEvent(pointerupEvent);
+
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('100%');
+        expect(tipElem?.textContent).toBe('100');
+
+        makePointerdown(controlContainer, offsetAxis, 680);
+        await makePointermove(controlContainer, offsetAxis, 680, 645);
+        controlContainer.dispatchEvent(pointerupEvent);
+
+        expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
+        expect(tipElem?.textContent).toBe('80');
+      });
+    });
   });
 
   describe('customizations through API', () => {
