@@ -70,6 +70,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setStepSize(stepSize: number): void {
+    if (this.options.stepSize === stepSize) return;
     if (stepSize > this.options.maxValue - this.options.minValue) return;
     if (stepSize === 0) return;
     if (!Number.isFinite(stepSize)) return;
@@ -84,8 +85,9 @@ class Model extends EventEmitter implements IModel {
 
   setValue(number: 1 | 2, value: number): void {
     const valueNumber: 'value1' | 'value2' = `value${number}`;
-    this.options[valueNumber] = this.fixValue(number, value);
+    if (this.options[valueNumber] === value) return;
 
+    this.options[valueNumber] = this.fixValue(number, value);
     this.emit('valueChanged', {
       number,
       value: this.options[valueNumber],
@@ -94,11 +96,15 @@ class Model extends EventEmitter implements IModel {
   }
 
   setVerticalState(isVertical: boolean): void {
+    if (this.options.isVertical === isVertical) return;
+
     this.options.isVertical = isVertical;
     this.emit('isVerticalChanged', isVertical);
   }
 
   setInterval(isInterval: boolean): void {
+    if (this.options.isInterval === isInterval) return;
+
     this.options.isInterval = isInterval;
     const { value1Fixed, value2Fixed } = this.fixValues();
     this.emit('isIntervalChanged', isInterval);
@@ -123,6 +129,8 @@ class Model extends EventEmitter implements IModel {
   }
 
   setShowProgress(showProgressBar: boolean): void {
+    if (this.options.showProgressBar === showProgressBar) return;
+
     this.options.showProgressBar = showProgressBar;
     this.emit('showProgressChanged', showProgressBar);
   }
