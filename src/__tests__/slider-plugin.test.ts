@@ -470,28 +470,33 @@ describe('slider-plugin', () => {
       $sliderInstance = $sliderContainer.sliderPlugin({ showTip });
       const [controlContainer] = $sliderInstance.find('.slider__control-container');
       let $tipElements: JQuery;
+      expect($sliderInstance.hasClass('slider_interval')).toBe(false);
       expect($sliderInstance.find('.slider__thumb').length).toBe(1);
       if (showTip) {
         $tipElements = $sliderInstance.find('.slider__tip');
         expect($tipElements.length).toBe(1);
-        expect($tipElements.text()).toBe('-50');
       }
 
       $sliderInstance.setInterval(true);
 
-      expect($sliderInstance.find('.slider__thumb').length).toBe(2);
+      expect($sliderInstance.hasClass('slider_interval')).toBe(true);
       expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+      expect($sliderInstance.find('.slider__thumb').length).toBe(2);
       if (showTip) {
         $tipElements = $sliderInstance.find('.slider__tip');
         expect($tipElements.length).toBe(2);
-        expect($tipElements[0].textContent).toBe('-50');
         expect($tipElements[1].textContent).toBe('50');
       }
 
       $sliderInstance.setInterval(false);
 
+      expect($sliderInstance.hasClass('slider_interval')).toBe(false);
       expect($sliderInstance.find('.slider__thumb').length).toBe(1);
-      if (showTip) expect($sliderInstance.find('.slider__tip').length).toBe(1);
+      if (showTip) {
+        $tipElements = $sliderInstance.find('.slider__tip');
+        expect($tipElements.length).toBe(1);
+        expect($tipElements[0].classList).toContain('slider__tip_1');
+      }
     });
   });
 });
