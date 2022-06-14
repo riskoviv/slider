@@ -489,7 +489,7 @@ describe('slider-plugin', () => {
         expect(tipElem?.textContent).toBe('80');
       });
 
-      test.only('should move thumb from penultimate position to max and vice versa by pointermove, dragging over halfStepFromPenultimateToMax from penultimate position', async () => {
+      test('should move thumb from penultimate position to max and vice versa by pointermove, dragging over halfStepFromPenultimateToMax from penultimate position', async () => {
         expect.assertions(6);
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
         const tipElem = controlContainer.querySelector('.slider__tip_1');
