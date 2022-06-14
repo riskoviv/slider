@@ -498,5 +498,18 @@ describe('slider-plugin', () => {
         expect($tipElements[0].classList).toContain('slider__tip_1');
       }
     });
+
+    test('if called setShowProgress(), should toggle \'slider__show-progress\' on $sliderInstance', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      expect($sliderInstance.hasClass('slider_show-progress')).toBe(false);
+
+      $sliderInstance.setShowProgress(true);
+
+      expect($sliderInstance.hasClass('slider_show-progress')).toBe(true);
+
+      $sliderInstance.setShowProgress(false);
+
+      expect($sliderInstance.hasClass('slider_show-progress')).toBe(false);
+    });
   });
 });
