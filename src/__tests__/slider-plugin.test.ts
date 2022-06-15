@@ -545,7 +545,7 @@ describe('slider-plugin', () => {
   });
 
   describe('customizations through API', () => {
-    test.each([false, true])('if called setInterval(true), should: add class slider__interval, create thumb2 and set position to it; if showTip: true, create tip2 and set a value to it; calling setInterval(false) should delete thumb2 and if showTip: true, delete it too', (showTip) => {
+    test.each([false, true])('setInterval(true) should: add class slider__interval, create thumb2 and set position to it; if showTip: true, create tip2 and set a value to it; calling setInterval(false) should delete thumb2 and if showTip: true, delete it too', (showTip) => {
       $sliderInstance = $sliderContainer.sliderPlugin({ showTip });
       const [controlContainer] = $sliderInstance.find('.slider__control-container');
       let $tipElements: JQuery;
@@ -578,7 +578,7 @@ describe('slider-plugin', () => {
       }
     });
 
-    test('if called setShowProgress(), should toggle \'slider__show-progress\' on $sliderInstance', () => {
+    test('setShowProgress() should toggle class slider__show-progress on $sliderInstance', () => {
       $sliderInstance = $sliderContainer.sliderPlugin();
       expect($sliderInstance.hasClass('slider_show-progress')).toBe(false);
 
