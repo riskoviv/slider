@@ -40,6 +40,10 @@ const definePropertiesForControlContainer = (controlContainer: HTMLElement, offs
   });
 };
 
+const getRandomInt = (min: number, max: number) => (
+  Math.floor(Math.random() * (max - min + 1) + min)
+);
+
 describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   const pointerupEvent = new MouseEvent('pointerup');
@@ -192,12 +196,14 @@ describe('slider-plugin', () => {
     offsetAxis: 'offsetX' | 'offsetY',
     offset: number,
     target?: HTMLElement,
+    button?: number,
   ) => {
     const pointerdownEvent = new MouseEvent('pointerdown');
     Object.defineProperties(pointerdownEvent, {
       pointerId: { value: 1 },
       [offsetAxis]: { value: offset },
       target: { value: target ?? element },
+      button: { value: button ?? 0 },
     });
     element.dispatchEvent(pointerdownEvent);
   };
@@ -509,6 +515,32 @@ describe('slider-plugin', () => {
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
         expect(tipElem?.textContent).toBe('80');
       });
+    });
+
+    describe('if event.button !== 0, interactive components as controlContainer and scale should not react', () => {
+      const getSliderElem = (elementName: string): HTMLElement => {
+        $sliderInstance = $sliderContainer.sliderPlugin(
+          { isVertical, showScale: elementName === 'scale' },
+        );
+        const [element] = $sliderInstance.find(`.slider__${elementName}`);
+        return element;
+      };
+
+      test.each(['control-container', 'scale'])(
+        '%s should not react to event w/ button !== 0 (e.g. RMB, MMB)',
+        (elementName) => {
+          const element = getSliderElem(elementName);
+          const randomClickPoint = getRandomInt(0, 680);
+          const randomButton = getRandomInt(1, 2);
+          const $controlContainer = $sliderInstance.find('.slider__control-container');
+          expect($controlContainer.css('--value-1-position')).toBe('25%');
+
+          makePointerdown(element, offsetAxis, randomClickPoint, element, randomButton);
+          element.dispatchEvent(pointerupEvent);
+
+          expect($controlContainer.css('--value-1-position')).toBe('25%');
+        },
+      );
     });
   });
 
