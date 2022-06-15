@@ -429,5 +429,37 @@ describe('Model', () => {
         expect(model.options.showProgressBar).toBe(booleanValue);
       });
     });
+
+    describe('should not emit their events if the value passed on call is the same as already set', () => {
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+      });
+
+      test('none of methods should emit event and no listeners should be called', () => {
+        const listeners: jest.Mock[] = [];
+        const eventNames: EventName[] = [
+          'stepSizeChanged',
+          'valueChanged',
+          'isVerticalChanged',
+          'isIntervalChanged',
+          'showProgressChanged',
+        ];
+        eventNames.forEach((eventName) => {
+          const listener = jest.fn();
+          model.on(eventName, listener);
+          listeners.push(listener);
+        });
+
+        model.setStepSize(10);
+        model.setValue(1, -50);
+        model.setVerticalState(false);
+        model.setInterval(false);
+        model.setShowProgress(false);
+
+        listeners.forEach((listener) => {
+          expect(listener).not.toBeCalled();
+        });
+      });
+    });
   });
 });
