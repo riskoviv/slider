@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable fsd/no-function-declaration-in-event-listener */
 import $ from 'jquery';
 import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
@@ -112,7 +111,7 @@ describe('slider-plugin', () => {
     ])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
       $sliderInstance = $sliderContainer.sliderPlugin(arg);
 
-      expect($sliderInstance.debug.getOptions()).toStrictEqual(defaultOptions);
+      expect($sliderInstance.getOptions()).toStrictEqual(defaultOptions);
     });
   });
 
@@ -124,7 +123,7 @@ describe('slider-plugin', () => {
 
       $sliderInstance = $sliderContainer.sliderPlugin(falseOptions);
 
-      expect($sliderInstance.debug.getOptions()).not.toHaveProperty('test');
+      expect($sliderInstance.getOptions()).not.toHaveProperty('test');
     });
 
     test('should not consider options that are of wrong type', () => {
@@ -134,7 +133,7 @@ describe('slider-plugin', () => {
 
       $sliderInstance = $sliderContainer.sliderPlugin(falseOptions);
 
-      expect($sliderInstance.debug.getOptions().stepSize).toBe(defaultOptions.stepSize);
+      expect($sliderInstance.getOptions().stepSize).toBe(defaultOptions.stepSize);
     });
 
     test('should not consider options of type number that have non-finite values', () => {
@@ -149,7 +148,7 @@ describe('slider-plugin', () => {
       $sliderInstance = $sliderContainer.sliderPlugin(options);
 
       getTypedKeys(options).forEach((option) => {
-        expect($sliderInstance.debug.getOptions()[option])
+        expect($sliderInstance.getOptions()[option])
           .toBe(defaultOptions[option]);
       });
     });
@@ -183,7 +182,7 @@ describe('slider-plugin', () => {
             isInterval,
           });
 
-          const pluginOptions = $sliderInstance.debug.getOptions();
+          const pluginOptions = $sliderInstance.getOptions();
           parameters.forEach((parameter, idx) => {
             expect(pluginOptions[parameter] = right[idx]);
           });
