@@ -309,8 +309,8 @@ describe('Model', () => {
             valueChange: { side: 'less than', result: 'value1 + stepSize' },
           },
           {
-          primaryValue: { number: 2, value: 10 },
-          secondaryValue: { number: 1, sourceValue: 20, resultValue: 0 },
+            primaryValue: { number: 2, value: 20 },
+            secondaryValue: { number: 1, sourceValue: 25, resultValue: 10 },
             valueChange: { side: 'more than', result: 'value2 - stepSize' },
           },
           {
