@@ -180,7 +180,7 @@ describe('slider-plugin', () => {
 
           $sliderInstance = $sliderContainer.sliderPlugin({
             ...wrongOptions,
-            ...{ isInterval },
+            isInterval,
           });
 
           const pluginOptions = $sliderInstance.debug.getOptions();
