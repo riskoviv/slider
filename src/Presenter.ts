@@ -98,11 +98,14 @@ class Presenter {
   }
 
   private initResizeObserver(): void {
+    if (this.sliderResizeObserver === undefined) {
       this.sliderResizeObserver = new ResizeObserver(() => {
         if (this.subViews.scale instanceof ScaleView) {
           this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
         }
       });
+    }
+
     this.sliderResizeObserver.observe(this.view.$elem[0]);
   }
 
