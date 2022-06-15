@@ -546,7 +546,7 @@ describe('slider-plugin', () => {
   describe('customizations through API', () => {
     test.each([false, true])('setInterval(true) should: add class slider__interval, create thumb2 and set position to it; if showTip: true, create tip2 and set a value to it; calling setInterval(false) should delete thumb2 and if showTip: true, delete it too', (showTip) => {
       $sliderInstance = $sliderContainer.sliderPlugin({ showTip });
-      const [controlContainer] = $sliderInstance.find('.slider__control-container');
+      const $controlContainer = $sliderInstance.find('.slider__control-container');
       let $tipElements: JQuery;
       expect($sliderInstance.hasClass('slider_interval')).toBe(false);
       expect($sliderInstance.find('.slider__thumb').length).toBe(1);
@@ -558,7 +558,7 @@ describe('slider-plugin', () => {
       $sliderInstance.setInterval(true);
 
       expect($sliderInstance.hasClass('slider_interval')).toBe(true);
-      expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
+      expect($controlContainer.css('--value-2-position')).toBe('75%');
       expect($sliderInstance.find('.slider__thumb').length).toBe(2);
       if (showTip) {
         $tipElements = $sliderInstance.find('.slider__tip');
