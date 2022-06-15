@@ -182,248 +182,250 @@ describe('Model', () => {
     });
   });
 
-  describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
-    const stepSizeChangedSpy = jest.fn();
-
-    beforeAll(() => {
-      initModelWithDefaultOptions();
-      model.on('stepSizeChanged', stepSizeChangedSpy);
-    });
-
-    test('should set positive integer that is less than range', () => {
-      model.setStepSize(20);
-
-      expect(model.options.stepSize).toBe(20);
-      expect(stepSizeChangedSpy).toBeCalled();
-    });
-
-    test('should set positive float that is less than range', () => {
-      model.setStepSize(15.5);
-
-      expect(model.options.stepSize).toBeCloseTo(15.5);
-      expect(stepSizeChangedSpy).toBeCalled();
-    });
-
-    test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
-      const negativeStepSize = -20;
-
-      model.setStepSize(negativeStepSize);
-
-      expect(model.options.stepSize).toBe(-negativeStepSize);
-      expect(stepSizeChangedSpy).toBeCalled();
-    });
-
-    test('shouldn\'t allow to set value that is more than range', () => {
-      const currentStepSize = model.options.stepSize;
-      const range = model.options.maxValue - model.options.minValue;
-      const stepMoreThanRange = range + 10;
-
-      model.setStepSize(stepMoreThanRange);
-
-      expect(model.options.stepSize).toBe(currentStepSize);
-      expect(model.options.stepSize).not.toBe(stepMoreThanRange);
-      expect(stepSizeChangedSpy).not.toBeCalled();
-    });
-
-    test('should not set any non-finite value', () => {
-      const currentStepSize = model.options.stepSize;
-
-      [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
-
-      expect(model.options.stepSize).toBe(currentStepSize);
-      expect(stepSizeChangedSpy).not.toBeCalled();
-    });
-  });
-
-  describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
-    const valueChangedSpy = jest.fn();
-
-    beforeEach(() => {
-      initModelWithDefaultOptions();
-      model.on('valueChanged', valueChangedSpy);
-    });
-
-    afterEach(() => {
-      model.off('valueChanged', valueChangedSpy);
-    });
-
-    test('should set 1st value to 0', () => {
-      model.setValue(1, 0);
-
-      expect(model.options.value1).toBe(0);
-      expect(valueChangedSpy).toBeCalled();
-    });
-
-    test('should set 2nd value to -40 (don\'t consider value1)', () => {
-      model.setValue(2, -40);
-
-      expect(model.options.value2).toBe(-40);
-      expect(valueChangedSpy).toBeCalled();
-    });
-
-    test.each`
-      valueName     | condition   | limitValue                 | passedValue
-      ${'minValue'} | ${'<'}      | ${defaultOptions.minValue} | ${-1}
-      ${'maxValue'} | ${'>'}      | ${defaultOptions.maxValue} | ${1}
-    `('should set value1 to $valueName if passed value $condition $valueName', ({
-      limitValue, passedValue,
-    }) => {
-      model.setValue(1, limitValue + passedValue);
-
-      expect(model.options.value1).toBe(limitValue);
-      expect(valueChangedSpy).toBeCalled();
-    });
-
-    test.each`
-      valueName     | value
-      ${'minValue'} | ${defaultOptions.minValue}
-      ${'maxValue'} | ${defaultOptions.maxValue}
-    `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
-      model.setValue(1, value);
-
-      expect(model.options.value1).toBe(value);
-      expect(valueChangedSpy).toBeCalled();
-    });
-
-    describe('if isInterval is true, setValue() should consider value1 or value2', () => {
-      let customModel: Model;
+  describe('API methods', () => {
+    describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
+      const stepSizeChangedSpy = jest.fn();
 
       beforeAll(() => {
-        customModel = new Model({ ...defaultOptions, isInterval: true });
-        customModel.on('valueChanged', valueChangedSpy);
+        initModelWithDefaultOptions();
+        model.on('stepSizeChanged', stepSizeChangedSpy);
       });
 
-      afterAll(() => {
-        customModel.off('valueChanged', valueChangedSpy);
+      test('should set positive integer that is less than range', () => {
+        model.setStepSize(20);
+
+        expect(model.options.stepSize).toBe(20);
+        expect(stepSizeChangedSpy).toBeCalled();
       });
 
-      test.each<{
-        primaryValue: { number: 1 | 2, value: number },
-        secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number },
-        valueChange: { side: string, result: string },
-      }>([
-        {
-          primaryValue: { number: 1, value: 0 },
-          secondaryValue: { number: 2, sourceValue: -10, resultValue: 10 },
-          valueChange: { side: 'less than', result: 'value1 + stepSize' },
-        },
-        {
+      test('should set positive float that is less than range', () => {
+        model.setStepSize(15.5);
+
+        expect(model.options.stepSize).toBeCloseTo(15.5);
+        expect(stepSizeChangedSpy).toBeCalled();
+      });
+
+      test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
+        const negativeStepSize = -20;
+
+        model.setStepSize(negativeStepSize);
+
+        expect(model.options.stepSize).toBe(-negativeStepSize);
+        expect(stepSizeChangedSpy).toBeCalled();
+      });
+
+      test('shouldn\'t allow to set value that is more than range', () => {
+        const currentStepSize = model.options.stepSize;
+        const range = model.options.maxValue - model.options.minValue;
+        const stepMoreThanRange = range + 10;
+
+        model.setStepSize(stepMoreThanRange);
+
+        expect(model.options.stepSize).toBe(currentStepSize);
+        expect(model.options.stepSize).not.toBe(stepMoreThanRange);
+        expect(stepSizeChangedSpy).not.toBeCalled();
+      });
+
+      test('should not set any non-finite value', () => {
+        const currentStepSize = model.options.stepSize;
+
+        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
+
+        expect(model.options.stepSize).toBe(currentStepSize);
+        expect(stepSizeChangedSpy).not.toBeCalled();
+      });
+    });
+
+    describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
+      const valueChangedSpy = jest.fn();
+
+      beforeEach(() => {
+        initModelWithDefaultOptions();
+        model.on('valueChanged', valueChangedSpy);
+      });
+
+      afterEach(() => {
+        model.off('valueChanged', valueChangedSpy);
+      });
+
+      test('should set 1st value to 0', () => {
+        model.setValue(1, 0);
+
+        expect(model.options.value1).toBe(0);
+        expect(valueChangedSpy).toBeCalled();
+      });
+
+      test('should set 2nd value to -40 (don\'t consider value1)', () => {
+        model.setValue(2, -40);
+
+        expect(model.options.value2).toBe(-40);
+        expect(valueChangedSpy).toBeCalled();
+      });
+
+      test.each`
+        valueName     | condition   | limitValue                 | passedValue
+        ${'minValue'} | ${'<'}      | ${defaultOptions.minValue} | ${-1}
+        ${'maxValue'} | ${'>'}      | ${defaultOptions.maxValue} | ${1}
+      `('should set value1 to $valueName if passed value $condition $valueName', ({
+        limitValue, passedValue,
+      }) => {
+        model.setValue(1, limitValue + passedValue);
+
+        expect(model.options.value1).toBe(limitValue);
+        expect(valueChangedSpy).toBeCalled();
+      });
+
+      test.each`
+        valueName     | value
+        ${'minValue'} | ${defaultOptions.minValue}
+        ${'maxValue'} | ${defaultOptions.maxValue}
+      `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
+        model.setValue(1, value);
+
+        expect(model.options.value1).toBe(value);
+        expect(valueChangedSpy).toBeCalled();
+      });
+
+      describe('if isInterval is true, setValue() should consider value1 or value2', () => {
+        let customModel: Model;
+
+        beforeAll(() => {
+          customModel = new Model({ ...defaultOptions, isInterval: true });
+          customModel.on('valueChanged', valueChangedSpy);
+        });
+
+        afterAll(() => {
+          customModel.off('valueChanged', valueChangedSpy);
+        });
+
+        test.each<{
+          primaryValue: { number: 1 | 2, value: number },
+          secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number },
+          valueChange: { side: string, result: string },
+        }>([
+          {
+            primaryValue: { number: 1, value: 0 },
+            secondaryValue: { number: 2, sourceValue: -10, resultValue: 10 },
+            valueChange: { side: 'less than', result: 'value1 + stepSize' },
+          },
+          {
           primaryValue: { number: 2, value: 10 },
           secondaryValue: { number: 1, sourceValue: 20, resultValue: 0 },
-          valueChange: { side: 'more than', result: 'value2 - stepSize' },
-        },
-        {
-          primaryValue: { number: 2, value: defaultOptions.maxValue },
-          secondaryValue: {
-            number: 1,
-            sourceValue: defaultOptions.maxValue,
-            resultValue: 90,
+            valueChange: { side: 'more than', result: 'value2 - stepSize' },
           },
-          valueChange: {
-            side: 'more or equal to maxValue that set to',
-            result: 'penultimate value',
+          {
+            primaryValue: { number: 2, value: defaultOptions.maxValue },
+            secondaryValue: {
+              number: 1,
+              sourceValue: defaultOptions.maxValue,
+              resultValue: 90,
+            },
+            valueChange: {
+              side: 'more or equal to maxValue that set to',
+              result: 'penultimate value',
+            },
           },
-        },
-      ])(
-        'if value$secondaryValue.number intent to set to $valueChange.side value$primaryValue.number, set value$secondaryValue.number to $valueChange.result',
-        ({ primaryValue, secondaryValue }) => {
-          customModel.setValue(primaryValue.number, primaryValue.value);
-          customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
+        ])(
+          'if value$secondaryValue.number intent to set to $valueChange.side value$primaryValue.number, set value$secondaryValue.number to $valueChange.result',
+          ({ primaryValue, secondaryValue }) => {
+            customModel.setValue(primaryValue.number, primaryValue.value);
+            customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
 
           expect(customModel.options[`value${primaryValue.number}`]).toBe(primaryValue.value);
           expect(customModel.options[`value${secondaryValue.number}`]).toBe(secondaryValue.resultValue);
-          expect(valueChangedSpy).toBeCalledTimes(2);
+            expect(valueChangedSpy).toBeCalledTimes(2);
+          },
+        );
+      });
+    });
+
+    describe('setVerticalState()', () => {
+      const isVerticalChangedSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('isVerticalChanged', isVerticalChangedSpy);
+      });
+
+      test.each([
+        ['enable', true],
+        ['disable', false],
+      ])('should %s isVertical if %s passed', (state, booleanValue) => {
+        model.setVerticalState(booleanValue);
+
+        expect(model.options.isVertical).toBe(booleanValue);
+        expect(isVerticalChangedSpy).toBeCalled();
+      });
+    });
+
+    describe('setInterval()', () => {
+      const isIntervalChangedSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('isIntervalChanged', isIntervalChangedSpy);
+        model.on('valueChanged', valueChangedSpy);
+      });
+
+      test.each([
+        ['enable', true],
+        ['disable', false],
+      ])('if values were not fixed by fixValues(), should %s isInterval and emit valueChanged only if isInterval is changed to true and position[2] was NaN before enabling isInterval', (state, booleanValue) => {
+        const valueChangedCallsCount = booleanValue && Number.isNaN(model.viewValues.positions[2])
+          ? 1 : 0;
+        model.setInterval(booleanValue);
+
+        expect(model.options.isInterval).toBe(booleanValue);
+        expect(isIntervalChangedSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalledTimes(valueChangedCallsCount);
+      });
+
+      test.each<[string, [number, number], { value1?: number, value2?: number }]>([
+        ['value1', [defaultOptions.maxValue, defaultOptions.maxValue], { value1: 90 }],
+        ['value2', [defaultOptions.minValue, defaultOptions.minValue], { value2: -90 }],
+        ['value1 & value2', [10, -10], { value1: -10, value2: 10 }],
+      ])(
+        'should emit valueChanged if %s was changed in fixValues()',
+        (valuesNames, [value1, value2], resultValues) => {
+          const customModel = new Model({
+            ...defaultOptions,
+            value1,
+            value2,
+          });
+          customModel.on('isIntervalChanged', isIntervalChangedSpy);
+          customModel.on('valueChanged', valueChangedSpy);
+
+          customModel.setInterval(true);
+
+          expect(isIntervalChangedSpy).toBeCalled();
+          getEntriesWithTypedKeys(resultValues).forEach(([valueName, value], index) => {
+            expect(customModel.options[valueName]).toBe(value);
+            const number = Number(valueName.slice(-1));
+            const changeTipValue = number === 1;
+            expect(valueChangedSpy.mock.calls[index])
+              .toContainEqual({ number, value, changeTipValue });
+          });
         },
       );
     });
-  });
 
-  describe('setVerticalState()', () => {
-    const isVerticalChangedSpy = jest.fn();
+    describe('setShowProgress()', () => {
+      const showProgressChangedSpy = jest.fn();
 
-    beforeAll(() => {
-      initModelWithDefaultOptions();
-      model.on('isVerticalChanged', isVerticalChangedSpy);
-    });
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('showProgressChanged', showProgressChangedSpy);
+      });
 
-    test.each([
-      ['enable', true],
-      ['disable', false],
-    ])('should %s isVertical if %s passed', (state, booleanValue) => {
-      model.setVerticalState(booleanValue);
+      test.each([
+        ['enable', true],
+        ['disable', false],
+      ])('should %s progressBar if %s passed', (state, booleanValue) => {
+        model.setShowProgress(booleanValue);
 
-      expect(model.options.isVertical).toBe(booleanValue);
-      expect(isVerticalChangedSpy).toBeCalled();
-    });
-  });
-
-  describe('setInterval()', () => {
-    const isIntervalChangedSpy = jest.fn();
-    const valueChangedSpy = jest.fn();
-
-    beforeAll(() => {
-      initModelWithDefaultOptions();
-      model.on('isIntervalChanged', isIntervalChangedSpy);
-      model.on('valueChanged', valueChangedSpy);
-    });
-
-    test.each([
-      ['enable', true],
-      ['disable', false],
-    ])('if values were not fixed by fixValues(), should %s isInterval and emit valueChanged only if isInterval is changed to true and position[2] was NaN before enabling isInterval', (state, booleanValue) => {
-      const valueChangedCallsCount = booleanValue && Number.isNaN(model.viewValues.positions[2])
-        ? 1 : 0;
-      model.setInterval(booleanValue);
-
-      expect(model.options.isInterval).toBe(booleanValue);
-      expect(isIntervalChangedSpy).toBeCalled();
-      expect(valueChangedSpy).toBeCalledTimes(valueChangedCallsCount);
-    });
-
-    test.each<[string, [number, number], { value1?: number, value2?: number }]>([
-      ['value1', [defaultOptions.maxValue, defaultOptions.maxValue], { value1: 90 }],
-      ['value2', [defaultOptions.minValue, defaultOptions.minValue], { value2: -90 }],
-      ['value1 & value2', [10, -10], { value1: -10, value2: 10 }],
-    ])(
-      'should emit valueChanged if %s was changed in fixValues()',
-      (valuesNames, [value1, value2], resultValues) => {
-        const customModel = new Model({
-          ...defaultOptions,
-          value1,
-          value2,
-        });
-        customModel.on('isIntervalChanged', isIntervalChangedSpy);
-        customModel.on('valueChanged', valueChangedSpy);
-
-        customModel.setInterval(true);
-
-        expect(isIntervalChangedSpy).toBeCalled();
-        getEntriesWithTypedKeys(resultValues).forEach(([valueName, value], index) => {
-          expect(customModel.options[valueName]).toBe(value);
-          const number = Number(valueName.slice(-1));
-          const changeTipValue = number === 1;
-          expect(valueChangedSpy.mock.calls[index])
-            .toContainEqual({ number, value, changeTipValue });
-        });
-      },
-    );
-  });
-
-  describe('setShowProgress()', () => {
-    const showProgressChangedSpy = jest.fn();
-
-    beforeAll(() => {
-      initModelWithDefaultOptions();
-      model.on('showProgressChanged', showProgressChangedSpy);
-    });
-
-    test.each([
-      ['enable', true],
-      ['disable', false],
-    ])('should %s progressBar if %s passed', (state, booleanValue) => {
-      model.setShowProgress(booleanValue);
-
-      expect(model.options.showProgressBar).toBe(booleanValue);
+        expect(model.options.showProgressBar).toBe(booleanValue);
+      });
     });
   });
 });
