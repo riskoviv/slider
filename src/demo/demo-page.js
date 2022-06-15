@@ -20,7 +20,7 @@ $(() => {
   //   showScale: true,
   // });
 
-  // console.log('slider2.getOptions(): ', window.slider2.debug.getOptions());
+  // console.log('slider2.getOptions(): ', window.slider2.getOptions());
 
   const $panel1 = $('#panel1');
   /** @type {JQuery<HTMLInputElement>} */
@@ -46,7 +46,7 @@ $(() => {
    */
 
   /** @type {SliderPluginOptions} */
-  const slider1Options = window.slider1.debug.getOptions();
+  const slider1Options = window.slider1.getOptions();
   console.log('slider1.getOptions(): ', slider1Options);
 
   if (slider1Options.isInterval) {
