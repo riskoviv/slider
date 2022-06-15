@@ -420,13 +420,16 @@ describe('Model', () => {
         model.on('showProgressChanged', showProgressChangedSpy);
       });
 
-      test.each([
-        ['enable', true],
-        ['disable', false],
-      ])('should %s progressBar if %s passed', (state, booleanValue) => {
+      test.each([['enable', true], ['disable', false]])(
+        'should %s progressBar if %s passed',
+        (state, booleanValue) => {
         model.setShowProgress(booleanValue);
 
+          expect(showProgressChangedSpy).toBeCalled();
         expect(model.options.showProgressBar).toBe(booleanValue);
+        },
+      );
+    });
       });
     });
 
