@@ -331,8 +331,10 @@ describe('Model', () => {
             customModel.setValue(primaryValue.number, primaryValue.value);
             customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
 
-          expect(customModel.options[`value${primaryValue.number}`]).toBe(primaryValue.value);
-          expect(customModel.options[`value${secondaryValue.number}`]).toBe(secondaryValue.resultValue);
+            expect(customModel.options[`value${primaryValue.number}`])
+              .toBe(primaryValue.value);
+            expect(customModel.options[`value${secondaryValue.number}`])
+              .toBe(secondaryValue.resultValue);
             expect(valueChangedSpy).toBeCalledTimes(2);
           },
         );
