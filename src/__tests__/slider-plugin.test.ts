@@ -590,5 +590,34 @@ describe('slider-plugin', () => {
 
       expect($sliderInstance.hasClass('slider_show-progress')).toBe(false);
     });
+
+    test('setValue() should fix value if it is not allowed considering stepSize, set new position to thumb according to that value, set value to tip if showTip: true', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        showTip: true, isInterval: true,
+      });
+      const [controlContainer] = $sliderInstance.find('.slider__control-container');
+      const $tipElements = $sliderInstance.find('.slider__tip');
+
+      $sliderInstance.setValue(1, -35);
+      $sliderInstance.setValue(2, 83);
+
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('35%');
+      expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('90%');
+      expect($tipElements[0].textContent).toBe('-30');
+      expect($tipElements[1].textContent).toBe('80');
+    });
+
+    test('setVerticalState() should toggle slider_vertical class on slider instance element', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+
+      $sliderInstance.setVerticalState(true);
+
+      expect($sliderInstance.hasClass('slider_vertical')).toBe(true);
+
+      $sliderInstance.setVerticalState(false);
+
+      expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+    });
   });
 });
