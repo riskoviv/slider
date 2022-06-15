@@ -92,7 +92,8 @@ class Presenter {
       .on('isVerticalChanged', listeners.changeOrientation)
       .on('isIntervalChanged', listeners.changeInterval)
       .on('valueChanged', listeners.setValueAndPosition)
-      .on('showProgressChanged', listeners.changeShowProgress);
+      .on('showProgressChanged', listeners.changeShowProgress)
+      .on('showTipChanged', listeners.changeShowTip);
   }
 
   private initResizeObserver(): void {
@@ -329,6 +330,28 @@ class Presenter {
 
     changeShowProgress: (showProgress: boolean): void => {
       this.view.toggleProgressBar(showProgress);
+    },
+
+    changeShowTip: (showTip: boolean): void => {
+      if (showTip) {
+        this.createSubView('tip', 1);
+        this.setTipValue({
+          number: 1,
+          value: this.options.value1,
+        });
+        if (this.options.isInterval) {
+          this.createSubView('tip', 2);
+          this.setTipValue({
+            number: 2,
+            value: this.options.value2,
+          });
+        }
+      } else {
+        this.removeSubView('tip1');
+        if (this.options.isInterval) {
+          this.removeSubView('tip2');
+        }
+      }
     },
   };
 

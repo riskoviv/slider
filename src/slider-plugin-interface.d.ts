@@ -34,6 +34,7 @@ interface IPluginPublicMethods {
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
+  setShowTip(showTip: boolean): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -48,6 +49,7 @@ type EventName = (
   | 'isVerticalChanged'
   | 'isIntervalChanged'
   | 'showProgressChanged'
+  | 'showTipChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;

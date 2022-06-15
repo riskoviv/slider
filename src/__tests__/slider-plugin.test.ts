@@ -618,5 +618,26 @@ describe('slider-plugin', () => {
 
       expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
     });
+
+    test.each([false, true])(
+      'setShowTip() should cause adding/removing of tip element(s) on controlContainer and set values in them',
+      (isInterval) => {
+        $sliderInstance = $sliderContainer.sliderPlugin({ isInterval });
+        const tipsCount = isInterval ? 2 : 1;
+        let $tipElements = $sliderInstance.find('.slider__tip');
+        expect($tipElements.length).toBe(0);
+
+        $sliderInstance.setShowTip(true);
+
+        $tipElements = $sliderInstance.find('.slider__tip');
+        expect($tipElements.length).toBe(tipsCount);
+        expect($tipElements[0].textContent).toBe('-50');
+        if (isInterval) expect($tipElements[1].textContent).toBe('50');
+
+        $sliderInstance.setShowTip(false);
+
+        expect($sliderInstance.find('.slider__tip').length).toBe(0);
+      },
+    );
   });
 });

@@ -423,14 +423,31 @@ describe('Model', () => {
       test.each([['enable', true], ['disable', false]])(
         'should %s progressBar if %s passed',
         (state, booleanValue) => {
-        model.setShowProgress(booleanValue);
+          model.setShowProgress(booleanValue);
 
           expect(showProgressChangedSpy).toBeCalled();
-        expect(model.options.showProgressBar).toBe(booleanValue);
+          expect(model.options.showProgressBar).toBe(booleanValue);
         },
       );
     });
+
+    describe('setShowTip()', () => {
+      const showTipChangedSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('showTipChanged', showTipChangedSpy);
       });
+
+      test.each([['add', true], ['remove', false]])(
+        'should %s tip(s) if passed %s',
+        (action, boolean) => {
+          model.setShowTip(boolean);
+
+          expect(showTipChangedSpy).toBeCalled();
+          expect(model.options.showTip).toBe(boolean);
+        },
+      );
     });
 
     describe('should not emit their events if the value passed on call is the same as already set', () => {
@@ -446,6 +463,7 @@ describe('Model', () => {
           'isVerticalChanged',
           'isIntervalChanged',
           'showProgressChanged',
+          'showTipChanged',
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
@@ -458,6 +476,7 @@ describe('Model', () => {
         model.setVerticalState(false);
         model.setInterval(false);
         model.setShowProgress(false);
+        model.setShowTip(false);
 
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();
