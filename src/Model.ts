@@ -144,9 +144,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   publicMethods: IPluginPublicMethods = {
-    debug: {
-      getOptions: this.getOptions.bind(this),
-    },
+    getOptions: this.getOptions.bind(this),
     setStepSize: this.setStepSize.bind(this),
     setValue: this.setValue.bind(this),
     setVerticalState: this.setVerticalState.bind(this),

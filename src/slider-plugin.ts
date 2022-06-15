@@ -36,7 +36,7 @@ $.fn.sliderPlugin = function sliderPlugin(
   const $sliderElem = presenter.view.$elem;
 
   ({
-    debug: $sliderElem.debug,
+    getOptions: $sliderElem.getOptions,
     setStepSize: $sliderElem.setStepSize,
     setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,

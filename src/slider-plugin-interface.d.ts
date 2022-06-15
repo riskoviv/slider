@@ -28,10 +28,10 @@ interface IPluginFunction {
 }
 
 interface IPluginPublicMethods {
-  debug: { [methodName: string]: () => IPluginOptions };
-  setStepSize: (stepSize: number) => void;
-  setValue: (thumbNumber: 1 | 2, valueIndex: number) => void;
-  setVerticalState: (isVertical: boolean) => void;
+  getOptions(): IPluginOptions;
+  setStepSize(stepSize: number): void;
+  setValue(thumbNumber: 1 | 2, valueIndex: number): void;
+  setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
 }
