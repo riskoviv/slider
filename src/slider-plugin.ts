@@ -43,6 +43,7 @@ $.fn.sliderPlugin = function sliderPlugin(
     setInterval: $sliderElem.setInterval,
     setShowProgress: $sliderElem.setShowProgress,
     setShowTip: $sliderElem.setShowTip,
+    setShowScale: $sliderElem.setShowScale,
   } = model.publicMethods);
 
   return $sliderElem;

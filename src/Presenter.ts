@@ -93,15 +93,16 @@ class Presenter {
       .on('isIntervalChanged', listeners.changeInterval)
       .on('valueChanged', listeners.setValueAndPosition)
       .on('showProgressChanged', listeners.changeShowProgress)
-      .on('showTipChanged', listeners.changeShowTip);
+      .on('showTipChanged', listeners.changeShowTip)
+      .on('showScaleChanged', listeners.changeShowScale);
   }
 
   private initResizeObserver(): void {
-    this.sliderResizeObserver = new ResizeObserver(() => {
-      if (this.subViews.scale instanceof ScaleView) {
-        this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
-      }
-    });
+      this.sliderResizeObserver = new ResizeObserver(() => {
+        if (this.subViews.scale instanceof ScaleView) {
+          this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
+        }
+      });
     this.sliderResizeObserver.observe(this.view.$elem[0]);
   }
 
@@ -351,6 +352,16 @@ class Presenter {
         if (this.options.isInterval) {
           this.removeSubView('tip2');
         }
+      }
+    },
+
+    changeShowScale: (showScale: boolean): void => {
+      if (showScale) {
+        this.createSubView('scale');
+        this.updateScale();
+      } else {
+        this.removeSubView('scale');
+        this.sliderResizeObserver?.disconnect();
       }
     },
   };

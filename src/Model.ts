@@ -146,6 +146,13 @@ class Model extends EventEmitter implements IModel {
     this.emit('showTipChanged', showTip);
   }
 
+  setShowScale(showScale: boolean): void {
+    if (this.options.showScale === showScale) return;
+
+    this.options.showScale = showScale;
+    this.emit('showScaleChanged', showScale);
+  }
+
   fixValueToPrecision(value: number): number {
     return Number.parseFloat(value.toFixed(this.fractionalPrecision));
   }
@@ -158,6 +165,7 @@ class Model extends EventEmitter implements IModel {
     setInterval: this.setInterval.bind(this),
     setShowProgress: this.setShowProgress.bind(this),
     setShowTip: this.setShowTip.bind(this),
+    setShowScale: this.setShowScale.bind(this),
   }
 
   private isValueAllowed(value: number): boolean {

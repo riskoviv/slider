@@ -31,6 +31,8 @@ $(() => {
   const $panel1Progress = $('.panel__progress', $panel1);
   /** @type {JQuery<HTMLInputElement>} */
   const $panel1Tip = $('.panel__tip', $panel1);
+  /** @type {JQuery<HTMLInputElement>} */
+  const $panel1Scale = $('.panel__scale', $panel1);
 
   /**
    * @typedef {{
@@ -67,6 +69,10 @@ $(() => {
     $panel1Tip[0].checked = true;
   }
 
+  if (slider1Options.showScale) {
+    $panel1Scale[0].checked = true;
+  }
+
   /**
    * @this HTMLInputElement isInterval checkbox element
    */
@@ -95,11 +101,20 @@ $(() => {
   $panel1Progress.on('change', slider1ChangeShowProgress);
 
   /**
-   * @this HTMLInputElement showProgress checkbox element
+   * @this HTMLInputElement showTip checkbox element
    */
   function slider1ChangeShowTip() {
     window.slider1.setShowTip(this.checked);
   }
 
   $panel1Tip.on('change', slider1ChangeShowTip);
+
+  /**
+   * @this HTMLInputElement showScale checkbox element
+   */
+  function slider1ChangeShowScale() {
+    window.slider1.setShowScale(this.checked);
+  }
+
+  $panel1Scale.on('change', slider1ChangeShowScale);
 });

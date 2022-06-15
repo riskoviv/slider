@@ -639,5 +639,20 @@ describe('slider-plugin', () => {
         expect($sliderInstance.find('.slider__tip').length).toBe(0);
       },
     );
+
+    test('setShowScale(true) should create scale element and fill w/ value elements; setShowScale(false) should remove scale element', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      expect($sliderInstance.find('.slider__scale').length).toBe(0);
+
+      $sliderInstance.setShowScale(true);
+
+      const $sliderScaleElem = $sliderInstance.find('.slider__scale');
+      expect($sliderScaleElem.length).toBe(1);
+      expect($sliderScaleElem.children().length).toBe(21);
+
+      $sliderInstance.setShowScale(false);
+
+      expect($sliderInstance.find('.slider__scale').length).toBe(0);
+    });
   });
 });

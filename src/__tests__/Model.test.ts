@@ -450,6 +450,25 @@ describe('Model', () => {
       );
     });
 
+    describe('setShowScale()', () => {
+      const showScaleChangedSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('showScaleChanged', showScaleChangedSpy);
+      });
+
+      test.each([['add', true], ['remove', false]])(
+        'should %s scale if passed %s',
+        (action, boolean) => {
+          model.setShowScale(boolean);
+
+          expect(showScaleChangedSpy).toBeCalled();
+          expect(model.options.showScale).toBe(boolean);
+        },
+      );
+    });
+
     describe('should not emit their events if the value passed on call is the same as already set', () => {
       beforeAll(() => {
         initModelWithDefaultOptions();
@@ -464,6 +483,7 @@ describe('Model', () => {
           'isIntervalChanged',
           'showProgressChanged',
           'showTipChanged',
+          'showScaleChanged',
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
@@ -477,6 +497,7 @@ describe('Model', () => {
         model.setInterval(false);
         model.setShowProgress(false);
         model.setShowTip(false);
+        model.setShowScale(false);
 
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();
