@@ -495,11 +495,7 @@ class Presenter {
       }
     },
 
-    sliderPointerUp: (e: PointerEvent): void => {
-      if (e.button !== 0) {
-        e.preventDefault();
-      }
-
+    sliderPointerUp: (): void => {
       this.view.controlContainerElem.removeEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
     },
 
