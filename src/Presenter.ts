@@ -282,10 +282,6 @@ class Presenter {
     return this.model.getValueByIndex(index);
   }
 
-  private isPositionAllowed(position: number): boolean {
-    return Number.isInteger(position / this.model.viewValues.stepInPercents);
-  }
-
   private modelEventListeners = {
     changeStepSize: (): void => {
       this.defineViewValues();
