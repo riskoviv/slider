@@ -32,7 +32,10 @@ const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   return childrenCountInParent === children.length;
 };
 
-const definePropertiesForControlContainer = (controlContainer: HTMLElement, offsetDimension: 'offsetWidth' | 'offsetHeight') => {
+const definePropertiesForControlContainer = (
+  controlContainer: HTMLElement,
+  offsetDimension: 'offsetWidth' | 'offsetHeight',
+) => {
   Object.defineProperties(controlContainer, {
     [offsetDimension]: { value: 680 },
     setPointerCapture: { value: jest.fn() },
@@ -273,7 +276,7 @@ describe('slider-plugin', () => {
     );
   });
 
-  describe.each([false, true])('if isVertical: %s', (isVertical) => {
+  describe.each([false, true])('DOM interaction with slider, if isVertical: %s', (isVertical) => {
     let controlContainer: HTMLElement;
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
