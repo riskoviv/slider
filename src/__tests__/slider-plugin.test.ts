@@ -193,6 +193,36 @@ describe('slider-plugin', () => {
       );
   });
 
+  describe.each([false, true])('edge cases tests', (isVertical) => {
+    test('if slider container size is small to fit all scale elements, slider__scale will have only every 2nd value element', () => {
+      const $smallSliderContainer = $('<div class="slider-container"></div>');
+      Object.defineProperty(
+        $smallSliderContainer[0],
+        isVertical ? 'offsetHeight' : 'offsetWidth',
+        { value: 70 },
+      );
+      const $smallSliderInstance = $smallSliderContainer.sliderPlugin({
+        showScale: true, isVertical,
+      });
+
+      expect($smallSliderInstance.find('.slider__scale-block').length).toBe(11);
+    });
+
+    test('scale should have last element containing maxValue and located at 100% position', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        showScale: true, stepSize: 3, isVertical,
+      });
+      const $sliderScale = $sliderInstance.find('.slider__scale');
+      const $lastScaleChild = $sliderScale.children().last();
+
+      expect($lastScaleChild.css('--scale-block-position')).toBe('100%');
+      expect($lastScaleChild.text().trim()).toBe(`${defaultOptions.maxValue}`);
+    });
+
+    test.todo('should move thumb2 to max position if isInterval');
+    test.todo('should not allow to move thumb1 past thumb2 by pointermove');
+  });
+
   const makePointerdown = (
     element: HTMLElement,
     offsetAxis: 'offsetX' | 'offsetY',
