@@ -701,38 +701,40 @@ describe('slider-plugin', () => {
       expect($lastScaleChild.text().trim()).toBe(`${defaultOptions.maxValue}`);
     });
 
-    test('shouldn\'t move thumb1 by pointermove to max position if isInterval: true', async () => {
+    test.each([
+      [1, 'to max', 2, 'max', 90, 100, 646, 664, '95%'],
+      [2, 'from max to penultimate', 1, 'penultimate', 90, 100, 680, 662, '100%'],
+      [1, 'to penultimate', 2, 'penultimate', 80, 90, 612, 650, '90%'],
+    ])(
+      'shouldn\'t move thumb%i by pointermove %s position if thumb%i is on %s position',
+      async (
+        activeThumb,
+        direction,
+        passiveThumb,
+        passivePosition,
+        value1,
+        value2,
+        startPoint,
+        endPoint,
+        activePosition,
+      ) => {
       $sliderInstance = $sliderContainer.sliderPlugin({
-        value1: 90, value2: 100, isInterval: true, isVertical,
+          value1, value2, isInterval: true, isVertical,
       });
       const [controlContainer] = $sliderInstance.find('.slider__control-container');
-      const [thumb1] = $sliderInstance.find('.slider__thumb_1');
+        const [movedThumb] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
       definePropertiesForControlContainer(controlContainer, offsetDimension);
       expect.assertions(2);
-      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('95%');
+        expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
+          .toBe(activePosition);
 
-      makePointerdown(controlContainer, offsetAxis, 646, thumb1);
-      await makePointermove(controlContainer, offsetAxis, 646, 664);
+        makePointerdown(controlContainer, offsetAxis, startPoint, movedThumb);
+        await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
       controlContainer.dispatchEvent(pointerupEvent);
 
-      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('95%');
-    });
-
-    test('shouldn\'t allow to move thumb2 by pointermove from max to penultimate position if thumb1 is on penultimate position', async () => {
-      $sliderInstance = $sliderContainer.sliderPlugin({
-        value1: 90, value2: 100, isInterval: true, isVertical,
-      });
-      const [controlContainer] = $sliderInstance.find('.slider__control-container');
-      const [thumb2] = $sliderInstance.find('.slider__thumb_2');
-      definePropertiesForControlContainer(controlContainer, offsetDimension);
-      expect.assertions(2);
-      expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('100%');
-
-      makePointerdown(controlContainer, offsetAxis, 680, thumb2);
-      await makePointermove(controlContainer, offsetAxis, 680, 662);
-      controlContainer.dispatchEvent(pointerupEvent);
-
-      expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('100%');
-    });
+        expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
+          .toBe(activePosition);
+      },
+    );
   });
 });
