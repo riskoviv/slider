@@ -6,11 +6,19 @@ import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
 import { getTypedKeys } from '../utils';
 
-window.ResizeObserver = jest.fn(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}));
+window.ResizeObserver = class ResizeObserver {
+  callback: ResizeObserverCallback;
+
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+};
 
 const defaultOptions: IPluginOptions = {
   stepSize: 10,
