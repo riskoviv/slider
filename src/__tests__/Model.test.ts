@@ -183,7 +183,7 @@ describe('Model', () => {
   });
 
   describe('API methods', () => {
-    describe('setStepSize(stepSize: number) set or don\t set values as stepSize option:', () => {
+    describe('setStepSize(stepSize: number) set or don\'t set values as stepSize option:', () => {
       const stepSizeChangedSpy = jest.fn();
 
       beforeAll(() => {
