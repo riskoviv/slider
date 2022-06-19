@@ -84,6 +84,8 @@ class Model extends EventEmitter implements IModel {
       this.options.stepSize = stepSize;
     }
 
+    this.fractionalPrecision = this.identifyMaxFractionalPrecision();
+
     this.emit('stepSizeChanged');
 
     const { value1Fixed, value2Fixed } = this.fixValues();
