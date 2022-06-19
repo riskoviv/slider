@@ -234,6 +234,18 @@ describe('Model', () => {
         expect(model.options.stepSize).toBe(currentStepSize);
         expect(stepSizeChangedSpy).not.toBeCalled();
       });
+
+      test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
+        const customModel = new Model({ ...defaultOptions, isInterval: true });
+        expect(customModel.options.value1).toBe(-50);
+        expect(customModel.options.value2).toBe(50);
+
+        customModel.setStepSize(4.12);
+
+        expect(customModel.fractionalPrecision).toBe(2);
+        expect(customModel.options.value1).toBe(-50.56);
+        expect(customModel.options.value2).toBe(48.32);
+      });
     });
 
     describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
