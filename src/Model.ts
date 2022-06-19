@@ -62,8 +62,8 @@ class Model extends EventEmitter implements IModel {
   }
 
   getPenultimateValue(): number {
-    return this.options.minValue + this.fixValueToPrecision(
-      this.options.stepSize * (this.allowedValuesCount - 2),
+    return this.fixValueToPrecision(
+      this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2),
     );
   }
 
