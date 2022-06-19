@@ -185,10 +185,12 @@ describe('Model', () => {
   describe('API methods', () => {
     describe('setStepSize(stepSize: number) set or don\'t set values as stepSize option:', () => {
       const stepSizeChangedSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('stepSizeChanged', stepSizeChangedSpy);
+        model.on('stepSizeChanged', stepSizeChangedSpy)
+          .on('valueChanged', valueChangedSpy);
       });
 
       test('should set positive integer that is less than range', () => {
@@ -237,11 +239,15 @@ describe('Model', () => {
 
       test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
         const customModel = new Model({ ...defaultOptions, isInterval: true });
+        customModel.on('valueChanged', valueChangedSpy)
+          .on('stepSizeChanged', stepSizeChangedSpy);
         expect(customModel.options.value1).toBe(-50);
         expect(customModel.options.value2).toBe(50);
 
         customModel.setStepSize(4.12);
 
+        expect(stepSizeChangedSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
         expect(customModel.fractionalPrecision).toBe(2);
         expect(customModel.options.value1).toBe(-50.56);
         expect(customModel.options.value2).toBe(48.32);
