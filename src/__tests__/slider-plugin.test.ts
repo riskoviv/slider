@@ -201,36 +201,6 @@ describe('slider-plugin', () => {
       );
   });
 
-  describe.each([false, true])('edge cases tests', (isVertical) => {
-    test('if slider container size is small to fit all scale elements, slider__scale will have only every 2nd value element', () => {
-      const $smallSliderContainer = $('<div class="slider-container"></div>');
-      Object.defineProperty(
-        $smallSliderContainer[0],
-        isVertical ? 'offsetHeight' : 'offsetWidth',
-        { value: 70 },
-      );
-      const $smallSliderInstance = $smallSliderContainer.sliderPlugin({
-        showScale: true, isVertical,
-      });
-
-      expect($smallSliderInstance.find('.slider__scale-block').length).toBe(11);
-    });
-
-    test('scale should have last element containing maxValue and located at 100% position', () => {
-      $sliderInstance = $sliderContainer.sliderPlugin({
-        showScale: true, stepSize: 3, isVertical,
-      });
-      const $sliderScale = $sliderInstance.find('.slider__scale');
-      const $lastScaleChild = $sliderScale.children().last();
-
-      expect($lastScaleChild.css('--scale-block-position')).toBe('100%');
-      expect($lastScaleChild.text().trim()).toBe(`${defaultOptions.maxValue}`);
-    });
-
-    test.todo('should move thumb2 to max position if isInterval');
-    test.todo('should not allow to move thumb1 past thumb2 by pointermove');
-  });
-
   const makePointerdown = (
     element: HTMLElement,
     offsetAxis: 'offsetX' | 'offsetY',
@@ -694,6 +664,76 @@ describe('slider-plugin', () => {
       $sliderInstance.setShowScale(false);
 
       expect($sliderInstance.find('.slider__scale').length).toBe(0);
+    });
+
+    test.todo('setStepSize()');
+
+    test.todo('setMinValue()');
+
+    test.todo('setMaxValue()');
+  });
+
+  describe.each([false, true])('edge cases tests, isVertical: %s', (isVertical) => {
+    const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
+    const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
+
+    test('if slider container size is small to fit all scale elements, slider__scale will have only every 2nd value element', () => {
+      const $smallSliderContainer = $('<div class="slider-container"></div>');
+      Object.defineProperty(
+        $smallSliderContainer[0],
+        isVertical ? 'offsetHeight' : 'offsetWidth',
+        { value: 70 },
+      );
+      const $smallSliderInstance = $smallSliderContainer.sliderPlugin({
+        showScale: true, isVertical,
+      });
+
+      expect($smallSliderInstance.find('.slider__scale-block').length).toBe(11);
+    });
+
+    test('scale should have last element containing maxValue and located at 100% position', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        showScale: true, stepSize: 3, isVertical,
+      });
+      const $sliderScale = $sliderInstance.find('.slider__scale');
+      const $lastScaleChild = $sliderScale.children().last();
+
+      expect($lastScaleChild.css('--scale-block-position')).toBe('100%');
+      expect($lastScaleChild.text().trim()).toBe(`${defaultOptions.maxValue}`);
+    });
+
+    test('shouldn\'t move thumb1 by pointermove to max position if isInterval: true', async () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        value1: 90, value2: 100, isInterval: true, isVertical,
+      });
+      const [controlContainer] = $sliderInstance.find('.slider__control-container');
+      const [thumb1] = $sliderInstance.find('.slider__thumb_1');
+      definePropertiesForControlContainer(controlContainer, offsetDimension);
+      expect.assertions(2);
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('95%');
+
+      makePointerdown(controlContainer, offsetAxis, 646, thumb1);
+      await makePointermove(controlContainer, offsetAxis, 646, 664);
+      controlContainer.dispatchEvent(pointerupEvent);
+
+      expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('95%');
+    });
+
+    test('shouldn\'t allow to move thumb2 by pointermove from max to penultimate position if thumb1 is on penultimate position', async () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        value1: 90, value2: 100, isInterval: true, isVertical,
+      });
+      const [controlContainer] = $sliderInstance.find('.slider__control-container');
+      const [thumb2] = $sliderInstance.find('.slider__thumb_2');
+      definePropertiesForControlContainer(controlContainer, offsetDimension);
+      expect.assertions(2);
+      expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('100%');
+
+      makePointerdown(controlContainer, offsetAxis, 680, thumb2);
+      await makePointermove(controlContainer, offsetAxis, 680, 662);
+      controlContainer.dispatchEvent(pointerupEvent);
+
+      expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('100%');
     });
   });
 });
