@@ -106,6 +106,7 @@ class Presenter {
       });
     }
 
+    this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     this.sliderResizeObserver.observe(this.view.$elem[0]);
   }
 
