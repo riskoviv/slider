@@ -85,6 +85,26 @@ class Model extends EventEmitter implements IModel {
     }
 
     this.emit('stepSizeChanged');
+
+    const { value1Fixed, value2Fixed } = this.fixValues();
+
+    if (value1Fixed) {
+      this.emit('valueChanged', {
+        number: 1,
+        value: this.options.value1,
+        changeTipValue: true,
+      });
+    }
+
+    if (this.options.isInterval) {
+      if (value2Fixed) {
+        this.emit('valueChanged', {
+          number: 2,
+          value: this.options.value2,
+          changeTipValue: true,
+        });
+      }
+    }
   }
 
   setValue(number: 1 | 2, value: number): void {
