@@ -665,7 +665,30 @@ describe('slider-plugin', () => {
       expect($sliderInstance.find('.slider__scale').length).toBe(0);
     });
 
-    test.todo('setStepSize()');
+    const getScaleValuesMaxFractionalPrecision = ($scale: JQuery) => {
+      const valuesFractionSizes = [...$scale.find('.slider__scale-text')].map((scaleTextElem) => {
+        const precision = Number(scaleTextElem.textContent?.split('.')[1]?.length);
+        return Number.isNaN(precision) ? 0 : precision;
+      });
+      return Math.max(...valuesFractionSizes);
+    };
+
+    test('setStepSize(number) should update positions of thumb1 & 2, update values in tips, update scale values', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        isInterval: true, showTip: true, showScale: true,
+      });
+      const $controlContainer = $sliderInstance.find('.slider__control-container');
+
+      $sliderInstance.setStepSize(23.54);
+
+      expect($controlContainer.css('--value-1-position')).toBe('23.54%');
+      expect($controlContainer.css('--value-2-position')).toBe('70.62%');
+      expect($controlContainer.find('.slider__tip_1').text()).toBe('-52.92');
+      expect($controlContainer.find('.slider__tip_2').text()).toBe('41.24');
+      const $sliderScale = $sliderInstance.find('.slider__scale');
+      expect($sliderScale.children().length).toBe(10);
+      expect(getScaleValuesMaxFractionalPrecision($sliderScale)).toBe(2);
+    });
 
     test.todo('setMinValue()');
 
@@ -718,19 +741,19 @@ describe('slider-plugin', () => {
         endPoint,
         activePosition,
       ) => {
-      $sliderInstance = $sliderContainer.sliderPlugin({
+        $sliderInstance = $sliderContainer.sliderPlugin({
           value1, value2, isInterval: true, isVertical,
-      });
-      const [controlContainer] = $sliderInstance.find('.slider__control-container');
+        });
+        const [controlContainer] = $sliderInstance.find('.slider__control-container');
         const [movedThumb] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
-      definePropertiesForControlContainer(controlContainer, offsetDimension);
-      expect.assertions(2);
+        definePropertiesForControlContainer(controlContainer, offsetDimension);
+        expect.assertions(2);
         expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
           .toBe(activePosition);
 
         makePointerdown(controlContainer, offsetAxis, startPoint, movedThumb);
         await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
-      controlContainer.dispatchEvent(pointerupEvent);
+        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
           .toBe(activePosition);
