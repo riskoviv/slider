@@ -393,6 +393,12 @@ class Presenter {
       && this.isPointerLessThanHalfStepAwayFromPenultimate(newPosition)
     ),
 
+    isOtherThumbOnPenultimatePosition: () => {
+      const otherThumbNumber = this.currentThumbData.thumbNumber === 1 ? 2 : 1;
+      const otherThumbPosition = this.model.viewValues.positions[otherThumbNumber];
+      return otherThumbPosition === this.model.viewValues.penultimatePosition;
+    },
+
     fixIfOutOfRange: (position: number): number => {
       if (position < 0) return 0;
       if (position > 100) return 100;
@@ -466,7 +472,7 @@ class Presenter {
         }
       } else if (this.thumbChecks.isSetToPenultimatePositionAllowed(newPosition)) {
         const isThumbAwayFromOtherThumb = this.options.isInterval
-          ? this.thumbChecks.isThumbKeepsDistance(newPosition)
+          ? !this.thumbChecks.isOtherThumbOnPenultimatePosition()
           : true;
         if (isThumbAwayFromOtherThumb) {
           this.setPositionAndCurrentValue({
