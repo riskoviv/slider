@@ -183,77 +183,6 @@ describe('Model', () => {
   });
 
   describe('API methods', () => {
-    describe('setStepSize(stepSize: number) set or don\'t set values as stepSize option:', () => {
-      const stepSizeChangedSpy = jest.fn();
-      const valueChangedSpy = jest.fn();
-
-      beforeAll(() => {
-        initModelWithDefaultOptions();
-        model.on('stepSizeChanged', stepSizeChangedSpy)
-          .on('valueChanged', valueChangedSpy);
-      });
-
-      test('should set positive integer that is less than range', () => {
-        model.setStepSize(20);
-
-        expect(model.options.stepSize).toBe(20);
-        expect(stepSizeChangedSpy).toBeCalled();
-      });
-
-      test('should set positive float that is less than range', () => {
-        model.setStepSize(15.5);
-
-        expect(model.options.stepSize).toBeCloseTo(15.5);
-        expect(stepSizeChangedSpy).toBeCalled();
-      });
-
-      test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
-        const negativeStepSize = -20;
-
-        model.setStepSize(negativeStepSize);
-
-        expect(model.options.stepSize).toBe(-negativeStepSize);
-        expect(stepSizeChangedSpy).toBeCalled();
-      });
-
-      test('shouldn\'t allow to set value that is more than range', () => {
-        const currentStepSize = model.options.stepSize;
-        const range = model.options.maxValue - model.options.minValue;
-        const stepMoreThanRange = range + 10;
-
-        model.setStepSize(stepMoreThanRange);
-
-        expect(model.options.stepSize).toBe(currentStepSize);
-        expect(model.options.stepSize).not.toBe(stepMoreThanRange);
-        expect(stepSizeChangedSpy).not.toBeCalled();
-      });
-
-      test('should not set any non-finite value', () => {
-        const currentStepSize = model.options.stepSize;
-
-        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
-
-        expect(model.options.stepSize).toBe(currentStepSize);
-        expect(stepSizeChangedSpy).not.toBeCalled();
-      });
-
-      test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
-        const customModel = new Model({ ...defaultOptions, isInterval: true });
-        customModel.on('valueChanged', valueChangedSpy)
-          .on('stepSizeChanged', stepSizeChangedSpy);
-        expect(customModel.options.value1).toBe(-50);
-        expect(customModel.options.value2).toBe(50);
-
-        customModel.setStepSize(4.12);
-
-        expect(stepSizeChangedSpy).toBeCalled();
-        expect(valueChangedSpy).toBeCalled();
-        expect(customModel.fractionalPrecision).toBe(2);
-        expect(customModel.options.value1).toBe(-50.56);
-        expect(customModel.options.value2).toBe(48.32);
-      });
-    });
-
     describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
       const valueChangedSpy = jest.fn();
 
@@ -487,6 +416,77 @@ describe('Model', () => {
       );
     });
 
+    describe('setStepSize(stepSize: number) set or don\'t set values as stepSize option:', () => {
+      const stepSizeChangedSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
+
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+        model.on('stepSizeChanged', stepSizeChangedSpy)
+          .on('valueChanged', valueChangedSpy);
+      });
+
+      test('should set positive integer that is less than range', () => {
+        model.setStepSize(20);
+
+        expect(model.options.stepSize).toBe(20);
+        expect(stepSizeChangedSpy).toBeCalled();
+      });
+
+      test('should set positive float that is less than range', () => {
+        model.setStepSize(15.5);
+
+        expect(model.options.stepSize).toBeCloseTo(15.5);
+        expect(stepSizeChangedSpy).toBeCalled();
+      });
+
+      test('shouldn\'t allow to set any negative value and set absolute value of it instead', () => {
+        const negativeStepSize = -20;
+
+        model.setStepSize(negativeStepSize);
+
+        expect(model.options.stepSize).toBe(-negativeStepSize);
+        expect(stepSizeChangedSpy).toBeCalled();
+      });
+
+      test('shouldn\'t allow to set value that is more than range', () => {
+        const currentStepSize = model.options.stepSize;
+        const range = model.options.maxValue - model.options.minValue;
+        const stepMoreThanRange = range + 10;
+
+        model.setStepSize(stepMoreThanRange);
+
+        expect(model.options.stepSize).toBe(currentStepSize);
+        expect(model.options.stepSize).not.toBe(stepMoreThanRange);
+        expect(stepSizeChangedSpy).not.toBeCalled();
+      });
+
+      test('should not set any non-finite value', () => {
+        const currentStepSize = model.options.stepSize;
+
+        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
+
+        expect(model.options.stepSize).toBe(currentStepSize);
+        expect(stepSizeChangedSpy).not.toBeCalled();
+      });
+
+      test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
+        const customModel = new Model({ ...defaultOptions, isInterval: true });
+        customModel.on('valueChanged', valueChangedSpy)
+          .on('stepSizeChanged', stepSizeChangedSpy);
+        expect(customModel.options.value1).toBe(-50);
+        expect(customModel.options.value2).toBe(50);
+
+        customModel.setStepSize(4.12);
+
+        expect(stepSizeChangedSpy).toBeCalled();
+        expect(valueChangedSpy).toBeCalled();
+        expect(customModel.fractionalPrecision).toBe(2);
+        expect(customModel.options.value1).toBe(-50.56);
+        expect(customModel.options.value2).toBe(48.32);
+      });
+    });
+
     describe('should not emit their events if the value passed on call is the same as already set', () => {
       beforeAll(() => {
         initModelWithDefaultOptions();
@@ -495,13 +495,13 @@ describe('Model', () => {
       test('none of methods should emit event and no listeners should be called', () => {
         const listeners: jest.Mock[] = [];
         const eventNames: EventName[] = [
-          'stepSizeChanged',
           'valueChanged',
           'isVerticalChanged',
           'isIntervalChanged',
           'showProgressChanged',
           'showTipChanged',
           'showScaleChanged',
+          'stepSizeChanged',
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
@@ -509,13 +509,13 @@ describe('Model', () => {
           listeners.push(listener);
         });
 
-        model.setStepSize(10);
         model.setValue(1, -50);
         model.setVerticalState(false);
         model.setInterval(false);
         model.setShowProgress(false);
         model.setShowTip(false);
         model.setShowScale(false);
+        model.setStepSize(10);
 
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();

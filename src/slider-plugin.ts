@@ -37,13 +37,13 @@ $.fn.sliderPlugin = function sliderPlugin(
 
   ({
     getOptions: $sliderElem.getOptions,
-    setStepSize: $sliderElem.setStepSize,
     setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
     setShowProgress: $sliderElem.setShowProgress,
     setShowTip: $sliderElem.setShowTip,
     setShowScale: $sliderElem.setShowScale,
+    setStepSize: $sliderElem.setStepSize,
   } = model.publicMethods);
 
   return $sliderElem;

@@ -73,20 +73,6 @@ class Model extends EventEmitter implements IModel {
     ) + 1;
   }
 
-  setStepSize(stepSize: number): void {
-    if (this.options.stepSize === stepSize) return;
-    if (stepSize > this.options.maxValue - this.options.minValue) return;
-    if (stepSize === 0) return;
-    if (!Number.isFinite(stepSize)) return;
-    if (stepSize < 0) {
-      this.options.stepSize = -stepSize;
-    } else {
-      this.options.stepSize = stepSize;
-    }
-
-    this.updateValues('stepSizeChanged');
-  }
-
   setValue(number: 1 | 2, value: number): void {
     const valueNumber: 'value1' | 'value2' = `value${number}`;
     if (this.options[valueNumber] === value) return;
@@ -153,19 +139,33 @@ class Model extends EventEmitter implements IModel {
     this.emit('showScaleChanged', showScale);
   }
 
+  setStepSize(stepSize: number): void {
+    if (!Number.isFinite(stepSize)) return;
+    if (this.options.stepSize === stepSize) return;
+    if (stepSize > this.options.maxValue - this.options.minValue) return;
+    if (stepSize === 0) return;
+    if (stepSize < 0) {
+      this.options.stepSize = -stepSize;
+    } else {
+      this.options.stepSize = stepSize;
+    }
+
+    this.updateValues('stepSizeChanged');
+  }
+
   fixValueToPrecision(value: number): number {
     return Number.parseFloat(value.toFixed(this.fractionalPrecision));
   }
 
   publicMethods: IPluginPublicMethods = {
     getOptions: this.getOptions.bind(this),
-    setStepSize: this.setStepSize.bind(this),
     setValue: this.setValue.bind(this),
     setVerticalState: this.setVerticalState.bind(this),
     setInterval: this.setInterval.bind(this),
     setShowProgress: this.setShowProgress.bind(this),
     setShowTip: this.setShowTip.bind(this),
     setShowScale: this.setShowScale.bind(this),
+    setStepSize: this.setStepSize.bind(this),
   }
 
   private updateValues(eventName: EventName) {

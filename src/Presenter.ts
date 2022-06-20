@@ -88,13 +88,13 @@ class Presenter {
 
   private bindModelEventListeners(): void {
     const listeners = this.modelEventListeners;
-    this.model.on('stepSizeChanged', listeners.changeStepSize)
-      .on('isVerticalChanged', listeners.changeOrientation)
+    this.model.on('isVerticalChanged', listeners.changeOrientation)
       .on('isIntervalChanged', listeners.changeInterval)
       .on('valueChanged', listeners.setValueAndPosition)
       .on('showProgressChanged', listeners.changeShowProgress)
       .on('showTipChanged', listeners.changeShowTip)
-      .on('showScaleChanged', listeners.changeShowScale);
+      .on('showScaleChanged', listeners.changeShowScale)
+      .on('stepSizeChanged', listeners.updateBounds)
   }
 
   private initResizeObserver(): void {

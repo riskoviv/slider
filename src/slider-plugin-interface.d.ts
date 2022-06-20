@@ -29,13 +29,13 @@ interface IPluginFunction {
 
 interface IPluginPublicMethods {
   getOptions(): IPluginOptions;
-  setStepSize(stepSize: number): void;
   setValue(thumbNumber: 1 | 2, valueIndex: number): void;
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
   setShowTip(showTip: boolean): void;
   setShowScale(showScale: boolean): void;
+  setStepSize(stepSize: number): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -44,7 +44,6 @@ interface JQuery extends IPluginPublicMethods {
 
 type EventName = (
   | 'sliderPointerDown'
-  | 'stepSizeChanged'
   | 'valueChanged'
   | 'scaleValueSelect'
   | 'isVerticalChanged'
@@ -52,6 +51,7 @@ type EventName = (
   | 'showProgressChanged'
   | 'showTipChanged'
   | 'showScaleChanged'
+  | 'stepSizeChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
