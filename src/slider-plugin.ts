@@ -44,6 +44,7 @@ $.fn.sliderPlugin = function sliderPlugin(
     setShowTip: $sliderElem.setShowTip,
     setShowScale: $sliderElem.setShowScale,
     setStepSize: $sliderElem.setStepSize,
+    setMinValue: $sliderElem.setMinValue,
   } = model.publicMethods);
 
   return $sliderElem;

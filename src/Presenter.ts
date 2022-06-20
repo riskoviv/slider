@@ -95,6 +95,7 @@ class Presenter {
       .on('showTipChanged', listeners.changeShowTip)
       .on('showScaleChanged', listeners.changeShowScale)
       .on('stepSizeChanged', listeners.updateBounds)
+      .on('minValueChanged', listeners.updateBounds);
   }
 
   private initResizeObserver(): void {

@@ -153,6 +153,19 @@ class Model extends EventEmitter implements IModel {
     this.updateValues('stepSizeChanged');
   }
 
+  setMinValue(minValue: number): void {
+    if (!Number.isFinite(minValue)) return;
+    if (this.options.minValue === minValue) return;
+    if (minValue > this.options.maxValue) return;
+    if (minValue === this.options.maxValue) {
+      this.options.maxValue = minValue + this.options.stepSize;
+    }
+
+    this.options.minValue = minValue;
+
+    this.updateValues('minValueChanged', true);
+  }
+
   fixValueToPrecision(value: number): number {
     return Number.parseFloat(value.toFixed(this.fractionalPrecision));
   }
@@ -166,6 +179,7 @@ class Model extends EventEmitter implements IModel {
     setShowTip: this.setShowTip.bind(this),
     setShowScale: this.setShowScale.bind(this),
     setStepSize: this.setStepSize.bind(this),
+    setMinValue: this.setMinValue.bind(this),
   }
 
   private updateValues(eventName: EventName, ignoreIsFixed = false) {
