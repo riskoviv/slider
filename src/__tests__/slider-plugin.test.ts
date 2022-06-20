@@ -711,7 +711,16 @@ describe('slider-plugin', () => {
         .toBe(true);
     });
 
-    test.todo('setMinValue()');
+    test('setMinValue(number) should update minValue, move thumb(s) & tip(s) to new positions, update fractionalPrecision, update scale values', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        isInterval: true, showTip: true, showScale: true,
+      });
+
+      $sliderInstance.setMinValue(-80);
+
+      const $scaleElem = $sliderInstance.find('.slider__scale');
+      expect($scaleElem.find('.slider__scale-text')[0].textContent).toBe('-80');
+    });
 
     test.todo('setMaxValue()');
   });

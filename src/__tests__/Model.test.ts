@@ -487,6 +487,46 @@ describe('Model', () => {
       });
     });
 
+    describe('setMinValue() should set new minValue, emit minValueChanged & valueChanged', () => {
+      const minValueChangedSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
+
+      beforeEach(() => {
+        initModelWithDefaultOptions();
+        model.on('minValueChanged', minValueChangedSpy)
+          .on('valueChanged', valueChangedSpy);
+      });
+
+      test.each([-85, 25.3, 2])(
+        'should set new minValue if it is less than maxValue',
+        (minValue) => {
+          model.setMinValue(minValue);
+
+          expect(model.options.minValue).toBe(minValue);
+          expect(minValueChangedSpy).toBeCalled();
+          expect(valueChangedSpy).toBeCalled();
+        },
+      );
+
+      test.each([123, NaN, -Infinity, Infinity])(
+        'should not set new minValue if it is more than maxValue or is not finite number',
+        (minValue) => {
+          model.setMinValue(minValue);
+
+          expect(model.options.minValue).toBe(defaultOptions.minValue);
+          expect(minValueChangedSpy).not.toBeCalled();
+          expect(valueChangedSpy).not.toBeCalled();
+        },
+      );
+
+      test('if new minValue === maxValue, should set maxValue to new minValue + stepSize and save minValue', () => {
+        model.setMinValue(100);
+
+        expect(model.options.minValue).toBe(100);
+        expect(model.options.maxValue).toBe(110);
+      });
+    });
+
     describe('should not emit their events if the value passed on call is the same as already set', () => {
       beforeAll(() => {
         initModelWithDefaultOptions();
@@ -502,6 +542,7 @@ describe('Model', () => {
           'showTipChanged',
           'showScaleChanged',
           'stepSizeChanged',
+          'minValueChanged',
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
@@ -516,6 +557,7 @@ describe('Model', () => {
         model.setShowTip(false);
         model.setShowScale(false);
         model.setStepSize(10);
+        model.setMinValue(-100);
 
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();
