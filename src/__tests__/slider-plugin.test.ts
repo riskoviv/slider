@@ -665,11 +665,14 @@ describe('slider-plugin', () => {
       expect($sliderInstance.find('.slider__scale').length).toBe(0);
     });
 
+    const getFloatPrecision = (floatNumber: string) => {
+      if (!floatNumber.includes('.')) return 0;
+      return floatNumber.split('.')[1].length;
+    };
+
     const getScaleValuesMaxFractionalPrecision = ($scale: JQuery) => {
-      const valuesFractionSizes = [...$scale.find('.slider__scale-text')].map((scaleTextElem) => {
-        const precision = Number(scaleTextElem.textContent?.split('.')[1]?.length);
-        return Number.isNaN(precision) ? 0 : precision;
-      });
+      const valuesFractionSizes = [...$scale.find('.slider__scale-text')]
+        .map((scaleTextElem) => getFloatPrecision(scaleTextElem.textContent ?? ''));
       return Math.max(...valuesFractionSizes);
     };
 
