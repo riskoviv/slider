@@ -301,8 +301,8 @@ class Model extends EventEmitter implements IModel {
       this.options.minValue,
       this.options.maxValue,
     ].map((value) => {
-      const precision = Number(String(value).split('.')[1]?.length);
-      return Number.isNaN(precision) ? 0 : precision;
+      if (!String(value).includes('.')) return 0;
+      return String(value).split('.')[1].length;
     });
     return Math.max(...fractionSizes);
   }
