@@ -676,6 +676,22 @@ describe('slider-plugin', () => {
       return Math.max(...valuesFractionSizes);
     };
 
+    const areDifferencesBetweenAllScaleValuesEqualToStepSize = (
+      $scale: JQuery, stepSize: number,
+    ) => {
+      const scaleValues = $scale.find('.slider__scale-text')
+        .map((idx, scaleElement) => Number(scaleElement.textContent)).get();
+      const stepSizePrecision = getFloatPrecision(String(stepSize));
+      const areDifferencesEqual = scaleValues.slice(0, scaleValues.length - 1)
+        .every((scaleValue, idx, values) => {
+          if (values[idx + 1] !== undefined) {
+            return Number((values[idx + 1] - scaleValue).toFixed(stepSizePrecision)) === stepSize;
+          }
+          return true;
+        });
+      return areDifferencesEqual;
+    };
+
     test('setStepSize(number) should update positions of thumb1 & 2, update values in tips, update scale values', () => {
       $sliderInstance = $sliderContainer.sliderPlugin({
         isInterval: true, showTip: true, showScale: true,
@@ -691,6 +707,8 @@ describe('slider-plugin', () => {
       const $sliderScale = $sliderInstance.find('.slider__scale');
       expect($sliderScale.children().length).toBe(10);
       expect(getScaleValuesMaxFractionalPrecision($sliderScale)).toBe(2);
+      expect(areDifferencesBetweenAllScaleValuesEqualToStepSize($sliderScale, 23.54))
+        .toBe(true);
     });
 
     test.todo('setMinValue()');
