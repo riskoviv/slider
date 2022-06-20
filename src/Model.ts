@@ -168,14 +168,14 @@ class Model extends EventEmitter implements IModel {
     setStepSize: this.setStepSize.bind(this),
   }
 
-  private updateValues(eventName: EventName) {
+  private updateValues(eventName: EventName, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
 
     this.emit(eventName);
 
     const { value1Fixed, value2Fixed } = this.fixValues();
 
-    if (value1Fixed) {
+    if (ignoreIsFixed || value1Fixed) {
       this.emit('valueChanged', {
         number: 1,
         value: this.options.value1,
@@ -184,7 +184,7 @@ class Model extends EventEmitter implements IModel {
     }
 
     if (this.options.isInterval) {
-      if (value2Fixed) {
+      if (ignoreIsFixed || value2Fixed) {
         this.emit('valueChanged', {
           number: 2,
           value: this.options.value2,
