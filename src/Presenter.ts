@@ -284,7 +284,7 @@ class Presenter {
   }
 
   private modelEventListeners = {
-    changeStepSize: (): void => {
+    updateBounds: (): void => {
       this.defineViewValues();
       if (this.options.showScale) {
         this.updateScale();
