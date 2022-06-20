@@ -84,29 +84,7 @@ class Model extends EventEmitter implements IModel {
       this.options.stepSize = stepSize;
     }
 
-    this.fractionalPrecision = this.identifyMaxFractionalPrecision();
-
-    this.emit('stepSizeChanged');
-
-    const { value1Fixed, value2Fixed } = this.fixValues();
-
-    if (value1Fixed) {
-      this.emit('valueChanged', {
-        number: 1,
-        value: this.options.value1,
-        changeTipValue: true,
-      });
-    }
-
-    if (this.options.isInterval) {
-      if (value2Fixed) {
-        this.emit('valueChanged', {
-          number: 2,
-          value: this.options.value2,
-          changeTipValue: true,
-        });
-      }
-    }
+    this.updateValues('stepSizeChanged');
   }
 
   setValue(number: 1 | 2, value: number): void {
@@ -188,6 +166,32 @@ class Model extends EventEmitter implements IModel {
     setShowProgress: this.setShowProgress.bind(this),
     setShowTip: this.setShowTip.bind(this),
     setShowScale: this.setShowScale.bind(this),
+  }
+
+  private updateValues(eventName: EventName) {
+    this.fractionalPrecision = this.identifyMaxFractionalPrecision();
+
+    this.emit(eventName);
+
+    const { value1Fixed, value2Fixed } = this.fixValues();
+
+    if (value1Fixed) {
+      this.emit('valueChanged', {
+        number: 1,
+        value: this.options.value1,
+        changeTipValue: true,
+      });
+    }
+
+    if (this.options.isInterval) {
+      if (value2Fixed) {
+        this.emit('valueChanged', {
+          number: 2,
+          value: this.options.value2,
+          changeTipValue: true,
+        });
+      }
+    }
   }
 
   private isValueAllowed(value: number): boolean {
