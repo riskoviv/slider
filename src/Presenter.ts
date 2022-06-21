@@ -157,6 +157,7 @@ class Presenter {
       this.createSubView('thumb', 2);
       if (this.options.showTip) {
         this.createSubView('tip', 2);
+        this.createSubView('tip', 3);
       }
     }
 
@@ -316,14 +317,20 @@ class Presenter {
         this.createSubView('thumb', 2);
         if (this.options.showTip) {
           this.createSubView('tip', 2);
+          this.createSubView('tip', 3);
           this.setTipValue({
             number: 2,
             value: this.options.value2,
+          });
+          this.setTipValue({
+            number: 3,
+            value: `${this.options.value1} – ${this.options.value2}`,
           });
         }
       } else {
         this.removeSubView('thumb2');
         this.removeSubView('tip2');
+        this.removeSubView('tip3');
       }
 
       this.view.toggleInterval(isInterval);
@@ -353,15 +360,21 @@ class Presenter {
         });
         if (this.options.isInterval) {
           this.createSubView('tip', 2);
+          this.createSubView('tip', 3);
           this.setTipValue({
             number: 2,
             value: this.options.value2,
+          });
+          this.setTipValue({
+            number: 3,
+            value: `${this.options.value1} – ${this.options.value2}`,
           });
         }
       } else {
         this.removeSubView('tip1');
         if (this.options.isInterval) {
           this.removeSubView('tip2');
+          this.removeSubView('tip3');
         }
       }
     },
@@ -649,9 +662,9 @@ class Presenter {
     this.options[`value${number}`] = value;
   }
 
-  private setTipValue(options: { number: 1 | 2, value: number }): void {
+  private setTipValue(options: { number: 1 | 2 | 3, value: number | string }): void {
     const { number: tipNumber, value } = options;
-    const tipName = tipNumber === 1 ? 'tip1' : 'tip2';
+    const tipName: 'tip1' | 'tip2' | 'tip3' = `tip${tipNumber}`;
     const tip = this.subViews[tipName];
     if (tip instanceof TipView) {
       tip.setValue(value);
