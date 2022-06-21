@@ -38,6 +38,7 @@ interface IPluginPublicMethods {
   setShowScale(showScale: boolean): void;
   setStepSize(stepSize: number): void;
   setMinValue(minValue: number): void;
+  setMaxValue(maxValue: number): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -55,6 +56,7 @@ type EventName = (
   | 'showScaleChanged'
   | 'stepSizeChanged'
   | 'minValueChanged'
+  | 'maxValueChanged'
 );
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
