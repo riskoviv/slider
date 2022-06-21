@@ -28,6 +28,8 @@ class Presenter {
 
   private sizeDimension: SizeDimension = 'offsetWidth';
 
+  private positionDimension: 'offsetLeft' | 'offsetTop' = 'offsetLeft';
+
   private positionAxis: PositionAxis = 'left';
 
   private offset: 'offsetX' | 'offsetY' = 'offsetX';
@@ -115,10 +117,12 @@ class Presenter {
   private updateDimensionAndAxis() {
     if (this.options.isVertical) {
       this.sizeDimension = 'offsetHeight';
+      this.positionDimension = 'offsetTop';
       this.positionAxis = 'top';
       this.offset = 'offsetY';
     } else {
       this.sizeDimension = 'offsetWidth';
+      this.positionDimension = 'offsetLeft';
       this.positionAxis = 'left';
       this.offset = 'offsetX';
     }
