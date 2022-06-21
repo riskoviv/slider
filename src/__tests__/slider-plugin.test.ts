@@ -711,18 +711,33 @@ describe('slider-plugin', () => {
         .toBe(true);
     });
 
-    test('setMinValue(number) should update minValue, move thumb(s) & tip(s) to new positions, update fractionalPrecision, update scale values', () => {
-      $sliderInstance = $sliderContainer.sliderPlugin({
-        isInterval: true, showTip: true, showScale: true,
-      });
+    test.each<['Min' | 'Max', string, number[][], string]>([
+      ['Min', 'minValue', [[-80, -50, 50], [10.3, 10.3, 50.3], [-43.12, 6.88, 46.88]], 'first'],
+      ['Max', 'maxValue', [[80, -50, 50], [-5.1, -50, -5.1], [84.37, -50, -10]], 'last'],
+    ])(
+      'set%sValue(number) should update %s, fractionalPrecision, scale values',
+      (minMax, valueName, values, childType) => {
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          isInterval: true, showTip: true, showScale: true,
+        });
+        const $scaleElem = $sliderInstance.find('.slider__scale');
+        const $tip1 = $sliderContainer.find('.slider__tip_1');
+        const $tip2 = $sliderContainer.find('.slider__tip_2');
 
-      $sliderInstance.setMinValue(-80);
+        values.forEach(([minMaxValue, value1, value2]) => {
+          $sliderInstance[`set${minMax}Value`](minMaxValue);
+          const $scaleEdgeElem = $scaleElem
+            .find(`.slider__scale-block:${childType}-child > .slider__scale-text`);
+          const valueFractionSize = getFloatPrecision(`${minMaxValue}`);
+          const scaleElemsFractionSize = getScaleValuesMaxFractionalPrecision($scaleElem);
 
-      const $scaleElem = $sliderInstance.find('.slider__scale');
-      expect($scaleElem.find('.slider__scale-text')[0].textContent).toBe('-80');
-    });
-
-    test.todo('setMaxValue()');
+          expect($scaleEdgeElem.text()).toBe(`${minMaxValue}`);
+          expect($tip1.text()).toBe(`${value1}`);
+          expect($tip2.text()).toBe(`${value2}`);
+          expect(scaleElemsFractionSize).toBe(valueFractionSize);
+        });
+      },
+    );
   });
 
   describe.each([false, true])('edge cases tests, isVertical: %s', (isVertical) => {
