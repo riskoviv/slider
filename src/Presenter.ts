@@ -584,6 +584,22 @@ class Presenter {
     return this.thumbChecks.fixIfOutOfRange(Math.round(position / step) * step);
   }
 
+  private findClosestThumbByValue(value: number): 1 | 2 {
+    const { value1, value2 } = this.options;
+    if (Math.abs(value - value1) > Math.abs(value - value2)) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  private findClosestThumbByPosition(position: number): 1 | 2 {
+    const { 1: position1, 2: position2 } = this.model.viewValues.positions;
+    const position1Diff = Math.abs(position1 - position);
+    const position2Diff = Math.abs(position2 - position);
+    return position1Diff <= position2Diff ? 1 : 2;
+  }
+
   private setPositionAndCurrentValue(options: {
     number: 1 | 2,
     position: number,
@@ -621,22 +637,6 @@ class Presenter {
     if (tip instanceof TipView) {
       tip.setValue(value);
     }
-  }
-
-  private findClosestThumbByValue(value: number): 1 | 2 {
-    const { value1, value2 } = this.options;
-    if (Math.abs(value - value1) > Math.abs(value - value2)) {
-      return 2;
-    }
-
-    return 1;
-  }
-
-  private findClosestThumbByPosition(position: number): 1 | 2 {
-    const { 1: position1, 2: position2 } = this.model.viewValues.positions;
-    const position1Diff = Math.abs(position1 - position);
-    const position2Diff = Math.abs(position2 - position);
-    return position1Diff <= position2Diff ? 1 : 2;
   }
 
   private defineViewValues(): void {
