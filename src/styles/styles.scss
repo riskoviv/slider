@@ -85,6 +85,7 @@
     transform: translateX(-50%);
     pointer-events: none;
     user-select: none;
+    white-space: nowrap;
 
     &::after {
       position: absolute;
@@ -111,6 +112,14 @@
 
     &_2 {
       left: var(--value-2-position);
+    }
+
+    &_3 {
+      left: calc(var(--value-1-position) + ((var(--value-2-position) - var(--value-1-position)) / 2));
+    }
+
+    &_hidden {
+      visibility: hidden;
     }
   }
 
@@ -227,6 +236,8 @@
         right: calc(var(--tip-margin) + 4px);
         transform: translateY(-50%);
         left: unset;
+        text-align: center;
+        white-space: normal;
 
         &::after {
           top: 50%;
@@ -242,6 +253,10 @@
 
         &_2 {
           top: var(--value-2-position);
+        }
+
+        &_3 {
+          top: calc(var(--value-1-position) + ((var(--value-2-position) - var(--value-1-position)) / 2));
         }
       }
 
