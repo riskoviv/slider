@@ -526,6 +526,43 @@ describe('Model', () => {
         expect(model.options.maxValue).toBe(defaultOptions.maxValue + model.options.stepSize);
       });
     });
+
+    describe('setMaxValue() should set new maxValue, emit maxValueChanged & valueChanged', () => {
+      const maxValueChangedSpy = jest.fn();
+      const valueChangedSpy = jest.fn();
+
+      beforeEach(() => {
+        initModelWithDefaultOptions();
+        model.on('maxValueChanged', maxValueChangedSpy)
+          .on('valueChanged', valueChangedSpy);
+      });
+
+      test.each([64, 0, -51])(
+        'should set new maxValue if it is more than minValue',
+        (maxValue) => {
+          model.setMaxValue(maxValue);
+
+          expect(model.options.maxValue).toBe(maxValue);
+          expect(maxValueChangedSpy).toBeCalled();
+          expect(valueChangedSpy).toBeCalled();
+        },
+      );
+
+      test.each([-105, NaN, -Infinity, Infinity])(
+        'should not set new maxValue if it is less than minValue or is not finite number',
+        (maxValue) => {
+          model.setMaxValue(maxValue);
+
+          expect(model.options.maxValue).toBe(defaultOptions.maxValue);
+          expect(maxValueChangedSpy).not.toBeCalled();
+          expect(valueChangedSpy).not.toBeCalled();
+        },
+      );
+
+      test('if new maxValue === minValue, should set maxValue to minValue + stepSize', () => {
+        model.setMaxValue(defaultOptions.minValue);
+
+        expect(model.options.maxValue).toBe(defaultOptions.minValue + defaultOptions.stepSize);
       });
     });
 
@@ -545,6 +582,7 @@ describe('Model', () => {
           'showScaleChanged',
           'stepSizeChanged',
           'minValueChanged',
+          'maxValueChanged',
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
@@ -561,6 +599,7 @@ describe('Model', () => {
         model.setShowScale(false);
         model.setStepSize(10);
         model.setMinValue(-100);
+        model.setMaxValue(100);
 
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();
