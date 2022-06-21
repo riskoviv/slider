@@ -205,8 +205,7 @@ class Presenter {
 
   private createScaleValuesElements(scaleView: ScaleView): void {
     const scale = scaleView;
-    const offset = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    const scaleSize = this.$pluginRootElem[0][offset];
+    const scaleSize = this.$pluginRootElem[0][this.sizeDimension];
     const { allowedValuesCount } = this.model;
     const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
