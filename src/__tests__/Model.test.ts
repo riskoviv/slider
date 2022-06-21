@@ -520,10 +520,12 @@ describe('Model', () => {
       );
 
       test('if new minValue === maxValue, should set maxValue to new minValue + stepSize and save minValue', () => {
-        model.setMinValue(100);
+        model.setMinValue(defaultOptions.maxValue);
 
-        expect(model.options.minValue).toBe(100);
-        expect(model.options.maxValue).toBe(110);
+        expect(model.options.minValue).toBe(defaultOptions.maxValue);
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue + model.options.stepSize);
+      });
+    });
       });
     });
 
