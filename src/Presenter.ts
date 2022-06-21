@@ -19,6 +19,8 @@ type subViewsData = {
   };
 };
 
+const isTipClass = (SubViewClass: subViewClass): SubViewClass is typeof TipView => SubViewClass.name === 'TipView';
+
 class Presenter {
   private options: IPluginOptions;
 
