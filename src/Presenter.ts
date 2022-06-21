@@ -608,6 +608,16 @@ class Presenter {
     return position1Diff <= position2Diff ? 1 : 2;
   }
 
+  private areTipsOverlap() {
+    const [tip1Elem] = this.subViews.tip1.$elem;
+    const [tip2Elem] = this.subViews.tip2.$elem;
+    const tip1Bound = tip1Elem[this.positionDimension] + tip1Elem[this.sizeDimension];
+    const tip2Bound = tip2Elem[this.positionDimension];
+
+    if (tip1Bound >= tip2Bound) return true;
+    return false;
+  }
+
   private setPositionAndCurrentValue(options: {
     number: 1 | 2,
     position: number,
@@ -645,6 +655,34 @@ class Presenter {
     if (tip instanceof TipView) {
       tip.setValue(value);
     }
+
+    if (this.options.isInterval && this.subViewExists('tip2')) {
+      if (this.areTipsOverlap()) {
+        this.showJointTip();
+      } else {
+        this.showSeparateTips();
+      }
+    }
+  }
+
+  private showJointTip() {
+    const tipHiddenClass = 'slider__tip_hidden';
+    const { tip1, tip2, tip3 } = this.subViews;
+    if (tip3 instanceof TipView) {
+      tip3.setValue(`${this.options.value1} – ${this.options.value2}`);
+    }
+
+    tip3.$elem.removeClass(tipHiddenClass);
+    tip1.$elem.addClass(tipHiddenClass);
+    tip2.$elem.addClass(tipHiddenClass);
+  }
+
+  private showSeparateTips() {
+    const tipHiddenClass = 'slider__tip_hidden';
+    const { tip1, tip2, tip3 } = this.subViews;
+    tip3.$elem.addClass(tipHiddenClass);
+    tip1.$elem.removeClass(tipHiddenClass);
+    tip2.$elem.removeClass(tipHiddenClass);
   }
 
   private defineViewValues(): void {
