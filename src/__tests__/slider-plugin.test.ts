@@ -74,7 +74,7 @@ describe('slider-plugin', () => {
     test('should create default instance of slider plugin', () => {
       expect($sliderContainer.children().length).toBe(1);
       expect($sliderContainer.children().first().hasClass('slider')).toBe(true);
-      ['setStepSize', 'setValue', 'setVerticalState', 'setInterval', 'setShowProgress']
+      ['setValue1', 'setValue2', 'setVerticalState', 'setInterval', 'setShowProgress', 'setShowTip', 'setShowScale', 'setStepSize', 'setMinValue', 'setMaxValue']
         .forEach((methodName) => {
           expect($sliderInstance).toHaveProperty(methodName);
         });
@@ -372,8 +372,8 @@ describe('slider-plugin', () => {
 
       afterEach(() => {
         // set default values
-        $sliderInstance.setValue(1, defaultOptions.value1);
-        $sliderInstance.setValue(2, defaultOptions.value2);
+        $sliderInstance.setValue1(defaultOptions.value1);
+        $sliderInstance.setValue2(defaultOptions.value2);
       });
 
       test.each([
@@ -607,8 +607,8 @@ describe('slider-plugin', () => {
       const [controlContainer] = $sliderInstance.find('.slider__control-container');
       const $tipElements = $sliderInstance.find('.slider__tip');
 
-      $sliderInstance.setValue(1, -35);
-      $sliderInstance.setValue(2, 83);
+      $sliderInstance.setValue1(-35);
+      $sliderInstance.setValue2(83);
 
       expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('35%');
       expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('90%');

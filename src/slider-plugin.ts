@@ -37,7 +37,8 @@ $.fn.sliderPlugin = function sliderPlugin(
 
   ({
     getOptions: $sliderElem.getOptions,
-    setValue: $sliderElem.setValue,
+    setValue1: $sliderElem.setValue1,
+    setValue2: $sliderElem.setValue2,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
     setShowProgress: $sliderElem.setShowProgress,

@@ -183,7 +183,7 @@ describe('Model', () => {
   });
 
   describe('API methods', () => {
-    describe('setValue() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
+    describe('setValue1|2() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
       const valueChangedSpy = jest.fn();
 
       beforeEach(() => {
@@ -196,14 +196,14 @@ describe('Model', () => {
       });
 
       test('should set 1st value to 0', () => {
-        model.setValue(1, 0);
+        model.setValue1(0);
 
         expect(model.options.value1).toBe(0);
         expect(valueChangedSpy).toBeCalled();
       });
 
       test('should set 2nd value to -40 (don\'t consider value1)', () => {
-        model.setValue(2, -40);
+        model.setValue2(-40);
 
         expect(model.options.value2).toBe(-40);
         expect(valueChangedSpy).toBeCalled();
@@ -216,7 +216,7 @@ describe('Model', () => {
       `('should set value1 to $valueName if passed value $condition $valueName', ({
         limitValue, passedValue,
       }) => {
-        model.setValue(1, limitValue + passedValue);
+        model.setValue1(limitValue + passedValue);
 
         expect(model.options.value1).toBe(limitValue);
         expect(valueChangedSpy).toBeCalled();
@@ -227,13 +227,13 @@ describe('Model', () => {
         ${'minValue'} | ${defaultOptions.minValue}
         ${'maxValue'} | ${defaultOptions.maxValue}
       `('should set value1 to $valueName if passed value === $valueName', ({ value }) => {
-        model.setValue(1, value);
+        model.setValue1(value);
 
         expect(model.options.value1).toBe(value);
         expect(valueChangedSpy).toBeCalled();
       });
 
-      describe('if isInterval is true, setValue() should consider value1 or value2', () => {
+      describe('if isInterval is true, setValue1|2() should consider value1 or value2', () => {
         let customModel: Model;
 
         beforeAll(() => {
@@ -275,8 +275,8 @@ describe('Model', () => {
         ])(
           'if value$secondaryValue.number intent to set to $valueChange.side value$primaryValue.number, set value$secondaryValue.number to $valueChange.result',
           ({ primaryValue, secondaryValue }) => {
-            customModel.setValue(primaryValue.number, primaryValue.value);
-            customModel.setValue(secondaryValue.number, secondaryValue.sourceValue);
+            customModel[`setValue${primaryValue.number}`](primaryValue.value);
+            customModel[`setValue${secondaryValue.number}`](secondaryValue.sourceValue);
 
             expect(customModel.options[`value${primaryValue.number}`])
               .toBe(primaryValue.value);
@@ -550,7 +550,8 @@ describe('Model', () => {
           listeners.push(listener);
         });
 
-        model.setValue(1, -50);
+        model.setValue1(-50);
+        model.setValue2(50);
         model.setVerticalState(false);
         model.setInterval(false);
         model.setShowProgress(false);

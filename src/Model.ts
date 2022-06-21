@@ -73,16 +73,12 @@ class Model extends EventEmitter implements IModel {
     ) + 1;
   }
 
-  setValue(number: 1 | 2, value: number): void {
-    const valueNumber: 'value1' | 'value2' = `value${number}`;
-    if (this.options[valueNumber] === value) return;
+  setValue1(value: number): void {
+    this.setValue(1, value);
+  }
 
-    this.options[valueNumber] = this.fixValue(number, value);
-    this.emit('valueChanged', {
-      number,
-      value: this.options[valueNumber],
-      changeTipValue: true,
-    });
+  setValue2(value: number): void {
+    this.setValue(2, value);
   }
 
   setVerticalState(isVertical: boolean): void {
@@ -172,7 +168,8 @@ class Model extends EventEmitter implements IModel {
 
   publicMethods: IPluginPublicMethods = {
     getOptions: this.getOptions.bind(this),
-    setValue: this.setValue.bind(this),
+    setValue1: this.setValue1.bind(this),
+    setValue2: this.setValue2.bind(this),
     setVerticalState: this.setVerticalState.bind(this),
     setInterval: this.setInterval.bind(this),
     setShowProgress: this.setShowProgress.bind(this),
@@ -180,6 +177,18 @@ class Model extends EventEmitter implements IModel {
     setShowScale: this.setShowScale.bind(this),
     setStepSize: this.setStepSize.bind(this),
     setMinValue: this.setMinValue.bind(this),
+  }
+
+  private setValue(number: 1 | 2, value: number): void {
+    const valueNumber: 'value1' | 'value2' = `value${number}`;
+    if (this.options[valueNumber] === value) return;
+
+    this.options[valueNumber] = this.fixValue(number, value);
+    this.emit('valueChanged', {
+      number,
+      value: this.options[valueNumber],
+      changeTipValue: true,
+    });
   }
 
   private updateValues(eventName: EventName, ignoreIsFixed = false) {

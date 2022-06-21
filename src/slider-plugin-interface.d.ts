@@ -29,7 +29,8 @@ interface IPluginFunction {
 
 interface IPluginPublicMethods {
   getOptions(): IPluginOptions;
-  setValue(thumbNumber: 1 | 2, valueIndex: number): void;
+  setValue1(value: number): void;
+  setValue2(value: number): void;
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
