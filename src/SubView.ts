@@ -6,7 +6,7 @@ abstract class SubView extends EventEmitter implements ISubView {
 
   constructor(
     private readonly viewType: ViewType,
-    private readonly elementNumber?: 1 | 2,
+    private readonly elementNumber?: 1 | 2 | 3,
   ) {
     super();
     this.$elem = this.render();

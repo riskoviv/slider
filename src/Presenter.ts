@@ -163,14 +163,18 @@ class Presenter {
     }
   }
 
-  private createSubView(subViewName: ViewType, number?: 1 | 2): void {
+  private createSubView(subViewName: ViewType, number?: 1 | 2 | 3): void {
     const currentElementData = this.subViewCreationData[subViewName];
     let subViewFullName = subViewName;
     const SubViewClass = currentElementData.constructorClass;
     if (subViewName === 'thumb' || subViewName === 'tip') {
       subViewFullName += number ?? 1;
       if (!this.subViewExists(subViewFullName)) {
-        this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
+        if (isTipClass(SubViewClass)) {
+          this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
+        } else if (number !== 3) {
+          this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
+        }
       }
     } else if (!this.subViewExists(subViewFullName)) {
       this.subViews[subViewFullName] = new SubViewClass();
