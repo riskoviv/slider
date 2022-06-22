@@ -22,8 +22,21 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
  */
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
+type EventName = (
+  | 'sliderPointerDown'
   | 'value1Changed'
   | 'value2Changed'
+  | 'scaleValueSelect'
+  | 'isVerticalChanged'
+  | 'isIntervalChanged'
+  | 'showProgressChanged'
+  | 'showTipChanged'
+  | 'showScaleChanged'
+  | 'stepSizeChanged'
+  | 'minValueChanged'
+  | 'maxValueChanged'
+);
+
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
   (options: Partial<IPluginOptions> = {}): JQuery;
@@ -41,24 +54,12 @@ interface IPluginPublicMethods {
   setStepSize(stepSize: number): void;
   setMinValue(minValue: number): void;
   setMaxValue(maxValue: number): void;
+  subscribeElementToEvent(element: HTMLInputElement, event: EventName): void
 }
 
 interface JQuery extends IPluginPublicMethods {
   sliderPlugin: IPluginFunction;
 }
-
-type EventName = (
-  | 'sliderPointerDown'
-  | 'scaleValueSelect'
-  | 'isVerticalChanged'
-  | 'isIntervalChanged'
-  | 'showProgressChanged'
-  | 'showTipChanged'
-  | 'showScaleChanged'
-  | 'stepSizeChanged'
-  | 'minValueChanged'
-  | 'maxValueChanged'
-);
 
 type EventHandler<argumentType> = (arg: argumentType) => void;
 

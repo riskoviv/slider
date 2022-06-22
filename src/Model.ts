@@ -142,7 +142,7 @@ class Model extends EventEmitter implements IModel {
       this.options.stepSize = stepSize;
     }
 
-    this.updateValues('stepSizeChanged');
+    this.updateValues('stepSizeChanged', stepSize);
   }
 
   setMinValue(minValue: number): void {
@@ -155,7 +155,7 @@ class Model extends EventEmitter implements IModel {
 
     this.options.minValue = minValue;
 
-    this.updateValues('minValueChanged', true);
+    this.updateValues('minValueChanged', minValue, true);
   }
 
   setMaxValue(maxValue: number): void {
@@ -168,11 +168,36 @@ class Model extends EventEmitter implements IModel {
       this.options.maxValue = maxValue;
     }
 
-    this.updateValues('maxValueChanged', true);
+    this.updateValues('maxValueChanged', maxValue, true);
   }
 
   fixValueToPrecision(value: number): number {
     return Number.parseFloat(value.toFixed(this.fractionalPrecision));
+  }
+
+  subscribeElementToEvent(element: HTMLInputElement, event: EventName): void {
+    const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
+      const subscribedElement = inputElement;
+      const updateCheckbox = (value: boolean) => {
+        subscribedElement.checked = value;
+      };
+      return updateCheckbox;
+    };
+
+    const makeNumericInputElementUpdater = (inputElement: HTMLInputElement) => {
+      const subscribedElement = inputElement;
+      const updateNumericInput = (arg: { value: number } | number) => {
+        if (typeof arg === 'object') subscribedElement.value = String(arg.value);
+        else subscribedElement.value = String(arg);
+      };
+      return updateNumericInput;
+    };
+
+    if (element.type === 'checkbox') {
+      this.on(event, makeCheckboxElementUpdater(element));
+    } else if (element.type === 'number') {
+      this.on(event, makeNumericInputElementUpdater(element));
+    }
   }
 
   publicMethods: IPluginPublicMethods = {
@@ -187,6 +212,7 @@ class Model extends EventEmitter implements IModel {
     setStepSize: this.setStepSize.bind(this),
     setMinValue: this.setMinValue.bind(this),
     setMaxValue: this.setMaxValue.bind(this),
+    subscribeElementToEvent: this.subscribeElementToEvent.bind(this),
   }
 
   private setValue(number: 1 | 2, value: number): void {
@@ -200,10 +226,10 @@ class Model extends EventEmitter implements IModel {
     });
   }
 
-  private updateValues(eventName: EventName, ignoreIsFixed = false) {
+  private updateValues(eventName: EventName, value: number, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
 
-    this.emit(eventName);
+    this.emit(eventName, value);
 
     const { value1Fixed, value2Fixed } = this.fixValues();
 

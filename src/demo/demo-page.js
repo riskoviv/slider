@@ -80,6 +80,7 @@ $(() => {
     window.slider1.setInterval(this.checked);
   }
 
+  window.slider1.subscribeElementToEvent($panel1Interval[0], 'isIntervalChanged');
   $panel1Interval.on('change', slider1ChangeIsInterval);
 
   /**
