@@ -33,6 +33,12 @@ $(() => {
   const $panel1Tip = $('.panel__tip', $panel1);
   /** @type {JQuery<HTMLInputElement>} */
   const $panel1Scale = $('.panel__scale', $panel1);
+  /** @type {JQuery<HTMLInputElement>} */
+  const $panel1Value1 = $('.panel__value1', $panel1);
+  /** @type {JQuery<HTMLInputElement>} */
+  const $panel1Value2 = $('.panel__value2', $panel1);
+  /** @type {JQuery<HTMLInputElement>} */
+  const $panel1StepSize = $('.panel__step-size', $panel1);
 
   /**
    * @typedef {{
@@ -72,6 +78,22 @@ $(() => {
   if (slider1Options.showScale) {
     $panel1Scale[0].checked = true;
   }
+
+  $panel1Value1.val(slider1Options.value1);
+  $panel1Value1.attr({
+    min: slider1Options.minValue,
+    max: slider1Options.maxValue,
+    step: slider1Options.stepSize,
+  });
+
+  $panel1Value2.val(slider1Options.value2);
+  $panel1Value2.attr({
+    min: slider1Options.minValue,
+    max: slider1Options.maxValue,
+    step: slider1Options.stepSize,
+  });
+
+  $panel1StepSize.val(slider1Options.stepSize);
 
   /**
    * @this HTMLInputElement isInterval checkbox element
@@ -118,4 +140,34 @@ $(() => {
   }
 
   $panel1Scale.on('change', slider1ChangeShowScale);
+
+  /**
+   * @this HTMLInputElement value1 input number element
+   */
+  function slider1ChangeValue1() {
+    window.slider1.setValue1(Number(this.value));
+  }
+
+  window.slider1.subscribeElementToEvent($panel1Value1[0], 'value1Changed');
+  $panel1Value1.on('input', slider1ChangeValue1);
+
+  /**
+   * @this HTMLInputElement value1 input number element
+   */
+  function slider1ChangeValue2() {
+    window.slider1.setValue2(Number(this.value));
+  }
+
+  window.slider1.subscribeElementToEvent($panel1Value2[0], 'value2Changed');
+  $panel1Value2.on('input', slider1ChangeValue2);
+
+  /**
+   * @this HTMLInputElement stepSize input number element
+   */
+  function slider1ChangeStepSize() {
+    window.slider1.setStepSize(Number(this.value));
+  }
+
+  window.slider1.subscribeElementToEvent($panel1StepSize[0], 'stepSizeChanged');
+  $panel1StepSize.on('input', slider1ChangeStepSize);
 });
