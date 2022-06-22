@@ -22,6 +22,8 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
  */
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
+  | 'value1Changed'
+  | 'value2Changed'
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
   (options: Partial<IPluginOptions> = {}): JQuery;
@@ -47,7 +49,6 @@ interface JQuery extends IPluginPublicMethods {
 
 type EventName = (
   | 'sliderPointerDown'
-  | 'valueChanged'
   | 'scaleValueSelect'
   | 'isVerticalChanged'
   | 'isIntervalChanged'

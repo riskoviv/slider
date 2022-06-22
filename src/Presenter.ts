@@ -96,7 +96,8 @@ class Presenter {
     const listeners = this.modelEventListeners;
     this.model.on('isVerticalChanged', listeners.changeOrientation)
       .on('isIntervalChanged', listeners.changeInterval)
-      .on('valueChanged', listeners.setValueAndPosition)
+      .on('value1Changed', listeners.makeSetValueAndPosition(1))
+      .on('value2Changed', listeners.makeSetValueAndPosition(2))
       .on('showProgressChanged', listeners.changeShowProgress)
       .on('showTipChanged', listeners.changeShowTip)
       .on('showScaleChanged', listeners.changeShowScale)
@@ -336,8 +337,8 @@ class Presenter {
       this.view.toggleInterval(isInterval);
     },
 
-    setValueAndPosition: (
-      { number, value, changeTipValue }: { number: 1 | 2, value: number, changeTipValue: boolean },
+    makeSetValueAndPosition: (number: 1 | 2) => ((
+      { value, changeTipValue }: { value: number, changeTipValue: boolean },
     ): void => {
       if (this.options.showTip && changeTipValue) {
         this.setTipValue({ number, value });
@@ -348,7 +349,7 @@ class Presenter {
       if (this.options.showTip) {
         this.showJointOrSeparateTips();
       }
-    },
+    }),
 
     changeShowProgress: (showProgress: boolean): void => {
       this.view.toggleProgressBar(showProgress);

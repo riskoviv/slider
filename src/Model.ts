@@ -94,8 +94,7 @@ class Model extends EventEmitter implements IModel {
     this.emit('isIntervalChanged', isInterval);
 
     if (value1Fixed) {
-      this.emit('valueChanged', {
-        number: 1,
+      this.emit('value1Changed', {
         value: this.options.value1,
         changeTipValue: true,
       });
@@ -103,8 +102,7 @@ class Model extends EventEmitter implements IModel {
 
     if (isInterval) {
       if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
-        this.emit('valueChanged', {
-          number: 2,
+        this.emit('value2Changed', {
           value: this.options.value2,
           changeTipValue: false,
         });
@@ -196,8 +194,7 @@ class Model extends EventEmitter implements IModel {
     if (this.options[valueNumber] === value) return;
 
     this.options[valueNumber] = this.fixValue(number, value);
-    this.emit('valueChanged', {
-      number,
+    this.emit(`${valueNumber}Changed`, {
       value: this.options[valueNumber],
       changeTipValue: true,
     });
@@ -211,8 +208,7 @@ class Model extends EventEmitter implements IModel {
     const { value1Fixed, value2Fixed } = this.fixValues();
 
     if (ignoreIsFixed || value1Fixed) {
-      this.emit('valueChanged', {
-        number: 1,
+      this.emit('value1Changed', {
         value: this.options.value1,
         changeTipValue: true,
       });
@@ -220,8 +216,7 @@ class Model extends EventEmitter implements IModel {
 
     if (this.options.isInterval) {
       if (ignoreIsFixed || value2Fixed) {
-        this.emit('valueChanged', {
-          number: 2,
+        this.emit('value2Changed', {
           value: this.options.value2,
           changeTipValue: true,
         });

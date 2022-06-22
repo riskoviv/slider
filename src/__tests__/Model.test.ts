@@ -184,29 +184,32 @@ describe('Model', () => {
 
   describe('API methods', () => {
     describe('setValue1|2() sets new 1st or 2nd value considering stepSize and correcting it if it\'s not satisfies stepSize', () => {
-      const valueChangedSpy = jest.fn();
+      const value1ChangedSpy = jest.fn();
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('valueChanged', valueChangedSpy);
+        model.on('value1Changed', value1ChangedSpy);
       });
 
       afterEach(() => {
-        model.off('valueChanged', valueChangedSpy);
+        model.off('value1Changed', value1ChangedSpy);
       });
 
       test('should set 1st value to 0', () => {
         model.setValue1(0);
 
         expect(model.options.value1).toBe(0);
-        expect(valueChangedSpy).toBeCalled();
+        expect(value1ChangedSpy).toBeCalled();
       });
 
       test('should set 2nd value to -40 (don\'t consider value1)', () => {
+        const value2ChangedSpy = jest.fn();
+        model.on('value2Changed', value2ChangedSpy);
         model.setValue2(-40);
 
         expect(model.options.value2).toBe(-40);
-        expect(valueChangedSpy).toBeCalled();
+        expect(value2ChangedSpy).toBeCalled();
+        model.off('value2Changed', value2ChangedSpy);
       });
 
       test.each`
@@ -219,7 +222,7 @@ describe('Model', () => {
         model.setValue1(limitValue + passedValue);
 
         expect(model.options.value1).toBe(limitValue);
-        expect(valueChangedSpy).toBeCalled();
+        expect(value1ChangedSpy).toBeCalled();
       });
 
       test.each`
@@ -230,19 +233,22 @@ describe('Model', () => {
         model.setValue1(value);
 
         expect(model.options.value1).toBe(value);
-        expect(valueChangedSpy).toBeCalled();
+        expect(value1ChangedSpy).toBeCalled();
       });
 
       describe('if isInterval is true, setValue1|2() should consider value1 or value2', () => {
+        const value2ChangedSpy = jest.fn();
         let customModel: Model;
 
         beforeAll(() => {
           customModel = new Model({ ...defaultOptions, isInterval: true });
-          customModel.on('valueChanged', valueChangedSpy);
+          customModel.on('value1Changed', value1ChangedSpy)
+            .on('value1Changed', value2ChangedSpy);
         });
 
         afterAll(() => {
-          customModel.off('valueChanged', valueChangedSpy);
+          customModel.off('value1Changed', value1ChangedSpy)
+            .off('value2Changed', value2ChangedSpy);
         });
 
         test.each<{
@@ -282,7 +288,8 @@ describe('Model', () => {
               .toBe(primaryValue.value);
             expect(customModel.options[`value${secondaryValue.number}`])
               .toBe(secondaryValue.resultValue);
-            expect(valueChangedSpy).toBeCalledTimes(2);
+            expect(value1ChangedSpy).toBeCalledTimes(1);
+            expect(value2ChangedSpy).toBeCalledTimes(1);
           },
         );
       });
@@ -309,12 +316,14 @@ describe('Model', () => {
 
     describe('setInterval()', () => {
       const isIntervalChangedSpy = jest.fn();
-      const valueChangedSpy = jest.fn();
+      const value1ChangedSpy = jest.fn();
+      const value2ChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
         model.on('isIntervalChanged', isIntervalChangedSpy);
-        model.on('valueChanged', valueChangedSpy);
+        model.on('value1Changed', value1ChangedSpy)
+          .on('value2Changed', value2ChangedSpy);
       });
 
       test.each([
@@ -327,7 +336,8 @@ describe('Model', () => {
 
         expect(model.options.isInterval).toBe(booleanValue);
         expect(isIntervalChangedSpy).toBeCalled();
-        expect(valueChangedSpy).toBeCalledTimes(valueChangedCallsCount);
+        expect(value1ChangedSpy).not.toBeCalled();
+        expect(value2ChangedSpy).toBeCalledTimes(valueChangedCallsCount);
       });
 
       test.each<[string, [number, number], { value1?: number, value2?: number }]>([
@@ -342,18 +352,19 @@ describe('Model', () => {
             value1,
             value2,
           });
-          customModel.on('isIntervalChanged', isIntervalChangedSpy);
-          customModel.on('valueChanged', valueChangedSpy);
+          customModel.on('isIntervalChanged', isIntervalChangedSpy)
+            .on('value1Changed', value1ChangedSpy)
+            .on('value2Changed', value2ChangedSpy);
 
           customModel.setInterval(true);
 
           expect(isIntervalChangedSpy).toBeCalled();
-          getEntriesWithTypedKeys(resultValues).forEach(([valueName, value], index) => {
+          getEntriesWithTypedKeys(resultValues).forEach(([valueName, value]) => {
             expect(customModel.options[valueName]).toBe(value);
             const number = Number(valueName.slice(-1));
             const changeTipValue = number === 1;
-            expect(valueChangedSpy.mock.calls[index])
-              .toContainEqual({ number, value, changeTipValue });
+            if (number === 1) expect(value1ChangedSpy).toBeCalledWith({ value, changeTipValue });
+            else expect(value2ChangedSpy).toBeCalledWith({ value, changeTipValue });
           });
         },
       );
@@ -418,12 +429,12 @@ describe('Model', () => {
 
     describe('setStepSize(stepSize: number) set or don\'t set values as stepSize option:', () => {
       const stepSizeChangedSpy = jest.fn();
-      const valueChangedSpy = jest.fn();
+      const value1ChangedSpy = jest.fn();
 
       beforeAll(() => {
         initModelWithDefaultOptions();
         model.on('stepSizeChanged', stepSizeChangedSpy)
-          .on('valueChanged', valueChangedSpy);
+          .on('value1Changed', value1ChangedSpy);
       });
 
       test('should set positive integer that is less than range', () => {
@@ -472,7 +483,9 @@ describe('Model', () => {
 
       test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
         const customModel = new Model({ ...defaultOptions, isInterval: true });
-        customModel.on('valueChanged', valueChangedSpy)
+        const value2ChangedSpy = jest.fn();
+        customModel.on('value1Changed', value1ChangedSpy)
+          .on('value2Changed', value2ChangedSpy)
           .on('stepSizeChanged', stepSizeChangedSpy);
         expect(customModel.options.value1).toBe(-50);
         expect(customModel.options.value2).toBe(50);
@@ -480,7 +493,8 @@ describe('Model', () => {
         customModel.setStepSize(4.12);
 
         expect(stepSizeChangedSpy).toBeCalled();
-        expect(valueChangedSpy).toBeCalled();
+        expect(value1ChangedSpy).toBeCalled();
+        expect(value2ChangedSpy).toBeCalled();
         expect(customModel.fractionalPrecision).toBe(2);
         expect(customModel.options.value1).toBe(-50.56);
         expect(customModel.options.value2).toBe(48.32);
@@ -489,12 +503,12 @@ describe('Model', () => {
 
     describe('setMinValue() should set new minValue, emit minValueChanged & valueChanged', () => {
       const minValueChangedSpy = jest.fn();
-      const valueChangedSpy = jest.fn();
+      const value1ChangedSpy = jest.fn();
 
       beforeEach(() => {
         initModelWithDefaultOptions();
         model.on('minValueChanged', minValueChangedSpy)
-          .on('valueChanged', valueChangedSpy);
+          .on('value1Changed', value1ChangedSpy);
       });
 
       test.each([-85, 25.3, 2])(
@@ -504,7 +518,7 @@ describe('Model', () => {
 
           expect(model.options.minValue).toBe(minValue);
           expect(minValueChangedSpy).toBeCalled();
-          expect(valueChangedSpy).toBeCalled();
+          expect(value1ChangedSpy).toBeCalled();
         },
       );
 
@@ -515,7 +529,7 @@ describe('Model', () => {
 
           expect(model.options.minValue).toBe(defaultOptions.minValue);
           expect(minValueChangedSpy).not.toBeCalled();
-          expect(valueChangedSpy).not.toBeCalled();
+          expect(value1ChangedSpy).not.toBeCalled();
         },
       );
 
@@ -529,12 +543,12 @@ describe('Model', () => {
 
     describe('setMaxValue() should set new maxValue, emit maxValueChanged & valueChanged', () => {
       const maxValueChangedSpy = jest.fn();
-      const valueChangedSpy = jest.fn();
+      const value1ChangedSpy = jest.fn();
 
       beforeEach(() => {
         initModelWithDefaultOptions();
         model.on('maxValueChanged', maxValueChangedSpy)
-          .on('valueChanged', valueChangedSpy);
+          .on('value1Changed', value1ChangedSpy);
       });
 
       test.each([64, 0, -51])(
@@ -544,7 +558,8 @@ describe('Model', () => {
 
           expect(model.options.maxValue).toBe(maxValue);
           expect(maxValueChangedSpy).toBeCalled();
-          expect(valueChangedSpy).toBeCalled();
+          if (maxValue < defaultOptions.value1) expect(value1ChangedSpy).toBeCalled();
+          else expect(value1ChangedSpy).not.toBeCalled();
         },
       );
 
@@ -555,7 +570,7 @@ describe('Model', () => {
 
           expect(model.options.maxValue).toBe(defaultOptions.maxValue);
           expect(maxValueChangedSpy).not.toBeCalled();
-          expect(valueChangedSpy).not.toBeCalled();
+          expect(value1ChangedSpy).not.toBeCalled();
         },
       );
 
@@ -574,7 +589,8 @@ describe('Model', () => {
       test('none of methods should emit event and no listeners should be called', () => {
         const listeners: jest.Mock[] = [];
         const eventNames: EventName[] = [
-          'valueChanged',
+          'value1Changed',
+          'value2Changed',
           'isVerticalChanged',
           'isIntervalChanged',
           'showProgressChanged',
