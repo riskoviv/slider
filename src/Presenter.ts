@@ -530,9 +530,7 @@ class Presenter {
 
   private pixelsToPercentsOfSliderLength(pixels: number): number {
     const sliderLength = this.view.$controlContainer[0][this.sizeDimension];
-    return this.thumbChecks.fixIfOutOfRange(
-      Number(((pixels / sliderLength) * 100).toFixed(2)),
-    );
+    return this.thumbChecks.fixIfOutOfRange(((pixels / sliderLength) * 100));
   }
 
   private findClosestAllowedPosition(position: number): number {
