@@ -300,6 +300,7 @@ class Presenter {
   private modelEventListeners = {
     updateBounds: (): void => {
       this.defineViewValues();
+      this.view.setThumbThickness(this.model.viewValues.stepInPercents);
       if (this.options.showScale) {
         this.updateScale();
       }
