@@ -1,7 +1,7 @@
 abstract class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on<argumentType>(event: EventName, handler: EventHandler<argumentType>): this {
+  on<argumentType>(event: EventName | ViewEventName, handler: EventHandler<argumentType>): this {
     if (this.events[event] === undefined) {
       this.events[event] = new Set<EventHandler<argumentType>>();
     }
@@ -9,7 +9,7 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  off<argumentType>(event: EventName, handler?: EventHandler<argumentType>): this {
+  off<argumentType>(event: EventName | ViewEventName, handler?: EventHandler<argumentType>): this {
     if (handler !== undefined) {
       this.events[event]?.delete(handler);
     } else {
@@ -18,7 +18,7 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  protected emit<argumentType>(event: EventName, arg?: argumentType): void {
+  protected emit<argumentType>(event: EventName | ViewEventName, arg?: argumentType): void {
     try {
       if (this.events[event] === undefined) {
         const emitError = new Error();

@@ -23,10 +23,8 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
 type EventName = (
-  | 'sliderPointerDown'
   | 'value1Changed'
   | 'value2Changed'
-  | 'scaleValueSelect'
   | 'isVerticalChanged'
   | 'isIntervalChanged'
   | 'showProgressChanged'
@@ -36,6 +34,11 @@ type EventName = (
   | 'minValueChanged'
   | 'maxValueChanged'
 );
+
+type ViewEventName = (
+  | 'sliderPointerDown'
+  | 'scaleValueSelect'
+)
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
@@ -64,12 +67,12 @@ interface JQuery extends IPluginPublicMethods {
 type EventHandler<argumentType> = (arg: argumentType) => void;
 
 type EventsStorage = {
-  [event in EventName]?: Set<EventHandler>;
+  [event in EventName | ViewEventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on<argumentType>(evt: EventName, handler: EventHandler<argumentType>): this;
-  off<argumentType>(evt: EventName, handler?: EventHandler<argumentType>): this;
+  on<argumentType>(evt: EventName | ViewEventName, handler: EventHandler<argumentType>): this;
+  off<argumentType>(evt: EventName | ViewEventName, handler?: EventHandler<argumentType>): this;
 }
 
 type ViewValues = {
