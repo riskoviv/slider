@@ -74,7 +74,6 @@ type ViewValues = {
   positions: { 1: number, 2: number },
   penultimatePosition: number,
   stepInPercents: number,
-  halfStepFromPenultimateToMax: number,
 };
 
 interface IModel extends IEventEmitter, IPluginPublicMethods {

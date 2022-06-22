@@ -292,7 +292,7 @@ class Presenter {
   private getValueByPosition(position: number): number {
     if (position === 100) return this.options.maxValue;
     const index = this.getIndexByPosition(position);
-    return this.model.getValueByIndex(index);
+    return this.fixValue(this.model.getValueByIndex(index));
   }
 
   private modelEventListeners = {
@@ -402,22 +402,6 @@ class Presenter {
       return newPosition > thumb1Position;
     },
 
-    isSetToMaxPositionAllowed: (newPosition: number) => (
-      this.currentThumbData.currentPosition !== 100
-      && this.isPointerLessThanHalfStepAwayFromMax(newPosition)
-    ),
-
-    isSetToPenultimatePositionAllowed: (newPosition: number) => (
-      this.currentThumbData.currentPosition !== this.model.viewValues.penultimatePosition
-      && this.isPointerLessThanHalfStepAwayFromPenultimate(newPosition)
-    ),
-
-    isOtherThumbOnPenultimatePosition: () => {
-      const otherThumbNumber = this.currentThumbData.thumbNumber === 1 ? 2 : 1;
-      const otherThumbPosition = this.model.viewValues.positions[otherThumbNumber];
-      return otherThumbPosition === this.model.viewValues.penultimatePosition;
-    },
-
     fixIfOutOfRange: (position: number): number => {
       if (position < 0) return 0;
       if (position > 100) return 100;
@@ -444,30 +428,20 @@ class Presenter {
           : 1;
 
         this.saveCurrentThumbData(closestThumb);
-        if (this.thumbChecks.isSetToMaxPositionAllowed(position)) {
-          if (!(this.options.isInterval && closestThumb === 1)) {
+        const allowedPosition = this.findClosestAllowedPosition(position);
+        const allowedValue = this.getValueByPosition(allowedPosition);
+
+        if (allowedPosition !== this.currentThumbData.currentPosition
+            && allowedValue !== this.currentThumbData.currentValue) {
+          const isFirstThumbAwayFromSecondThumb = this.options.isInterval
+            ? this.thumbChecks.isThumbKeepsDistance(allowedPosition)
+            : true;
+          if (isFirstThumbAwayFromSecondThumb) {
             this.setPositionAndCurrentValue({
               number: closestThumb,
-              position: 100,
-              value: this.options.maxValue,
+              position: allowedPosition,
+              value: allowedValue,
             });
-          }
-        } else if (!this.isPointerLessThanHalfStepAwayFromMax(position)) {
-          const allowedPosition = this.findClosestAllowedPosition(position);
-          const allowedValue = this.fixValue(this.getValueByPosition(allowedPosition));
-
-          if (allowedPosition !== this.currentThumbData.currentPosition
-              && allowedValue !== this.currentThumbData.currentValue) {
-            const isFirstThumbAwayFromSecondThumb = this.options.isInterval
-              ? this.thumbChecks.isThumbKeepsDistance(allowedPosition)
-              : true;
-            if (isFirstThumbAwayFromSecondThumb) {
-              this.setPositionAndCurrentValue({
-                number: closestThumb,
-                position: allowedPosition,
-                value: allowedValue,
-              });
-            }
           }
         }
       }
@@ -479,44 +453,20 @@ class Presenter {
     },
 
     sliderPointerMove: (e: PointerEvent): void => {
-      let newPosition = this.pixelsToPercentsOfSliderLength(e[this.offset]);
+      const newPosition = this.findClosestAllowedPosition(
+        this.pixelsToPercentsOfSliderLength(e[this.offset]),
+      );
       const { thumbNumber } = this.currentThumbData;
-      if (this.thumbChecks.isSetToMaxPositionAllowed(newPosition)) {
-        if (!(this.options.isInterval && thumbNumber === 1)) {
-          this.setPositionAndCurrentValue({
-            number: thumbNumber,
-            position: 100,
-            value: this.options.maxValue,
-          });
-        }
-      } else if (this.thumbChecks.isSetToPenultimatePositionAllowed(newPosition)) {
-        const isThumbAwayFromOtherThumb = this.options.isInterval
-          ? !this.thumbChecks.isOtherThumbOnPenultimatePosition()
-          : true;
-        if (isThumbAwayFromOtherThumb) {
-          this.setPositionAndCurrentValue({
-            number: thumbNumber,
-            position: this.model.viewValues.penultimatePosition,
-            value: this.model.penultimateValue,
-          });
-        }
-      } else {
-          newPosition = this.findClosestAllowedPosition(
-            this.thumbChecks.fixIfOutOfRange(newPosition),
-          );
-          const isThumbAwayFromOtherThumb = this.options.isInterval
-            ? this.thumbChecks.isThumbKeepsDistance(newPosition)
-            : true;
-          const newValue = this.fixValue(this.getValueByPosition(newPosition));
-          if (isThumbAwayFromOtherThumb) {
-            this.setPositionAndCurrentValue({
-              number: thumbNumber,
-              position: newPosition,
-              value: newValue,
-            });
-          }
-        }
+      const isThumbAwayFromOtherThumb = this.options.isInterval
+        ? this.thumbChecks.isThumbKeepsDistance(newPosition)
+        : true;
       if (isThumbAwayFromOtherThumb && newPosition !== this.currentThumbData.currentPosition) {
+        const newValue = this.fixValue(this.getValueByPosition(newPosition));
+        this.setPositionAndCurrentValue({
+          number: thumbNumber,
+          position: newPosition,
+          value: newValue,
+        });
       }
     },
 
@@ -578,25 +528,20 @@ class Presenter {
     return this.model.viewValues.stepInPercents * (this.model.allowedValuesCount - 2);
   }
 
-  private isPointerLessThanHalfStepAwayFromMax(newPosition: number) {
-    return newPosition > this.model.viewValues.penultimatePosition
-      + this.model.viewValues.halfStepFromPenultimateToMax;
-  }
-
-  private isPointerLessThanHalfStepAwayFromPenultimate(newPosition: number) {
-    return newPosition < 100 - this.model.viewValues.halfStepFromPenultimateToMax
-      && newPosition > this.model.viewValues.penultimatePosition;
-  }
-
   private pixelsToPercentsOfSliderLength(pixels: number): number {
-    return Number(((pixels / sliderLength) * 100).toFixed(1));
     const sliderLength = this.view.$controlContainer[0][this.sizeDimension];
+    return this.thumbChecks.fixIfOutOfRange(
+      Number(((pixels / sliderLength) * 100).toFixed(2)),
+    );
   }
 
   private findClosestAllowedPosition(position: number): number {
-    if (position === 100) return 100;
+    if (position > this.model.viewValues.penultimatePosition) {
+      const finalStep = 100 - this.model.viewValues.penultimatePosition;
+      return Math.round(position / finalStep) * finalStep;
+    }
     const step = this.model.viewValues.stepInPercents;
-    return this.thumbChecks.fixIfOutOfRange(Math.round(position / step) * step);
+    return Math.round(position / step) * step;
   }
 
   private findClosestThumbByValue(value: number): 1 | 2 {
@@ -699,9 +644,6 @@ class Presenter {
     this.model.allowedValuesCount = this.model.getAllowedValuesCount();
     this.model.penultimateValue = this.model.getPenultimateValue();
     this.model.viewValues.penultimatePosition = this.getPenultimatePosition();
-    this.model.viewValues.halfStepFromPenultimateToMax = (
-      100 - this.model.viewValues.penultimatePosition
-    ) / 2;
   }
 }
 
