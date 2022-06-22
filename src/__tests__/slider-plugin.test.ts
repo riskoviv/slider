@@ -572,7 +572,7 @@ describe('slider-plugin', () => {
       expect($sliderInstance.find('.slider__thumb').length).toBe(2);
       if (showTip) {
         $tipElements = $sliderInstance.find('.slider__tip');
-        expect($tipElements.length).toBe(2);
+        expect($tipElements.length).toBe(3);
         expect($tipElements[1].textContent).toBe('50');
       }
 
@@ -633,7 +633,7 @@ describe('slider-plugin', () => {
       'setShowTip() should cause adding/removing of tip element(s) on controlContainer and set values in them',
       (isInterval) => {
         $sliderInstance = $sliderContainer.sliderPlugin({ isInterval });
-        const tipsCount = isInterval ? 2 : 1;
+        const tipsCount = isInterval ? 3 : 1;
         let $tipElements = $sliderInstance.find('.slider__tip');
         expect($tipElements.length).toBe(0);
 
