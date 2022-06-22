@@ -18,10 +18,11 @@ body {
 .panel {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
 
   label {
     user-select: none;
-    margin-left: 20px;
   }
 }
 
