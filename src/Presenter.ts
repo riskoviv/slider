@@ -391,11 +391,6 @@ class Presenter {
   };
 
   private thumbChecks = {
-    isCursorMovedHalfStep: (position: number): boolean => (
-      Math.abs(position - this.currentThumbData.currentPosition)
-        > this.model.viewValues.halfStepInPercents
-    ),
-
     isThumbKeepsDistance: (newPosition: number): boolean => {
       const { thumbNumber } = this.currentThumbData;
       if (thumbNumber === 1) {
@@ -506,8 +501,6 @@ class Presenter {
           });
         }
       } else {
-        const movedHalfStep = this.thumbChecks.isCursorMovedHalfStep(newPosition);
-        if (movedHalfStep) {
           newPosition = this.findClosestAllowedPosition(
             this.thumbChecks.fixIfOutOfRange(newPosition),
           );
@@ -523,6 +516,7 @@ class Presenter {
             });
           }
         }
+      if (isThumbAwayFromOtherThumb && newPosition !== this.currentThumbData.currentPosition) {
       }
     },
 
@@ -702,7 +696,6 @@ class Presenter {
     const { minValue, maxValue, stepSize } = this.options;
     const totalSliderRange = maxValue - minValue;
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
-    this.model.viewValues.halfStepInPercents = this.model.viewValues.stepInPercents / 2;
     this.model.allowedValuesCount = this.model.getAllowedValuesCount();
     this.model.penultimateValue = this.model.getPenultimateValue();
     this.model.viewValues.penultimatePosition = this.getPenultimatePosition();

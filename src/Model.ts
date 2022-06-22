@@ -12,7 +12,6 @@ class Model extends EventEmitter implements IModel {
   viewValues: ViewValues = {
     positions: { 1: NaN, 2: NaN },
     stepInPercents: NaN,
-    halfStepInPercents: NaN,
     penultimatePosition: NaN,
     halfStepFromPenultimateToMax: NaN,
   };
