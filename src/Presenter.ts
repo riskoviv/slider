@@ -324,10 +324,6 @@ class Presenter {
             number: 2,
             value: this.options.value2,
           });
-          this.setTipValue({
-            number: 3,
-            value: `${this.options.value1} – ${this.options.value2}`,
-          });
         }
       } else {
         this.removeSubView('thumb2');
@@ -335,6 +331,7 @@ class Presenter {
         this.removeSubView('tip3');
       }
 
+      this.showJointOrSeparateTips();
       this.view.toggleInterval(isInterval);
     },
 
@@ -347,6 +344,9 @@ class Presenter {
 
       const position = this.getPositionByValue(value);
       this.setPosition(number, position);
+      if (this.options.showTip) {
+        this.showJointOrSeparateTips();
+      }
     },
 
     changeShowProgress: (showProgress: boolean): void => {
@@ -564,12 +564,15 @@ class Presenter {
   }
 
   private areTipsOverlap() {
-    const [tip1Elem] = this.subViews.tip1.$elem;
-    const [tip2Elem] = this.subViews.tip2.$elem;
-    const tip1Bound = tip1Elem[this.positionDimension] + tip1Elem[this.sizeDimension];
-    const tip2Bound = tip2Elem[this.positionDimension];
+    if (this.subViewExists('tip1') && this.subViewExists('tip2')) {
+      const [tip1Elem] = this.subViews.tip1.$elem;
+      const [tip2Elem] = this.subViews.tip2.$elem;
+      const tip1Bound = tip1Elem[this.positionDimension] + tip1Elem[this.sizeDimension];
+      const tip2Bound = tip2Elem[this.positionDimension];
+      if (tip1Bound >= tip2Bound) return true;
+      return false;
+    }
 
-    if (tip1Bound >= tip2Bound) return true;
     return false;
   }
 
@@ -612,10 +615,21 @@ class Presenter {
     }
 
     if (this.options.isInterval && this.subViewExists('tip2')) {
+      this.showJointOrSeparateTips();
+    }
+  }
+
+  private showJointOrSeparateTips() {
+    if (this.options.isInterval && this.options.showTip) {
       if (this.areTipsOverlap()) {
         this.showJointTip();
       } else {
         this.showSeparateTips();
+      }
+    } else if (this.options.showTip) {
+      const { tip1 } = this.subViews;
+      if (tip1 instanceof TipView) {
+        tip1.$elem.removeClass(this.tipHiddenClass);
       }
     }
   }
