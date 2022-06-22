@@ -394,12 +394,12 @@ describe('slider-plugin', () => {
       );
 
       test.each([
-        [1, 170, 510, 15, 70, 40],
-        [2, 510, 170, -15, 30, -40],
+        [1, 170, 680, 70, 40],
+        [2, 510, 0, 30, -40],
       ])(
         'should not set active thumb (%i) position beyond passive thumb position by pointermove',
         async (
-          activeThumb, startPoint, passiveThumbPoint, activeThumbExcess, expectedPosition, tipValue,
+          activeThumb, startPoint, activeThumbEndPoint, expectedPosition, tipValue,
         ) => {
           expect.assertions(6);
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
@@ -407,7 +407,6 @@ describe('slider-plugin', () => {
           expect(tipElements[1].textContent).toBe('-50');
           expect(tipElements[2].textContent).toBe('50');
           const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
-          const activeThumbEndPoint = passiveThumbPoint + activeThumbExcess;
 
           makePointerdown(controlContainer, offsetAxis, startPoint, activeThumbElem);
           await makePointermove(controlContainer, offsetAxis, startPoint, activeThumbEndPoint);
