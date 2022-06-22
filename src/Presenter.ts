@@ -42,6 +42,8 @@ class Presenter {
 
   private fixValue = this.model.fixValueToPrecision.bind(this.model);
 
+  private tipHiddenClass = 'slider__tip_hidden';
+
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -619,23 +621,21 @@ class Presenter {
   }
 
   private showJointTip() {
-    const tipHiddenClass = 'slider__tip_hidden';
     const { tip1, tip2, tip3 } = this.subViews;
     if (tip3 instanceof TipView) {
       tip3.setValue(`${this.options.value1} – ${this.options.value2}`);
     }
 
-    tip3.$elem.removeClass(tipHiddenClass);
-    tip1.$elem.addClass(tipHiddenClass);
-    tip2.$elem.addClass(tipHiddenClass);
+    tip3.$elem.removeClass(this.tipHiddenClass);
+    tip1.$elem.addClass(this.tipHiddenClass);
+    tip2.$elem.addClass(this.tipHiddenClass);
   }
 
   private showSeparateTips() {
-    const tipHiddenClass = 'slider__tip_hidden';
     const { tip1, tip2, tip3 } = this.subViews;
-    tip3.$elem.addClass(tipHiddenClass);
-    tip1.$elem.removeClass(tipHiddenClass);
-    tip2.$elem.removeClass(tipHiddenClass);
+    tip3.$elem.addClass(this.tipHiddenClass);
+    tip1.$elem.removeClass(this.tipHiddenClass);
+    tip2.$elem.removeClass(this.tipHiddenClass);
   }
 
   private defineViewValues(): void {
