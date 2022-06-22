@@ -595,9 +595,8 @@ class Presenter {
   }
 
   private pixelsToPercentsOfSliderLength(pixels: number): number {
-    const offset = this.options.isVertical ? 'offsetHeight' : 'offsetWidth';
-    const sliderLength = this.view.$controlContainer[0][offset];
     return Number(((pixels / sliderLength) * 100).toFixed(1));
+    const sliderLength = this.view.$controlContainer[0][this.sizeDimension];
   }
 
   private findClosestAllowedPosition(position: number): number {
