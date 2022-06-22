@@ -215,7 +215,7 @@ class Model extends EventEmitter implements IModel {
     subscribeElementToEvent: this.subscribeElementToEvent.bind(this),
   }
 
-  private setValue(number: 1 | 2, value: number): void {
+  setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
     const valueNumber: 'value1' | 'value2' = `value${number}`;
     if (this.options[valueNumber] === value) return;
 
@@ -223,6 +223,7 @@ class Model extends EventEmitter implements IModel {
     this.emit(`${valueNumber}Changed`, {
       value: this.options[valueNumber],
       changeTipValue: true,
+      onlySaveValue,
     });
   }
 

@@ -92,6 +92,7 @@ interface IModel extends IEventEmitter, IPluginPublicMethods {
   getPenultimateValue(): number;
   getAllowedValuesCount(): number;
   fixValueToPrecision(value: number): number;
+  setValue(number: 1 | 2, value: number, onlySaveValue?: boolean): void;
 }
 
 type PositionAxis = 'left' | 'top';

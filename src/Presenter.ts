@@ -338,14 +338,21 @@ class Presenter {
     },
 
     makeSetValueAndPosition: (number: 1 | 2) => ((
-      { value, changeTipValue }: { value: number, changeTipValue: boolean },
+      {
+        value,
+        changeTipValue,
+        onlySaveValue,
+      }: { value: number, changeTipValue: boolean, onlySaveValue: boolean },
     ): void => {
       if (this.options.showTip && changeTipValue) {
         this.setTipValue({ number, value });
       }
 
       const position = this.getPositionByValue(value);
-      this.setPosition(number, position);
+      if (!onlySaveValue) {
+        this.setPosition(number, position);
+      }
+
       if (this.options.showTip) {
         this.showJointOrSeparateTips();
       }
@@ -605,7 +612,7 @@ class Presenter {
 
   private saveCurrentValue(number: 1 | 2, value: number): void {
     this.currentThumbData.currentValue = value;
-    this.options[`value${number}`] = value;
+    this.model.setValue(number, value, true);
   }
 
   private setTipValue(options: { number: 1 | 2 | 3, value: number | string }): void {
