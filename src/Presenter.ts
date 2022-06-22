@@ -535,8 +535,11 @@ class Presenter {
 
   private findClosestAllowedPosition(position: number): number {
     if (position > this.model.viewValues.penultimatePosition) {
-      const finalStep = 100 - this.model.viewValues.penultimatePosition;
-      return Math.round(position / finalStep) * finalStep;
+      const finalHalfStep = (100 - this.model.viewValues.penultimatePosition) / 2;
+      if (position < this.model.viewValues.penultimatePosition + finalHalfStep) {
+        return this.model.viewValues.penultimatePosition;
+      }
+      return 100;
     }
     const step = this.model.viewValues.stepInPercents;
     return Math.round(position / step) * step;
