@@ -21,7 +21,7 @@ class Panel {
   }
 
   private subscribeElementsToBoundsChanges() {
-    const bounds = ['min', 'max', 'step'];
+    const bounds = ['min', 'step'];
     bounds.forEach((bound) => {
       const boundChangeListener = (e: Event) => {
         const { target } = e;
@@ -38,6 +38,7 @@ class Panel {
       return floatNumber.split('.')[1].length;
     };
 
+    bounds.push('max');
     const stepFractionSizeListener = (e: Event) => {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
@@ -77,7 +78,6 @@ class Panel {
         event,
         method,
         this.pluginOptions.minValue,
-        this.pluginOptions.maxValue,
         this.pluginOptions.stepSize,
       );
     });
@@ -110,11 +110,10 @@ class Panel {
     event: EventName,
     method: keyof IPluginPublicValueMethods,
     min?: number,
-    max?: number,
     step?: number,
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input-${label}" value="${value}"></input>`);
-    $inputElement.attr({ min, max, step });
+    $inputElement.attr({ min, step });
     const $labeledNumberElement = $(`<label class="panel__${label}">${label}</label>`).append($inputElement);
     this.sliderPlugin.subscribeElementToEvent($inputElement[0], event);
     const inputValueChangeListener = (e: Event) => {
