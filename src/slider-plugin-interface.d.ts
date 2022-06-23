@@ -45,19 +45,25 @@ interface IPluginFunction {
   (options: Partial<IPluginOptions> = {}): JQuery;
 }
 
-interface IPluginPublicMethods {
-  getOptions(): IPluginOptions;
-  setValue1(value: number): void;
-  setValue2(value: number): void;
+interface IPluginPublicStateMethods {
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
   setShowTip(showTip: boolean): void;
   setShowScale(showScale: boolean): void;
+}
+
+interface IPluginPublicValueMethods {
+  setValue1(value: number): void;
+  setValue2(value: number): void;
   setStepSize(stepSize: number): void;
   setMinValue(minValue: number): void;
   setMaxValue(maxValue: number): void;
-  subscribeElementToEvent(element: HTMLInputElement, event: EventName): void
+}
+
+interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
+  getOptions(): IPluginOptions;
+  subscribeElementToEvent(element: HTMLInputElement, event: EventName): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
