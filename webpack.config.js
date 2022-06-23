@@ -12,7 +12,7 @@ const filename = (ext) => (
     : `[name].${ext}`
 );
 const filepath = (pathdata, ext) => (
-  pathdata.chunk.name === 'demo-page'
+  ['demo-page', 'panel'].includes(pathdata.chunk.name)
     ? `demo/${filename(ext)}`
     : filename(ext)
 );
@@ -22,6 +22,7 @@ export default {
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
     'demo-page': './src/demo/demo-page.js',
+    panel: './src/Panel.ts',
   },
   output: {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
