@@ -1,0 +1,18 @@
+.panel {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: absolute;
+  bottom:0;
+  right: 0;
+
+  label {
+    user-select: none;
+    color: #aaa;
+
+    @media (prefers-color-scheme: light) {
+      color: black;
+    }
+  }
+}

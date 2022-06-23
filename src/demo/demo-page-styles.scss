@@ -15,17 +15,6 @@ body {
   margin: 0;
 }
 
-.panel {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 10px;
-
-  label {
-    user-select: none;
-  }
-}
-
 .data-monitor {
   position: fixed;
   bottom: 0;
@@ -59,6 +48,7 @@ body {
   margin: 0 50px;
   // width: 600px;
   height: 100%;
+  position: relative;
 
   &_vertical {
     margin-left: 150px;
