@@ -1,6 +1,6 @@
 {
   "name": "slider",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "slider jQuery plugin written in TypeScript using MVP architecture",
   "main": "slider-plugin.ts",
   "private": true,
