@@ -240,7 +240,7 @@ describe('Model', () => {
         const value2ChangedSpy = jest.fn();
         let customModel: Model;
 
-        beforeAll(() => {
+        beforeEach(() => {
           customModel = new Model({ ...defaultOptions, isInterval: true });
           customModel.on('value1Changed', value1ChangedSpy)
             .on('value1Changed', value2ChangedSpy);
@@ -256,6 +256,16 @@ describe('Model', () => {
           secondaryValue: { number: 1 | 2, sourceValue: number, resultValue: number },
           valueChange: { side: string, result: string },
         }>([
+          {
+            primaryValue: { number: 2, value: 20 },
+            secondaryValue: { number: 1, sourceValue: 20, resultValue: 10 },
+            valueChange: { side: 'equal to', result: 'value2 - stepSize' },
+          },
+          {
+            primaryValue: { number: 1, value: -30 },
+            secondaryValue: { number: 2, sourceValue: -30, resultValue: -20 },
+            valueChange: { side: 'equal to', result: 'value1 + stepSize' },
+          },
           {
             primaryValue: { number: 1, value: 0 },
             secondaryValue: { number: 2, sourceValue: -10, resultValue: 10 },
@@ -552,14 +562,16 @@ describe('Model', () => {
       });
 
       test.each([64, 0, -51])(
-        'should set new maxValue if it is more than minValue',
+        'should set new maxValue to %i if it is more than minValue',
         (maxValue) => {
           model.setMaxValue(maxValue);
 
           expect(model.options.maxValue).toBe(maxValue);
           expect(maxValueChangedSpy).toBeCalled();
-          if (maxValue < defaultOptions.value1) expect(value1ChangedSpy).toBeCalled();
-          else expect(value1ChangedSpy).not.toBeCalled();
+          if (maxValue < defaultOptions.value1) {
+            expect(model.getOptions().value1).toBe(maxValue);
+          }
+          expect(value1ChangedSpy).toBeCalled();
         },
       );
 
