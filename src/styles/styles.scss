@@ -116,6 +116,10 @@
 
     &_3 {
       left: calc(var(--value-1-position) + ((var(--value-2-position) - var(--value-1-position)) / 2));
+
+      &::after {
+        display: none;
+      }
     }
 
     &_hidden {
