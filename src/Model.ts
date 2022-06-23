@@ -43,14 +43,14 @@ class Model extends EventEmitter implements IModel {
   getIndexByValueNumber(valueNumber: 1 | 2): number {
     const value = this.options[`value${valueNumber}`];
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    const index = Math.trunc((value - this.options.minValue) / this.options.stepSize);
+    const index = Math.round((value - this.options.minValue) / this.options.stepSize);
 
     return index;
   }
 
   getIndexByValue(value: number): number {
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    return (value - this.options.minValue) / this.options.stepSize;
+    return this.fixValueToPrecision((value - this.options.minValue) / this.options.stepSize);
   }
 
   getValueByIndex(index: number): number {
