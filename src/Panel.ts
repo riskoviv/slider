@@ -21,7 +21,8 @@ class Panel {
   }
 
   private subscribeElementsToBoundsChanges() {
-    ['min', 'max', 'step'].forEach((bound) => {
+    const bounds = ['min', 'max', 'step'];
+    bounds.forEach((bound) => {
       const boundChangeListener = (e: Event) => {
         const { target } = e;
         if (target instanceof HTMLInputElement) {
@@ -31,6 +32,22 @@ class Panel {
       };
       this.panelElements[bound].children()[0].addEventListener('input', boundChangeListener);
     });
+
+    const getFloatPrecision = (floatNumber: string) => {
+      if (!floatNumber.includes('.')) return 0;
+      return floatNumber.split('.')[1].length;
+    };
+
+    const stepFractionSizeListener = (e: Event) => {
+      const { target } = e;
+      if (target instanceof HTMLInputElement) {
+        const boundStepSize = 1 / 10 ** getFloatPrecision(target.value);
+        bounds.forEach((bound) => {
+          this.panelElements[bound].children().prop('step', boundStepSize);
+        });
+      }
+    };
+    this.panelElements.step.children()[0].addEventListener('input', stepFractionSizeListener);
   }
 
   private makePanelElements() {
