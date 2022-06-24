@@ -91,17 +91,9 @@ class Panel {
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input-${label}"></input>`);
     $inputElement[0].checked = checked;
-    const $labeledCheckboxElement = $(`<label class="panel__${label}">${label}</label>`)
-      .append($inputElement);
-    this.sliderPlugin.subscribeElementToEvent($inputElement[0], event);
-    const inputChangeListener = (e: Event) => {
-      const { target } = e;
-      if (target instanceof HTMLInputElement) {
-        this.sliderPlugin[method](target.checked);
-      }
-    };
-    $inputElement[0].addEventListener('change', inputChangeListener);
-    return $labeledCheckboxElement;
+    return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+      label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderStateMethod: method,
+    });
   }
 
   private makeInputNumberElement(
@@ -114,16 +106,40 @@ class Panel {
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input-${label}" value="${value}"></input>`);
     $inputElement.attr({ min, step });
-    const $labeledNumberElement = $(`<label class="panel__${label}">${label}</label>`).append($inputElement);
-    this.sliderPlugin.subscribeElementToEvent($inputElement[0], event);
-    const inputValueChangeListener = (e: Event) => {
+    return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+      label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderValueMethod: method,
+    });
+  }
+
+  private appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+    label,
+    $inputElement,
+    sliderEvent,
+    inputEventType,
+    sliderValueMethod,
+    sliderStateMethod,
+  }: {
+    label: string,
+    $inputElement: JQuery<HTMLInputElement>,
+    sliderEvent: EventName,
+    inputEventType: 'input' | 'change',
+    sliderValueMethod?: keyof IPluginPublicValueMethods,
+    sliderStateMethod?: keyof IPluginPublicStateMethods,
+  }) {
+    const $labelElement = $(`<label class="panel__${label}">${label}</label>`).append($inputElement);
+    this.sliderPlugin.subscribeElementToEvent($inputElement[0], sliderEvent);
+    const panelInputListener = (e: Event) => {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
-        this.sliderPlugin[method](Number(target.value));
+        if (inputEventType === 'input' && sliderValueMethod) {
+          this.sliderPlugin[sliderValueMethod](Number(target.value));
+        } else if (inputEventType === 'change' && sliderStateMethod) {
+          this.sliderPlugin[sliderStateMethod](target.checked);
+        }
       }
     };
-    $inputElement[0].addEventListener('input', inputValueChangeListener);
-    return $labeledNumberElement;
+    $inputElement[0].addEventListener(inputEventType, panelInputListener);
+    return $labelElement;
   }
 }
 
