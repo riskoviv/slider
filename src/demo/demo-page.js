@@ -5,7 +5,7 @@ import Panel from '../Panel.ts';
 $(() => {
   const $slider1 = $('#slider1');
   window.slider1 = $slider1.sliderPlugin({
-    stepSize: 3,
+    // stepSize: 3,
     // minValue: 0,
     // maxValue: 500,
     // value1: 50,
@@ -17,7 +17,7 @@ $(() => {
     // showProgressBar: true,
   });
 
-  const realPanel = new Panel(window.slider1);
+  window.realPanel = new Panel(window.slider1);
 
   // const $slider2 = $('#slider2');
   // window.slider2 = $slider2.sliderPlugin({
