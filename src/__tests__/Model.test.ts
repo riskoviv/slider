@@ -231,7 +231,7 @@ describe('Model', () => {
         beforeEach(() => {
           customModel = new Model({ ...defaultOptions, isInterval: true });
           customModel.on('value1Changed', value1ChangedSpy)
-            .on('value1Changed', value2ChangedSpy);
+            .on('value2Changed', value2ChangedSpy);
         });
 
         afterAll(() => {
