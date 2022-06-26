@@ -128,13 +128,14 @@ class Panel {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
         if (inputEventType === 'input' && sliderValueMethod) {
-          this.sliderPlugin[sliderValueMethod](Number(target.value));
+          this.sliderPlugin[sliderValueMethod](target.valueAsNumber);
         } else if (inputEventType === 'change' && sliderStateMethod) {
           this.sliderPlugin[sliderStateMethod](target.checked);
         }
       }
     };
     $inputElement[0].addEventListener(inputEventType, panelInputListener);
+
     return $labelElement;
   }
 }
