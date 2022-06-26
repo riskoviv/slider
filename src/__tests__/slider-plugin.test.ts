@@ -5,20 +5,7 @@ import $ from 'jquery';
 import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
 import { getTypedKeys, getFractionalPartSize, defaultOptions } from '../utils';
-
-window.ResizeObserver = class ResizeObserver {
-  callback: ResizeObserverCallback;
-
-  observe = jest.fn();
-
-  unobserve = jest.fn();
-
-  disconnect = jest.fn();
-
-  constructor(callback: ResizeObserverCallback) {
-    this.callback = callback;
-  }
-};
+import './mocks/ResizeObserver';
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   const childrenCountInParent = children.reduce((childCount, childClass) => (
