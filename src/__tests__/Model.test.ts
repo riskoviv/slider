@@ -1,18 +1,6 @@
 import Model from '../Model';
-import { getEntriesWithTypedKeys } from '../utils';
+import { getEntriesWithTypedKeys, defaultOptions } from '../utils';
 
-const defaultOptions: IPluginOptions = {
-  stepSize: 10,
-  minValue: -100,
-  maxValue: 100,
-  value1: -50,
-  value2: 50,
-  isVertical: false,
-  isInterval: false,
-  showTip: false,
-  showScale: false,
-  showProgressBar: false,
-};
 let model: Model;
 
 const initModelWithDefaultOptions = () => {

@@ -1,5 +1,6 @@
 import './styles/panel-styles.scss';
 import $ from 'jquery';
+import { getFractionalPartSize } from './utils';
 
 class Panel {
   private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"></div>');
@@ -33,16 +34,11 @@ class Panel {
       this.panelElements[bound].children()[0].addEventListener('input', boundChangeListener);
     });
 
-    const getFloatPrecision = (floatNumber: string) => {
-      if (!floatNumber.includes('.')) return 0;
-      return floatNumber.split('.')[1].length;
-    };
-
     bounds.push('max');
     const stepFractionSizeListener = (e: Event) => {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
-        const boundStepSize = 1 / 10 ** getFloatPrecision(target.value);
+        const boundStepSize = 1 / 10 ** getFractionalPartSize(target.value);
         bounds.forEach((bound) => {
           this.panelElements[bound].children().prop('step', boundStepSize);
         });

@@ -1,4 +1,5 @@
 import EventEmitter from './EventEmitter';
+import { getFractionalPartSize } from './utils';
 
 class Model extends EventEmitter implements IModel {
   options: IPluginOptions;
@@ -359,10 +360,7 @@ class Model extends EventEmitter implements IModel {
       this.options.stepSize,
       this.options.minValue,
       this.options.maxValue,
-    ].map((value) => {
-      if (!String(value).includes('.')) return 0;
-      return String(value).split('.')[1].length;
-    });
+    ].map((value) => getFractionalPartSize(value));
     return Math.max(...fractionSizes);
   }
 }

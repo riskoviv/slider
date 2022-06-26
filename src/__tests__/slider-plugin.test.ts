@@ -4,7 +4,7 @@
 import $ from 'jquery';
 import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
-import { getTypedKeys } from '../utils';
+import { getTypedKeys, getFractionalPartSize, defaultOptions } from '../utils';
 
 window.ResizeObserver = class ResizeObserver {
   callback: ResizeObserverCallback;
@@ -18,19 +18,6 @@ window.ResizeObserver = class ResizeObserver {
   constructor(callback: ResizeObserverCallback) {
     this.callback = callback;
   }
-};
-
-const defaultOptions: IPluginOptions = {
-  stepSize: 10,
-  minValue: -100,
-  maxValue: 100,
-  value1: -50,
-  value2: 50,
-  isVertical: false,
-  isInterval: false,
-  showTip: false,
-  showScale: false,
-  showProgressBar: false,
 };
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
@@ -664,14 +651,9 @@ describe('slider-plugin', () => {
       expect($sliderInstance.find('.slider__scale').length).toBe(0);
     });
 
-    const getFloatPrecision = (floatNumber: string) => {
-      if (!floatNumber.includes('.')) return 0;
-      return floatNumber.split('.')[1].length;
-    };
-
     const getScaleValuesMaxFractionalPrecision = ($scale: JQuery) => {
       const valuesFractionSizes = [...$scale.find('.slider__scale-text')]
-        .map((scaleTextElem) => getFloatPrecision(scaleTextElem.textContent ?? ''));
+        .map((scaleTextElem) => getFractionalPartSize(scaleTextElem.textContent ?? ''));
       return Math.max(...valuesFractionSizes);
     };
 
@@ -680,7 +662,7 @@ describe('slider-plugin', () => {
     ) => {
       const scaleValues = $scale.find('.slider__scale-text')
         .map((idx, scaleElement) => Number(scaleElement.textContent)).get();
-      const stepSizePrecision = getFloatPrecision(String(stepSize));
+      const stepSizePrecision = getFractionalPartSize(String(stepSize));
       const areDifferencesEqual = scaleValues.slice(0, scaleValues.length - 1)
         .every((scaleValue, idx, values) => {
           if (values[idx + 1] !== undefined) {
@@ -727,7 +709,7 @@ describe('slider-plugin', () => {
           $sliderInstance[`set${minMax}Value`](minMaxValue);
           const $scaleEdgeElem = $scaleElem
             .find(`.slider__scale-block:${childType}-child > .slider__scale-text`);
-          const valueFractionSize = getFloatPrecision(`${minMaxValue}`);
+          const valueFractionSize = getFractionalPartSize(`${minMaxValue}`);
           const scaleElemsFractionSize = getScaleValuesMaxFractionalPrecision($scaleElem);
 
           expect($scaleEdgeElem.text()).toBe(`${minMaxValue}`);
