@@ -49,9 +49,12 @@ class Model extends EventEmitter implements IModel {
     return index;
   }
 
-  getIndexByValue(value: number): number {
+  getIndexByValue(value: number, precision?: number): number {
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    return this.fixValueToPrecision((value - this.options.minValue) / this.options.stepSize);
+    return this.fixValueToPrecision(
+      (value - this.options.minValue) / this.options.stepSize,
+      precision,
+    );
   }
 
   getValueByIndex(index: number): number {
@@ -172,8 +175,8 @@ class Model extends EventEmitter implements IModel {
     this.updateValues('maxValueChanged', maxValue, true);
   }
 
-  fixValueToPrecision(value: number): number {
-    return Number.parseFloat(value.toFixed(this.fractionalPrecision));
+  fixValueToPrecision(value: number, customPrecision?: number): number {
+    return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
   subscribeElementToEvent(element: HTMLInputElement, event: EventName): void {
@@ -255,7 +258,10 @@ class Model extends EventEmitter implements IModel {
   private isValueAllowed(value: number): boolean {
     if (!this.isValueInRange(value)) return false;
     if (value === this.options.minValue || value === this.options.maxValue) return true;
-    const valueIndex = this.getIndexByValue(value);
+    const valueIndex = this.getIndexByValue(
+      value,
+      Math.max(getFractionalPartSize(value), this.fractionalPrecision) + 1,
+    );
     return Number.isInteger(valueIndex);
   }
 

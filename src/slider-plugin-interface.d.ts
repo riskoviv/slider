@@ -96,7 +96,7 @@ interface IModel extends IEventEmitter, IPluginPublicMethods {
   publicMethods: IPluginPublicMethods;
   getStateOptions(): IPluginStateOptions;
   getIndexByValueNumber(valueNumber: 1 | 2): number;
-  getIndexByValue(value: number): number;
+  getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;
   getPenultimateValue(): number;
   getAllowedValuesCount(): number;
