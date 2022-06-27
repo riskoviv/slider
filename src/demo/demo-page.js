@@ -4,25 +4,28 @@ import Panel from '../Panel.ts';
 
 $(() => {
   const $slider1 = $('#slider1');
-  window.slider1 = $slider1.sliderPlugin({
-    // stepSize: 3,
-    // minValue: 0,
-    // maxValue: 500,
-    // value1: 50,
-    // value2: 92,
-    // isVertical: true,
+  window.slider1 = $slider1.sliderPlugin();
+  window.panel1 = new Panel(window.slider1);
+
+  const $slider2 = $('#slider2');
+  window.slider2 = $slider2.sliderPlugin({
+    showScale: true,
+    showProgressBar: true,
+    showTip: true,
+    isInterval: true,
+  });
+  window.panel2 = new Panel(window.slider2);
+
+  const $slider3 = $('#slider3');
+  window.slider3 = $slider3.sliderPlugin({
+    isVertical: true,
     isInterval: true,
     showTip: true,
-    showScale: true,
-    // showProgressBar: true,
+    minValue: 0,
+    maxValue: 10000,
+    stepSize: 100,
+    value1: 1000,
+    value2: 5000,
   });
-
-  window.realPanel = new Panel(window.slider1);
-
-  // const $slider2 = $('#slider2');
-  // window.slider2 = $slider2.sliderPlugin({
-  //   showScale: true,
-  // });
-
-  // console.log('slider2.getOptions(): ', window.slider2.getOptions());
+  window.panel3 = new Panel(window.slider3);
 });
