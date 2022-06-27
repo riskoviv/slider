@@ -12,15 +12,6 @@ type subViewClass = (
   | typeof TipView
 );
 
-type subViewsData = {
-  [subViewName in ViewType]: {
-    constructorClass: subViewClass,
-    parentElement: JQuery<HTMLElement>,
-  };
-};
-
-const isTipClass = (SubViewClass: subViewClass): SubViewClass is typeof TipView => SubViewClass.name === 'TipView';
-
 class Presenter {
   private options: IPluginOptions;
 
@@ -35,8 +26,6 @@ class Presenter {
   private positionAxis: PositionAxis = 'left';
 
   private offset: 'offsetX' | 'offsetY' = 'offsetX';
-
-  private subViewCreationData: subViewsData;
 
   private sliderResizeObserver: ResizeObserver | undefined;
 
@@ -61,27 +50,8 @@ class Presenter {
     this.updateDimensionAndAxis();
     this.defineViewValues();
     this.view = new View({ isVertical, isInterval, showProgressBar });
-    this.toggleContainerClass(isVertical);
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
     this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
-    this.subViewCreationData = {
-      track: {
-        constructorClass: TrackView,
-        parentElement: this.view.$controlContainer,
-      },
-      thumb: {
-        constructorClass: ThumbView,
-        parentElement: this.view.$controlContainer,
-      },
-      scale: {
-        constructorClass: ScaleView,
-        parentElement: this.view.$elem,
-      },
-      tip: {
-        constructorClass: TipView,
-        parentElement: this.view.$controlContainer,
-      },
-    };
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -170,26 +140,32 @@ class Presenter {
   }
 
   private createSubView(subViewName: ViewType, number?: 1 | 2 | 3): void {
-    const currentElementData = this.subViewCreationData[subViewName];
+    const thumbOrTip = subViewName === 'thumb' || subViewName === 'tip';
     let subViewFullName = subViewName;
-    const SubViewClass = currentElementData.constructorClass;
-    if (subViewName === 'thumb' || subViewName === 'tip') {
-      subViewFullName += number ?? 1;
-      if (!this.subViewExists(subViewFullName)) {
-        if (isTipClass(SubViewClass)) {
-          this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
-        } else if (number !== 3) {
-          this.subViews[subViewFullName] = new SubViewClass(number ?? 1);
-        }
-      }
-    } else if (!this.subViewExists(subViewFullName)) {
-      this.subViews[subViewFullName] = new SubViewClass();
+    if (thumbOrTip && number !== undefined) {
+      subViewFullName += number;
     }
 
-    currentElementData.parentElement.append(this.renderSubView(subViewFullName));
+    if (this.subViewExists(subViewFullName)) return;
+
+    switch (subViewName) {
+      case 'thumb':
+        if (number !== 3) this.subViews[subViewFullName] = new ThumbView(number);
+        break;
+      case 'tip':
+        this.subViews[subViewFullName] = new TipView(number);
+        break;
+      default: {
+        const OtherSubView = subViewName === 'scale' ? ScaleView : TrackView;
+        this.subViews[subViewFullName] = new OtherSubView();
+      }
+    }
 
     if (subViewName === 'scale') {
+      this.view.$elem.append(this.renderSubView(subViewFullName));
       this.subViews[subViewFullName].on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
+    } else {
+      this.view.$controlContainer.append(this.renderSubView(subViewFullName));
     }
   }
 
