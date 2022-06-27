@@ -184,6 +184,8 @@ class Model extends EventEmitter implements IModel {
       const subscribedElement = inputElement;
       const updateCheckbox = (value: boolean) => {
         subscribedElement.checked = value;
+        const changeEvent = new InputEvent('change');
+        subscribedElement.dispatchEvent(changeEvent);
       };
       return updateCheckbox;
     };
@@ -193,6 +195,8 @@ class Model extends EventEmitter implements IModel {
       const updateNumericInput = (arg: { value: number } | number) => {
         if (typeof arg === 'object') subscribedElement.value = String(arg.value);
         else subscribedElement.value = String(arg);
+        const inputEvent = new InputEvent('input');
+        subscribedElement.dispatchEvent(inputEvent);
       };
       return updateNumericInput;
     };
