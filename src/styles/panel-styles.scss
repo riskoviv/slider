@@ -1,18 +1,67 @@
 .panel {
   display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: flex-start;
   gap: 10px;
-  position: absolute;
-  bottom:0;
-  right: 0;
+  align-content: start;
+
+  &__value-options, &__state-options {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
 
   label {
+    font-family: Roboto;
+    font-weight: normal;
+    font-size: 14px;
     user-select: none;
     color: #aaa;
+    border: 2px solid black;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    vertical-align: middle;
+    flex-basis: 100px;
 
     @media (prefers-color-scheme: light) {
       color: black;
     }
+  }
+
+  input {
+    height: 100%;
+    margin-left: 5px;
+    font-family: inherit;
+  }
+
+  input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    text-align: center;
+    // background-color: orangered;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+      content: "❌";
+    }
+
+    &:checked {
+      // background-color: lawngreen;
+
+      &::after {
+        content: "✔";
+        font-weight: bold;
+        color: green;
+        text-shadow: black 0px 0px 3px;
+      }
+    }
+  }
+
+  input[type="number"] {
+    width: 40px;
   }
 }
