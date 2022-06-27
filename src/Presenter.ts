@@ -289,7 +289,7 @@ class Presenter {
       if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
         this.initResizeObserver();
       }
-      this.toggleContainerClass(isVertical);
+      this.showJointOrSeparateTips();
     },
 
     changeInterval: (isInterval: boolean): void => {
@@ -487,10 +487,6 @@ class Presenter {
         : `<p>${description}: <span>${value}</span></p>`;
       this.dataMonitor.append(htmlStr);
     });
-  }
-
-  private toggleContainerClass(isVertical: boolean): void {
-    this.$pluginRootElem.toggleClass('slider-container_vertical', isVertical);
   }
 
   // end of debug tools
