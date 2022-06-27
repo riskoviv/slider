@@ -4,7 +4,7 @@
 import $ from 'jquery';
 import Panel from '../Panel';
 import '../slider-plugin';
-import { defaultOptions, getFractionalPartSize } from '../utils';
+import { getFractionalPartSize } from '../utils';
 import './mocks/ResizeObserver';
 
 describe('Panel', () => {
@@ -15,102 +15,197 @@ describe('Panel', () => {
   let panel: Panel;
   let $panelElement: JQuery<HTMLElement>;
 
-  beforeEach(() => {
-    Object.defineProperties($sliderContainer[0], {
-      offsetWidth: { value: 700 },
-      offsetHeight: { value: 700 },
-    });
-    $sliderInstance = $sliderContainer.sliderPlugin();
-    panel = new Panel($sliderInstance);
-    $panelElement = $sliderContainer.find('.panel');
-  });
-
-  test('if plugin initialized w/ default options, should init Panel w/ all checkboxes unchecked', () => {
-    const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
-
-    $panelCheckboxInputs.each((idx, elem) => {
-      if (elem instanceof HTMLInputElement) {
-        expect(elem.checked).toBe(false);
-      }
-    });
-  });
-
-  test('if plugin initialized w/ all state options as true, should make Panel\'s all checkboxes checked', () => {
-    $sliderInstance = $sliderContainer.sliderPlugin({
-      isVertical: true, isInterval: true, showProgressBar: true, showScale: true, showTip: true,
-    });
-    panel = new Panel($sliderInstance);
-    $panelElement = $sliderContainer.find('.panel');
-    const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
-
-    $panelCheckboxInputs.each((idx, elem) => {
-      if (elem instanceof HTMLInputElement) {
-        expect(elem.checked).toBe(true);
-      }
-    });
-  });
-
-  test('should change every state option after checkbox toggle', () => {
-    const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
-    const inputChangeEventSpy = jest.fn();
-
-    $panelCheckboxInputs.each((idx, elem) => {
-      if (elem instanceof HTMLInputElement) {
-        elem.addEventListener('change', inputChangeEventSpy);
-        // eslint-disable-next-line no-param-reassign
-        elem.checked = true;
-        elem.dispatchEvent(changeEvent);
-        expect(elem.checked).toBe(true);
-      }
+  describe('initialized w/ default options', () => {
+    beforeEach(() => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      panel = new Panel($sliderInstance);
+      $panelElement = $sliderContainer.find('.panel');
     });
 
-    expect(inputChangeEventSpy).toBeCalledTimes(5);
-    const sliderOptions = $sliderInstance.getOptions();
-    const sliderStateOptions: (keyof IPluginStateOptions)[] = ['isVertical', 'isInterval', 'showProgressBar', 'showScale', 'showTip'];
-    sliderStateOptions.forEach((stateOption) => {
-      expect(sliderOptions[stateOption]).toBe(true);
-    });
-  });
+    test('if plugin initialized w/ default options, should init Panel w/ all checkboxes unchecked', () => {
+      const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
 
-  test('should change every numeric option of slider if numeric Panel element\'s value is changed', () => {
-    const data: [string, keyof IPluginValueOptions, number][] = [
-      ['from', 'value1', -30],
-      ['to', 'value2', 70],
-      ['min', 'minValue', -40],
-      ['max', 'maxValue', 50],
-      ['step', 'stepSize', 13],
-    ];
-    data.forEach(([elemClass, option, value]) => {
-      const $panelElem = $panelElement.find(`input[class$="${elemClass}"]`);
-      $panelElem.val(value);
-      $panelElem[0].dispatchEvent(inputEvent);
-      expect($sliderInstance.getOptions()[option]).toBe(value);
-    });
-  });
-
-  test.each([['min', 84], ['step', 3]])(
-    'changing value in %s input should change %s attr of from and to inputs',
-    (constraint, value) => {
-      const $elem: JQuery<HTMLElement> = $panelElement.find(`input[class$="${constraint}"]`);
-      $elem.val(value);
-      $elem[0].dispatchEvent(inputEvent);
-      ['from', 'to'].forEach((inputElem) => {
-        expect($panelElement.find(`input[class$="${inputElem}"]`).attr(constraint)).toBe(`${value}`);
+      $panelCheckboxInputs.each((idx, elem) => {
+        if (elem instanceof HTMLInputElement) {
+          expect(elem.checked).toBe(false);
+        }
       });
-    },
-  );
+    });
 
-  test.each([15.3, 7.51, 9.123, 2])(
-    'should change constraints inputs step attr according to fractional part size of step input',
-    (stepSize) => {
-      const constraints = ['min', 'max', 'step'];
+    test('should fill all number inputs based on slider options values', () => {
+      const valuesNames: [string, keyof IPluginValueOptions][] = [
+        ['from', 'value1'], ['to', 'value2'], ['min', 'minValue'], ['max', 'maxValue'], ['step', 'stepSize'],
+      ];
+      const sliderOptions = $sliderInstance.getOptions();
+
+      valuesNames.forEach(([elemClass, sliderOption]) => {
+        expect(Number($panelElement.find(`input[class$="${elemClass}"]`).val()))
+          .toBe(sliderOptions[sliderOption]);
+      });
+    });
+
+    test('should change every state option after checkbox toggle', () => {
+      const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
+      const inputChangeEventSpy = jest.fn();
+
+      $panelCheckboxInputs.each((idx, elem) => {
+        if (elem instanceof HTMLInputElement) {
+          elem.addEventListener('change', inputChangeEventSpy);
+          // eslint-disable-next-line no-param-reassign
+          elem.checked = true;
+          elem.dispatchEvent(changeEvent);
+          expect(elem.checked).toBe(true);
+        }
+      });
+
+      expect(inputChangeEventSpy).toBeCalledTimes(10);
+      const sliderOptions = $sliderInstance.getOptions();
+      const sliderStateOptions: (keyof IPluginStateOptions)[] = ['isVertical', 'isInterval', 'showProgressBar', 'showScale', 'showTip'];
+      sliderStateOptions.forEach((stateOption) => {
+        expect(sliderOptions[stateOption]).toBe(true);
+      });
+    });
+
+    test('should change every numeric option of slider if numeric Panel element\'s value is changed', () => {
+      const data: [string, keyof IPluginValueOptions, number][] = [
+        ['from', 'value1', -30],
+        ['to', 'value2', 70],
+        ['min', 'minValue', -40],
+        ['max', 'maxValue', 50],
+        ['step', 'stepSize', 13],
+      ];
+
+      data.forEach(([elemClass, option, value]) => {
+        const $panelElem = $panelElement.find(`input[class$="${elemClass}"]`);
+
+        $panelElem.val(value);
+        $panelElem[0].dispatchEvent(inputEvent);
+
+        expect($sliderInstance.getOptions()[option]).toBe(value);
+      });
+    });
+
+    test.each([['min', 84], ['step', 3]])(
+      'changing value in %s input should change min/step attr of from and to inputs',
+      (bound, value) => {
+        const $boundElem = $panelElement.find(`input[class$="${bound}"]`);
+
+        $boundElem.val(value);
+        $boundElem[0].dispatchEvent(inputEvent);
+
+        ['from', 'to'].forEach((inputElem) => {
+          expect($panelElement.find(`input[class$="${inputElem}"]`).attr(bound)).toBe(`${value}`);
+        });
+      },
+    );
+
+    test.each<[keyof IPluginPublicValueMethods, string, number]>([
+      ['setMinValue', 'min', 68], ['setStepSize', 'step', 7.1],
+    ])(
+      'changing value by %s slider method should change %s attr of from and to inputs',
+      (sliderMethod, bound, value) => {
+        $sliderInstance[sliderMethod](value);
+
+        ['from', 'to'].forEach((inputElem) => {
+          expect($panelElement.find(`input[class$="${inputElem}"]`).attr(bound)).toBe(`${value}`);
+        });
+      },
+    );
+
+    test('if step element value changed, should change bounds inputs step attr according to fractional part size of stepSize', () => {
+      const bounds = ['min', 'max', 'step'];
       const stepElem = $panelElement.find('input[class$="step"]');
-      stepElem.val(stepSize);
-      stepElem[0].dispatchEvent(inputEvent);
-      constraints.forEach((constraint) => {
-        const constraintElem = $panelElement.find(`input[class$="${constraint}"]`);
-        expect(constraintElem.attr('step')).toBe(`${1 / 10 ** getFractionalPartSize(stepSize)}`);
+
+      [15.3, 7.51, 9.123, 2].forEach((stepSize) => {
+        stepElem.val(stepSize);
+        stepElem[0].dispatchEvent(inputEvent);
+
+        bounds.forEach((bound) => {
+          const boundElem = $panelElement.find(`input[class$="${bound}"]`);
+          expect(boundElem.attr('step')).toBe(`${1 / 10 ** getFractionalPartSize(stepSize)}`);
+        });
       });
-    },
-  );
+    });
+
+    test('if stepSize changed by setStepSize(), should change bounds inputs step attr according to fractional part size of stepSize', () => {
+      const bounds = ['min', 'max', 'step'];
+
+      [3.4, 5.12, 6.321, 1].forEach((stepSize) => {
+        $sliderInstance.setStepSize(stepSize);
+
+        bounds.forEach((bound) => {
+          const boundElem = $panelElement.find(`input[class$="${bound}"]`);
+          expect(boundElem.attr('step')).toBe(`${1 / 10 ** getFractionalPartSize(stepSize)}`);
+        });
+      });
+    });
+  });
+
+  describe('initialized w/ custom options', () => {
+    test('if plugin initialized w/ all state options as true, should make Panel\'s all checkboxes checked', () => {
+      $sliderInstance = $sliderContainer.sliderPlugin({
+        isVertical: true, isInterval: true, showProgressBar: true, showScale: true, showTip: true,
+      });
+      panel = new Panel($sliderInstance);
+      $panelElement = $sliderContainer.find('.panel');
+      const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
+
+      $panelCheckboxInputs.each((idx, elem) => {
+        if (elem instanceof HTMLInputElement) {
+          expect(elem.checked).toBe(true);
+        }
+      });
+    });
+
+    describe('stepUp() & stepDown() on numeric inputs', () => {
+      let stepSize: number;
+
+      beforeAll(() => {
+        stepSize = 3.5;
+        $sliderInstance = $sliderContainer.sliderPlugin({ stepSize, isInterval: true });
+        panel = new Panel($sliderInstance);
+        $panelElement = $sliderContainer.find('.panel');
+      });
+
+      test.each(['from', 'to'])(
+        '"%s" input should do stepped value change by stepSize from slider options',
+        (valueInputClass) => {
+          const [valueInput] = $panelElement.find(`input[class$="${valueInputClass}"]`);
+          if (valueInput instanceof HTMLInputElement) {
+            const initialValue = valueInput.valueAsNumber;
+
+            valueInput.stepUp();
+            valueInput.dispatchEvent(inputEvent);
+
+            expect(valueInput.valueAsNumber).toBe(initialValue + stepSize);
+
+            valueInput.stepDown();
+            valueInput.dispatchEvent(inputEvent);
+
+            expect(valueInput.valueAsNumber).toBe(initialValue);
+          }
+        },
+      );
+
+      test.each(['min', 'max', 'step'])(
+        '"%s" input should do stepped value change by stepSize based on stepSize value fractional precision',
+        (boundInputClass) => {
+          const [boundInput] = $panelElement.find(`input[class$="${boundInputClass}"]`);
+          if (boundInput instanceof HTMLInputElement) {
+            const initialValue = boundInput.valueAsNumber;
+
+            boundInput.stepUp();
+            boundInput.dispatchEvent(inputEvent);
+
+            expect(boundInput.valueAsNumber).toBe(initialValue + 0.1);
+
+            boundInput.stepDown();
+            boundInput.dispatchEvent(inputEvent);
+
+            expect(boundInput.valueAsNumber).toBe(initialValue);
+          }
+        },
+      );
+    });
+  });
 });
