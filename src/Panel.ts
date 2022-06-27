@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { getFractionalPartSize } from './utils';
 
 class Panel {
-  private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"></div>');
+  private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"><div class="panel__value-options"></div><div class="panel__state-options"></div></div>');
 
   private panelElements: { [elemName: string]: JQuery } = {};
 
@@ -18,7 +18,10 @@ class Panel {
   }
 
   private appendElementsToPanel() {
-    Object.values(this.panelElements).forEach((element) => this.panelRootElement.append(element));
+    Object.values(this.panelElements).forEach((element) => {
+      element.has('input[type="checkbox"]').appendTo(this.panelRootElement.find('.panel__state-options'));
+      element.has('input[type="number"]').appendTo(this.panelRootElement.find('.panel__value-options'));
+    });
   }
 
   private static getStepPrecision(value: string | number) {
@@ -141,7 +144,7 @@ class Panel {
     sliderValueMethod?: keyof IPluginPublicValueMethods,
     sliderStateMethod?: keyof IPluginPublicStateMethods,
   }) {
-    const $labelElement = $(`<label class="panel__${label}">${label}</label>`).append($inputElement);
+    const $labelElement = $(`<label class="panel__label-${label}">${label}</label>`).append($inputElement);
     this.sliderPlugin.subscribeElementToEvent($inputElement[0], sliderEvent);
     const panelInputListener = (e: Event) => {
       const { target } = e;
