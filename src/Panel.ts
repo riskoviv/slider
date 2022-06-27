@@ -21,30 +21,34 @@ class Panel {
     Object.values(this.panelElements).forEach((element) => this.panelRootElement.append(element));
   }
 
+  private static getStepPrecision(value: string | number) {
+    return 1 / 10 ** getFractionalPartSize(value);
+  }
+
   private subscribeElementsToBoundsChanges() {
     const bounds = ['min', 'step'];
     bounds.forEach((bound) => {
-      const boundChangeListener = (e: Event) => {
+      const setValuesBounds = (e: Event) => {
         const { target } = e;
         if (target instanceof HTMLInputElement) {
           this.panelElements.from.children().prop(bound, target.value);
           this.panelElements.to.children().prop(bound, target.value);
         }
       };
-      this.panelElements[bound].children()[0].addEventListener('input', boundChangeListener);
+      this.panelElements[bound].children()[0].addEventListener('input', setValuesBounds);
     });
 
     bounds.push('max');
-    const stepFractionSizeListener = (e: Event) => {
+    const setBoundsStep = (e: Event) => {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
-        const boundStepSize = 1 / 10 ** getFractionalPartSize(target.value);
+        const boundStepSize = Panel.getStepPrecision(target.value);
         bounds.forEach((bound) => {
           this.panelElements[bound].children().prop('step', boundStepSize);
         });
       }
     };
-    this.panelElements.step.children()[0].addEventListener('input', stepFractionSizeListener);
+    this.panelElements.step.children()[0].addEventListener('input', setBoundsStep);
   }
 
   private makePanelElements() {
@@ -73,12 +77,14 @@ class Panel {
         value,
         event,
         method,
-        this.pluginOptions.minValue,
         this.pluginOptions.stepSize,
+        this.pluginOptions.minValue,
       );
     });
     valueOptions.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputNumberElement(label, value, event, method);
+      this.panelElements[label] = this.makeInputNumberElement(
+        label, value, event, method, Panel.getStepPrecision(this.pluginOptions.stepSize),
+      );
     });
   }
 
@@ -97,11 +103,11 @@ class Panel {
     value: number,
     event: EventName,
     method: keyof IPluginPublicValueMethods,
-    min?: number,
     step?: number,
+    min?: number,
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input-${label}" value="${value}"></input>`);
-    $inputElement.attr({ min, step });
+    $inputElement.prop({ step, min });
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderValueMethod: method,
     });
