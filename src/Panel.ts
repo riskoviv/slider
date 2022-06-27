@@ -49,6 +49,19 @@ class Panel {
       }
     };
     this.panelElements.step.children()[0].addEventListener('input', setBoundsStep);
+
+    const toggleToInput = (isInterval: boolean) => {
+      this.panelElements.to.toggleClass('panel__to_disabled', !isInterval);
+      this.panelElements.to.children().prop('disabled', !isInterval);
+    };
+    toggleToInput(this.pluginOptions.isInterval);
+    const checkIsInterval = (e: Event) => {
+      const { target } = e;
+      if (target instanceof HTMLInputElement) {
+        toggleToInput(target.checked);
+      }
+    };
+    this.panelElements.interval.children()[0].addEventListener('change', checkIsInterval);
   }
 
   private makePanelElements() {
