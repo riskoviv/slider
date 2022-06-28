@@ -20,7 +20,7 @@ describe('Panel', () => {
     });
 
     test('if plugin initialized w/ default options, should init Panel w/ all checkboxes unchecked', () => {
-      const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
+      const $panelCheckboxInputs = $panelElement.find('.panel__input_type_checkbox');
 
       $panelCheckboxInputs.each((idx, elem) => {
         if (elem instanceof HTMLInputElement) {
@@ -35,14 +35,14 @@ describe('Panel', () => {
       ];
       const sliderOptions = $sliderInstance.getOptions();
 
-      valuesNames.forEach(([elemClass, sliderOption]) => {
-        expect(Number($panelElement.find(`input[class$="${elemClass}"]`).val()))
+      valuesNames.forEach(([role, sliderOption]) => {
+        expect(Number($panelElement.find(`.panel__input_type_number[data-role="${role}"]`).val()))
           .toBe(sliderOptions[sliderOption]);
       });
     });
 
     test('should change every state option after checkbox toggle', () => {
-      const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
+      const $panelCheckboxInputs = $panelElement.find('.panel__input_type_checkbox');
       const inputChangeEventSpy = jest.fn();
 
       $panelCheckboxInputs.each((idx, elem) => {
@@ -72,8 +72,8 @@ describe('Panel', () => {
         ['step', 'stepSize', 13],
       ];
 
-      data.forEach(([elemClass, option, value]) => {
-        const $panelElem = $panelElement.find(`input[class$="${elemClass}"]`);
+      data.forEach(([role, option, value]) => {
+        const $panelElem = $panelElement.find(`.panel__input_type_number[data-role="${role}"]`);
 
         $panelElem.val(value);
         $panelElem[0].dispatchEvent(inputEvent);
@@ -85,13 +85,13 @@ describe('Panel', () => {
     test.each([['min', 84], ['step', 3]])(
       'changing value in %s input should change min/step attr of from and to inputs',
       (bound, value) => {
-        const $boundElem = $panelElement.find(`input[class$="${bound}"]`);
+        const $boundElem = $panelElement.find(`.panel__input_type_number[data-role="${bound}"]`);
 
         $boundElem.val(value);
         $boundElem[0].dispatchEvent(inputEvent);
 
         ['from', 'to'].forEach((inputElem) => {
-          expect($panelElement.find(`input[class$="${inputElem}"]`).attr(bound)).toBe(`${value}`);
+          expect($panelElement.find(`.panel__input_type_number[data-role="${inputElem}"]`).attr(bound)).toBe(`${value}`);
         });
       },
     );
@@ -104,21 +104,21 @@ describe('Panel', () => {
         $sliderInstance[sliderMethod](value);
 
         ['from', 'to'].forEach((inputElem) => {
-          expect($panelElement.find(`input[class$="${inputElem}"]`).attr(bound)).toBe(`${value}`);
+          expect($panelElement.find(`.panel__input_type_number[data-role="${inputElem}"]`).attr(bound)).toBe(`${value}`);
         });
       },
     );
 
     test('if step element value changed, should change bounds inputs step attr according to fractional part size of stepSize', () => {
       const bounds = ['min', 'max', 'step'];
-      const stepElem = $panelElement.find('input[class$="step"]');
+      const stepElem = $panelElement.find('.panel__input_type_number[data-role="step"]');
 
       [15.3, 7.51, 9.123, 2].forEach((stepSize) => {
         stepElem.val(stepSize);
         stepElem[0].dispatchEvent(inputEvent);
 
         bounds.forEach((bound) => {
-          const boundElem = $panelElement.find(`input[class$="${bound}"]`);
+          const boundElem = $panelElement.find(`.panel__input_type_number[data-role="${bound}"]`);
           expect(boundElem.attr('step')).toBe(`${1 / 10 ** getFractionalPartSize(stepSize)}`);
         });
       });
@@ -131,7 +131,7 @@ describe('Panel', () => {
         $sliderInstance.setStepSize(stepSize);
 
         bounds.forEach((bound) => {
-          const boundElem = $panelElement.find(`input[class$="${bound}"]`);
+          const boundElem = $panelElement.find(`.panel__input_type_number[data-role="${bound}"]`);
           expect(boundElem.attr('step')).toBe(`${1 / 10 ** getFractionalPartSize(stepSize)}`);
         });
       });
@@ -145,7 +145,7 @@ describe('Panel', () => {
       });
       panel = new Panel($sliderInstance);
       $panelElement = $sliderContainer.find('.panel');
-      const $panelCheckboxInputs = $panelElement.find('input[type="checkbox"]');
+      const $panelCheckboxInputs = $panelElement.find('.panel__input_type_checkbox');
 
       $panelCheckboxInputs.each((idx, elem) => {
         if (elem instanceof HTMLInputElement) {
@@ -167,7 +167,7 @@ describe('Panel', () => {
       test.each(['from', 'to'])(
         '"%s" input should do stepped value change by stepSize from slider options',
         (valueInputClass) => {
-          const [valueInput] = $panelElement.find(`input[class$="${valueInputClass}"]`);
+          const [valueInput] = $panelElement.find(`.panel__input_type_number[data-role="${valueInputClass}"]`);
           if (valueInput instanceof HTMLInputElement) {
             const initialValue = valueInput.valueAsNumber;
 
@@ -187,7 +187,7 @@ describe('Panel', () => {
       test.each(['min', 'max', 'step'])(
         '"%s" input should do stepped value change by stepSize based on stepSize value fractional precision',
         (boundInputClass) => {
-          const [boundInput] = $panelElement.find(`input[class$="${boundInputClass}"]`);
+          const [boundInput] = $panelElement.find(`.panel__input_type_number[data-role="${boundInputClass}"]`);
           if (boundInput instanceof HTMLInputElement) {
             const initialValue = boundInput.valueAsNumber;
 

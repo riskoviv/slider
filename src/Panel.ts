@@ -54,7 +54,7 @@ class Panel {
     this.panelElements.step.children()[0].addEventListener('input', setBoundsStep);
 
     const toggleToInput = (isInterval: boolean) => {
-      this.panelElements.to.toggleClass('panel__to_disabled', !isInterval);
+      this.panelElements.to.toggleClass('panel__label_disabled', !isInterval);
       this.panelElements.to.children().prop('disabled', !isInterval);
     };
     toggleToInput(this.pluginOptions.isInterval);
@@ -107,7 +107,7 @@ class Panel {
   private makeInputCheckboxElement(
     label: string, checked: boolean, event: EventName, method: keyof IPluginPublicStateMethods,
   ) {
-    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input-${label}"></input>`);
+    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderStateMethod: method,
@@ -122,7 +122,7 @@ class Panel {
     step?: number,
     min?: number,
   ) {
-    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input-${label}" value="${value}"></input>`);
+    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input_type_number" data-role="${label}" value="${value}"></input>`);
     $inputElement.prop({ step, min });
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderValueMethod: method,
@@ -144,7 +144,7 @@ class Panel {
     sliderValueMethod?: keyof IPluginPublicValueMethods,
     sliderStateMethod?: keyof IPluginPublicStateMethods,
   }) {
-    const $labelElement = $(`<label class="panel__label-${label}">${label}</label>`).append($inputElement);
+    const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`).append($inputElement);
     this.sliderPlugin.subscribeElementToEvent($inputElement[0], sliderEvent);
     const panelInputListener = (e: Event) => {
       const { target } = e;
