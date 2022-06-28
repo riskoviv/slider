@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import $ from 'jquery';
 import Presenter from '../Presenter';
 import Model from '../Model';

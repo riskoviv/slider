@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import $ from 'jquery';
 import Panel from '../Panel';
 import '../slider-plugin';

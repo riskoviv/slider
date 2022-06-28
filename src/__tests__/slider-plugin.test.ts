@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import $ from 'jquery';
 import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
