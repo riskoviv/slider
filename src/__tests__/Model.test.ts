@@ -622,5 +622,44 @@ describe('Model', () => {
         });
       });
     });
+
+    describe('subscribeElementToEvent() receives an HTMLInputElement and depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
+      beforeAll(() => {
+        initModelWithDefaultOptions();
+      });
+
+      test('should subscribe input[type="number"] element to value1Changed event and change its value to arg.value emitted by event', () => {
+        const inputNumberElement = document.createElement('input');
+        inputNumberElement.type = 'number';
+        const value1 = 20;
+
+        model.subscribeElementToEvent(inputNumberElement, 'value1Changed');
+        model.setValue1(value1);
+
+        expect(inputNumberElement.valueAsNumber).toBe(value1);
+      });
+
+      test('should subscribe input[type="number"] element to stepSizeChanged event and change its value to value emitted by event', () => {
+        const inputNumberElement = document.createElement('input');
+        inputNumberElement.type = 'number';
+        const stepSize = 2;
+
+        model.subscribeElementToEvent(inputNumberElement, 'stepSizeChanged');
+        model.setStepSize(stepSize);
+
+        expect(inputNumberElement.valueAsNumber).toBe(stepSize);
+      });
+
+      test('should subscribe input[type="checkbox"] element to isIntervalChanged event and change its "checked" property to value emitted by event', () => {
+        const inputCheckboxElement = document.createElement('input');
+        inputCheckboxElement.type = 'checkbox';
+        const isInterval = true;
+
+        model.subscribeElementToEvent(inputCheckboxElement, 'isIntervalChanged');
+        model.setInterval(isInterval);
+
+        expect(inputCheckboxElement.checked).toBe(isInterval);
+      });
+    });
   });
 });
