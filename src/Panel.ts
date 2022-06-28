@@ -107,7 +107,7 @@ class Panel {
   private makeInputCheckboxElement(
     label: string, checked: boolean, event: EventName, method: keyof IPluginPublicStateMethods,
   ) {
-    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input_type_checkbox" data-role="${label}"></input>`);
+    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderStateMethod: method,
@@ -122,7 +122,7 @@ class Panel {
     step?: number,
     min?: number,
   ) {
-    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input_type_number" data-role="${label}" value="${value}"></input>`);
+    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}" value="${value}"></input>`);
     $inputElement.prop({ step, min });
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderValueMethod: method,
