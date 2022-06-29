@@ -7,18 +7,13 @@ import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 
 let isDev = true;
 
-const filename = (ext) => (
-  isDev
-    ? `[name].[fullhash:7].${ext}`
-    : `[name].${ext}`
-);
 const filepath = (pathData, ext) => {
   switch (pathData.chunk.name) {
     case 'demo-page':
     case 'panel':
-      return `demo/${filename(ext)}`;
+      return `demo/[name].${ext}`;
     default:
-      return filename(ext);
+      return `[name].${ext}`;
   }
 };
 
