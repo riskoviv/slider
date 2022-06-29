@@ -146,7 +146,8 @@ class Panel {
     sliderValueMethod?: keyof IPluginPublicValueMethods,
     sliderStateMethod?: keyof IPluginPublicStateMethods,
   }) {
-    const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`).append($inputElement);
+    const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
+      .append($inputElement);
     this.sliderPlugin.subscribeElementToEvent($inputElement[0], sliderEvent);
     const panelInputListener = (e: Event) => {
       const { target } = e;
