@@ -90,7 +90,7 @@ describe('slider-plugin', () => {
   describe('if options arg passed to plugin is not an object or if it is an array (object that has length property)', () => {
     test.each([
       42, 'fail', [123, 'stepSize'], 321n, Symbol('symbol'),
-    ])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
+    ])('should ignore %s argument and instantiate w/ default options', <T>(arg: T) => {
       $sliderInstance = $sliderContainer.sliderPlugin(arg);
 
       expect($sliderInstance.getOptions()).toStrictEqual(defaultOptions);
