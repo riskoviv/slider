@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import $ from 'jquery';
 import '@testing-library/jest-dom';
 import ScaleView from '../subviews/ScaleView';

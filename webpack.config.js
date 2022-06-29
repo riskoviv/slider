@@ -1,31 +1,34 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import webpack from 'webpack';
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 
-const isDev = process.env.NODE_ENV === 'development';
+let isDev = true;
 
-const filename = (ext) => (
-  isDev
-    ? `[name].[fullhash:7].${ext}`
-    : `[name].${ext}`
-);
-const filepath = (pathdata, ext) => (
-  pathdata.chunk.name === 'demo-page'
-    ? `demo/${filename(ext)}`
-    : filename(ext)
-);
+const filepath = (pathData, ext) => {
+  switch (pathData.chunk.name) {
+    case 'demo-page':
+    case 'panel':
+      return `demo/[name].${ext}`;
+    default:
+      return `[name].${ext}`;
+  }
+};
 
-export default {
+const config = {
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
-    'demo-page': './src/demo/demo-page.js',
+    'demo-page': {
+      import: './src/demo/demo-page.js',
+      dependOn: 'panel',
+    },
+    panel: './src/Panel.ts',
   },
   output: {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    filename: (pathdata) => filepath(pathdata, 'js'),
+    filename: (pathData) => filepath(pathData, 'js'),
     path: path.resolve('dist'),
     clean: true,
   },
@@ -66,7 +69,7 @@ export default {
       jQuery: 'jquery',
     }),
     new MiniCssExtractPlugin({
-      filename: (pathdata) => filepath(pathdata, 'css'),
+      filename: (pathData) => filepath(pathData, 'css'),
     }),
   ],
   externals: {
@@ -83,4 +86,12 @@ export default {
     static: './dist',
   },
   stats: 'minimal',
+};
+
+export default (env, argv) => {
+  if (argv.mode === 'production') {
+    isDev = false;
+  }
+
+  return config;
 };

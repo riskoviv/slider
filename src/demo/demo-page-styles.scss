@@ -1,8 +1,8 @@
 html {
-  --page-color: #ddd;
+  --page-color: #333335;
 
-  @media (prefers-color-scheme: dark) {
-    --page-color: #333335;
+  @media (prefers-color-scheme: light) {
+    --page-color: #ddd;
   }
 }
 
@@ -10,56 +10,27 @@ html, body {
   height: 100%;
 }
 
-body {
+.demo-page {
+  box-sizing: border-box;
   background-color: var(--page-color);
   margin: 0;
-}
-
-.panel {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
+  gap: 2%;
+  padding: 1% 0;
 
-  label {
-    user-select: none;
-    margin-left: 20px;
-  }
-}
+  &__slider-container {
+    position: relative;
+    width: 31%;
+    height: 90%;
+    max-height: 670px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 3%;
 
-.data-monitor {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(102, 102, 102, 0.699);
-  color: #ddd;
-  font-size: 13px;
-  font-family: 'JetBrains Mono', monospace;
-  z-index: 2;
-  backdrop-filter: blur(2px);
-  padding-inline: 15px;
-
-  span {
-    font-weight: bold;
-  }
-
-  @media (max-aspect-ratio: 1/1) {
-    left: unset;
-    right: 0;
-  }
-}
-
-.overscroll-container {
-  box-sizing: border-box;
-  height: 100%;
-  // width: 200%;
-  padding: 50px 0;
-}
-
-.slider-container {
-  margin: 0 50px;
-  // width: 600px;
-  height: 100%;
-
-  &_vertical {
-    margin-left: 150px;
+    > :first-child {
+      flex-basis: 90%;
+    }
   }
 }

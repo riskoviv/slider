@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import View from '../View';
 import { getEntriesWithTypedKeys } from '../utils';
 

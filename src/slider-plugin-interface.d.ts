@@ -22,71 +22,88 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
  */
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
+type EventName = (
+  | 'value1Changed'
+  | 'value2Changed'
+  | 'isVerticalChanged'
+  | 'isIntervalChanged'
+  | 'showProgressChanged'
+  | 'showTipChanged'
+  | 'showScaleChanged'
+  | 'stepSizeChanged'
+  | 'minValueChanged'
+  | 'maxValueChanged'
+);
+
+type ViewEventName = (
+  | 'sliderPointerDown'
+  | 'scaleValueSelect'
+)
+
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
   (options: Partial<IPluginOptions> = {}): JQuery;
 }
 
-interface IPluginPublicMethods {
-  debug: { [methodName: string]: () => IPluginOptions };
-  setStepSize: (stepSize: number) => void;
-  setValue: (thumbNumber: 1 | 2, valueIndex: number) => void;
-  setVerticalState: (isVertical: boolean) => void;
+interface IPluginPublicStateMethods {
+  setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
+  setShowTip(showTip: boolean): void;
+  setShowScale(showScale: boolean): void;
+}
+
+interface IPluginPublicValueMethods {
+  setValue1(value: number): void;
+  setValue2(value: number): void;
+  setStepSize(stepSize: number): void;
+  setMinValue(minValue: number): void;
+  setMaxValue(maxValue: number): void;
+}
+
+interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
+  getOptions(): IPluginOptions;
+  subscribeToEvent<Value>(
+    event: EventName,
+    elementOrCallback: HTMLInputElement | ((value: Value) => void),
+  ): void;
 }
 
 interface JQuery extends IPluginPublicMethods {
   sliderPlugin: IPluginFunction;
 }
 
-type EventName = (
-  | 'sliderPointerDown'
-  | 'stepSizeChanged'
-  | 'valueChanged'
-  | 'scaleValueSelect'
-  | 'isVerticalChanged'
-  | 'isIntervalChanged'
-  | 'showProgressChanged'
-);
-
-type EventHandler<argumentType> = (arg: argumentType) => void;
+type EventHandler<Value, Options> = (value: Value, options?: Options) => void;
 
 type EventsStorage = {
-  [event in EventName]?: Set<EventHandler>;
+  [event in EventName | ViewEventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on<argumentType>(evt: EventName, handler: EventHandler<argumentType>): this;
-  off<argumentType>(evt: EventName, handler?: EventHandler<argumentType>): this;
+  on<Value, Options>(evt: EventName | ViewEventName, handler: EventHandler<Value, Options>): this;
 }
 
 type ViewValues = {
   positions: { 1: number, 2: number },
   penultimatePosition: number,
   stepInPercents: number,
-  halfStepInPercents: number,
-  halfStepFromPenultimateToMax: number,
 };
 
-interface IModel extends IEventEmitter {
+interface IModel extends IEventEmitter, IPluginPublicMethods {
   options: IPluginOptions;
   allowedValuesCount: number;
   fractionalPrecision: number;
   penultimateValue: number;
   viewValues: ViewValues;
-  getOptions(): IPluginOptions;
+  publicMethods: IPluginPublicMethods;
   getStateOptions(): IPluginStateOptions;
   getIndexByValueNumber(valueNumber: 1 | 2): number;
-  getIndexByValue(value: number): number;
+  getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;
   getPenultimateValue(): number;
-  setStepSize(stepSize: number): void;
-  setValue(thumbNumber: 1 | 2, valueIndex: number): void;
-  setVerticalState(isVertical: boolean): void;
-  setInterval(isInterval: boolean): void;
+  getAllowedValuesCount(): number;
   fixValueToPrecision(value: number): number;
-  publicMethods: IPluginPublicMethods;
+  setValue(number: 1 | 2, value: number, onlySaveValue?: boolean): void;
 }
 
 type PositionAxis = 'left' | 'top';
