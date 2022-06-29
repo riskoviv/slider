@@ -475,21 +475,6 @@ class Presenter {
     },
   }
 
-  // debug tools
-  private dataMonitor: JQuery<HTMLElement> = $('.data-monitor');
-
-  private setMonitorData(data: { [description: string]: string | number | boolean }): void {
-    this.dataMonitor.html('');
-    Object.entries(data).forEach(([description, value]) => {
-      const htmlStr = value === ''
-        ? `<p>${description}</p>`
-        : `<p>${description}: <span>${value}</span></p>`;
-      this.dataMonitor.append(htmlStr);
-    });
-  }
-
-  // end of debug tools
-
   private currentThumbData: {
     thumbNumber: 1 | 2,
     currentPosition: number,
