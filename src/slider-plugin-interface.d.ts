@@ -80,7 +80,6 @@ type EventsStorage = {
 };
 
 interface IEventEmitter {
-  off<argumentType>(evt: EventName | ViewEventName, handler?: EventHandler<argumentType>): this;
   on<Value, Options>(evt: EventName | ViewEventName, handler: EventHandler<Value, Options>): this;
 }
 

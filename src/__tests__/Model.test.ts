@@ -179,10 +179,6 @@ describe('Model', () => {
         model.on('value1Changed', value1ChangedSpy);
       });
 
-      afterEach(() => {
-        model.off('value1Changed', value1ChangedSpy);
-      });
-
       test('should set 1st value to 0', () => {
         model.setValue1(0);
 
@@ -197,7 +193,6 @@ describe('Model', () => {
 
         expect(model.options.value2).toBe(-40);
         expect(value2ChangedSpy).toBeCalled();
-        model.off('value2Changed', value2ChangedSpy);
       });
 
       test.each`
@@ -232,11 +227,6 @@ describe('Model', () => {
           customModel = new Model({ ...defaultOptions, isInterval: true });
           customModel.on('value1Changed', value1ChangedSpy)
             .on('value2Changed', value2ChangedSpy);
-        });
-
-        afterAll(() => {
-          customModel.off('value1Changed', value1ChangedSpy)
-            .off('value2Changed', value2ChangedSpy);
         });
 
         test.each<{

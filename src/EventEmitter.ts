@@ -12,15 +12,6 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  off<argumentType>(event: EventName | ViewEventName, handler?: EventHandler<argumentType>): this {
-    if (handler !== undefined) {
-      this.events[event]?.delete(handler);
-    } else {
-      delete this.events[event];
-    }
-    return this;
-  }
-
   protected emit<Value, Options>(
     event: EventName | ViewEventName,
     changedValue: Value,
