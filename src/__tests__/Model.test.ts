@@ -623,7 +623,7 @@ describe('Model', () => {
       });
     });
 
-    describe('subscribeElementToEvent() receives an HTMLInputElement and depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
+    describe('subscribeToEvent() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
       beforeAll(() => {
         initModelWithDefaultOptions();
       });
@@ -633,7 +633,7 @@ describe('Model', () => {
         inputNumberElement.type = 'number';
         const value1 = 20;
 
-        model.subscribeElementToEvent(inputNumberElement, 'value1Changed');
+        model.subscribeToEvent('value1Changed', inputNumberElement);
         model.setValue1(value1);
 
         expect(inputNumberElement.valueAsNumber).toBe(value1);
@@ -644,7 +644,7 @@ describe('Model', () => {
         inputNumberElement.type = 'number';
         const stepSize = 2;
 
-        model.subscribeElementToEvent(inputNumberElement, 'stepSizeChanged');
+        model.subscribeToEvent('stepSizeChanged', inputNumberElement);
         model.setStepSize(stepSize);
 
         expect(inputNumberElement.valueAsNumber).toBe(stepSize);
@@ -655,7 +655,7 @@ describe('Model', () => {
         inputCheckboxElement.type = 'checkbox';
         const isInterval = true;
 
-        model.subscribeElementToEvent(inputCheckboxElement, 'isIntervalChanged');
+        model.subscribeToEvent('isIntervalChanged', inputCheckboxElement);
         model.setInterval(isInterval);
 
         expect(inputCheckboxElement.checked).toBe(isInterval);

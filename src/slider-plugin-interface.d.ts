@@ -63,7 +63,10 @@ interface IPluginPublicValueMethods {
 
 interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
   getOptions(): IPluginOptions;
-  subscribeElementToEvent(element: HTMLInputElement, event: EventName): void;
+  subscribeToEvent<Value>(
+    event: EventName,
+    elementOrCallback: HTMLInputElement | ((value: Value) => void),
+  ): void;
 }
 
 interface JQuery extends IPluginPublicMethods {

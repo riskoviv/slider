@@ -148,7 +148,7 @@ class Panel {
   }) {
     const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
       .append($inputElement);
-    this.sliderPlugin.subscribeElementToEvent($inputElement[0], sliderEvent);
+    this.sliderPlugin.subscribeToEvent(sliderEvent, $inputElement[0]);
     const panelInputListener = (e: Event) => {
       const { target } = e;
       if (target instanceof HTMLInputElement) {

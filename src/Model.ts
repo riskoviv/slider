@@ -179,7 +179,10 @@ class Model extends EventEmitter implements IModel {
     return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
-  subscribeElementToEvent(element: HTMLInputElement, event: EventName): void {
+  subscribeToEvent<Value>(
+    event: EventName,
+    elementOrCallback: HTMLInputElement | ((value: Value) => void),
+  ): void {
     const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
       const subscribedElement = inputElement;
       const updateCheckbox = (value: boolean) => {
@@ -201,10 +204,14 @@ class Model extends EventEmitter implements IModel {
       return updateNumericInput;
     };
 
-    if (element.type === 'checkbox') {
-      this.on(event, makeCheckboxElementUpdater(element));
-    } else if (element.type === 'number') {
-      this.on(event, makeNumericInputElementUpdater(element));
+    if (elementOrCallback instanceof HTMLInputElement) {
+      if (elementOrCallback.type === 'checkbox') {
+        this.on(event, makeCheckboxElementUpdater(elementOrCallback));
+      } else if (elementOrCallback.type === 'number') {
+        this.on(event, makeNumericInputElementUpdater(elementOrCallback));
+      }
+    } else if (elementOrCallback instanceof Function) {
+      this.on(event, elementOrCallback);
     }
   }
 
@@ -220,7 +227,7 @@ class Model extends EventEmitter implements IModel {
     setStepSize: this.setStepSize.bind(this),
     setMinValue: this.setMinValue.bind(this),
     setMaxValue: this.setMaxValue.bind(this),
-    subscribeElementToEvent: this.subscribeElementToEvent.bind(this),
+    subscribeToEvent: this.subscribeToEvent.bind(this),
   }
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
