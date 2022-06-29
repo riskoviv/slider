@@ -11,11 +11,15 @@ const filename = (ext) => (
     ? `[name].[fullhash:7].${ext}`
     : `[name].${ext}`
 );
-const filepath = (pathdata, ext) => (
-  ['demo-page', 'panel'].includes(pathdata.chunk.name)
-    ? `demo/${filename(ext)}`
-    : filename(ext)
-);
+const filepath = (pathData, ext) => {
+  switch (pathData.chunk.name) {
+    case 'demo-page':
+    case 'panel':
+      return `demo/${filename(ext)}`;
+    default:
+      return filename(ext);
+  }
+};
 
 export default {
   mode: 'development',
@@ -26,7 +30,7 @@ export default {
   },
   output: {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    filename: (pathdata) => filepath(pathdata, 'js'),
+    filename: (pathData) => filepath(pathData, 'js'),
     path: path.resolve('dist'),
     clean: true,
   },
