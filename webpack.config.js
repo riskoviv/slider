@@ -5,7 +5,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 
-const isDev = process.env.NODE_ENV === 'development';
+let isDev = true;
 
 const filename = (ext) => (
   isDev
@@ -22,7 +22,7 @@ const filepath = (pathData, ext) => {
   }
 };
 
-export default {
+const config = {
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
@@ -91,4 +91,12 @@ export default {
     static: './dist',
   },
   stats: 'minimal',
+};
+
+export default (env, argv) => {
+  if (argv.mode === 'production') {
+    isDev = false;
+  }
+
+  return config;
 };
