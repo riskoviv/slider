@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import webpack from 'webpack';
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -32,7 +33,6 @@ export default {
     panel: './src/Panel.ts',
   },
   output: {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     filename: (pathData) => filepath(pathData, 'js'),
     path: path.resolve('dist'),
     clean: true,
