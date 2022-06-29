@@ -98,18 +98,12 @@ class Model extends EventEmitter implements IModel {
     this.emit('isIntervalChanged', isInterval);
 
     if (value1Fixed) {
-      this.emit('value1Changed', {
-        value: this.options.value1,
-        changeTipValue: true,
-      });
+      this.emit('value1Changed', this.options.value1, { changeTipValue: true });
     }
 
     if (isInterval) {
       if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
-        this.emit('value2Changed', {
-          value: this.options.value2,
-          changeTipValue: false,
-        });
+        this.emit('value2Changed', this.options.value2, { changeTipValue: false });
       }
     }
   }
@@ -195,9 +189,8 @@ class Model extends EventEmitter implements IModel {
 
     const makeNumericInputElementUpdater = (inputElement: HTMLInputElement) => {
       const subscribedElement = inputElement;
-      const updateNumericInput = (arg: { value: number } | number) => {
-        if (typeof arg === 'object') subscribedElement.value = String(arg.value);
-        else subscribedElement.value = String(arg);
+      const updateNumericInput = (value: number) => {
+        subscribedElement.value = String(value);
         const inputEvent = new InputEvent('input');
         subscribedElement.dispatchEvent(inputEvent);
       };
@@ -235,8 +228,7 @@ class Model extends EventEmitter implements IModel {
     if (this.options[valueNumber] === value) return;
 
     this.options[valueNumber] = this.fixValue(number, value);
-    this.emit(`${valueNumber}Changed`, {
-      value: this.options[valueNumber],
+    this.emit(`${valueNumber}Changed`, this.options[valueNumber], {
       changeTipValue: true,
       onlySaveValue,
     });
@@ -250,18 +242,12 @@ class Model extends EventEmitter implements IModel {
     const { value1Fixed, value2Fixed } = this.fixValues();
 
     if (ignoreIsFixed || value1Fixed) {
-      this.emit('value1Changed', {
-        value: this.options.value1,
-        changeTipValue: true,
-      });
+      this.emit('value1Changed', this.options.value1, { changeTipValue: true });
     }
 
     if (this.options.isInterval) {
       if (ignoreIsFixed || value2Fixed) {
-        this.emit('value2Changed', {
-          value: this.options.value2,
-          changeTipValue: true,
-        });
+        this.emit('value2Changed', this.options.value2, { changeTipValue: true });
       }
     }
   }

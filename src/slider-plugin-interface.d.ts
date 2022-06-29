@@ -73,15 +73,15 @@ interface JQuery extends IPluginPublicMethods {
   sliderPlugin: IPluginFunction;
 }
 
-type EventHandler<argumentType> = (arg: argumentType) => void;
+type EventHandler<Value, Options> = (value: Value, options?: Options) => void;
 
 type EventsStorage = {
   [event in EventName | ViewEventName]?: Set<EventHandler>;
 };
 
 interface IEventEmitter {
-  on<argumentType>(evt: EventName | ViewEventName, handler: EventHandler<argumentType>): this;
   off<argumentType>(evt: EventName | ViewEventName, handler?: EventHandler<argumentType>): this;
+  on<Value, Options>(evt: EventName | ViewEventName, handler: EventHandler<Value, Options>): this;
 }
 
 type ViewValues = {

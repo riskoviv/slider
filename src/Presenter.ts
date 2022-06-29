@@ -313,17 +313,16 @@ class Presenter {
       this.view.toggleInterval(isInterval);
     },
 
-    makeSetValueAndPosition: (number: 1 | 2) => (({
-      value, changeTipValue, onlySaveValue,
-    }: {
-      value: number, changeTipValue: boolean, onlySaveValue: boolean,
-    }): void => {
-      if (this.options.showTip && changeTipValue) {
+    makeSetValueAndPosition: (number: 1 | 2) => ((
+      value: number,
+      options?: { changeTipValue: boolean, onlySaveValue: boolean },
+    ): void => {
+      if (this.options.showTip && options?.changeTipValue) {
         this.setTipValue({ number, value });
       }
 
       const position = this.getPositionByValue(value);
-      if (!onlySaveValue) {
+      if (!options?.onlySaveValue) {
         this.setPosition(number, position);
       }
 

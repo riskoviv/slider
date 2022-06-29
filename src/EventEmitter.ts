@@ -1,9 +1,12 @@
 abstract class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on<argumentType>(event: EventName | ViewEventName, handler: EventHandler<argumentType>): this {
+  on<Value, Options>(
+    event: EventName | ViewEventName,
+    handler: EventHandler<Value, Options>,
+  ): this {
     if (this.events[event] === undefined) {
-      this.events[event] = new Set<EventHandler<argumentType>>();
+      this.events[event] = new Set<EventHandler<Value, Options>>();
     }
     this.events[event]?.add(handler);
     return this;
@@ -18,22 +21,28 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  protected emit<argumentType>(event: EventName | ViewEventName, arg?: argumentType): void {
+  protected emit<Value, Options>(
+    event: EventName | ViewEventName,
+    changedValue: Value,
+    options?: Options,
+  ): void {
     try {
       if (this.events[event] === undefined) {
         const emitError = new Error();
         emitError.name = 'EmitError';
         emitError.message = `${event} event is not registered. arg = ${
-          typeof arg === 'object'
-            ? `{ ${Object.entries(arg).map(
+          typeof changedValue === 'object'
+            ? `{ ${Object.entries(changedValue).map(
               ([key, value]) => `${key}: ${value}`,
             ).join(', ')} }`
-            : arg
+            : changedValue
         }`;
         throw emitError;
       }
 
-      this.events[event]?.forEach((handler) => handler(arg));
+      this.events[event]?.forEach(
+        (handler: EventHandler<Value, Options>) => handler(changedValue, options),
+      );
     } catch (error) {
       console.error(error);
     }
