@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { getFractionalPartSize } from './utils';
 
 class Panel {
-  private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"><div class="panel__value-options"></div><div class="panel__state-options"></div></div>');
+  private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"><div class="panel__options panel__options_group_values"></div><div class="panel__options panel__options_group_states"></div></div>');
 
   private panelElements: { [elemName: string]: JQuery } = {};
 
@@ -19,8 +19,10 @@ class Panel {
 
   private appendElementsToPanel() {
     Object.values(this.panelElements).forEach((element) => {
-      element.has('input[type="checkbox"]').appendTo(this.panelRootElement.find('.panel__state-options'));
-      element.has('input[type="number"]').appendTo(this.panelRootElement.find('.panel__value-options'));
+      element.has('.panel__input_type_number')
+        .appendTo(this.panelRootElement.find('.panel__options_group_values'));
+      element.has('.panel__input_type_checkbox')
+        .appendTo(this.panelRootElement.find('.panel__options_group_states'));
     });
   }
 

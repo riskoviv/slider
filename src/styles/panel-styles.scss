@@ -5,13 +5,13 @@
   gap: 10px;
   align-content: start;
 
-  &__value-options, &__state-options {
+  &__options {
     display: flex;
     justify-content: center;
     width: 100%;
   }
 
-  label {
+  &__label {
     font-family: Roboto;
     font-weight: normal;
     font-size: 14px;
@@ -30,13 +30,11 @@
     }
   }
 
-  input {
+  &__input {
     height: 100%;
     margin-left: 5px;
     font-family: inherit;
-  }
 
-  input[type="checkbox"] {
     appearance: none;
     width: 20px;
     text-align: center;
@@ -48,6 +46,7 @@
     &::after {
       content: "❌";
     }
+    &_type_checkbox {
 
     &:checked {
       // background-color: lawngreen;
@@ -61,7 +60,8 @@
     }
   }
 
-  input[type="number"] {
     width: 40px;
+    &_type_number {
+    }
   }
 }
