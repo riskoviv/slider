@@ -25,7 +25,10 @@ export default {
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
-    'demo-page': './src/demo/demo-page.js',
+    'demo-page': {
+      import: './src/demo/demo-page.js',
+      dependOn: 'panel',
+    },
     panel: './src/Panel.ts',
   },
   output: {
