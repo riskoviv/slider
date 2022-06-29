@@ -1,8 +1,8 @@
 html {
-  --page-color: #ddd;
+  --page-color: #333335;
 
-  @media (prefers-color-scheme: dark) {
-    --page-color: #333335;
+  @media (prefers-color-scheme: light) {
+    --page-color: #ddd;
   }
 }
 
@@ -11,31 +11,26 @@ html, body {
 }
 
 .demo-page {
+  box-sizing: border-box;
   background-color: var(--page-color);
   margin: 0;
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 1%;
+  gap: 2%;
+  padding: 1% 0;
 
   &__slider-container {
-    padding: 15px;
     position: relative;
-    width: 100%;
+    width: 31%;
     height: 90%;
-    max-height: 840px;
-    max-width: 570px;
+    max-height: 670px;
     display: flex;
     flex-direction: column;
     row-gap: 3%;
 
-    > .slider {
-      flex-basis: 70%;
-    }
-
-    > .panel {
-      flex-basis: 30%;
+    > :first-child {
+      flex-basis: 90%;
     }
   }
 }
