@@ -650,6 +650,30 @@ describe('Model', () => {
 
         expect(inputCheckboxElement.checked).toBe(isInterval);
       });
+
+      test('should subscribe callback function to event and call it on event and pass it number value changed during event', () => {
+        let variableChangedByCallback = 0;
+        model.subscribeToEvent('value1Changed', (value: number) => {
+          variableChangedByCallback = value;
+        });
+        const value1 = 30;
+
+        model.setValue1(value1);
+
+        expect(variableChangedByCallback).toBe(value1);
+      });
+
+      test('should subscribe callback function to event and call it on event and pass it boolean value changed during event', () => {
+        let variableChangedByCallback = false;
+        model.subscribeToEvent('showProgressChanged', (value: boolean) => {
+          variableChangedByCallback = value;
+        });
+        const showProgressBar = true;
+
+        model.setShowProgress(showProgressBar);
+
+        expect(variableChangedByCallback).toBe(showProgressBar);
+      });
     });
   });
 });
