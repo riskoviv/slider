@@ -74,7 +74,7 @@ export default {
       jQuery: 'jquery',
     }),
     new MiniCssExtractPlugin({
-      filename: (pathdata) => filepath(pathdata, 'css'),
+      filename: (pathData) => filepath(pathData, 'css'),
     }),
   ],
   externals: {
