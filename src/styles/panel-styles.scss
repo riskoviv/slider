@@ -35,30 +35,59 @@
     margin-left: 5px;
     font-family: inherit;
 
-    appearance: none;
-    width: 20px;
-    text-align: center;
-    // background-color: orangered;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &::after {
-      content: "❌";
-    }
     &_type_checkbox {
+      --height: 20px; // all sizes depend on this variable
+      --padding-small: calc(var(--height) * 0.2);
+      --padding-big: calc(var(--height) * 1.1);
+      --margin-min: calc(var(--height) * 0.1);
+      appearance: none;
+      width: calc(var(--height) * 2.3);
+      min-width: fit-content;
+      height: var(--height);
+      background: #ccc;
+      border-radius: calc(var(--height) / 2);
+      position: relative;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s;
 
-    &:checked {
-      // background-color: lawngreen;
+      &::before {
+        --circle-size: calc(var(--height) * 0.8);
+        width: var(--circle-size);
+        min-width: var(--circle-size);
+        height: var(--circle-size);
+        position: absolute;
+        left: calc(var(--height) * 0.1);
+        background: white;
+        content: '';
+        border-radius: 50%;
+        box-shadow: 0 calc(var(--height) * 0.13) calc(var(--height) * 0.16) 0 rgba(0, 0, 0, 0.3);
+        transition: left 0.3s;
+      }
 
       &::after {
-        content: "✔";
+        content: 'OFF';
+        color: black;
         font-weight: bold;
-        color: green;
-        text-shadow: black 0px 0px 3px;
+        font-size: calc(var(--height) / 2);
+        padding: 0 var(--padding-small) 0 var(--padding-big);
+        white-space: nowrap;
+      }
+
+      &:checked {
+        background: #ca2f73;
+
+        &::before {
+          left: calc(100% - var(--height) * 0.9);
+        }
+
+        &::after {
+          content: 'ON';
+          color: white;
+          padding: 0 var(--padding-big) 0 var(--padding-small);
+        }
       }
     }
-  }
 
     width: 40px;
     &_type_number {
