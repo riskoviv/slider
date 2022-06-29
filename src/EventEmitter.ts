@@ -32,7 +32,10 @@ abstract class EventEmitter implements IEventEmitter {
       }
 
       this.events[event]?.forEach(
-        (handler: EventHandler<Value, Options>) => handler(changedValue, options),
+        (handler: EventHandler<Value, Options>) => {
+          if (options) handler(changedValue, options);
+          else handler(changedValue);
+        },
       );
     } catch (error) {
       console.error(error);
