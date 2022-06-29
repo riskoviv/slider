@@ -16,13 +16,15 @@
   --slider-size: 20px;
   --slider-half-size: calc(var(--slider-size) / 2);
   --slider-quarter-size: calc(var(--slider-half-size) / 2);
-  --main-color: #4eb7a8;
-  --track-color: #9e9e9e;
-  --scale-text-color: #666;
 
-  @media (prefers-color-scheme: dark) {
-    --track-color: #666666;
-    --scale-text-color: #999;
+  --track-color: #666666;
+  --scale-text-color: #999;
+  --main-color: #219187;
+
+  @media (prefers-color-scheme: light) {
+    --main-color: #41a798;
+    --track-color: #9e9e9e;
+    --scale-text-color: #666;
   }
 
   display: flex;
