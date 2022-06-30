@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import TipView from '../subviews/TipView';
 
 describe('TipView', () => {

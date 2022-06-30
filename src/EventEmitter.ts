@@ -1,32 +1,34 @@
 abstract class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on<Value, Options>(
-    event: EventName | ViewEventName,
-    handler: EventHandler<Value, Options>,
-  ): this {
+  on<argumentType>(event: EventName, handler: EventHandler<argumentType>): this {
     if (this.events[event] === undefined) {
-      this.events[event] = new Set<EventHandler<Value, Options>>();
+      this.events[event] = new Set<EventHandler<argumentType>>();
     }
     this.events[event]?.add(handler);
     return this;
   }
 
-  protected emit<Value, Options>(
-    event: EventName | ViewEventName,
-    changedValue: Value,
-    options?: Options,
-  ): void {
+  off<argumentType>(event: EventName, handler?: EventHandler<argumentType>): this {
+    if (handler !== undefined) {
+      this.events[event]?.delete(handler);
+    } else {
+      delete this.events[event];
+    }
+    return this;
+  }
+
+  protected emit<argumentType>(event: EventName, arg?: argumentType): void {
     try {
       if (this.events[event] === undefined) {
         const emitError = new Error();
         emitError.name = 'EmitError';
         emitError.message = `${event} event is not registered. arg = ${
-          typeof changedValue === 'object'
-            ? `{ ${Object.entries(changedValue).map(
+          typeof arg === 'object'
+            ? `{ ${Object.entries(arg).map(
               ([key, value]) => `${key}: ${value}`,
             ).join(', ')} }`
-            : changedValue
+            : arg
         }`;
         throw emitError;
       }

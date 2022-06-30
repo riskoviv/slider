@@ -1,5 +1,4 @@
 import EventEmitter from './EventEmitter';
-import { getFractionalPartSize } from './utils';
 
 class Model extends EventEmitter implements IModel {
   options: IPluginOptions;
@@ -13,13 +12,17 @@ class Model extends EventEmitter implements IModel {
   viewValues: ViewValues = {
     positions: { 1: NaN, 2: NaN },
     stepInPercents: NaN,
+    halfStepInPercents: NaN,
     penultimatePosition: NaN,
+    halfStepFromPenultimateToMax: NaN,
   };
 
   constructor(options: IPluginOptions) {
     super();
     this.options = { ...options };
-    this.allowedValuesCount = this.getAllowedValuesCount();
+    this.allowedValuesCount = Math.ceil(
+      (options.maxValue - options.minValue) / options.stepSize,
+    ) + 1;
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
     this.penultimateValue = this.getPenultimateValue();
     this.fixValues();
@@ -44,17 +47,14 @@ class Model extends EventEmitter implements IModel {
   getIndexByValueNumber(valueNumber: 1 | 2): number {
     const value = this.options[`value${valueNumber}`];
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    const index = Math.round((value - this.options.minValue) / this.options.stepSize);
+    const index = Math.trunc((value - this.options.minValue) / this.options.stepSize);
 
     return index;
   }
 
-  getIndexByValue(value: number, precision?: number): number {
+  getIndexByValue(value: number): number {
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    return this.fixValueToPrecision(
-      (value - this.options.minValue) / this.options.stepSize,
-      precision,
-    );
+    return (value - this.options.minValue) / this.options.stepSize;
   }
 
   getValueByIndex(index: number): number {
@@ -64,202 +64,87 @@ class Model extends EventEmitter implements IModel {
   }
 
   getPenultimateValue(): number {
-    return this.fixValueToPrecision(
-      this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2),
+    return this.options.minValue + this.fixValueToPrecision(
+      this.options.stepSize * (this.allowedValuesCount - 2),
     );
   }
 
-  getAllowedValuesCount(): number {
-    return Math.ceil(
-      (this.options.maxValue - this.options.minValue) / this.options.stepSize,
-    ) + 1;
-  }
-
-  setValue1(value: number): void {
-    this.setValue(1, value);
-  }
-
-  setValue2(value: number): void {
-    this.setValue(2, value);
-  }
-
-  setVerticalState(isVertical: boolean): void {
-    if (this.options.isVertical === isVertical) return;
-
-    this.options.isVertical = isVertical;
-    this.emit('isVerticalChanged', isVertical);
-  }
-
-  setInterval(isInterval: boolean): void {
-    if (this.options.isInterval === isInterval) return;
-
-    this.options.isInterval = isInterval;
-    const { value1Fixed, value2Fixed } = this.fixValues();
-    this.emit('isIntervalChanged', isInterval);
-
-    if (value1Fixed) {
-      this.emit('value1Changed', this.options.value1, { changeTipValue: true });
-    }
-
-    if (isInterval) {
-      if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
-        this.emit('value2Changed', this.options.value2, { changeTipValue: false });
-      }
-    }
-  }
-
-  setShowProgress(showProgressBar: boolean): void {
-    if (this.options.showProgressBar === showProgressBar) return;
-
-    this.options.showProgressBar = showProgressBar;
-    this.emit('showProgressChanged', showProgressBar);
-  }
-
-  setShowTip(showTip: boolean): void {
-    if (this.options.showTip === showTip) return;
-
-    this.options.showTip = showTip;
-    this.emit('showTipChanged', showTip);
-  }
-
-  setShowScale(showScale: boolean): void {
-    if (this.options.showScale === showScale) return;
-
-    this.options.showScale = showScale;
-    this.emit('showScaleChanged', showScale);
-  }
-
   setStepSize(stepSize: number): void {
-    if (!Number.isFinite(stepSize)) return;
-    if (this.options.stepSize === stepSize) return;
     if (stepSize > this.options.maxValue - this.options.minValue) return;
     if (stepSize === 0) return;
+    if (!Number.isFinite(stepSize)) return;
     if (stepSize < 0) {
       this.options.stepSize = -stepSize;
     } else {
       this.options.stepSize = stepSize;
     }
 
-    this.updateValues('stepSizeChanged', stepSize);
+    this.emit('stepSizeChanged');
   }
 
-  setMinValue(minValue: number): void {
-    if (!Number.isFinite(minValue)) return;
-    if (this.options.minValue === minValue) return;
-    if (minValue > this.options.maxValue) return;
-    if (minValue === this.options.maxValue) {
-      this.options.maxValue = minValue + this.options.stepSize;
-    }
-
-    this.options.minValue = minValue;
-
-    this.updateValues('minValueChanged', minValue, true);
-  }
-
-  setMaxValue(maxValue: number): void {
-    if (!Number.isFinite(maxValue)) return;
-    if (maxValue === this.options.maxValue) return;
-    if (maxValue < this.options.minValue) return;
-    if (maxValue === this.options.minValue) {
-      this.options.maxValue = maxValue + this.options.stepSize;
-    } else {
-      this.options.maxValue = maxValue;
-    }
-
-    this.updateValues('maxValueChanged', maxValue, true);
-  }
-
-  fixValueToPrecision(value: number, customPrecision?: number): number {
-    return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
-  }
-
-  subscribeToEvent<Value>(
-    event: EventName,
-    elementOrCallback: HTMLInputElement | ((value: Value) => void),
-  ): void {
-    const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
-      const subscribedElement = inputElement;
-      const updateCheckbox = (value: boolean) => {
-        subscribedElement.checked = value;
-        const changeEvent = new InputEvent('change');
-        subscribedElement.dispatchEvent(changeEvent);
-      };
-      return updateCheckbox;
-    };
-
-    const makeNumericInputElementUpdater = (inputElement: HTMLInputElement) => {
-      const subscribedElement = inputElement;
-      const updateNumericInput = (value: number) => {
-        subscribedElement.value = String(value);
-        const inputEvent = new InputEvent('input');
-        subscribedElement.dispatchEvent(inputEvent);
-      };
-      return updateNumericInput;
-    };
-
-    if (elementOrCallback instanceof HTMLInputElement) {
-      if (elementOrCallback.type === 'checkbox') {
-        this.on(event, makeCheckboxElementUpdater(elementOrCallback));
-      } else if (elementOrCallback.type === 'number') {
-        this.on(event, makeNumericInputElementUpdater(elementOrCallback));
-      }
-    } else if (elementOrCallback instanceof Function) {
-      this.on(event, elementOrCallback);
-    }
-  }
-
-  publicMethods: IPluginPublicMethods = {
-    getOptions: this.getOptions.bind(this),
-    setValue1: this.setValue1.bind(this),
-    setValue2: this.setValue2.bind(this),
-    setVerticalState: this.setVerticalState.bind(this),
-    setInterval: this.setInterval.bind(this),
-    setShowProgress: this.setShowProgress.bind(this),
-    setShowTip: this.setShowTip.bind(this),
-    setShowScale: this.setShowScale.bind(this),
-    setStepSize: this.setStepSize.bind(this),
-    setMinValue: this.setMinValue.bind(this),
-    setMaxValue: this.setMaxValue.bind(this),
-    subscribeToEvent: this.subscribeToEvent.bind(this),
-  }
-
-  setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
+  setValue(number: 1 | 2, value: number): void {
     const valueNumber: 'value1' | 'value2' = `value${number}`;
-    if (this.options[valueNumber] === value) return;
-
     this.options[valueNumber] = this.fixValue(number, value);
-    this.emit(`${valueNumber}Changed`, this.options[valueNumber], {
+
+    this.emit('valueChanged', {
+      number,
+      value: this.options[valueNumber],
       changeTipValue: true,
-      onlySaveValue,
     });
   }
 
-  private updateValues(eventName: EventName, value: number, ignoreIsFixed = false) {
-    this.fractionalPrecision = this.identifyMaxFractionalPrecision();
+  setVerticalState(isVertical: boolean): void {
+    this.options.isVertical = isVertical;
+    this.emit('isVerticalChanged', isVertical);
+  }
 
-    this.emit(eventName, value);
-
+  setInterval(isInterval: boolean): void {
+    this.options.isInterval = isInterval;
     const { value1Fixed, value2Fixed } = this.fixValues();
+    this.emit('isIntervalChanged', isInterval);
 
-    if (ignoreIsFixed || value1Fixed) {
-      this.emit('value1Changed', this.options.value1, { changeTipValue: true });
+    if (value1Fixed) {
+      this.emit('valueChanged', {
+        number: 1,
+        value: this.options.value1,
+        changeTipValue: true,
+      });
     }
 
-    if (this.options.isInterval) {
-      if (ignoreIsFixed || value2Fixed) {
-        this.emit('value2Changed', this.options.value2, { changeTipValue: true });
+    if (isInterval) {
+      if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
+        this.emit('valueChanged', {
+          number: 2,
+          value: this.options.value2,
+          changeTipValue: false,
+        });
       }
     }
   }
 
+  setShowProgress(showProgressBar: boolean): void {
+    this.options.showProgressBar = showProgressBar;
+    this.emit('showProgressChanged', showProgressBar);
+  }
+
+  fixValueToPrecision(value: number): number {
+    return Number.parseFloat(value.toFixed(this.fractionalPrecision));
+  }
+
+  publicMethods: IPluginPublicMethods = {
+    debug: {
+      getOptions: this.getOptions.bind(this),
+    },
+    setStepSize: this.setStepSize.bind(this),
+    setValue: this.setValue.bind(this),
+    setVerticalState: this.setVerticalState.bind(this),
+    setInterval: this.setInterval.bind(this),
+    setShowProgress: this.setShowProgress.bind(this),
+  }
+
   private isValueAllowed(value: number): boolean {
-    if (!this.isValueInRange(value)) return false;
-    if (value === this.options.minValue || value === this.options.maxValue) return true;
-    const valueIndex = this.getIndexByValue(
-      value,
-      Math.max(getFractionalPartSize(value), this.fractionalPrecision) + 1,
-    );
-    return Number.isInteger(valueIndex);
+    if (value === this.options.maxValue || value === this.options.minValue) return true;
+    return Number.isInteger((value - this.options.minValue) / this.options.stepSize);
   }
 
   private getSecondValue(): number {
@@ -363,7 +248,10 @@ class Model extends EventEmitter implements IModel {
       this.options.stepSize,
       this.options.minValue,
       this.options.maxValue,
-    ].map((value) => getFractionalPartSize(value));
+    ].map((value) => {
+      const precision = Number(String(value).split('.')[1]?.length);
+      return Number.isNaN(precision) ? 0 : precision;
+    });
     return Math.max(...fractionSizes);
   }
 }

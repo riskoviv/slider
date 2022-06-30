@@ -1,14 +1,14 @@
 {
   "name": "slider",
-  "version": "0.9.0",
+  "version": "0.8.0",
   "description": "slider jQuery plugin written in TypeScript using MVP architecture",
   "main": "slider-plugin.ts",
   "private": true,
   "scripts": {
     "start": "webpack serve",
     "test": "jest",
-    "dev": "webpack",
-    "build": "webpack --mode=production"
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production"
   },
   "keywords": [
     "slider",

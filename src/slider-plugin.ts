@@ -36,18 +36,12 @@ $.fn.sliderPlugin = function sliderPlugin(
   const $sliderElem = presenter.view.$elem;
 
   ({
-    getOptions: $sliderElem.getOptions,
-    setValue1: $sliderElem.setValue1,
-    setValue2: $sliderElem.setValue2,
+    debug: $sliderElem.debug,
+    setStepSize: $sliderElem.setStepSize,
+    setValue: $sliderElem.setValue,
     setVerticalState: $sliderElem.setVerticalState,
     setInterval: $sliderElem.setInterval,
     setShowProgress: $sliderElem.setShowProgress,
-    setShowTip: $sliderElem.setShowTip,
-    setShowScale: $sliderElem.setShowScale,
-    setStepSize: $sliderElem.setStepSize,
-    setMinValue: $sliderElem.setMinValue,
-    setMaxValue: $sliderElem.setMaxValue,
-    subscribeToEvent: $sliderElem.subscribeToEvent,
   } = model.publicMethods);
 
   return $sliderElem;

@@ -4,13 +4,19 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
   <title><%= htmlWebpackPlugin.options.title %></title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="demo-page">
-  <div class="demo-page__slider-container" id="slider1"></div>
-  <div class="demo-page__slider-container" id="slider2"></div>
-  <div class="demo-page__slider-container" id="slider3"></div>
+<body>
+  <!-- <div class="data-monitor"></div> -->
+  <div class="overscroll-container">
+    <div class="slider-container" id="slider1"></div>
+    <!-- <div class="slider-container" id="slider2"></div> -->
+    <div class="panel" id="panel1">
+      <label>isInterval: <input class="panel__interval" type="checkbox" name="interval"></label>
+      <label>isVertical: <input class="panel__vertical" type="checkbox" name="vertical"></label>
+      <label>showProgress: <input class="panel__progress" type="checkbox" name="progress"></label>
+    </div>
+  </div>
 </body>
 </html>

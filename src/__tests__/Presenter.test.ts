@@ -1,7 +1,16 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import $ from 'jquery';
 import Presenter from '../Presenter';
 import Model from '../Model';
-import './mocks/ResizeObserver';
+
+window.ResizeObserver = jest.fn(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
 
 describe('Presenter', () => {
   const defaultOptions: IPluginOptions = {
