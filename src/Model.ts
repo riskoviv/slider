@@ -173,9 +173,9 @@ class Model extends EventEmitter implements IModel {
     return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
-  subscribeToEvent<Value>(
+  subscribeToEvent<Value, Options>(
     event: EventName,
-    elementOrCallback: HTMLInputElement | ((value: Value) => void),
+    elementOrCallback: Subscriber<Value, Options>,
   ): void {
     const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
       const subscribedElement = inputElement;
@@ -199,13 +199,25 @@ class Model extends EventEmitter implements IModel {
 
     if (elementOrCallback instanceof HTMLInputElement) {
       if (elementOrCallback.type === 'checkbox') {
-        this.on(event, makeCheckboxElementUpdater(elementOrCallback));
+        this.on(event, makeCheckboxElementUpdater(elementOrCallback), elementOrCallback);
       } else if (elementOrCallback.type === 'number') {
-        this.on(event, makeNumericInputElementUpdater(elementOrCallback));
+        this.on(event, makeNumericInputElementUpdater(elementOrCallback), elementOrCallback);
       }
     } else if (elementOrCallback instanceof Function) {
-      this.on(event, elementOrCallback);
+      this.on(event, elementOrCallback, elementOrCallback);
     }
+  }
+
+  unsubscribeFromEvent<Value, Options>(
+    event: EventName,
+    elementOrCallback: Subscriber<Value, Options>,
+  ): void {
+    if (elementOrCallback === 'Presenter') {
+      console.warn('Presenter can\'t be unsubscribed!');
+      return;
+    }
+
+    this.off(event, elementOrCallback);
   }
 
   publicMethods: IPluginPublicMethods = {
@@ -221,6 +233,7 @@ class Model extends EventEmitter implements IModel {
     setMinValue: this.setMinValue.bind(this),
     setMaxValue: this.setMaxValue.bind(this),
     subscribeToEvent: this.subscribeToEvent.bind(this),
+    unsubscribeFromEvent: this.unsubscribeFromEvent.bind(this),
   }
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {

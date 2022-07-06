@@ -4,11 +4,24 @@ abstract class EventEmitter implements IEventEmitter {
   on<Value, Options>(
     event: EventName | ViewEventName,
     handler: EventHandler<Value, Options>,
+    subscriber: Subscriber<Value, Options> = 'Presenter',
   ): this {
     if (this.events[event] === undefined) {
-      this.events[event] = new Set<EventHandler<Value, Options>>();
+      this.events[event] = new Map<Subscriber<Value, Options>, EventHandler<Value, Options>>();
     }
-    this.events[event]?.add(handler);
+    this.events[event]?.set(subscriber, handler);
+    return this;
+  }
+
+  off<Value, Options>(
+    event: EventName | ViewEventName,
+    subscriber: Subscriber<Value, Options>,
+  ): this {
+    if (this.events[event] === undefined) return this;
+    if (!this.events[event]?.has(subscriber)) return this;
+
+    this.events[event]?.delete(subscriber);
+    console.log(`${subscriber} was unsubscribed from ${event}`);
     return this;
   }
 
@@ -18,7 +31,8 @@ abstract class EventEmitter implements IEventEmitter {
     options?: Options,
   ): void {
     try {
-      if (this.events[event] === undefined) {
+      const eventMap = this.events[event];
+      if (eventMap === undefined) {
         const emitError = new Error();
         emitError.name = 'EmitError';
         emitError.message = `${event} event is not registered. arg = ${
@@ -29,14 +43,14 @@ abstract class EventEmitter implements IEventEmitter {
             : changedValue
         }`;
         throw emitError;
+      } else {
+        [...eventMap.values()].forEach(
+          (handler: EventHandler<Value, Options>) => {
+            if (options) handler(changedValue, options);
+            else handler(changedValue);
+          },
+        );
       }
-
-      this.events[event]?.forEach(
-        (handler: EventHandler<Value, Options>) => {
-          if (options) handler(changedValue, options);
-          else handler(changedValue);
-        },
-      );
     } catch (error) {
       console.error(error);
     }
