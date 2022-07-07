@@ -1,5 +1,5 @@
 import Model from '../Model';
-import { getEntriesWithTypedKeys, defaultOptions } from '../utils';
+import { getEntriesWithTypedKeys, defaultOptions, invalidValues } from '../utils';
 
 let model: Model;
 
@@ -460,10 +460,10 @@ describe('Model', () => {
         expect(stepSizeChangedSpy).not.toBeCalled();
       });
 
-      test('should not set any non-finite value', () => {
+      test('should not set any non-finite, non-number value and 0', () => {
         const currentStepSize = model.options.stepSize;
 
-        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
+        [0, ...invalidValues].forEach((value: any) => model.setStepSize(value));
 
         expect(model.options.stepSize).toBe(currentStepSize);
         expect(stepSizeChangedSpy).not.toBeCalled();
@@ -510,16 +510,15 @@ describe('Model', () => {
         },
       );
 
-      test.each([123, NaN, -Infinity, Infinity])(
-        'should not set new minValue if it is more than maxValue or is not finite number',
-        (minValue) => {
+      test('should not set new minValue if it is more than maxValue or is not finite number or not a number', () => {
+        [123, ...invalidValues].forEach((minValue: any) => {
           model.setMinValue(minValue);
+        });
 
-          expect(model.options.minValue).toBe(defaultOptions.minValue);
-          expect(minValueChangedSpy).not.toBeCalled();
-          expect(value1ChangedSpy).not.toBeCalled();
-        },
-      );
+        expect(model.options.minValue).toBe(defaultOptions.minValue);
+        expect(minValueChangedSpy).not.toBeCalled();
+        expect(value1ChangedSpy).not.toBeCalled();
+      });
 
       test('if new minValue === maxValue, should set maxValue to new minValue + stepSize and save minValue', () => {
         model.setMinValue(defaultOptions.maxValue);
@@ -553,16 +552,15 @@ describe('Model', () => {
         },
       );
 
-      test.each([-105, NaN, -Infinity, Infinity])(
-        'should not set new maxValue if it is less than minValue or is not finite number',
-        (maxValue) => {
+      test('should not set new maxValue if it is less than minValue or is not finite number or not a number', () => {
+        [-105, ...invalidValues].forEach((maxValue: any) => {
           model.setMaxValue(maxValue);
+        });
 
-          expect(model.options.maxValue).toBe(defaultOptions.maxValue);
-          expect(maxValueChangedSpy).not.toBeCalled();
-          expect(value1ChangedSpy).not.toBeCalled();
-        },
-      );
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue);
+        expect(maxValueChangedSpy).not.toBeCalled();
+        expect(value1ChangedSpy).not.toBeCalled();
+      });
 
       test('if new maxValue === minValue, should set maxValue to minValue + stepSize', () => {
         model.setMaxValue(defaultOptions.minValue);
