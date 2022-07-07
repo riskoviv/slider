@@ -83,9 +83,10 @@ class Presenter {
           this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
         }
       });
+    } else {
+      this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     }
 
-    this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     this.sliderResizeObserver.observe(this.view.$elem[0]);
   }
 
