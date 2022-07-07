@@ -629,42 +629,54 @@ describe('Model', () => {
     });
 
     describe('subscribe() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         initModelWithDefaultOptions();
       });
 
-      test('should subscribe input[type="number"] element to value1Changed event and change its value to arg.value emitted by event', () => {
-        const inputNumberElement = document.createElement('input');
-        inputNumberElement.type = 'number';
-        const value1 = 20;
+      test.concurrent.each<[string, EventName, 'valueAsNumber' | 'checked', {
+          numericCall?: [keyof IPluginPublicValueMethods, number, number],
+          booleanCall?: [keyof IPluginPublicStateMethods, boolean, boolean],
+        },
+      ]>([
+        ['number', 'value1Changed', 'valueAsNumber', {
+          numericCall: ['setValue1', 20, 30],
+        }],
+        ['number', 'stepSizeChanged', 'valueAsNumber', {
+          numericCall: ['setStepSize', 2, 6],
+        }],
+        ['checkbox', 'isIntervalChanged', 'checked', {
+          booleanCall: ['setInterval', true, false],
+        }],
+      ])(
+        'should subscribe input[type="%s"] element to %s event and change its %s property to value emitted on event dispatch, but after unsubscribe() new value passed to method should not be set to inputElement',
+        (inputType, event, inputProperty, { numericCall, booleanCall }) => {
+          const inputElement = document.createElement('input');
+          inputElement.type = inputType;
 
-        model.subscribeToEvent('value1Changed', inputNumberElement);
-        model.setValue1(value1);
+          model.subscribe(event, inputElement);
+          if (numericCall) {
+            const [method, value1, value2] = numericCall;
+            model[method](value1);
 
-        expect(inputNumberElement.valueAsNumber).toBe(value1);
-      });
+            expect(inputElement[inputProperty]).toBe(value1);
 
-      test('should subscribe input[type="number"] element to stepSizeChanged event and change its value to value emitted by event', () => {
-        const inputNumberElement = document.createElement('input');
-        inputNumberElement.type = 'number';
-        const stepSize = 2;
+            model.unsubscribe(inputElement);
+            model[method](value2);
 
-        model.subscribeToEvent('stepSizeChanged', inputNumberElement);
-        model.setStepSize(stepSize);
+            expect(inputElement[inputProperty]).toBe(value1);
+          } else if (booleanCall) {
+            const [method, value1, value2] = booleanCall;
+            model[method](value1);
 
-        expect(inputNumberElement.valueAsNumber).toBe(stepSize);
-      });
+            expect(inputElement[inputProperty]).toBe(value1);
 
-      test('should subscribe input[type="checkbox"] element to isIntervalChanged event and change its "checked" property to value emitted by event', () => {
-        const inputCheckboxElement = document.createElement('input');
-        inputCheckboxElement.type = 'checkbox';
-        const isInterval = true;
+            model.unsubscribe(inputElement);
+            model[method](value2);
 
-        model.subscribeToEvent('isIntervalChanged', inputCheckboxElement);
-        model.setInterval(isInterval);
-
-        expect(inputCheckboxElement.checked).toBe(isInterval);
-      });
+            expect(inputElement[inputProperty]).toBe(value1);
+          }
+        },
+      );
 
       test('should subscribe callback function to event and call it on event and pass it number value changed during event', () => {
         let variableChangedByCallback = 0;
