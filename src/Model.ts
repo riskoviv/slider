@@ -236,6 +236,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
+    if (!Number.isFinite(value)) return;
     const valueNumber: 'value1' | 'value2' = `value${number}`;
     if (this.options[valueNumber] === value) return;
 

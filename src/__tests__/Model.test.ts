@@ -179,6 +179,23 @@ describe('Model', () => {
         model.on('value1Changed', value1ChangedSpy);
       });
 
+      test('should not set any non-finite number and non-number value', () => {
+        const value2ChangedSpy = jest.fn();
+        model.on('value2Changed', value2ChangedSpy);
+        const currentValue1 = model.options.value1;
+        const currentValue2 = model.options.value2;
+
+        invalidValues.forEach((value: any) => {
+          model.setValue1(value);
+          model.setValue2(value);
+        });
+
+        expect(model.options.value1).toBe(currentValue1);
+        expect(model.options.value2).toBe(currentValue2);
+        expect(value1ChangedSpy).not.toBeCalled();
+        expect(value2ChangedSpy).not.toBeCalled();
+      });
+
       test('should set 1st value to 0', () => {
         model.setValue1(0);
 
