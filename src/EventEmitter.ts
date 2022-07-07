@@ -13,16 +13,18 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  off<Value, Options>(
-    event: EventName | ViewEventName,
-    subscriber: Subscriber<Value, Options>,
-  ): this {
-    if (this.events[event] === undefined) return this;
-    if (!this.events[event]?.has(subscriber)) return this;
+  off<Value, Options>(subscriber: Subscriber<Value, Options>): boolean {
+    let isUnsubscribePerformed = false;
+    Object.values(this.events).forEach((eventMap) => {
+      [...eventMap.keys()].forEach((eventSubscriber) => {
+        if (eventSubscriber === subscriber) {
+          eventMap.delete(eventSubscriber);
+          isUnsubscribePerformed = true;
+        }
+      });
+    });
 
-    this.events[event]?.delete(subscriber);
-    console.log(`${subscriber} was unsubscribed from ${event}`);
-    return this;
+    return isUnsubscribePerformed;
   }
 
   protected emit<Value, Options>(

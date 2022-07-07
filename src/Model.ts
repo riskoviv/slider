@@ -210,13 +210,13 @@ class Model extends EventEmitter implements IModel {
 
   unsubscribe<Value, Options>(
     elementOrCallback: Subscriber<Value, Options>,
-  ): void {
+  ): boolean {
     if (elementOrCallback === 'Presenter') {
       console.warn('Presenter can\'t be unsubscribed!');
-      return;
+      return false;
     }
 
-    this.off(event, elementOrCallback);
+    return this.off(elementOrCallback);
   }
 
   publicMethods: IPluginPublicMethods = {

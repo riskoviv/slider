@@ -67,10 +67,9 @@ interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicV
     event: EventName,
     elementOrCallback: HTMLInputElement | ((value: Value) => void),
   ): void;
-    event: EventName,
   unsubscribe<Value>(
     elementOrCallback: HTMLInputElement | ((value: Value) => void),
-  ): void;
+  ): boolean;
 }
 
 interface JQuery extends IPluginPublicMethods {
@@ -92,9 +91,8 @@ interface IEventEmitter {
     subscriber?: Subscriber,
   ): this;
   off<Value, Options>(
-    event: EventName | ViewEventName,
     subscriber: Subscriber<Value, Options>,
-  ): this;
+  ): boolean;
 }
 
 type ViewValues = {
