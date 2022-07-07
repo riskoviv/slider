@@ -517,7 +517,7 @@ describe('Model', () => {
       });
 
       test.each([-85, 25.3, 2])(
-        'should set new minValue if it is less than maxValue',
+        `should set new minValue (%d) if it is less than maxValue (${defaultOptions.maxValue})`,
         (minValue) => {
           model.setMinValue(minValue);
 
@@ -556,7 +556,7 @@ describe('Model', () => {
       });
 
       test.each([64, 0, -51])(
-        'should set new maxValue to %i if it is more than minValue',
+        `should set new maxValue to %i if it is more than minValue (${defaultOptions.minValue})`,
         (maxValue) => {
           model.setMaxValue(maxValue);
 
