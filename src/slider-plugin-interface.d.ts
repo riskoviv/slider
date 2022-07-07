@@ -63,12 +63,12 @@ interface IPluginPublicValueMethods {
 
 interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
   getOptions(): IPluginOptions;
-  subscribeToEvent<Value>(
+  subscribe<Value>(
     event: EventName,
     elementOrCallback: HTMLInputElement | ((value: Value) => void),
   ): void;
-  unsubscribeFromEvent<Value>(
     event: EventName,
+  unsubscribe<Value>(
     elementOrCallback: HTMLInputElement | ((value: Value) => void),
   ): void;
 }

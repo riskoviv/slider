@@ -613,7 +613,7 @@ describe('Model', () => {
       });
     });
 
-    describe('subscribeToEvent() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
+    describe('subscribe() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
       beforeAll(() => {
         initModelWithDefaultOptions();
       });
@@ -653,7 +653,7 @@ describe('Model', () => {
 
       test('should subscribe callback function to event and call it on event and pass it number value changed during event', () => {
         let variableChangedByCallback = 0;
-        model.subscribeToEvent('value1Changed', (value: number) => {
+        model.subscribe('value1Changed', (value: number) => {
           variableChangedByCallback = value;
         });
         const value1 = 30;
@@ -665,7 +665,7 @@ describe('Model', () => {
 
       test('should subscribe callback function to event and call it on event and pass it boolean value changed during event', () => {
         let variableChangedByCallback = false;
-        model.subscribeToEvent('showProgressChanged', (value: boolean) => {
+        model.subscribe('showProgressChanged', (value: boolean) => {
           variableChangedByCallback = value;
         });
         const showProgressBar = true;

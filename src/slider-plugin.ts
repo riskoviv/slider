@@ -47,8 +47,8 @@ $.fn.sliderPlugin = function sliderPlugin(
     setStepSize: $sliderElem.setStepSize,
     setMinValue: $sliderElem.setMinValue,
     setMaxValue: $sliderElem.setMaxValue,
-    subscribeToEvent: $sliderElem.subscribeToEvent,
-    unsubscribeFromEvent: $sliderElem.unsubscribeFromEvent,
+    subscribe: $sliderElem.subscribe,
+    unsubscribe: $sliderElem.unsubscribe,
   } = model.publicMethods);
 
   return $sliderElem;

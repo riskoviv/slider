@@ -173,7 +173,7 @@ class Model extends EventEmitter implements IModel {
     return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
-  subscribeToEvent<Value, Options>(
+  subscribe<Value, Options>(
     event: EventName,
     elementOrCallback: Subscriber<Value, Options>,
   ): void {
@@ -208,8 +208,7 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  unsubscribeFromEvent<Value, Options>(
-    event: EventName,
+  unsubscribe<Value, Options>(
     elementOrCallback: Subscriber<Value, Options>,
   ): void {
     if (elementOrCallback === 'Presenter') {
@@ -232,8 +231,8 @@ class Model extends EventEmitter implements IModel {
     setStepSize: this.setStepSize.bind(this),
     setMinValue: this.setMinValue.bind(this),
     setMaxValue: this.setMaxValue.bind(this),
-    subscribeToEvent: this.subscribeToEvent.bind(this),
-    unsubscribeFromEvent: this.unsubscribeFromEvent.bind(this),
+    subscribe: this.subscribe.bind(this),
+    unsubscribe: this.unsubscribe.bind(this),
   }
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
