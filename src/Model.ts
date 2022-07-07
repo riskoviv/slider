@@ -203,6 +203,10 @@ class Model extends EventEmitter implements IModel {
       } else if (elementOrCallback.type === 'number') {
         this.on(event, makeNumericInputElementUpdater(elementOrCallback), elementOrCallback);
       }
+
+      Object.defineProperty(elementOrCallback, 'unsubscribe', {
+        value: this.unsubscribe.bind(this, elementOrCallback),
+      });
     } else if (elementOrCallback instanceof Function) {
       this.on(event, elementOrCallback, elementOrCallback);
     }
