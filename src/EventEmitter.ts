@@ -43,14 +43,14 @@ abstract class EventEmitter implements IEventEmitter {
             : changedValue
         }`;
         throw emitError;
-      } else {
-        [...eventMap.values()].forEach(
-          (handler: EventHandler<Value, Options>) => {
-            if (options) handler(changedValue, options);
-            else handler(changedValue);
-          },
-        );
       }
+
+      [...eventMap.values()].forEach(
+        (handler: EventHandler<Value, Options>) => {
+          if (options) handler(changedValue, options);
+          else handler(changedValue);
+        },
+      );
     } catch (error) {
       console.error(error);
     }
