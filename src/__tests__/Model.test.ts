@@ -678,28 +678,44 @@ describe('Model', () => {
         },
       );
 
-      test('should subscribe callback function to event and call it on event and pass it number value changed during event', () => {
-        let variableChangedByCallback = 0;
-        model.subscribe('value1Changed', (value: number) => {
+      test('should subscribe callback function to event and call it on event and pass it number value changed during event, and don\'t call callback after unsubscribe', () => {
+        let variableChangedByCallback;
+        const callback = (value: number) => {
           variableChangedByCallback = value;
-        });
+        };
+        model.subscribe('value1Changed', callback);
         const value1 = 30;
 
         model.setValue1(value1);
 
         expect(variableChangedByCallback).toBe(value1);
+
+        model.unsubscribe(callback);
+        const value2 = 40;
+
+        model.setValue1(value2);
+
+        expect(variableChangedByCallback).toBe(value1);
       });
 
-      test('should subscribe callback function to event and call it on event and pass it boolean value changed during event', () => {
-        let variableChangedByCallback = false;
-        model.subscribe('showProgressChanged', (value: boolean) => {
+      test('should subscribe callback function to event and call it on event and pass it boolean value changed during event, and don\'t call callback after unsubscribe', () => {
+        let variableChangedByCallback;
+        const callback = (value: boolean) => {
           variableChangedByCallback = value;
-        });
-        const showProgressBar = true;
+        };
+        model.subscribe('showProgressChanged', callback);
+        const value1 = true;
 
-        model.setShowProgress(showProgressBar);
+        model.setShowProgress(value1);
 
-        expect(variableChangedByCallback).toBe(showProgressBar);
+        expect(variableChangedByCallback).toBe(value1);
+
+        model.unsubscribe(callback);
+        const value2 = false;
+
+        model.setShowProgress(value2);
+
+        expect(variableChangedByCallback).toBe(value1);
       });
     });
   });
