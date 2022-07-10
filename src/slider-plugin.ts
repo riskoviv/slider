@@ -74,13 +74,13 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
 
   const checkedOptions = { ...options };
 
-  type pluginOptionsEntry = [
+  type PluginOptionsEntry = [
     keyof Partial<IPluginOptions>,
     TypeOfValues<Partial<IPluginOptions>>
   ];
 
   getEntriesWithTypedKeys(options).forEach(
-    (option: pluginOptionsEntry) => {
+    (option: PluginOptionsEntry) => {
       const [key, value] = option;
 
       if (defaultOptions[key] === undefined) {
