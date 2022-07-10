@@ -84,6 +84,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setVerticalState(isVertical: boolean): void {
+    if (typeof isVertical !== 'boolean') return;
     if (this.options.isVertical === isVertical) return;
 
     this.options.isVertical = isVertical;
@@ -91,6 +92,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setInterval(isInterval: boolean): void {
+    if (typeof isInterval !== 'boolean') return;
     if (this.options.isInterval === isInterval) return;
 
     this.options.isInterval = isInterval;
@@ -109,6 +111,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setShowProgress(showProgressBar: boolean): void {
+    if (typeof showProgressBar !== 'boolean') return;
     if (this.options.showProgressBar === showProgressBar) return;
 
     this.options.showProgressBar = showProgressBar;
@@ -116,6 +119,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setShowTip(showTip: boolean): void {
+    if (typeof showTip !== 'boolean') return;
     if (this.options.showTip === showTip) return;
 
     this.options.showTip = showTip;
@@ -123,6 +127,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setShowScale(showScale: boolean): void {
+    if (typeof showScale !== 'boolean') return;
     if (this.options.showScale === showScale) return;
 
     this.options.showScale = showScale;
