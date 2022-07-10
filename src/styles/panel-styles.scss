@@ -55,12 +55,16 @@
       width: calc(var(--height) * 2.3);
       min-width: fit-content;
       height: var(--height);
-      background: #ccc;
+      background-color: #5c5c5c;
       border-radius: calc(var(--height) / 2);
       position: relative;
       display: flex;
       align-items: center;
       transition: background 0.3s;
+
+      @media (prefers-color-scheme: light) {
+        background-color: #b1b1b1;
+      }
 
       &::before {
         --circle-size: calc(var(--height) * 0.8);
@@ -69,7 +73,7 @@
         height: var(--circle-size);
         position: absolute;
         left: calc(var(--height) * 0.1);
-        background: white;
+        background-color: white;
         content: '';
         border-radius: 50%;
         box-shadow: 0 calc(var(--height) * 0.13) calc(var(--height) * 0.16) 0 rgba(0, 0, 0, 0.3);
@@ -78,15 +82,19 @@
 
       &::after {
         content: 'OFF';
-        color: black;
+        color: white;
         font-weight: bold;
         font-size: calc(var(--height) / 2);
         padding: 0 var(--padding-small) 0 var(--padding-big);
         white-space: nowrap;
+
+        @media (prefers-color-scheme: light) {
+          color: black;
+        }
       }
 
       &:checked {
-        background: #ca2f73;
+        background-color: #ca2f73;
 
         &::before {
           left: calc(100% - var(--height) * 0.9);
