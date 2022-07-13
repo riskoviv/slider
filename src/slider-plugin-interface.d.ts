@@ -22,23 +22,22 @@ interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
  */
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
-type EventName = (
+type ModelEvent = (
   | 'value1Changed'
   | 'value2Changed'
+  | 'stepSizeChanged'
+  | 'minValueChanged'
+  | 'maxValueChanged'
   | 'isVerticalChanged'
   | 'isIntervalChanged'
   | 'showProgressChanged'
   | 'showTipChanged'
   | 'showScaleChanged'
-  | 'stepSizeChanged'
-  | 'minValueChanged'
-  | 'maxValueChanged'
 );
 
-type ViewEventName = (
-  | 'sliderPointerDown'
-  | 'scaleValueSelect'
-)
+type ViewEvent = 'sliderPointerDown' | 'scaleValueSelect';
+
+type SliderEvent = ModelEvent | ViewEvent;
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
@@ -61,14 +60,40 @@ interface IPluginPublicValueMethods {
   setMaxValue(maxValue: number): void;
 }
 
+interface HTMLInputElementWithUnsubscribe extends HTMLInputElement {
+  unsubscribe?(): boolean;
+}
+
+type SliderPointerDownData = {
+  target: HTMLDivElement;
+  offsetX: number;
+  offsetY: number;
+};
+
+type SetValueEventOptions = {
+  changeTipValue: boolean,
+  onlySaveValue?: boolean,
+};
+
+interface EventHandler<Value> {
+  (value: Value, options?: SetValueEventOptions): void;
+  unsubscribe?(): boolean;
+}
+
+type Subscriber<Value> = HTMLInputElementWithUnsubscribe | EventHandler<Value>;
+
+type EventsStorage = {
+  [event in SliderEvent]?: Map<Subscriber | undefined, EventHandler>;
+};
+
 interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
   getOptions(): IPluginOptions;
   subscribe<Value>(
-    event: EventName,
-    elementOrCallback: HTMLInputElement | ((value: Value) => void),
+    event: ModelEvent,
+    elementOrCallback: Subscriber<Value>,
   ): void;
   unsubscribe<Value>(
-    elementOrCallback: HTMLInputElement | ((value: Value) => void),
+    elementOrCallback: Subscriber<Value>,
   ): boolean;
 }
 
@@ -76,23 +101,13 @@ interface JQuery extends IPluginPublicMethods {
   sliderPlugin: IPluginFunction;
 }
 
-type EventHandler<Value, Options> = (value: Value, options?: Options) => void;
-
-type Subscriber<Value, Options> = string | HTMLInputElement | EventHandler<Value, Options>;
-
-type EventsStorage = {
-  [event in EventName | ViewEventName]?: Map<Subscriber, EventHandler>;
-};
-
 interface IEventEmitter {
-  on<Value, Options>(
-    event: EventName | ViewEventName,
-    handler: EventHandler<Value, Options>,
-    subscriber?: Subscriber,
+  on<Value>(
+    event: SliderEvent,
+    handler: EventHandler<Value>,
+    subscriber?: Subscriber<Value>,
   ): this;
-  off<Value, Options>(
-    subscriber: Subscriber<Value, Options>,
-  ): boolean;
+  off<Value>(subscriber: Subscriber<Value>): boolean;
 }
 
 type ViewValues = {

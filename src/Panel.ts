@@ -70,18 +70,18 @@ class Panel {
   }
 
   private makePanelElements() {
-    const stateOptions: [string, boolean, EventName, keyof IPluginPublicStateMethods][] = [
+    const stateOptions: [string, boolean, ModelEvent, keyof IPluginPublicStateMethods][] = [
       ['vertical', this.pluginOptions.isVertical, 'isVerticalChanged', 'setVerticalState'],
       ['interval', this.pluginOptions.isInterval, 'isIntervalChanged', 'setInterval'],
       ['bar', this.pluginOptions.showProgressBar, 'showProgressChanged', 'setShowProgress'],
       ['scale', this.pluginOptions.showScale, 'showScaleChanged', 'setShowScale'],
       ['tip', this.pluginOptions.showTip, 'showTipChanged', 'setShowTip'],
     ];
-    const values: [string, number, EventName, keyof IPluginPublicValueMethods][] = [
+    const values: [string, number, ModelEvent, keyof IPluginPublicValueMethods][] = [
       ['from', this.pluginOptions.value1, 'value1Changed', 'setValue1'],
       ['to', this.pluginOptions.value2, 'value2Changed', 'setValue2'],
     ];
-    const valueOptions: [string, number, EventName, keyof IPluginPublicValueMethods][] = [
+    const valueOptions: [string, number, ModelEvent, keyof IPluginPublicValueMethods][] = [
       ['min', this.pluginOptions.minValue, 'minValueChanged', 'setMinValue'],
       ['max', this.pluginOptions.maxValue, 'maxValueChanged', 'setMaxValue'],
       ['step', this.pluginOptions.stepSize, 'stepSizeChanged', 'setStepSize'],
@@ -119,7 +119,7 @@ class Panel {
   private makeInputNumberElement(
     label: string,
     value: number,
-    event: EventName,
+    event: ModelEvent,
     method: keyof IPluginPublicValueMethods,
     step?: number,
     min?: number,
@@ -141,7 +141,7 @@ class Panel {
   }: {
     label: string,
     $inputElement: JQuery<HTMLInputElement>,
-    sliderEvent: EventName,
+    sliderEvent: ModelEvent,
     inputEventType: 'input' | 'change',
     sliderValueMethod?: keyof IPluginPublicValueMethods,
     sliderStateMethod?: keyof IPluginPublicStateMethods,

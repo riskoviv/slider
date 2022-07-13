@@ -1,20 +1,20 @@
 abstract class EventEmitter implements IEventEmitter {
   private events: EventsStorage = {};
 
-  on<Value, Options>(
-    event: EventName | ViewEventName,
-    handler: EventHandler<Value, Options>,
-    subscriber: Subscriber<Value, Options> = 'Presenter',
+  on<Value>(
+    event: SliderEvent,
+    handler: EventHandler<Value>,
+    subscriber?: Subscriber<Value>,
   ): this {
     if (this.events[event] === undefined) {
-      this.events[event] = new Map<Subscriber<Value, Options>, EventHandler<Value, Options>>();
+      this.events[event] = new Map<Subscriber<Value>, EventHandler<Value>>();
     }
     this.events[event]?.set(subscriber, handler);
     return this;
   }
 
-  off<Value, Options>(subscriber: Subscriber<Value, Options>): boolean {
-    let isUnsubscribePerformed = false;
+  off<Value>(subscriber: Subscriber<Value>): boolean {
+    let isUnsubscribed = false;
     Object.values(this.events).forEach((eventMap) => {
       [...eventMap.keys()].forEach((eventSubscriber) => {
         if (eventSubscriber === subscriber) {
@@ -27,10 +27,10 @@ abstract class EventEmitter implements IEventEmitter {
     return isUnsubscribePerformed;
   }
 
-  protected emit<Value, Options>(
-    event: EventName | ViewEventName,
+  protected emit<Value>(
+    event: SliderEvent,
     changedValue: Value,
-    options?: Options,
+    options?: SetValueEventOptions,
   ): void {
     try {
       const eventMap = this.events[event];
@@ -48,7 +48,7 @@ abstract class EventEmitter implements IEventEmitter {
       }
 
       [...eventMap.values()].forEach(
-        (handler: EventHandler<Value, Options>) => {
+        (handler: EventHandler<Value>) => {
           if (options) handler(changedValue, options);
           else handler(changedValue);
         },

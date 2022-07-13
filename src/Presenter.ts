@@ -5,7 +5,7 @@ import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
 
-type subViewClass = (
+type SubViewClass = (
   | typeof TrackView
   | typeof ThumbView
   | typeof ScaleView
@@ -17,7 +17,7 @@ class Presenter {
 
   readonly view: IView;
 
-  private subViews: { [viewName: string]: InstanceType<subViewClass> } = {};
+  private subViews: { [viewName: string]: InstanceType<SubViewClass> } = {};
 
   private sizeDimension: SizeDimension = 'offsetWidth';
 
@@ -316,7 +316,7 @@ class Presenter {
 
     makeSetValueAndPosition: (number: 1 | 2) => ((
       value: number,
-      options?: { changeTipValue: boolean, onlySaveValue: boolean },
+      options?: SetValueEventOptions,
     ): void => {
       if (this.options.showTip && options?.changeTipValue) {
         this.setTipValue({ number, value });
@@ -395,11 +395,7 @@ class Presenter {
   }
 
   private viewEventHandlers = {
-    sliderPointerDown: (data: {
-      target: HTMLDivElement,
-      offsetX: number,
-      offsetY: number,
-    }): void => {
+    sliderPointerDown: (data: SliderPointerDownData): void => {
       const { target } = data;
       if (target.classList.contains('slider__thumb')) {
         const thumbNumber = Number(target.dataset.number);

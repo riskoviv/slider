@@ -178,9 +178,9 @@ class Model extends EventEmitter implements IModel {
     return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
-  subscribe<Value, Options>(
-    event: EventName,
-    elementOrCallback: Subscriber<Value, Options>,
+  subscribe<Value>(
+    event: ModelEvent,
+    elementOrCallback: Subscriber<Value>,
   ): void {
     const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
       const subscribedElement = inputElement;
@@ -217,11 +217,11 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  unsubscribe<Value, Options>(
-    elementOrCallback: Subscriber<Value, Options>,
+  unsubscribe<Value>(
+    elementOrCallback: Subscriber<Value>,
   ): boolean {
-    if (elementOrCallback === 'Presenter') {
-      console.warn('Presenter can\'t be unsubscribed!');
+    if (!(elementOrCallback instanceof HTMLInputElement
+      || elementOrCallback instanceof Function)) {
       return false;
     }
 
@@ -256,7 +256,7 @@ class Model extends EventEmitter implements IModel {
     });
   }
 
-  private updateValues(eventName: EventName, value: number, ignoreIsFixed = false) {
+  private updateValues(eventName: ModelEvent, value: number, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
 
     this.emit(eventName, value);

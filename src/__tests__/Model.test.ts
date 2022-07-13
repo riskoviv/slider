@@ -593,7 +593,7 @@ describe('Model', () => {
 
       test('none of methods should emit event and no listeners should be called', () => {
         const listeners: jest.Mock[] = [];
-        const eventNames: EventName[] = [
+        const eventNames: ModelEvent[] = [
           'value1Changed',
           'value2Changed',
           'isVerticalChanged',
@@ -633,7 +633,7 @@ describe('Model', () => {
         initModelWithDefaultOptions();
       });
 
-      test.concurrent.each<[string, EventName, 'valueAsNumber' | 'checked', {
+      test.concurrent.each<[string, ModelEvent, 'valueAsNumber' | 'checked', {
           numericCall?: [keyof IPluginPublicValueMethods, number, number],
           booleanCall?: [keyof IPluginPublicStateMethods, boolean, boolean],
         },
