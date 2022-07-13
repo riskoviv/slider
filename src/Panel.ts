@@ -107,7 +107,10 @@ class Panel {
   }
 
   private makeInputCheckboxElement(
-    label: string, checked: boolean, event: EventName, method: keyof IPluginPublicStateMethods,
+    label: string,
+    checked: boolean,
+    event: ModelEvent,
+    method: keyof IPluginPublicStateMethods,
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;

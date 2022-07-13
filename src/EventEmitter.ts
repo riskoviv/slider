@@ -9,6 +9,7 @@ abstract class EventEmitter implements IEventEmitter {
     if (this.events[event] === undefined) {
       this.events[event] = new Map<Subscriber<Value>, EventHandler<Value>>();
     }
+
     this.events[event]?.set(subscriber, handler);
     return this;
   }
@@ -19,12 +20,12 @@ abstract class EventEmitter implements IEventEmitter {
       [...eventMap.keys()].forEach((eventSubscriber) => {
         if (eventSubscriber === subscriber) {
           eventMap.delete(eventSubscriber);
-          isUnsubscribePerformed = true;
+          isUnsubscribed = true;
         }
       });
     });
 
-    return isUnsubscribePerformed;
+    return isUnsubscribed;
   }
 
   protected emit<Value>(

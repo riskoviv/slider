@@ -163,8 +163,8 @@ class Presenter {
     }
 
     if (subViewName === 'scale') {
-      this.view.$elem.append(this.renderSubView(subViewFullName));
-      this.subViews[subViewFullName].on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
+      this.view.$elem.append(this.renderSubView('scale'));
+      this.subViews.scale.on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
     } else {
       this.view.$controlContainer.append(this.renderSubView(subViewFullName));
     }
