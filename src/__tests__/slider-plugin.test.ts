@@ -705,6 +705,29 @@ describe('slider-plugin', () => {
     );
   });
 
+  describe('subscribe & unsubscribe API methods', () => {
+    let controlContainer: HTMLElement;
+
+    beforeEach(() => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      [controlContainer] = $sliderInstance.find('.slider__control-container');
+      definePropertiesForControlContainer(controlContainer, 'offsetWidth');
+    });
+
+    test('should subscribe HTMLInputElement and change its value after DOM interaction w/ slider instance', () => {
+      const inputElement: HTMLInputElementWithUnsubscribe = document.createElement('input');
+      inputElement.type = 'number';
+      $sliderInstance.subscribe('value1Changed', inputElement);
+
+      makePointerdown(controlContainer, 'offsetX', 465);
+      controlContainer.dispatchEvent(pointerupEvent);
+
+      const { value1 } = $sliderInstance.getOptions();
+      expect(value1).toBe(40);
+      expect(inputElement.valueAsNumber).toBe(value1);
+    });
+  });
+
   describe.each([false, true])('edge cases tests, isVertical: %s', (isVertical) => {
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
