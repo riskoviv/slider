@@ -123,7 +123,6 @@ interface IModel extends IEventEmitter, IPluginPublicMethods {
   penultimateValue: number;
   viewValues: ViewValues;
   publicMethods: IPluginPublicMethods;
-  getStateOptions(): IPluginStateOptions;
   getIndexByValueNumber(valueNumber: 1 | 2): number;
   getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;

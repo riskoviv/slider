@@ -121,20 +121,6 @@ describe('Model', () => {
     expect(modelOptions).not.toBe(model.options);
   });
 
-  test('getStateOptions returns the same state options as they were passed on init', () => {
-    const stateOptions: IPluginStateOptions = {
-      isInterval: defaultOptions.isInterval,
-      isVertical: defaultOptions.isVertical,
-      showTip: defaultOptions.showTip,
-      showScale: defaultOptions.showScale,
-      showProgressBar: defaultOptions.showProgressBar,
-    };
-
-    const modelStateOptions = model.getStateOptions();
-
-    expect(modelStateOptions).toEqual(stateOptions);
-  });
-
   describe('getIndexByValueNumber(valueNumber: 1 | 2)', () => {
     test.each<[1 | 2, number]>([
       [1, 5],

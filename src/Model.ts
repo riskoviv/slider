@@ -30,17 +30,6 @@ class Model extends EventEmitter implements IModel {
     return { ...this.options };
   }
 
-  getStateOptions(): IPluginStateOptions {
-    const stateOptions = {
-      isInterval: this.options.isInterval,
-      isVertical: this.options.isVertical,
-      showTip: this.options.showTip,
-      showScale: this.options.showScale,
-      showProgressBar: this.options.showProgressBar,
-    };
-    return stateOptions;
-  }
-
   getIndexByValueNumber(valueNumber: 1 | 2): number {
     const value = this.options[`value${valueNumber}`];
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
