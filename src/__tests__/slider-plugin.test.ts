@@ -694,12 +694,12 @@ describe('slider-plugin', () => {
           const $scaleEdgeElem = $scaleElem
             .find(`.slider__scale-block:${childType}-child > .slider__scale-text`);
           const valueFractionSize = getFractionalPartSize(`${minMaxValue}`);
-          const scaleElemsFractionSize = getScaleValuesMaxFractionalPrecision($scaleElem);
+          const scaleElementsFractionSize = getScaleValuesMaxFractionalPrecision($scaleElem);
 
           expect($scaleEdgeElem.text()).toBe(`${minMaxValue}`);
           expect($tip1.text()).toBe(`${value1}`);
           expect($tip2.text()).toBe(`${value2}`);
-          expect(scaleElemsFractionSize).toBe(valueFractionSize);
+          expect(scaleElementsFractionSize).toBe(valueFractionSize);
         });
       },
     );
