@@ -615,97 +615,101 @@ describe('Model', () => {
     });
 
     describe('subscribe() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
+      let isUnsubscribed: boolean;
+
       beforeEach(() => {
         initModelWithDefaultOptions();
+        isUnsubscribed = false;
       });
 
-      test.concurrent.each<[string, ModelEvent, 'valueAsNumber' | 'checked', {
-          numericCall?: [keyof IPluginPublicValueMethods, number, number],
-          booleanCall?: [keyof IPluginPublicStateMethods, boolean, boolean],
+      type Primitive = number | boolean;
+
+      test.concurrent.each<[string, ModelEvent, Primitive[], 'valueAsNumber' | 'checked', {
+          numericMethod?: keyof IPluginPublicValueMethods,
+          booleanMethod?: keyof IPluginPublicStateMethods,
         },
       ]>([
-        ['number', 'value1Changed', 'valueAsNumber', {
-          numericCall: ['setValue1', 20, 30],
+        ['number', 'value1Changed', [20, 30], 'valueAsNumber', {
+          numericMethod: 'setValue1',
         }],
-        ['number', 'stepSizeChanged', 'valueAsNumber', {
-          numericCall: ['setStepSize', 2, 6],
+        ['number', 'stepSizeChanged', [2, 6], 'valueAsNumber', {
+          numericMethod: 'setStepSize',
         }],
-        ['checkbox', 'isIntervalChanged', 'checked', {
-          booleanCall: ['setInterval', true, false],
+        ['checkbox', 'isIntervalChanged', [true, false], 'checked', {
+          booleanMethod: 'setInterval',
         }],
       ])(
         'should subscribe input[type="%s"] element to %s event and change its %s property to value emitted on event dispatch, but after unsubscribe() new value passed to method should not be set to inputElement',
-        (inputType, event, inputProperty, { numericCall, booleanCall }) => {
-          const inputElement = document.createElement('input');
+        (inputType, event, [value1, value2], inputProperty, { numericMethod, booleanMethod }) => {
+          const inputElement: HTMLInputElementWithUnsubscribe = document.createElement('input');
           inputElement.type = inputType;
 
           model.subscribe(event, inputElement);
-          if (numericCall) {
-            const [method, value1, value2] = numericCall;
-            model[method](value1);
-
-            expect(inputElement[inputProperty]).toBe(value1);
-
-            const isUnsubscribed = model.unsubscribe(inputElement);
-            model[method](value2);
-
-            expect(isUnsubscribed).toBe(true);
-            expect(inputElement[inputProperty]).toBe(value1);
-          } else if (booleanCall) {
-            const [method, value1, value2] = booleanCall;
-            model[method](value1);
-
-            expect(inputElement[inputProperty]).toBe(value1);
-
-            const isUnsubscribed = model.unsubscribe(inputElement);
-            model[method](value2);
-
-            expect(isUnsubscribed).toBe(true);
-            expect(inputElement[inputProperty]).toBe(value1);
+          if (numericMethod && typeof value1 === 'number') {
+            model[numericMethod](value1);
+          } else if (booleanMethod && typeof value1 === 'boolean') {
+            model[booleanMethod](value1);
           }
+
+          expect(inputElement[inputProperty]).toBe(value1);
+
+          if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(inputElement);
+          else if (inputElement.unsubscribe) isUnsubscribed = inputElement.unsubscribe();
+
+          expect(isUnsubscribed).toBe(true);
+
+          if (numericMethod && typeof value2 === 'number') {
+            model[numericMethod](value2);
+          } else if (booleanMethod && typeof value2 === 'boolean') {
+            model[booleanMethod](value2);
+          }
+
+          expect(inputElement[inputProperty]).toBe(value1);
         },
       );
 
-      test('should subscribe callback function to event and call it on event and pass it number value changed during event, and don\'t call callback after unsubscribe', () => {
-        let variableChangedByCallback;
-        const callback = (value: number) => {
-          variableChangedByCallback = value;
-        };
-        model.subscribe('value1Changed', callback);
-        const value1 = 30;
+      describe('callback subscribe / unsubscribe', () => {
+        let variableChangedByCallback: Primitive | undefined;
 
-        model.setValue1(value1);
+        beforeEach(() => {
+          variableChangedByCallback = undefined;
+        });
 
-        expect(variableChangedByCallback).toBe(value1);
+        test.each<[ModelEvent, Primitive, Primitive, {
+          numberMethod?: keyof IPluginPublicValueMethods,
+          booleanMethod?: keyof IPluginPublicStateMethods,
+        }]>([
+          ['value1Changed', 30, 40, { numberMethod: 'setValue1' }],
+          ['showProgressChanged', true, false, { booleanMethod: 'setShowProgress' }],
+        ])(
+          'should subscribe callback function to event and call it on event passing it value changed during event, and don\'t call callback after unsubscribe',
+          (event, value1, value2, { numberMethod, booleanMethod }) => {
+            const callback: EventHandler<Primitive> = (value: Primitive) => {
+              variableChangedByCallback = value;
+            };
+            model.subscribe(event, callback);
 
-        const isUnsubscribed = model.unsubscribe(callback);
-        const value2 = 40;
+            if (typeof value1 === 'number' && numberMethod) {
+              model[numberMethod](value1);
+            } else if (typeof value1 === 'boolean' && booleanMethod) {
+              model[booleanMethod](value1);
+            }
 
-        model.setValue1(value2);
+            expect(variableChangedByCallback).toBe(value1);
 
-        expect(isUnsubscribed).toBe(true);
-        expect(variableChangedByCallback).toBe(value1);
-      });
+            if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(callback);
+            else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
 
-      test('should subscribe callback function to event and call it on event and pass it boolean value changed during event, and don\'t call callback after unsubscribe', () => {
-        let variableChangedByCallback;
-        const callback = (value: boolean) => {
-          variableChangedByCallback = value;
-        };
-        model.subscribe('showProgressChanged', callback);
-        const value1 = true;
+            if (typeof value2 === 'number' && numberMethod) {
+              model[numberMethod](value2);
+            } else if (typeof value2 === 'boolean' && booleanMethod) {
+              model[booleanMethod](value2);
+            }
 
-        model.setShowProgress(value1);
-
-        expect(variableChangedByCallback).toBe(value1);
-
-        const isUnsubscribed = model.unsubscribe(callback);
-        const value2 = false;
-
-        model.setShowProgress(value2);
-
-        expect(isUnsubscribed).toBe(true);
-        expect(variableChangedByCallback).toBe(value1);
+            expect(isUnsubscribed).toBe(true);
+            expect(variableChangedByCallback).toBe(value1);
+          },
+        );
       });
     });
   });
