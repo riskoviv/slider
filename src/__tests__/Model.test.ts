@@ -660,9 +660,10 @@ describe('Model', () => {
 
             expect(inputElement[inputProperty]).toBe(value1);
 
-            model.unsubscribe(inputElement);
+            const isUnsubscribed = model.unsubscribe(inputElement);
             model[method](value2);
 
+            expect(isUnsubscribed).toBe(true);
             expect(inputElement[inputProperty]).toBe(value1);
           } else if (booleanCall) {
             const [method, value1, value2] = booleanCall;
@@ -670,9 +671,10 @@ describe('Model', () => {
 
             expect(inputElement[inputProperty]).toBe(value1);
 
-            model.unsubscribe(inputElement);
+            const isUnsubscribed = model.unsubscribe(inputElement);
             model[method](value2);
 
+            expect(isUnsubscribed).toBe(true);
             expect(inputElement[inputProperty]).toBe(value1);
           }
         },
@@ -690,11 +692,12 @@ describe('Model', () => {
 
         expect(variableChangedByCallback).toBe(value1);
 
-        model.unsubscribe(callback);
+        const isUnsubscribed = model.unsubscribe(callback);
         const value2 = 40;
 
         model.setValue1(value2);
 
+        expect(isUnsubscribed).toBe(true);
         expect(variableChangedByCallback).toBe(value1);
       });
 
@@ -710,11 +713,12 @@ describe('Model', () => {
 
         expect(variableChangedByCallback).toBe(value1);
 
-        model.unsubscribe(callback);
+        const isUnsubscribed = model.unsubscribe(callback);
         const value2 = false;
 
         model.setShowProgress(value2);
 
+        expect(isUnsubscribed).toBe(true);
         expect(variableChangedByCallback).toBe(value1);
       });
     });
