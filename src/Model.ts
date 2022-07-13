@@ -211,9 +211,14 @@ class Model extends EventEmitter implements IModel {
 
       Object.defineProperty(elementOrCallback, 'unsubscribe', {
         value: this.unsubscribe.bind(this, elementOrCallback),
+        writable: true,
+        configurable: true,
       });
     } else if (elementOrCallback instanceof Function) {
       this.on(event, elementOrCallback, elementOrCallback);
+      // eslint-disable-next-line no-param-reassign
+      elementOrCallback.unsubscribe = this.unsubscribe
+        .bind<this, EventHandler<Value>, boolean>(this, elementOrCallback);
     }
   }
 
@@ -224,6 +229,9 @@ class Model extends EventEmitter implements IModel {
       || elementOrCallback instanceof Function)) {
       return false;
     }
+
+    // eslint-disable-next-line no-param-reassign
+    delete elementOrCallback.unsubscribe;
 
     return this.off(elementOrCallback);
   }
