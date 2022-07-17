@@ -115,7 +115,7 @@ class Panel {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
-      label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderStateMethod: method,
+      label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderMethod: method,
     });
   }
 
@@ -130,7 +130,7 @@ class Panel {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}" value="${value}"></input>`);
     $inputElement.prop({ step, min });
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
-      label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderValueMethod: method,
+      label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderMethod: method,
     });
   }
 
@@ -139,26 +139,28 @@ class Panel {
     $inputElement,
     sliderEvent,
     inputEventType,
-    sliderValueMethod,
-    sliderStateMethod,
+    sliderMethod,
   }: {
     label: string,
     $inputElement: JQuery<HTMLInputElement>,
     sliderEvent: ModelEvent,
-    inputEventType: 'input' | 'change',
-    sliderValueMethod?: keyof IPluginPublicValueMethods,
-    sliderStateMethod?: keyof IPluginPublicStateMethods,
-  }) {
+  } & ({
+    inputEventType: 'input',
+    sliderMethod: keyof IPluginPublicValueMethods,
+  } | {
+    inputEventType: 'change',
+    sliderMethod: keyof IPluginPublicStateMethods,
+  })) {
     const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
       .append($inputElement);
     this.sliderPlugin.subscribe(sliderEvent, $inputElement[0]);
     const panelInputListener = (e: Event) => {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
-        if (inputEventType === 'input' && sliderValueMethod) {
-          this.sliderPlugin[sliderValueMethod](target.valueAsNumber);
-        } else if (inputEventType === 'change' && sliderStateMethod) {
-          this.sliderPlugin[sliderStateMethod](target.checked);
+        if (inputEventType === 'input') {
+          this.sliderPlugin[sliderMethod](target.valueAsNumber);
+        } else if (inputEventType === 'change') {
+          this.sliderPlugin[sliderMethod](target.checked);
         }
       }
     };
