@@ -1,3 +1,5 @@
+/* eslint-disable lines-between-class-members */
+/* eslint-disable no-dupe-class-members */
 import EventEmitter from './EventEmitter';
 import { getFractionalPartSize } from './utils';
 
@@ -167,62 +169,33 @@ class Model extends EventEmitter implements IModel {
     return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
-  subscribe<Value>(
-    event: ModelEvent,
-    elementOrCallback: Subscriber<Value>,
-  ): void {
-    const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
-      const subscribedElement = inputElement;
-      const updateCheckbox = (value: boolean) => {
-        subscribedElement.checked = value;
-        const changeEvent = new InputEvent('change');
-        subscribedElement.dispatchEvent(changeEvent);
-      };
-      return updateCheckbox;
-    };
-
-    const makeNumericInputElementUpdater = (inputElement: HTMLInputElement) => {
-      const subscribedElement = inputElement;
-      const updateNumericInput = (value: number) => {
-        subscribedElement.value = String(value);
-        const inputEvent = new InputEvent('input');
-        subscribedElement.dispatchEvent(inputEvent);
-      };
-      return updateNumericInput;
-    };
-
-    if (elementOrCallback instanceof HTMLInputElement) {
-      if (elementOrCallback.type === 'checkbox') {
-        this.on(event, makeCheckboxElementUpdater(elementOrCallback), elementOrCallback);
-      } else if (elementOrCallback.type === 'number') {
-        this.on(event, makeNumericInputElementUpdater(elementOrCallback), elementOrCallback);
-      }
-
-      Object.defineProperty(elementOrCallback, 'unsubscribe', {
-        value: this.unsubscribe.bind(this, elementOrCallback),
+  subscribe(options: ValueSubscribe): void;
+  subscribe(options: StateSubscribe): void;
+  subscribe(options: ValueSubscribe | StateSubscribe): void;
+  subscribe(options: ValueSubscribe | StateSubscribe): void {
+    this.eventsSwitch({ options, type: 'subscribe' });
+    const { subscriber } = options;
+    if (subscriber instanceof HTMLInputElement) {
+      Object.defineProperty(subscriber, 'unsubscribe', {
+        value: this.unsubscribe.bind(this, subscriber),
         writable: true,
         configurable: true,
       });
-    } else if (elementOrCallback instanceof Function) {
-      this.on(event, elementOrCallback, elementOrCallback);
-      // eslint-disable-next-line no-param-reassign
-      elementOrCallback.unsubscribe = this.unsubscribe
-        .bind<this, EventHandler<Value>, boolean>(this, elementOrCallback);
+    } else if (subscriber instanceof Function) {
+      subscriber.unsubscribe = this.unsubscribe.bind(this, subscriber);
     }
   }
 
-  unsubscribe<Value>(
-    elementOrCallback: Subscriber<Value>,
-  ): boolean {
-    if (!(elementOrCallback instanceof HTMLInputElement
-      || elementOrCallback instanceof Function)) {
+  unsubscribe(subscriber: Subscriber): boolean {
+    if (!(subscriber instanceof HTMLInputElement
+      || subscriber instanceof Function)) {
       return false;
     }
 
     // eslint-disable-next-line no-param-reassign
-    delete elementOrCallback.unsubscribe;
+    delete subscriber.unsubscribe;
 
-    return this.off(elementOrCallback);
+    return this.off(subscriber);
   }
 
   publicMethods: IPluginPublicMethods = {
