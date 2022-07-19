@@ -4,6 +4,8 @@
     "es2021": true
   },
   "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "airbnb-base",
     "plugin:fsd/all"
@@ -46,7 +48,8 @@
           "error"
         ]
       }
-    ]
+    ],
+    "@typescript-eslint/adjacent-overload-signatures": "error"
   },
   "settings": {
     "import/resolver": {
