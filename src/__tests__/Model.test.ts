@@ -1,5 +1,5 @@
 import Model from '../Model';
-import { getEntriesWithTypedKeys, defaultOptions } from '../utils';
+import { getEntriesWithTypedKeys, defaultOptions, invalidValues } from '../utils';
 
 let model: Model;
 
@@ -121,20 +121,6 @@ describe('Model', () => {
     expect(modelOptions).not.toBe(model.options);
   });
 
-  test('getStateOptions returns the same state options as they were passed on init', () => {
-    const stateOptions: IPluginStateOptions = {
-      isInterval: defaultOptions.isInterval,
-      isVertical: defaultOptions.isVertical,
-      showTip: defaultOptions.showTip,
-      showScale: defaultOptions.showScale,
-      showProgressBar: defaultOptions.showProgressBar,
-    };
-
-    const modelStateOptions = model.getStateOptions();
-
-    expect(modelStateOptions).toEqual(stateOptions);
-  });
-
   describe('getIndexByValueNumber(valueNumber: 1 | 2)', () => {
     test.each<[1 | 2, number]>([
       [1, 5],
@@ -176,7 +162,24 @@ describe('Model', () => {
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'value1Changed', handler: value1ChangedSpy });
+      });
+
+      test('should not set any non-finite number and non-number value', () => {
+        const value2ChangedSpy = jest.fn();
+        model.on({ event: 'value2Changed', handler: value2ChangedSpy });
+        const currentValue1 = model.options.value1;
+        const currentValue2 = model.options.value2;
+
+        invalidValues.forEach((value: any) => {
+          model.setValue1(value);
+          model.setValue2(value);
+        });
+
+        expect(model.options.value1).toBe(currentValue1);
+        expect(model.options.value2).toBe(currentValue2);
+        expect(value1ChangedSpy).not.toBeCalled();
+        expect(value2ChangedSpy).not.toBeCalled();
       });
 
       test('should set 1st value to 0', () => {
@@ -188,7 +191,7 @@ describe('Model', () => {
 
       test('should set 2nd value to -40 (don\'t consider value1)', () => {
         const value2ChangedSpy = jest.fn();
-        model.on('value2Changed', value2ChangedSpy);
+        model.on({ event: 'value2Changed', handler: value2ChangedSpy });
         model.setValue2(-40);
 
         expect(model.options.value2).toBe(-40);
@@ -225,8 +228,8 @@ describe('Model', () => {
 
         beforeEach(() => {
           customModel = new Model({ ...defaultOptions, isInterval: true });
-          customModel.on('value1Changed', value1ChangedSpy)
-            .on('value2Changed', value2ChangedSpy);
+          customModel.on({ event: 'value1Changed', handler: value1ChangedSpy })
+            .on({ event: 'value2Changed', handler: value2ChangedSpy });
         });
 
         test.each<{
@@ -288,7 +291,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('isVerticalChanged', isVerticalChangedSpy);
+        model.on({ event: 'isVerticalChanged', handler: isVerticalChangedSpy });
       });
 
       test.each([
@@ -309,9 +312,9 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('isIntervalChanged', isIntervalChangedSpy);
-        model.on('value1Changed', value1ChangedSpy)
-          .on('value2Changed', value2ChangedSpy);
+        model.on({ event: 'isIntervalChanged', handler: isIntervalChangedSpy });
+        model.on({ event: 'value1Changed', handler: value1ChangedSpy })
+          .on({ event: 'value2Changed', handler: value2ChangedSpy });
       });
 
       test.each([
@@ -340,9 +343,9 @@ describe('Model', () => {
             value1,
             value2,
           });
-          customModel.on('isIntervalChanged', isIntervalChangedSpy)
-            .on('value1Changed', value1ChangedSpy)
-            .on('value2Changed', value2ChangedSpy);
+          customModel.on({ event: 'isIntervalChanged', handler: isIntervalChangedSpy })
+            .on({ event: 'value1Changed', handler: value1ChangedSpy })
+            .on({ event: 'value2Changed', handler: value2ChangedSpy });
 
           customModel.setInterval(true);
 
@@ -363,7 +366,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('showProgressChanged', showProgressChangedSpy);
+        model.on({ event: 'showProgressChanged', handler: showProgressChangedSpy });
       });
 
       test.each([['enable', true], ['disable', false]])(
@@ -382,7 +385,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('showTipChanged', showTipChangedSpy);
+        model.on({ event: 'showTipChanged', handler: showTipChangedSpy });
       });
 
       test.each([['add', true], ['remove', false]])(
@@ -401,7 +404,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('showScaleChanged', showScaleChangedSpy);
+        model.on({ event: 'showScaleChanged', handler: showScaleChangedSpy });
       });
 
       test.each([['add', true], ['remove', false]])(
@@ -421,8 +424,8 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('stepSizeChanged', stepSizeChangedSpy)
-          .on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'stepSizeChanged', handler: stepSizeChangedSpy })
+          .on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test('should set positive integer that is less than range', () => {
@@ -460,10 +463,10 @@ describe('Model', () => {
         expect(stepSizeChangedSpy).not.toBeCalled();
       });
 
-      test('should not set any non-finite value', () => {
+      test('should not set any non-finite, non-number value and 0', () => {
         const currentStepSize = model.options.stepSize;
 
-        [0, NaN, -Infinity, Infinity].forEach((value) => model.setStepSize(value));
+        [0, ...invalidValues].forEach((value: any) => model.setStepSize(value));
 
         expect(model.options.stepSize).toBe(currentStepSize);
         expect(stepSizeChangedSpy).not.toBeCalled();
@@ -472,9 +475,9 @@ describe('Model', () => {
       test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
         const customModel = new Model({ ...defaultOptions, isInterval: true });
         const value2ChangedSpy = jest.fn();
-        customModel.on('value1Changed', value1ChangedSpy)
-          .on('value2Changed', value2ChangedSpy)
-          .on('stepSizeChanged', stepSizeChangedSpy);
+        customModel.on({ event: 'value1Changed', handler: value1ChangedSpy })
+          .on({ event: 'value2Changed', handler: value2ChangedSpy })
+          .on({ event: 'stepSizeChanged', handler: stepSizeChangedSpy });
         expect(customModel.options.value1).toBe(-50);
         expect(customModel.options.value2).toBe(50);
 
@@ -495,12 +498,12 @@ describe('Model', () => {
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('minValueChanged', minValueChangedSpy)
-          .on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'minValueChanged', handler: minValueChangedSpy })
+          .on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test.each([-85, 25.3, 2])(
-        'should set new minValue if it is less than maxValue',
+        `should set new minValue (%d) if it is less than maxValue (${defaultOptions.maxValue})`,
         (minValue) => {
           model.setMinValue(minValue);
 
@@ -510,16 +513,15 @@ describe('Model', () => {
         },
       );
 
-      test.each([123, NaN, -Infinity, Infinity])(
-        'should not set new minValue if it is more than maxValue or is not finite number',
-        (minValue) => {
+      test('should not set new minValue if it is more than maxValue or is not finite number or not a number', () => {
+        [123, ...invalidValues].forEach((minValue: any) => {
           model.setMinValue(minValue);
+        });
 
-          expect(model.options.minValue).toBe(defaultOptions.minValue);
-          expect(minValueChangedSpy).not.toBeCalled();
-          expect(value1ChangedSpy).not.toBeCalled();
-        },
-      );
+        expect(model.options.minValue).toBe(defaultOptions.minValue);
+        expect(minValueChangedSpy).not.toBeCalled();
+        expect(value1ChangedSpy).not.toBeCalled();
+      });
 
       test('if new minValue === maxValue, should set maxValue to new minValue + stepSize and save minValue', () => {
         model.setMinValue(defaultOptions.maxValue);
@@ -535,12 +537,12 @@ describe('Model', () => {
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('maxValueChanged', maxValueChangedSpy)
-          .on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'maxValueChanged', handler: maxValueChangedSpy })
+          .on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test.each([64, 0, -51])(
-        'should set new maxValue to %i if it is more than minValue',
+        `should set new maxValue to %i if it is more than minValue (${defaultOptions.minValue})`,
         (maxValue) => {
           model.setMaxValue(maxValue);
 
@@ -553,16 +555,15 @@ describe('Model', () => {
         },
       );
 
-      test.each([-105, NaN, -Infinity, Infinity])(
-        'should not set new maxValue if it is less than minValue or is not finite number',
-        (maxValue) => {
+      test('should not set new maxValue if it is less than minValue or is not finite number or not a number', () => {
+        [-105, ...invalidValues].forEach((maxValue: any) => {
           model.setMaxValue(maxValue);
+        });
 
-          expect(model.options.maxValue).toBe(defaultOptions.maxValue);
-          expect(maxValueChangedSpy).not.toBeCalled();
-          expect(value1ChangedSpy).not.toBeCalled();
-        },
-      );
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue);
+        expect(maxValueChangedSpy).not.toBeCalled();
+        expect(value1ChangedSpy).not.toBeCalled();
+      });
 
       test('if new maxValue === minValue, should set maxValue to minValue + stepSize', () => {
         model.setMaxValue(defaultOptions.minValue);
@@ -578,7 +579,7 @@ describe('Model', () => {
 
       test('none of methods should emit event and no listeners should be called', () => {
         const listeners: jest.Mock[] = [];
-        const eventNames: EventName[] = [
+        const eventNames: ModelEvent[] = [
           'value1Changed',
           'value2Changed',
           'isVerticalChanged',
@@ -592,7 +593,7 @@ describe('Model', () => {
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
-          model.on(eventName, listener);
+          model.on({ event: eventName, handler: listener });
           listeners.push(listener);
         });
 
@@ -613,66 +614,118 @@ describe('Model', () => {
       });
     });
 
-    describe('subscribeToEvent() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
-      beforeAll(() => {
+    describe('subscribe() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
+      let isUnsubscribed: boolean;
+
+      beforeEach(() => {
         initModelWithDefaultOptions();
+        isUnsubscribed = false;
       });
 
-      test('should subscribe input[type="number"] element to value1Changed event and change its value to arg.value emitted by event', () => {
-        const inputNumberElement = document.createElement('input');
-        inputNumberElement.type = 'number';
-        const value1 = 20;
+      test.concurrent.each`
+        inputType     | event                  | inputProperty      | value1  | value2   | method
+        ${'number'}   | ${'value1Changed'}     | ${'valueAsNumber'} | ${20}   | ${30}    | ${'setValue1'}
+        ${'number'}   | ${'stepSizeChanged'}   | ${'valueAsNumber'} | ${2}    | ${6}     | ${'setStepSize'}
+        ${'checkbox'} | ${'isIntervalChanged'} | ${'checked'}       | ${true} | ${false} | ${'setInterval'}
+      `(
+        'should subscribe input[type="$inputType"] element to $event event and change its $inputProperty property to value ($value1) emitted on event dispatch, but after unsubscribe() new value ($value2) passed to method should not be set on inputElement',
+        ({
+          inputType, event, inputProperty, value1, value2, method,
+        }: {
+          inputType: 'number',
+          event: ValueEvent,
+          value1: number,
+          value2: number,
+          inputProperty: 'valueAsNumber',
+          method: keyof IPluginPublicValueMethods,
+        } | {
+          inputType: 'checkbox',
+          event: StateEvent,
+          value1: boolean,
+          value2: boolean,
+          inputProperty: 'checked',
+          method: keyof IPluginPublicStateMethods,
+        }) => {
+          const inputElement: UnsubHTMLInputElement = document.createElement('input');
+          inputElement.type = inputType;
+          model.subscribe({ event, subscriber: inputElement });
 
-        model.subscribeToEvent('value1Changed', inputNumberElement);
-        model.setValue1(value1);
+          switch (inputType) {
+            case 'number':
+              model[method](value1);
+              break;
+            case 'checkbox':
+              model[method](value1);
+              break;
+            default: break;
+          }
 
-        expect(inputNumberElement.valueAsNumber).toBe(value1);
-      });
+          expect(inputElement[inputProperty]).toBe(value1);
 
-      test('should subscribe input[type="number"] element to stepSizeChanged event and change its value to value emitted by event', () => {
-        const inputNumberElement = document.createElement('input');
-        inputNumberElement.type = 'number';
-        const stepSize = 2;
+          if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(inputElement);
+          else if (inputElement.unsubscribe) isUnsubscribed = inputElement.unsubscribe();
 
-        model.subscribeToEvent('stepSizeChanged', inputNumberElement);
-        model.setStepSize(stepSize);
+          expect(isUnsubscribed).toBe(true);
 
-        expect(inputNumberElement.valueAsNumber).toBe(stepSize);
-      });
+          switch (inputType) {
+            case 'number':
+              model[method](value2);
+              break;
+            case 'checkbox':
+              model[method](value2);
+              break;
+            default: break;
+          }
 
-      test('should subscribe input[type="checkbox"] element to isIntervalChanged event and change its "checked" property to value emitted by event', () => {
-        const inputCheckboxElement = document.createElement('input');
-        inputCheckboxElement.type = 'checkbox';
-        const isInterval = true;
+          expect(inputElement[inputProperty]).toBe(value1);
+        },
+      );
 
-        model.subscribeToEvent('isIntervalChanged', inputCheckboxElement);
-        model.setInterval(isInterval);
+      type Primitive = number | boolean;
+      type Callback<Value> = ((value: Value) => void) & Unsubscribable;
 
-        expect(inputCheckboxElement.checked).toBe(isInterval);
-      });
+      describe('callback subscribe / unsubscribe', () => {
+        let variableChangedByCallback: Primitive | undefined;
 
-      test('should subscribe callback function to event and call it on event and pass it number value changed during event', () => {
-        let variableChangedByCallback = 0;
-        model.subscribeToEvent('value1Changed', (value: number) => {
-          variableChangedByCallback = value;
+        beforeEach(() => {
+          variableChangedByCallback = undefined;
         });
-        const value1 = 30;
 
-        model.setValue1(value1);
+        test.each<[ModelEvent, Primitive, Primitive, {
+          numberMethod?: keyof IPluginPublicValueMethods,
+          booleanMethod?: keyof IPluginPublicStateMethods,
+        }]>([
+          ['value1Changed', 30, 40, { numberMethod: 'setValue1' }],
+          ['showProgressChanged', true, false, { booleanMethod: 'setShowProgress' }],
+        ])(
+          'should subscribe callback function to event and call it on event passing it value changed during event, and don\'t call callback after unsubscribe',
+          (event, value1, value2, { numberMethod, booleanMethod }) => {
+            const callback: Callback<Primitive> = (value: Primitive) => {
+              variableChangedByCallback = value;
+            };
+            model.subscribe({ event, subscriber: callback });
 
-        expect(variableChangedByCallback).toBe(value1);
-      });
+            if (typeof value1 === 'number' && numberMethod) {
+              model[numberMethod](value1);
+            } else if (typeof value1 === 'boolean' && booleanMethod) {
+              model[booleanMethod](value1);
+            }
 
-      test('should subscribe callback function to event and call it on event and pass it boolean value changed during event', () => {
-        let variableChangedByCallback = false;
-        model.subscribeToEvent('showProgressChanged', (value: boolean) => {
-          variableChangedByCallback = value;
-        });
-        const showProgressBar = true;
+            expect(variableChangedByCallback).toBe(value1);
 
-        model.setShowProgress(showProgressBar);
+            if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(callback);
+            else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
 
-        expect(variableChangedByCallback).toBe(showProgressBar);
+            if (typeof value2 === 'number' && numberMethod) {
+              model[numberMethod](value2);
+            } else if (typeof value2 === 'boolean' && booleanMethod) {
+              model[booleanMethod](value2);
+            }
+
+            expect(isUnsubscribed).toBe(true);
+            expect(variableChangedByCallback).toBe(value1);
+          },
+        );
       });
     });
   });

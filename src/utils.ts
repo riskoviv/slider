@@ -1,4 +1,4 @@
-const defaultOptions: IPluginOptions = {
+const defaultOptions: SliderOptions = {
   stepSize: 10,
   minValue: -100,
   maxValue: 100,
@@ -42,9 +42,24 @@ const getFractionalPartSize = (value: number | string): number => {
   return valueAsString.split('.')[1].length;
 };
 
+const invalidValues = [
+  NaN,
+  -Infinity,
+  Infinity,
+  'string',
+  [123],
+  1n,
+  { value: 321 },
+  (): boolean => false,
+  Symbol('test'),
+  null,
+  undefined,
+];
+
 export {
   defaultOptions,
   getTypedKeys,
   getEntriesWithTypedKeys,
   getFractionalPartSize,
+  invalidValues,
 };

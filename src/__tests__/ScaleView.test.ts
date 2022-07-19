@@ -129,7 +129,7 @@ describe('ScaleView', () => {
 
     beforeAll(() => {
       scaleValueSelectSpy = jest.fn();
-      scale.on('scaleValueSelect', scaleValueSelectSpy);
+      scale.on({ event: 'scaleValueSelect', handler: scaleValueSelectSpy });
       scale.scaleValueElements = getScaleElementsWithValues([0, 100, 200, 300, 400, 500]);
       scale.insertScaleValueElements();
     });

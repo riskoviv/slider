@@ -1,8 +1,10 @@
+/* eslint-disable lines-between-class-members */
+/* eslint-disable no-dupe-class-members */
 import EventEmitter from './EventEmitter';
 import { getFractionalPartSize } from './utils';
 
 class Model extends EventEmitter implements IModel {
-  options: IPluginOptions;
+  options: SliderOptions;
 
   allowedValuesCount: number;
 
@@ -16,7 +18,7 @@ class Model extends EventEmitter implements IModel {
     penultimatePosition: NaN,
   };
 
-  constructor(options: IPluginOptions) {
+  constructor(options: SliderOptions) {
     super();
     this.options = { ...options };
     this.allowedValuesCount = this.getAllowedValuesCount();
@@ -26,19 +28,8 @@ class Model extends EventEmitter implements IModel {
   }
 
   // debug method
-  getOptions(): IPluginOptions {
+  getOptions(): SliderOptions {
     return { ...this.options };
-  }
-
-  getStateOptions(): IPluginStateOptions {
-    const stateOptions = {
-      isInterval: this.options.isInterval,
-      isVertical: this.options.isVertical,
-      showTip: this.options.showTip,
-      showScale: this.options.showScale,
-      showProgressBar: this.options.showProgressBar,
-    };
-    return stateOptions;
   }
 
   getIndexByValueNumber(valueNumber: 1 | 2): number {
@@ -84,49 +75,54 @@ class Model extends EventEmitter implements IModel {
   }
 
   setVerticalState(isVertical: boolean): void {
+    if (typeof isVertical !== 'boolean') return;
     if (this.options.isVertical === isVertical) return;
 
     this.options.isVertical = isVertical;
-    this.emit('isVerticalChanged', isVertical);
+    this.emit({ event: 'isVerticalChanged', value: isVertical });
   }
 
   setInterval(isInterval: boolean): void {
+    if (typeof isInterval !== 'boolean') return;
     if (this.options.isInterval === isInterval) return;
 
     this.options.isInterval = isInterval;
     const { value1Fixed, value2Fixed } = this.fixValues();
-    this.emit('isIntervalChanged', isInterval);
+    this.emit({ event: 'isIntervalChanged', value: isInterval });
 
     if (value1Fixed) {
-      this.emit('value1Changed', this.options.value1, { changeTipValue: true });
+      this.emit({ event: 'value1Changed', value: this.options.value1, options: { changeTipValue: true } });
     }
 
     if (isInterval) {
       if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
-        this.emit('value2Changed', this.options.value2, { changeTipValue: false });
+        this.emit({ event: 'value2Changed', value: this.options.value2, options: { changeTipValue: false } });
       }
     }
   }
 
   setShowProgress(showProgressBar: boolean): void {
+    if (typeof showProgressBar !== 'boolean') return;
     if (this.options.showProgressBar === showProgressBar) return;
 
     this.options.showProgressBar = showProgressBar;
-    this.emit('showProgressChanged', showProgressBar);
+    this.emit({ event: 'showProgressChanged', value: showProgressBar });
   }
 
   setShowTip(showTip: boolean): void {
+    if (typeof showTip !== 'boolean') return;
     if (this.options.showTip === showTip) return;
 
     this.options.showTip = showTip;
-    this.emit('showTipChanged', showTip);
+    this.emit({ event: 'showTipChanged', value: showTip });
   }
 
   setShowScale(showScale: boolean): void {
+    if (typeof showScale !== 'boolean') return;
     if (this.options.showScale === showScale) return;
 
     this.options.showScale = showScale;
-    this.emit('showScaleChanged', showScale);
+    this.emit({ event: 'showScaleChanged', value: showScale });
   }
 
   setStepSize(stepSize: number): void {
@@ -173,39 +169,33 @@ class Model extends EventEmitter implements IModel {
     return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
   }
 
-  subscribeToEvent<Value>(
-    event: EventName,
-    elementOrCallback: HTMLInputElement | ((value: Value) => void),
-  ): void {
-    const makeCheckboxElementUpdater = (inputElement: HTMLInputElement) => {
-      const subscribedElement = inputElement;
-      const updateCheckbox = (value: boolean) => {
-        subscribedElement.checked = value;
-        const changeEvent = new InputEvent('change');
-        subscribedElement.dispatchEvent(changeEvent);
-      };
-      return updateCheckbox;
-    };
-
-    const makeNumericInputElementUpdater = (inputElement: HTMLInputElement) => {
-      const subscribedElement = inputElement;
-      const updateNumericInput = (value: number) => {
-        subscribedElement.value = String(value);
-        const inputEvent = new InputEvent('input');
-        subscribedElement.dispatchEvent(inputEvent);
-      };
-      return updateNumericInput;
-    };
-
-    if (elementOrCallback instanceof HTMLInputElement) {
-      if (elementOrCallback.type === 'checkbox') {
-        this.on(event, makeCheckboxElementUpdater(elementOrCallback));
-      } else if (elementOrCallback.type === 'number') {
-        this.on(event, makeNumericInputElementUpdater(elementOrCallback));
-      }
-    } else if (elementOrCallback instanceof Function) {
-      this.on(event, elementOrCallback);
+  subscribe(options: ValueSubscribe): void;
+  subscribe(options: StateSubscribe): void;
+  subscribe(options: ValueSubscribe | StateSubscribe): void;
+  subscribe(options: ValueSubscribe | StateSubscribe): void {
+    this.eventsSwitch({ options, type: 'subscribe' });
+    const { subscriber } = options;
+    if (subscriber instanceof HTMLInputElement) {
+      Object.defineProperty(subscriber, 'unsubscribe', {
+        value: this.unsubscribe.bind(this, subscriber),
+        writable: true,
+        configurable: true,
+      });
+    } else if (subscriber instanceof Function) {
+      subscriber.unsubscribe = this.unsubscribe.bind(this, subscriber);
     }
+  }
+
+  unsubscribe(subscriber: Subscriber): boolean {
+    if (!(subscriber instanceof HTMLInputElement
+      || subscriber instanceof Function)) {
+      return false;
+    }
+
+    // eslint-disable-next-line no-param-reassign
+    delete subscriber.unsubscribe;
+
+    return this.off(subscriber);
   }
 
   publicMethods: IPluginPublicMethods = {
@@ -220,34 +210,40 @@ class Model extends EventEmitter implements IModel {
     setStepSize: this.setStepSize.bind(this),
     setMinValue: this.setMinValue.bind(this),
     setMaxValue: this.setMaxValue.bind(this),
-    subscribeToEvent: this.subscribeToEvent.bind(this),
+    subscribe: this.subscribe.bind(this),
+    unsubscribe: this.unsubscribe.bind(this),
   }
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
+    if (!Number.isFinite(value)) return;
     const valueNumber: 'value1' | 'value2' = `value${number}`;
     if (this.options[valueNumber] === value) return;
 
     this.options[valueNumber] = this.fixValue(number, value);
-    this.emit(`${valueNumber}Changed`, this.options[valueNumber], {
-      changeTipValue: true,
-      onlySaveValue,
+    this.emit({
+      event: `${valueNumber}Changed`,
+      value: this.options[valueNumber],
+      options: {
+        changeTipValue: true,
+        onlySaveValue,
+      },
     });
   }
 
-  private updateValues(eventName: EventName, value: number, ignoreIsFixed = false) {
+  private updateValues(eventName: ValueEvent, value: number, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
 
-    this.emit(eventName, value);
+    this.emit({ event: eventName, value });
 
     const { value1Fixed, value2Fixed } = this.fixValues();
 
     if (ignoreIsFixed || value1Fixed) {
-      this.emit('value1Changed', this.options.value1, { changeTipValue: true });
+      this.emit({ event: 'value1Changed', value: this.options.value1, options: { changeTipValue: true } });
     }
 
     if (this.options.isInterval) {
       if (ignoreIsFixed || value2Fixed) {
-        this.emit('value2Changed', this.options.value2, { changeTipValue: true });
+        this.emit({ event: 'value2Changed', value: this.options.value2, options: { changeTipValue: true } });
       }
     }
   }

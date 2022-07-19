@@ -77,10 +77,13 @@ class View extends EventEmitter implements IView {
 
     const { target } = e;
     if (target instanceof HTMLDivElement) {
-      this.emit('sliderPointerDown', {
-        target,
-        offsetX: e.offsetX,
-        offsetY: e.offsetY,
+      this.emit({
+        event: 'sliderPointerDown',
+        value: {
+          target,
+          offsetX: e.offsetX,
+          offsetY: e.offsetY,
+        },
       });
     }
   }

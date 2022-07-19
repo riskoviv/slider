@@ -5,7 +5,7 @@ import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
 
-type subViewClass = (
+type SubViewClass = (
   | typeof TrackView
   | typeof ThumbView
   | typeof ScaleView
@@ -13,11 +13,11 @@ type subViewClass = (
 );
 
 class Presenter {
-  private options: IPluginOptions;
+  private options: SliderOptions;
 
   readonly view: IView;
 
-  private subViews: { [viewName: string]: InstanceType<subViewClass> } = {};
+  private subViews: { [viewName: string]: InstanceType<SubViewClass> } = {};
 
   private sizeDimension: SizeDimension = 'offsetWidth';
 
@@ -51,7 +51,7 @@ class Presenter {
     this.defineViewValues();
     this.view = new View({ isVertical, isInterval, showProgressBar });
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
-    this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
+    this.view.on({ event: 'sliderPointerDown', handler: this.viewEventHandlers.sliderPointerDown });
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -64,16 +64,16 @@ class Presenter {
 
   private bindModelEventListeners(): void {
     const listeners = this.modelEventListeners;
-    this.model.on('isVerticalChanged', listeners.changeOrientation)
-      .on('isIntervalChanged', listeners.changeInterval)
-      .on('value1Changed', listeners.makeSetValueAndPosition(1))
-      .on('value2Changed', listeners.makeSetValueAndPosition(2))
-      .on('showProgressChanged', listeners.changeShowProgress)
-      .on('showTipChanged', listeners.changeShowTip)
-      .on('showScaleChanged', listeners.changeShowScale)
-      .on('stepSizeChanged', listeners.updateBounds)
-      .on('minValueChanged', listeners.updateBounds)
-      .on('maxValueChanged', listeners.updateBounds);
+    this.model.on({ event: 'isVerticalChanged', handler: listeners.changeOrientation })
+      .on({ event: 'isIntervalChanged', handler: listeners.changeInterval })
+      .on({ event: 'value1Changed', handler: listeners.makeSetValueAndPosition(1) })
+      .on({ event: 'value2Changed', handler: listeners.makeSetValueAndPosition(2) })
+      .on({ event: 'showProgressChanged', handler: listeners.changeShowProgress })
+      .on({ event: 'showTipChanged', handler: listeners.changeShowTip })
+      .on({ event: 'showScaleChanged', handler: listeners.changeShowScale })
+      .on({ event: 'stepSizeChanged', handler: listeners.updateBounds })
+      .on({ event: 'minValueChanged', handler: listeners.updateBounds })
+      .on({ event: 'maxValueChanged', handler: listeners.updateBounds });
   }
 
   private initResizeObserver(): void {
@@ -83,9 +83,10 @@ class Presenter {
           this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
         }
       });
+    } else {
+      this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     }
 
-    this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     this.sliderResizeObserver.observe(this.view.$elem[0]);
   }
 
@@ -162,8 +163,8 @@ class Presenter {
     }
 
     if (subViewName === 'scale') {
-      this.view.$elem.append(this.renderSubView(subViewFullName));
-      this.subViews[subViewFullName].on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
+      this.view.$elem.append(this.renderSubView('scale'));
+      this.subViews.scale.on({ event: 'scaleValueSelect', handler: this.viewEventHandlers.scaleValueSelect });
     } else {
       this.view.$controlContainer.append(this.renderSubView(subViewFullName));
     }
@@ -315,7 +316,7 @@ class Presenter {
 
     makeSetValueAndPosition: (number: 1 | 2) => ((
       value: number,
-      options?: { changeTipValue: boolean, onlySaveValue: boolean },
+      options?: SetValueEventOptions,
     ): void => {
       if (this.options.showTip && options?.changeTipValue) {
         this.setTipValue({ number, value });
@@ -394,11 +395,7 @@ class Presenter {
   }
 
   private viewEventHandlers = {
-    sliderPointerDown: (data: {
-      target: HTMLDivElement,
-      offsetX: number,
-      offsetY: number,
-    }): void => {
+    sliderPointerDown: (data: SliderPointerDownData): void => {
       const { target } = data;
       if (target.classList.contains('slider__thumb')) {
         const thumbNumber = Number(target.dataset.number);

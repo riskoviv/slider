@@ -1,7 +1,9 @@
 import $ from 'jquery';
 import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
-import { getTypedKeys, getFractionalPartSize, defaultOptions } from '../utils';
+import {
+  getTypedKeys, getFractionalPartSize, defaultOptions, invalidValues,
+} from '../utils';
 import './mocks/ResizeObserver';
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
@@ -88,9 +90,7 @@ describe('slider-plugin', () => {
   });
 
   describe('if options arg passed to plugin is not an object or if it is an array (object that has length property)', () => {
-    test.each([
-      42, 'fail', [123, 'stepSize'], 321n, Symbol('symbol'),
-    ])('should ignore %s argument and instantiate w/ default options', <T>(arg: T) => {
+    test.each([42, ...invalidValues])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
       $sliderInstance = $sliderContainer.sliderPlugin(arg);
 
       expect($sliderInstance.getOptions()).toStrictEqual(defaultOptions);
@@ -99,7 +99,7 @@ describe('slider-plugin', () => {
 
   describe('fixCustomOptions() should exclude wrong custom options from object that will be passed to Model', () => {
     test('should not include those properties in resulting options object that then passed to Model', () => {
-      const falseOptions: Record<string, unknown> & Partial<IPluginOptions> = {
+      const falseOptions: Record<string, unknown> & Partial<SliderOptions> = {
         test: 123,
       };
 
@@ -139,7 +139,7 @@ describe('slider-plugin', () => {
   describe('checkOptionsValues() should check numeric values and correct them so plugin can work properly', () => {
     const dO = defaultOptions;
     test.concurrent
-      .each<[(keyof IPluginValueOptions)[], number[], number[], boolean?]>([
+      .each<[(keyof ValueOptions)[], number[], number[], boolean?]>([
         [['stepSize'], [-5], [5]],
         [['stepSize'], [0], [dO.stepSize]],
         [['minValue', 'maxValue'], [150, -70], [-70, 150]],
@@ -154,7 +154,7 @@ describe('slider-plugin', () => {
       ])(
         'should correct wrong %p from %p to %p',
         async (parameters, wrong, right, isInterval = false) => {
-          const wrongOptions: Partial<IPluginValueOptions> = {};
+          const wrongOptions: Partial<ValueOptions> = {};
           parameters.forEach((parameter, idx) => {
             wrongOptions[parameter] = wrong[idx];
           });
@@ -694,15 +694,38 @@ describe('slider-plugin', () => {
           const $scaleEdgeElem = $scaleElem
             .find(`.slider__scale-block:${childType}-child > .slider__scale-text`);
           const valueFractionSize = getFractionalPartSize(`${minMaxValue}`);
-          const scaleElemsFractionSize = getScaleValuesMaxFractionalPrecision($scaleElem);
+          const scaleElementsFractionSize = getScaleValuesMaxFractionalPrecision($scaleElem);
 
           expect($scaleEdgeElem.text()).toBe(`${minMaxValue}`);
           expect($tip1.text()).toBe(`${value1}`);
           expect($tip2.text()).toBe(`${value2}`);
-          expect(scaleElemsFractionSize).toBe(valueFractionSize);
+          expect(scaleElementsFractionSize).toBe(valueFractionSize);
         });
       },
     );
+  });
+
+  describe('subscribe & unsubscribe API methods', () => {
+    let controlContainer: HTMLElement;
+
+    beforeEach(() => {
+      $sliderInstance = $sliderContainer.sliderPlugin();
+      [controlContainer] = $sliderInstance.find('.slider__control-container');
+      definePropertiesForControlContainer(controlContainer, 'offsetWidth');
+    });
+
+    test('should subscribe HTMLInputElement and change its value after DOM interaction w/ slider instance', () => {
+      const inputElement: UnsubHTMLInputElement = document.createElement('input');
+      inputElement.type = 'number';
+      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement });
+
+      makePointerdown(controlContainer, 'offsetX', 465);
+      controlContainer.dispatchEvent(pointerupEvent);
+
+      const { value1 } = $sliderInstance.getOptions();
+      expect(value1).toBe(40);
+      expect(inputElement.valueAsNumber).toBe(value1);
+    });
   });
 
   describe.each([false, true])('edge cases tests, isVertical: %s', (isVertical) => {

@@ -30,7 +30,7 @@ describe('Panel', () => {
     });
 
     test('should fill all number inputs based on slider options values', () => {
-      const valuesNames: [string, keyof IPluginValueOptions][] = [
+      const valuesNames: [string, keyof ValueOptions][] = [
         ['from', 'value1'], ['to', 'value2'], ['min', 'minValue'], ['max', 'maxValue'], ['step', 'stepSize'],
       ];
       const sliderOptions = $sliderInstance.getOptions();
@@ -57,14 +57,14 @@ describe('Panel', () => {
 
       expect(inputChangeEventSpy).toBeCalledTimes(10);
       const sliderOptions = $sliderInstance.getOptions();
-      const sliderStateOptions: (keyof IPluginStateOptions)[] = ['isVertical', 'isInterval', 'showProgressBar', 'showScale', 'showTip'];
+      const sliderStateOptions: (keyof StateOptions)[] = ['isVertical', 'isInterval', 'showProgressBar', 'showScale', 'showTip'];
       sliderStateOptions.forEach((stateOption) => {
         expect(sliderOptions[stateOption]).toBe(true);
       });
     });
 
     test('should change every numeric option of slider if numeric Panel element\'s value is changed', () => {
-      const data: [string, keyof IPluginValueOptions, number][] = [
+      const data: [string, keyof ValueOptions, number][] = [
         ['from', 'value1', -30],
         ['to', 'value2', 70],
         ['min', 'minValue', -40],

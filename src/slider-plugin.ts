@@ -4,7 +4,7 @@ import Presenter from './Presenter';
 import './styles/styles.scss';
 import { getEntriesWithTypedKeys } from './utils';
 
-const defaultOptions: IPluginOptions = {
+const defaultOptions: SliderOptions = {
   stepSize: 10,
   minValue: -100,
   maxValue: 100,
@@ -17,12 +17,12 @@ const defaultOptions: IPluginOptions = {
   showProgressBar: false,
 };
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
-let fixCustomOptions: (options: Partial<IPluginOptions>) => null | Partial<IPluginOptions>;
-let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
+let fixCustomOptions: (options: Partial<SliderOptions>) => null | Partial<SliderOptions>;
+let checkOptionsValues: (options: SliderOptions) => SliderOptions;
 
 $.fn.sliderPlugin = function sliderPlugin(
   this: JQuery,
-  options: Partial<IPluginOptions> = {},
+  options: Partial<SliderOptions> = {},
 ): JQuery {
   cleanContainerIfNotEmpty(this);
 
@@ -47,7 +47,8 @@ $.fn.sliderPlugin = function sliderPlugin(
     setStepSize: $sliderElem.setStepSize,
     setMinValue: $sliderElem.setMinValue,
     setMaxValue: $sliderElem.setMaxValue,
-    subscribeToEvent: $sliderElem.subscribeToEvent,
+    subscribe: $sliderElem.subscribe,
+    unsubscribe: $sliderElem.unsubscribe,
   } = model.publicMethods);
 
   return $sliderElem;
@@ -60,8 +61,9 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
   }
 };
 
-fixCustomOptions = (options: Partial<IPluginOptions>) => {
-  if (typeof options !== 'object' || Object.prototype.hasOwnProperty.call(options, 'length')) {
+fixCustomOptions = (options: Partial<SliderOptions>) => {
+  const notAnObject = typeof options !== 'object' || options === null;
+  if (notAnObject || Object.prototype.hasOwnProperty.call(options, 'length')) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
     return null;
   }
@@ -72,13 +74,13 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
 
   const checkedOptions = { ...options };
 
-  type pluginOptionsEntry = [
-    keyof Partial<IPluginOptions>,
-    TypeOfValues<Partial<IPluginOptions>>
+  type PluginOptionsEntry = [
+    keyof Partial<SliderOptions>,
+    TypeOfValues<Partial<SliderOptions>>
   ];
 
   getEntriesWithTypedKeys(options).forEach(
-    (option: pluginOptionsEntry) => {
+    (option: PluginOptionsEntry) => {
       const [key, value] = option;
 
       if (defaultOptions[key] === undefined) {
@@ -99,7 +101,7 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
   return checkedOptions;
 };
 
-checkOptionsValues = (options: IPluginOptions) => {
+checkOptionsValues = (options: SliderOptions) => {
   const pluginOptions = { ...options };
   const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 

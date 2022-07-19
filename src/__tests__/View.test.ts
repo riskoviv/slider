@@ -116,7 +116,7 @@ describe('View', () => {
 
       beforeAll(() => {
         sliderPointerDownSpy = jest.fn();
-        view.on('sliderPointerDown', sliderPointerDownSpy);
+        view.on({ event: 'sliderPointerDown', handler: sliderPointerDownSpy });
       });
 
       test('if e.button === 0 (LMB), pointerdown event should call preventDefault() & emit sliderPointerDown event', () => {

@@ -4,7 +4,7 @@ import Model from '../Model';
 import './mocks/ResizeObserver';
 
 describe('Presenter', () => {
-  const defaultOptions: IPluginOptions = {
+  const defaultOptions: SliderOptions = {
     stepSize: 10,
     minValue: -100,
     maxValue: 100,
@@ -31,7 +31,7 @@ describe('Presenter', () => {
   });
 
   test('should create Presenter with all state options on', () => {
-    const options: IPluginOptions = {
+    const options: SliderOptions = {
       stepSize: 10,
       minValue: -100,
       maxValue: 100,
