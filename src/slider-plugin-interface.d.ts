@@ -1,48 +1,131 @@
 /* eslint-disable no-redeclare */
-interface IPluginValueOptions {
-  stepSize: number;
-  minValue: number;
-  maxValue: number;
-  value1: number;
-  value2: number;
-}
+type ValueOptions = {
+  stepSize: number,
+  minValue: number,
+  maxValue: number,
+  value1: number,
+  value2: number,
+};
 
-interface IPluginStateOptions {
-  isVertical: boolean;
-  isInterval: boolean;
-  showTip: boolean;
-  showScale: boolean;
-  showProgressBar: boolean;
-}
+type StateOptions = {
+  isVertical: boolean,
+  isInterval: boolean,
+  showTip: boolean,
+  showScale: boolean,
+  showProgressBar: boolean,
+};
 
-interface IPluginOptions extends IPluginValueOptions, IPluginStateOptions {}
+type SliderOptions = ValueOptions & StateOptions;
 
 /**
  * Returns type of values of object-like type
  */
 type TypeOfValues<Obj> = Obj[keyof Obj];
 
-type ModelEvent = (
+type ValueEvent = (
   | 'value1Changed'
   | 'value2Changed'
   | 'stepSizeChanged'
   | 'minValueChanged'
   | 'maxValueChanged'
+);
+
+type StateEvent = (
   | 'isVerticalChanged'
   | 'isIntervalChanged'
   | 'showProgressChanged'
   | 'showTipChanged'
   | 'showScaleChanged'
-);
+)
 
-type ViewEvent = 'sliderPointerDown' | 'scaleValueSelect';
+type ModelEvent = ValueEvent | StateEvent;
 
-type SliderEvent = ModelEvent | ViewEvent;
+type SliderPointerDownEvent = 'sliderPointerDown';
+type ScaleValueSelectEvent = 'scaleValueSelect';
 
-interface IPluginFunction {
-  // eslint-disable-next-line no-use-before-define
-  (options: Partial<IPluginOptions> = {}): JQuery;
+type SliderPointerDownData = {
+  target: HTMLDivElement;
+  offsetX: number;
+  offsetY: number;
+};
+
+type SetValueEventOptions = {
+  changeTipValue: boolean,
+  onlySaveValue?: boolean,
+};
+
+interface Unsubscribable {
+  unsubscribe?(): boolean;
 }
+
+interface UnsubHTMLInputElement extends HTMLInputElement, Unsubscribable {}
+
+interface ValueHandler extends Unsubscribable {
+  (value: number, options?: SetValueEventOptions): void;
+}
+interface StateHandler extends Unsubscribable {
+  (value: boolean): void;
+}
+interface SliderPointerDownHandler extends Unsubscribable {
+  (value: SliderPointerDownData): void;
+}
+
+interface ScaleValueSelectHandler extends Unsubscribable {
+  (value: number): void;
+}
+
+type Subscriber = UnsubHTMLInputElement | ValueHandler | StateHandler;
+
+type ValueHandlers = {
+  [valueEvent in ValueEvent]?: Map<UnsubHTMLInputElement | ValueHandler | undefined, ValueHandler>;
+};
+type StateHandlers = {
+  [stateEvent in StateEvent]?: Map<UnsubHTMLInputElement | StateHandler | undefined, StateHandler>;
+};
+type ViewHandlers = {
+  sliderPointerDown?: Map<undefined, (value: SliderPointerDownData) => void>;
+  scaleValueSelect?: Map<undefined, (data: number) => void>;
+};
+
+type ValueOn = {
+  event: ValueEvent,
+  handler: ValueHandler,
+  subscriber?: UnsubHTMLInputElement | ValueHandler,
+};
+
+type StateOn = {
+  event: StateEvent,
+  handler: StateHandler,
+  subscriber?: UnsubHTMLInputElement | StateHandler,
+};
+
+type SliderPointerDownOn = {
+  event: SliderPointerDownEvent,
+  handler: SliderPointerDownHandler,
+};
+
+type ScaleValueSelectOn = {
+  event: ScaleValueSelectEvent,
+  handler: ScaleValueSelectHandler,
+};
+
+type ViewOn = SliderPointerDownOn | ScaleValueSelectOn;
+
+interface IEventEmitter {
+  on(options: ValueOn): this;
+  on(options: StateOn): this;
+  on(options: ViewOn): this;
+  // on(options: ValueOn | StateOn | ViewOn): this;
+}
+
+type ValueEmit = { event: ValueEvent, value: number, options?: SetValueEventOptions };
+type StateEmit = { event: StateEvent, value: boolean };
+type SliderPointerDownEmit = { event: SliderPointerDownEvent, value: SliderPointerDownData };
+type ScaleValueSelectEmit = { event: ScaleValueSelectEvent, value: number };
+type ViewEmit = SliderPointerDownEmit | ScaleValueSelectEmit;
+
+type ValueSubscribe = Required<Omit<ValueOn, 'handler'>>;
+type StateSubscribe = Required<Omit<StateOn, 'handler'>>;
 
 interface IPluginPublicStateMethods {
   setVerticalState(isVertical: boolean): void;
@@ -60,54 +143,21 @@ interface IPluginPublicValueMethods {
   setMaxValue(maxValue: number): void;
 }
 
-interface HTMLInputElementWithUnsubscribe extends HTMLInputElement {
-  unsubscribe?(): boolean;
-}
-
-type SliderPointerDownData = {
-  target: HTMLDivElement;
-  offsetX: number;
-  offsetY: number;
-};
-
-type SetValueEventOptions = {
-  changeTipValue: boolean,
-  onlySaveValue?: boolean,
-};
-
-interface EventHandler<Value> {
-  (value: Value, options?: SetValueEventOptions): void;
-  unsubscribe?(): boolean;
-}
-
-type Subscriber<Value> = HTMLInputElementWithUnsubscribe | EventHandler<Value>;
-
-type EventsStorage = {
-  [event in SliderEvent]?: Map<Subscriber | undefined, EventHandler>;
-};
-
 interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
-  getOptions(): IPluginOptions;
-  subscribe<Value>(
-    event: ModelEvent,
-    elementOrCallback: Subscriber<Value>,
-  ): void;
-  unsubscribe<Value>(
-    elementOrCallback: Subscriber<Value>,
-  ): boolean;
+  getOptions(): SliderOptions;
+  subscribe(options: ValueSubscribe): void;
+  subscribe(options: StateSubscribe): void;
+  subscribe(options: ValueSubscribe | StateSubscribe): void;
+  unsubscribe(subscriber: Subscriber): boolean;
+}
+
+interface IPluginFunction {
+  // eslint-disable-next-line no-use-before-define
+  (options?: Partial<SliderOptions>): JQuery;
 }
 
 interface JQuery extends IPluginPublicMethods {
   sliderPlugin: IPluginFunction;
-}
-
-interface IEventEmitter {
-  on<Value>(
-    event: SliderEvent,
-    handler: EventHandler<Value>,
-    subscriber?: Subscriber<Value>,
-  ): this;
-  off<Value>(subscriber: Subscriber<Value>): boolean;
 }
 
 type ViewValues = {
@@ -117,7 +167,7 @@ type ViewValues = {
 };
 
 interface IModel extends IEventEmitter, IPluginPublicMethods {
-  options: IPluginOptions;
+  options: SliderOptions;
   allowedValuesCount: number;
   fractionalPrecision: number;
   penultimateValue: number;
@@ -160,11 +210,6 @@ interface IView extends IEventEmitter {
   setPosition(valueNumber: 1 | 2, position: number): void;
   setThumbThickness(thickness: number): void;
 }
-
-type ViewParams = {
-  parentElement?: JQuery<HTMLElement>,
-  elementNumber?: 1 | 2,
-};
 
 type ViewType = (
   | 'track'

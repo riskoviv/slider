@@ -99,7 +99,7 @@ describe('slider-plugin', () => {
 
   describe('fixCustomOptions() should exclude wrong custom options from object that will be passed to Model', () => {
     test('should not include those properties in resulting options object that then passed to Model', () => {
-      const falseOptions: Record<string, unknown> & Partial<IPluginOptions> = {
+      const falseOptions: Record<string, unknown> & Partial<SliderOptions> = {
         test: 123,
       };
 
@@ -139,7 +139,7 @@ describe('slider-plugin', () => {
   describe('checkOptionsValues() should check numeric values and correct them so plugin can work properly', () => {
     const dO = defaultOptions;
     test.concurrent
-      .each<[(keyof IPluginValueOptions)[], number[], number[], boolean?]>([
+      .each<[(keyof ValueOptions)[], number[], number[], boolean?]>([
         [['stepSize'], [-5], [5]],
         [['stepSize'], [0], [dO.stepSize]],
         [['minValue', 'maxValue'], [150, -70], [-70, 150]],
@@ -154,7 +154,7 @@ describe('slider-plugin', () => {
       ])(
         'should correct wrong %p from %p to %p',
         async (parameters, wrong, right, isInterval = false) => {
-          const wrongOptions: Partial<IPluginValueOptions> = {};
+          const wrongOptions: Partial<ValueOptions> = {};
           parameters.forEach((parameter, idx) => {
             wrongOptions[parameter] = wrong[idx];
           });
@@ -715,7 +715,7 @@ describe('slider-plugin', () => {
     });
 
     test('should subscribe HTMLInputElement and change its value after DOM interaction w/ slider instance', () => {
-      const inputElement: HTMLInputElementWithUnsubscribe = document.createElement('input');
+      const inputElement: UnsubHTMLInputElement = document.createElement('input');
       inputElement.type = 'number';
       $sliderInstance.subscribe('value1Changed', inputElement);
 

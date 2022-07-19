@@ -7,7 +7,7 @@ class Panel {
 
   private panelElements: { [elemName: string]: JQuery } = {};
 
-  private pluginOptions: IPluginOptions;
+  private pluginOptions: SliderOptions;
 
   constructor(private sliderPlugin: JQuery) {
     this.pluginOptions = sliderPlugin.getOptions();

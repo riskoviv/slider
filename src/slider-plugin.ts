@@ -4,7 +4,7 @@ import Presenter from './Presenter';
 import './styles/styles.scss';
 import { getEntriesWithTypedKeys } from './utils';
 
-const defaultOptions: IPluginOptions = {
+const defaultOptions: SliderOptions = {
   stepSize: 10,
   minValue: -100,
   maxValue: 100,
@@ -17,12 +17,12 @@ const defaultOptions: IPluginOptions = {
   showProgressBar: false,
 };
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
-let fixCustomOptions: (options: Partial<IPluginOptions>) => null | Partial<IPluginOptions>;
-let checkOptionsValues: (options: IPluginOptions) => IPluginOptions;
+let fixCustomOptions: (options: Partial<SliderOptions>) => null | Partial<SliderOptions>;
+let checkOptionsValues: (options: SliderOptions) => SliderOptions;
 
 $.fn.sliderPlugin = function sliderPlugin(
   this: JQuery,
-  options: Partial<IPluginOptions> = {},
+  options: Partial<SliderOptions> = {},
 ): JQuery {
   cleanContainerIfNotEmpty(this);
 
@@ -61,7 +61,7 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
   }
 };
 
-fixCustomOptions = (options: Partial<IPluginOptions>) => {
+fixCustomOptions = (options: Partial<SliderOptions>) => {
   const notAnObject = typeof options !== 'object' || options === null;
   if (notAnObject || Object.prototype.hasOwnProperty.call(options, 'length')) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
@@ -75,8 +75,8 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
   const checkedOptions = { ...options };
 
   type PluginOptionsEntry = [
-    keyof Partial<IPluginOptions>,
-    TypeOfValues<Partial<IPluginOptions>>
+    keyof Partial<SliderOptions>,
+    TypeOfValues<Partial<SliderOptions>>
   ];
 
   getEntriesWithTypedKeys(options).forEach(
@@ -101,7 +101,7 @@ fixCustomOptions = (options: Partial<IPluginOptions>) => {
   return checkedOptions;
 };
 
-checkOptionsValues = (options: IPluginOptions) => {
+checkOptionsValues = (options: SliderOptions) => {
   const pluginOptions = { ...options };
   const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 

@@ -13,7 +13,7 @@ type SubViewClass = (
 );
 
 class Presenter {
-  private options: IPluginOptions;
+  private options: SliderOptions;
 
   readonly view: IView;
 

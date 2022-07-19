@@ -2,7 +2,7 @@ import EventEmitter from './EventEmitter';
 import { getFractionalPartSize } from './utils';
 
 class Model extends EventEmitter implements IModel {
-  options: IPluginOptions;
+  options: SliderOptions;
 
   allowedValuesCount: number;
 
@@ -16,7 +16,7 @@ class Model extends EventEmitter implements IModel {
     penultimatePosition: NaN,
   };
 
-  constructor(options: IPluginOptions) {
+  constructor(options: SliderOptions) {
     super();
     this.options = { ...options };
     this.allowedValuesCount = this.getAllowedValuesCount();
@@ -26,7 +26,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   // debug method
-  getOptions(): IPluginOptions {
+  getOptions(): SliderOptions {
     return { ...this.options };
   }
 
