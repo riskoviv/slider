@@ -622,31 +622,42 @@ describe('Model', () => {
         isUnsubscribed = false;
       });
 
-      test.concurrent.each<[string, ModelEvent, Primitive[], 'valueAsNumber' | 'checked', {
-          numericMethod?: keyof IPluginPublicValueMethods,
-          booleanMethod?: keyof IPluginPublicStateMethods,
-        },
-      ]>([
-        ['number', 'value1Changed', [20, 30], 'valueAsNumber', {
-          numericMethod: 'setValue1',
-        }],
-        ['number', 'stepSizeChanged', [2, 6], 'valueAsNumber', {
-          numericMethod: 'setStepSize',
-        }],
-        ['checkbox', 'isIntervalChanged', [true, false], 'checked', {
-          booleanMethod: 'setInterval',
-        }],
-      ])(
-        'should subscribe input[type="%s"] element to %s event and change its %s property to value emitted on event dispatch, but after unsubscribe() new value passed to method should not be set to inputElement',
-        (inputType, event, [value1, value2], inputProperty, { numericMethod, booleanMethod }) => {
-          const inputElement: HTMLInputElementWithUnsubscribe = document.createElement('input');
+      test.concurrent.each`
+        inputType     | event                  | inputProperty      | value1  | value2   | method
+        ${'number'}   | ${'value1Changed'}     | ${'valueAsNumber'} | ${20}   | ${30}    | ${'setValue1'}
+        ${'number'}   | ${'stepSizeChanged'}   | ${'valueAsNumber'} | ${2}    | ${6}     | ${'setStepSize'}
+        ${'checkbox'} | ${'isIntervalChanged'} | ${'checked'}       | ${true} | ${false} | ${'setInterval'}
+      `(
+        'should subscribe input[type="$inputType"] element to $event event and change its $inputProperty property to value ($value1) emitted on event dispatch, but after unsubscribe() new value ($value2) passed to method should not be set on inputElement',
+        ({
+          inputType, event, inputProperty, value1, value2, method,
+        }: {
+          inputType: 'number',
+          event: ValueEvent,
+          value1: number,
+          value2: number,
+          inputProperty: 'valueAsNumber',
+          method: keyof IPluginPublicValueMethods,
+        } | {
+          inputType: 'checkbox',
+          event: StateEvent,
+          value1: boolean,
+          value2: boolean,
+          inputProperty: 'checked',
+          method: keyof IPluginPublicStateMethods,
+        }) => {
+          const inputElement: UnsubHTMLInputElement = document.createElement('input');
           inputElement.type = inputType;
+          model.subscribe({ event, subscriber: inputElement });
 
-          model.subscribe(event, inputElement);
-          if (numericMethod && typeof value1 === 'number') {
-            model[numericMethod](value1);
-          } else if (booleanMethod && typeof value1 === 'boolean') {
-            model[booleanMethod](value1);
+          switch (inputType) {
+            case 'number':
+              model[method](value1);
+              break;
+            case 'checkbox':
+              model[method](value1);
+              break;
+            default: break;
           }
 
           expect(inputElement[inputProperty]).toBe(value1);
@@ -656,10 +667,14 @@ describe('Model', () => {
 
           expect(isUnsubscribed).toBe(true);
 
-          if (numericMethod && typeof value2 === 'number') {
-            model[numericMethod](value2);
-          } else if (booleanMethod && typeof value2 === 'boolean') {
-            model[booleanMethod](value2);
+          switch (inputType) {
+            case 'number':
+              model[method](value2);
+              break;
+            case 'checkbox':
+              model[method](value2);
+              break;
+            default: break;
           }
 
           expect(inputElement[inputProperty]).toBe(value1);
