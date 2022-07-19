@@ -622,8 +622,6 @@ describe('Model', () => {
         isUnsubscribed = false;
       });
 
-      type Primitive = number | boolean;
-
       test.concurrent.each<[string, ModelEvent, Primitive[], 'valueAsNumber' | 'checked', {
           numericMethod?: keyof IPluginPublicValueMethods,
           booleanMethod?: keyof IPluginPublicStateMethods,
@@ -668,6 +666,9 @@ describe('Model', () => {
         },
       );
 
+      type Primitive = number | boolean;
+      type Callback<Value> = ((value: Value) => void) & Unsubscribable;
+
       describe('callback subscribe / unsubscribe', () => {
         let variableChangedByCallback: Primitive | undefined;
 
@@ -684,7 +685,7 @@ describe('Model', () => {
         ])(
           'should subscribe callback function to event and call it on event passing it value changed during event, and don\'t call callback after unsubscribe',
           (event, value1, value2, { numberMethod, booleanMethod }) => {
-            const callback: EventHandler<Primitive> = (value: Primitive) => {
+            const callback: Callback<Primitive> = (value: Primitive) => {
               variableChangedByCallback = value;
             };
             model.subscribe({ event, subscriber: callback });

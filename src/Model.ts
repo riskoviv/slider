@@ -230,7 +230,7 @@ class Model extends EventEmitter implements IModel {
     });
   }
 
-  private updateValues(eventName: ModelEvent, value: number, ignoreIsFixed = false) {
+  private updateValues(eventName: ValueEvent, value: number, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
 
     this.emit({ event: eventName, value });
