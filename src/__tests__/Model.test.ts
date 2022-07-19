@@ -162,12 +162,12 @@ describe('Model', () => {
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test('should not set any non-finite number and non-number value', () => {
         const value2ChangedSpy = jest.fn();
-        model.on('value2Changed', value2ChangedSpy);
+        model.on({ event: 'value2Changed', handler: value2ChangedSpy });
         const currentValue1 = model.options.value1;
         const currentValue2 = model.options.value2;
 
@@ -191,7 +191,7 @@ describe('Model', () => {
 
       test('should set 2nd value to -40 (don\'t consider value1)', () => {
         const value2ChangedSpy = jest.fn();
-        model.on('value2Changed', value2ChangedSpy);
+        model.on({ event: 'value2Changed', handler: value2ChangedSpy });
         model.setValue2(-40);
 
         expect(model.options.value2).toBe(-40);
@@ -228,8 +228,8 @@ describe('Model', () => {
 
         beforeEach(() => {
           customModel = new Model({ ...defaultOptions, isInterval: true });
-          customModel.on('value1Changed', value1ChangedSpy)
-            .on('value2Changed', value2ChangedSpy);
+          customModel.on({ event: 'value1Changed', handler: value1ChangedSpy })
+            .on({ event: 'value2Changed', handler: value2ChangedSpy });
         });
 
         test.each<{
@@ -291,7 +291,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('isVerticalChanged', isVerticalChangedSpy);
+        model.on({ event: 'isVerticalChanged', handler: isVerticalChangedSpy });
       });
 
       test.each([
@@ -312,9 +312,9 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('isIntervalChanged', isIntervalChangedSpy);
-        model.on('value1Changed', value1ChangedSpy)
-          .on('value2Changed', value2ChangedSpy);
+        model.on({ event: 'isIntervalChanged', handler: isIntervalChangedSpy });
+        model.on({ event: 'value1Changed', handler: value1ChangedSpy })
+          .on({ event: 'value2Changed', handler: value2ChangedSpy });
       });
 
       test.each([
@@ -343,9 +343,9 @@ describe('Model', () => {
             value1,
             value2,
           });
-          customModel.on('isIntervalChanged', isIntervalChangedSpy)
-            .on('value1Changed', value1ChangedSpy)
-            .on('value2Changed', value2ChangedSpy);
+          customModel.on({ event: 'isIntervalChanged', handler: isIntervalChangedSpy })
+            .on({ event: 'value1Changed', handler: value1ChangedSpy })
+            .on({ event: 'value2Changed', handler: value2ChangedSpy });
 
           customModel.setInterval(true);
 
@@ -366,7 +366,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('showProgressChanged', showProgressChangedSpy);
+        model.on({ event: 'showProgressChanged', handler: showProgressChangedSpy });
       });
 
       test.each([['enable', true], ['disable', false]])(
@@ -385,7 +385,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('showTipChanged', showTipChangedSpy);
+        model.on({ event: 'showTipChanged', handler: showTipChangedSpy });
       });
 
       test.each([['add', true], ['remove', false]])(
@@ -404,7 +404,7 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('showScaleChanged', showScaleChangedSpy);
+        model.on({ event: 'showScaleChanged', handler: showScaleChangedSpy });
       });
 
       test.each([['add', true], ['remove', false]])(
@@ -424,8 +424,8 @@ describe('Model', () => {
 
       beforeAll(() => {
         initModelWithDefaultOptions();
-        model.on('stepSizeChanged', stepSizeChangedSpy)
-          .on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'stepSizeChanged', handler: stepSizeChangedSpy })
+          .on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test('should set positive integer that is less than range', () => {
@@ -475,9 +475,9 @@ describe('Model', () => {
       test('if isInterval: true, should update fractionalPrecision & change value1 & value2 according to new stepSize & fractionalPrecision', () => {
         const customModel = new Model({ ...defaultOptions, isInterval: true });
         const value2ChangedSpy = jest.fn();
-        customModel.on('value1Changed', value1ChangedSpy)
-          .on('value2Changed', value2ChangedSpy)
-          .on('stepSizeChanged', stepSizeChangedSpy);
+        customModel.on({ event: 'value1Changed', handler: value1ChangedSpy })
+          .on({ event: 'value2Changed', handler: value2ChangedSpy })
+          .on({ event: 'stepSizeChanged', handler: stepSizeChangedSpy });
         expect(customModel.options.value1).toBe(-50);
         expect(customModel.options.value2).toBe(50);
 
@@ -498,8 +498,8 @@ describe('Model', () => {
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('minValueChanged', minValueChangedSpy)
-          .on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'minValueChanged', handler: minValueChangedSpy })
+          .on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test.each([-85, 25.3, 2])(
@@ -537,8 +537,8 @@ describe('Model', () => {
 
       beforeEach(() => {
         initModelWithDefaultOptions();
-        model.on('maxValueChanged', maxValueChangedSpy)
-          .on('value1Changed', value1ChangedSpy);
+        model.on({ event: 'maxValueChanged', handler: maxValueChangedSpy })
+          .on({ event: 'value1Changed', handler: value1ChangedSpy });
       });
 
       test.each([64, 0, -51])(
@@ -593,7 +593,7 @@ describe('Model', () => {
         ];
         eventNames.forEach((eventName) => {
           const listener = jest.fn();
-          model.on(eventName, listener);
+          model.on({ event: eventName, handler: listener });
           listeners.push(listener);
         });
 
@@ -687,7 +687,7 @@ describe('Model', () => {
             const callback: EventHandler<Primitive> = (value: Primitive) => {
               variableChangedByCallback = value;
             };
-            model.subscribe(event, callback);
+            model.subscribe({ event, subscriber: callback });
 
             if (typeof value1 === 'number' && numberMethod) {
               model[numberMethod](value1);

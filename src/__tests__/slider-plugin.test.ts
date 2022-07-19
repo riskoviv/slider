@@ -717,7 +717,7 @@ describe('slider-plugin', () => {
     test('should subscribe HTMLInputElement and change its value after DOM interaction w/ slider instance', () => {
       const inputElement: UnsubHTMLInputElement = document.createElement('input');
       inputElement.type = 'number';
-      $sliderInstance.subscribe('value1Changed', inputElement);
+      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement });
 
       makePointerdown(controlContainer, 'offsetX', 465);
       controlContainer.dispatchEvent(pointerupEvent);

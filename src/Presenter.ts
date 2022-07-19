@@ -51,7 +51,7 @@ class Presenter {
     this.defineViewValues();
     this.view = new View({ isVertical, isInterval, showProgressBar });
     this.view.setThumbThickness(this.model.viewValues.stepInPercents);
-    this.view.on('sliderPointerDown', this.viewEventHandlers.sliderPointerDown);
+    this.view.on({ event: 'sliderPointerDown', handler: this.viewEventHandlers.sliderPointerDown });
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -64,16 +64,16 @@ class Presenter {
 
   private bindModelEventListeners(): void {
     const listeners = this.modelEventListeners;
-    this.model.on('isVerticalChanged', listeners.changeOrientation)
-      .on('isIntervalChanged', listeners.changeInterval)
-      .on('value1Changed', listeners.makeSetValueAndPosition(1))
-      .on('value2Changed', listeners.makeSetValueAndPosition(2))
-      .on('showProgressChanged', listeners.changeShowProgress)
-      .on('showTipChanged', listeners.changeShowTip)
-      .on('showScaleChanged', listeners.changeShowScale)
-      .on('stepSizeChanged', listeners.updateBounds)
-      .on('minValueChanged', listeners.updateBounds)
-      .on('maxValueChanged', listeners.updateBounds);
+    this.model.on({ event: 'isVerticalChanged', handler: listeners.changeOrientation })
+      .on({ event: 'isIntervalChanged', handler: listeners.changeInterval })
+      .on({ event: 'value1Changed', handler: listeners.makeSetValueAndPosition(1) })
+      .on({ event: 'value2Changed', handler: listeners.makeSetValueAndPosition(2) })
+      .on({ event: 'showProgressChanged', handler: listeners.changeShowProgress })
+      .on({ event: 'showTipChanged', handler: listeners.changeShowTip })
+      .on({ event: 'showScaleChanged', handler: listeners.changeShowScale })
+      .on({ event: 'stepSizeChanged', handler: listeners.updateBounds })
+      .on({ event: 'minValueChanged', handler: listeners.updateBounds })
+      .on({ event: 'maxValueChanged', handler: listeners.updateBounds });
   }
 
   private initResizeObserver(): void {
@@ -164,7 +164,7 @@ class Presenter {
 
     if (subViewName === 'scale') {
       this.view.$elem.append(this.renderSubView('scale'));
-      this.subViews.scale.on('scaleValueSelect', this.viewEventHandlers.scaleValueSelect);
+      this.subViews.scale.on({ event: 'scaleValueSelect', handler: this.viewEventHandlers.scaleValueSelect });
     } else {
       this.view.$controlContainer.append(this.renderSubView(subViewFullName));
     }
