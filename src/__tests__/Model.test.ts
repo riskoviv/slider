@@ -691,24 +691,39 @@ describe('Model', () => {
           variableChangedByCallback = undefined;
         });
 
-        test.each<[ModelEvent, Primitive, Primitive, {
-          numberMethod?: keyof IPluginPublicValueMethods,
-          booleanMethod?: keyof IPluginPublicStateMethods,
-        }]>([
-          ['value1Changed', 30, 40, { numberMethod: 'setValue1' }],
-          ['showProgressChanged', true, false, { booleanMethod: 'setShowProgress' }],
-        ])(
-          'should subscribe callback function to event and call it on event passing it value changed during event, and don\'t call callback after unsubscribe',
-          (event, value1, value2, { numberMethod, booleanMethod }) => {
-            const callback: Callback<Primitive> = (value: Primitive) => {
+        test.each`
+          event                    | value1  | value2   | method
+          ${'value1Changed'}       | ${30}   | ${40}    | ${'setValue1'}
+          ${'showProgressChanged'} | ${true} | ${false} | ${'setShowProgress'}
+        `(
+          "should subscribe callback function to event and call it on event passing it value changed during event, and don't call callback after unsubscribe",
+          ({
+            event, value1, value2, method,
+          }: {
+            event: ValueEvent;
+            value1: number;
+            value2: number;
+            method: keyof IPluginPublicValueMethods;
+          } | {
+            event: StateEvent;
+            value1: boolean;
+            value2: boolean;
+            method: keyof IPluginPublicStateMethods;
+          }) => {
+            const callback: Callback<typeof value1> = (value: typeof value1) => {
               variableChangedByCallback = value;
             };
             model.subscribe({ event, subscriber: callback });
 
-            if (typeof value1 === 'number' && numberMethod) {
-              model[numberMethod](value1);
-            } else if (typeof value1 === 'boolean' && booleanMethod) {
-              model[booleanMethod](value1);
+            switch (event) {
+              case 'value1Changed':
+                model[method](value1);
+                break;
+              case 'showProgressChanged':
+                model[method](value1);
+                break;
+              default:
+                break;
             }
 
             expect(variableChangedByCallback).toBe(value1);
@@ -716,10 +731,15 @@ describe('Model', () => {
             if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(callback);
             else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
 
-            if (typeof value2 === 'number' && numberMethod) {
-              model[numberMethod](value2);
-            } else if (typeof value2 === 'boolean' && booleanMethod) {
-              model[booleanMethod](value2);
+            switch (event) {
+              case 'value1Changed':
+                model[method](value2);
+                break;
+              case 'showProgressChanged':
+                model[method](value2);
+                break;
+              default:
+                break;
             }
 
             expect(isUnsubscribed).toBe(true);
