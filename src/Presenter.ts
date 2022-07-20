@@ -1,3 +1,5 @@
+/* eslint-disable no-dupe-class-members */
+/* eslint-disable lines-between-class-members */
 import $ from 'jquery';
 import TrackView from './subviews/TrackView';
 import ThumbView from './subviews/ThumbView';
@@ -5,19 +7,25 @@ import ScaleView from './subviews/ScaleView';
 import View from './View';
 import TipView from './subviews/TipView';
 
-type SubViewClass = (
-  | typeof TrackView
-  | typeof ThumbView
-  | typeof ScaleView
-  | typeof TipView
-);
+type SubViews = {
+  track: TrackView,
+  thumb1: ThumbView,
+  thumb2?: ThumbView,
+  tip1?: TipView,
+  tip2?: TipView,
+  tip3?: TipView,
+  scale?: ScaleView,
+};
 
 class Presenter {
   private options: SliderOptions;
 
   readonly view: IView;
 
-  private subViews: { [viewName: string]: InstanceType<SubViewClass> } = {};
+  private subViews: SubViews = {
+    track: new TrackView(),
+    thumb1: new ThumbView(),
+  };
 
   private sizeDimension: SizeDimension = 'offsetWidth';
 
@@ -119,16 +127,23 @@ class Presenter {
     }
   }
 
+  private appendSubViewElementToControlContainer(subViewName: keyof SubViews) {
+    const subView = this.subViews[subViewName];
+    if (subView !== undefined) {
+      this.view.$controlContainer.append(subView.$elem);
+    }
+  }
+
   private createInitialSubViews() {
-    this.createSubView('track');
-    this.createSubView('thumb', 1);
+    this.appendSubViewElementToControlContainer('track');
+    this.appendSubViewElementToControlContainer('thumb1');
 
     if (this.options.showTip) {
       this.createSubView('tip', 1);
     }
 
     if (this.options.isInterval) {
-      this.createSubView('thumb', 2);
+      this.createSubView('thumb');
       if (this.options.showTip) {
         this.createSubView('tip', 2);
         this.createSubView('tip', 3);
@@ -140,33 +155,32 @@ class Presenter {
     }
   }
 
-  private createSubView(subViewName: ViewType, number?: 1 | 2 | 3): void {
-    const thumbOrTip = subViewName === 'thumb' || subViewName === 'tip';
-    let subViewFullName = subViewName;
-    if (thumbOrTip && number !== undefined) {
-      subViewFullName += number;
-    }
-
-    if (this.subViewExists(subViewFullName)) return;
-
+  private createSubView(subViewName: 'tip', number: 1 | 2 | 3): void;
+  private createSubView(subViewName: 'thumb'): void;
+  private createSubView(subViewName: 'scale'): void;
+  private createSubView(subViewName: 'tip' | 'thumb' | 'scale', number?: 1 | 2 | 3): void {
     switch (subViewName) {
-      case 'thumb':
-        if (number !== 3) this.subViews[subViewFullName] = new ThumbView(number);
+      case 'tip': {
+        if (number !== undefined) {
+          this.subViews[`tip${number}`] = new TipView(number);
+          this.appendSubViewElementToControlContainer(`tip${number}`);
+        }
         break;
-      case 'tip':
-        this.subViews[subViewFullName] = new TipView(number);
-        break;
-      default: {
-        const OtherSubView = subViewName === 'scale' ? ScaleView : TrackView;
-        this.subViews[subViewFullName] = new OtherSubView();
       }
-    }
-
-    if (subViewName === 'scale') {
-      this.view.$elem.append(this.renderSubView('scale'));
-      this.subViews.scale.on({ event: 'scaleValueSelect', handler: this.viewEventHandlers.scaleValueSelect });
-    } else {
-      this.view.$controlContainer.append(this.renderSubView(subViewFullName));
+      case 'thumb': {
+        this.subViews.thumb2 = new ThumbView(2);
+        this.appendSubViewElementToControlContainer('thumb2');
+        break;
+      }
+      default: {
+        this.subViews.scale = new ScaleView();
+        const scaleElem = this.renderSubView('scale');
+        if (scaleElem !== null) this.view.$elem.append(scaleElem);
+        this.subViews.scale.on({
+          event: 'scaleValueSelect',
+          handler: this.viewEventHandlers.scaleValueSelect,
+        });
+      }
     }
   }
 
@@ -295,7 +309,7 @@ class Presenter {
 
     changeInterval: (isInterval: boolean): void => {
       if (isInterval) {
-        this.createSubView('thumb', 2);
+        this.createSubView('thumb');
         if (this.options.showTip) {
           this.createSubView('tip', 2);
           this.createSubView('tip', 3);
