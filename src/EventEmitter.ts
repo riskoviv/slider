@@ -99,21 +99,19 @@ abstract class EventEmitter implements IEventEmitter {
 
   protected off(subscriber: Subscriber): boolean {
     return [this.valueHandlers, this.stateHandlers].some(
-      (handlersStorage) => (Object.values(handlersStorage).reduce<boolean>((
-        mapUnsubscribeState, handlersMap,
-      ) => {
-        const foundSubscriberInMap = [...handlersMap.keys()].reduce<boolean>((
-          subscriberUnsubscribeState, registeredSubscriber,
-        ) => {
-          if (registeredSubscriber === subscriber) {
-            handlersMap.delete(registeredSubscriber);
-            return true;
-          }
-          return subscriberUnsubscribeState;
-        }, false);
-        if (foundSubscriberInMap) return true;
-        return mapUnsubscribeState;
-      }, false)),
+      (handlersStorage) => (Object.values(handlersStorage)
+        .reduce<boolean>((mapUnsubscribeState, handlersMap) => {
+          const foundSubscriberInMap = [...handlersMap.keys()]
+            .reduce<boolean>((subscriberUnsubscribeState, registeredSubscriber) => {
+              if (registeredSubscriber === subscriber) {
+                handlersMap.delete(registeredSubscriber);
+                return true;
+              }
+              return subscriberUnsubscribeState;
+            }, false);
+          if (foundSubscriberInMap) return true;
+          return mapUnsubscribeState;
+        }, false)),
     );
   }
 
