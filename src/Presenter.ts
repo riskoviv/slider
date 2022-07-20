@@ -87,7 +87,7 @@ class Presenter {
   private initResizeObserver(): void {
     if (this.sliderResizeObserver === undefined) {
       this.sliderResizeObserver = new ResizeObserver(() => {
-        if (this.subViews.scale instanceof ScaleView) {
+        if (this.subViews.scale !== undefined) {
           this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
         }
       });
@@ -191,7 +191,7 @@ class Presenter {
   // **************************************
   private updateScale(): void {
     const { scale } = this.subViews;
-    if (scale instanceof ScaleView) {
+    if (scale !== undefined) {
       this.createScaleValuesElements(scale);
       scale.insertScaleValueElements();
       this.initResizeObserver();
@@ -250,19 +250,20 @@ class Presenter {
   // *
   // ***********************************
 
-  private subViewExists(subViewName: string): boolean {
-    return this.subViews[subViewName] !== undefined;
-  }
-
-  private removeSubView(subViewName: string): void {
-    if (this.subViewExists(subViewName)) {
-      this.subViews[subViewName].removeView();
+  private removeSubView(subViewName: keyof SubViews): void {
+    const subView = this.subViews[subViewName];
+    if (subView !== undefined) {
+      subView.removeView();
       delete this.subViews[subViewName];
     }
   }
 
-  private renderSubView(subViewName: string): JQuery<HTMLElement> {
-    return this.subViews[subViewName].$elem;
+  private renderSubView(subViewName: keyof SubViews): JQuery<HTMLElement> | null {
+    const subView = this.subViews[subViewName];
+    if (subView !== undefined) {
+      return subView.$elem;
+    }
+    return null;
   }
 
   private insertSliderToContainer(): void {
@@ -300,7 +301,7 @@ class Presenter {
     changeOrientation: (isVertical: boolean): void => {
       this.updateDimensionAndAxis();
       this.view.toggleVertical(isVertical);
-      if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
+      if (this.options.showScale && this.subViews.scale !== undefined) {
         this.initResizeObserver();
       }
       this.showJointOrSeparateTips();
@@ -536,10 +537,12 @@ class Presenter {
     return position1Diff <= position2Diff ? 1 : 2;
   }
 
-  private areTipsOverlap() {
-    if (this.subViewExists('tip1') && this.subViewExists('tip2')) {
-      const [tip1Elem] = this.subViews.tip1.$elem;
-      const [tip2Elem] = this.subViews.tip2.$elem;
+  private areTipsOverlap(): boolean {
+    const { tip1 } = this.subViews;
+    const { tip2 } = this.subViews;
+    if (tip1 !== undefined && tip2 !== undefined) {
+      const [tip1Elem] = tip1.$elem;
+      const [tip2Elem] = tip2.$elem;
       const tip1Bound = tip1Elem[this.positionDimension] + tip1Elem[this.sizeDimension];
       const tip2Bound = tip2Elem[this.positionDimension];
       if (tip1Bound >= tip2Bound) return true;
@@ -583,11 +586,11 @@ class Presenter {
     const { number: tipNumber, value } = options;
     const tipName: 'tip1' | 'tip2' | 'tip3' = `tip${tipNumber}`;
     const tip = this.subViews[tipName];
-    if (tip instanceof TipView) {
+    if (tip !== undefined) {
       tip.setValue(value);
     }
 
-    if (this.options.isInterval && this.subViewExists('tip2')) {
+    if (this.options.isInterval && this.subViews.tip2 !== undefined) {
       this.showJointOrSeparateTips();
     }
   }
@@ -601,7 +604,7 @@ class Presenter {
       }
     } else if (this.options.showTip) {
       const { tip1 } = this.subViews;
-      if (tip1 instanceof TipView) {
+      if (tip1 !== undefined) {
         tip1.$elem.removeClass(this.tipHiddenClass);
       }
     }
@@ -609,20 +612,21 @@ class Presenter {
 
   private showJointTip() {
     const { tip1, tip2, tip3 } = this.subViews;
-    if (tip3 instanceof TipView) {
+    if (tip1 !== undefined && tip2 !== undefined && tip3 !== undefined) {
       tip3.setValue(`${this.options.value1} – ${this.options.value2}`);
+      tip3.$elem.removeClass(this.tipHiddenClass);
+      tip1.$elem.addClass(this.tipHiddenClass);
+      tip2.$elem.addClass(this.tipHiddenClass);
     }
-
-    tip3.$elem.removeClass(this.tipHiddenClass);
-    tip1.$elem.addClass(this.tipHiddenClass);
-    tip2.$elem.addClass(this.tipHiddenClass);
   }
 
   private showSeparateTips() {
     const { tip1, tip2, tip3 } = this.subViews;
-    tip3.$elem.addClass(this.tipHiddenClass);
-    tip1.$elem.removeClass(this.tipHiddenClass);
-    tip2.$elem.removeClass(this.tipHiddenClass);
+    if (tip1 !== undefined && tip2 !== undefined && tip3 !== undefined) {
+      tip3.$elem.addClass(this.tipHiddenClass);
+      tip1.$elem.removeClass(this.tipHiddenClass);
+      tip2.$elem.removeClass(this.tipHiddenClass);
+    }
   }
 
   private defineViewValues(): void {
