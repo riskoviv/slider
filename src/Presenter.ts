@@ -226,11 +226,10 @@ class Presenter {
       }
     }
 
-    const lastElemIsNotMaxValue = scale.scaleValueElements
-      .slice(-1)[0][0]
-      .style.getPropertyValue('--scale-block-position')
-      .trim() !== '100%';
-    if (lastElemIsNotMaxValue) {
+    const [lastScaleElem] = scale.scaleValueElements.slice(-1)[0];
+    const lastScaleElemPosition = lastScaleElem.style.getPropertyValue('--scale-block-position');
+    const lastScaleElemPositionIs100Percent = lastScaleElemPosition === '100%';
+    if (!lastScaleElemPositionIs100Percent) {
       scale.scaleValueElements.push(
         this.makeNewScaleValueElement(
           this.options.maxValue,
