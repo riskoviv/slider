@@ -411,7 +411,7 @@ describe('slider-plugin', () => {
       test('if isInterval: false, should set thumb1 on every clicked scale value position and set value for tip1', () => {
         initForScale(false);
 
-        [...scaleElem.children].forEach((scaleValueElem, index) => {
+        [...scaleElem.children].forEach((scaleValueElem) => {
           if (scaleValueElem instanceof HTMLDivElement) {
             Object.defineProperty(pointerdownEvent, 'target', {
               value: scaleValueElem.firstElementChild, writable: true,
@@ -420,10 +420,8 @@ describe('slider-plugin', () => {
             scaleElem.dispatchEvent(pointerupEvent);
 
             const scaleBlockPosition = scaleValueElem.style.getPropertyValue('--scale-block-position');
-            expect(controlContainer.style.getPropertyValue('--value-1-position'))
-              .toBe(scaleBlockPosition);
-            expect(tipElements[1].textContent)
-              .toBe(String(defaultOptions.minValue + defaultOptions.stepSize * index));
+            expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe(scaleBlockPosition);
+            expect(tipElements[1].textContent).toBe(scaleValueElem.firstElementChild?.textContent);
           }
         });
       });
