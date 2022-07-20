@@ -572,12 +572,12 @@ describe('Model', () => {
       });
     });
 
-    describe('should not emit their events if the value passed on call is the same as already set', () => {
-      beforeAll(() => {
+    describe('should not emit their events and no listeners should be called, just return and do nothing', () => {
+      beforeEach(() => {
         initModelWithDefaultOptions();
       });
 
-      test('none of methods should emit event and no listeners should be called', () => {
+      test('if the value passed on call is the same as already set', () => {
         const listeners: jest.Mock[] = [];
         const eventNames: ModelEvent[] = [
           'value1Changed',
@@ -611,6 +611,39 @@ describe('Model', () => {
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();
         });
+      });
+
+      test('if argument passed to every state method has wrong type', () => {
+        const listeners: jest.Mock[] = [];
+        const eventNames: StateEvent[] = [
+          'isVerticalChanged',
+          'isIntervalChanged',
+          'showProgressChanged',
+          'showTipChanged',
+          'showScaleChanged',
+        ];
+        eventNames.forEach((eventName) => {
+          const listener = jest.fn();
+          model.on({ event: eventName, handler: listener });
+          listeners.push(listener);
+        });
+        const stateMethods: (keyof IPluginPublicStateMethods)[] = [
+          'setVerticalState',
+          'setInterval',
+          'setShowProgress',
+          'setShowTip',
+          'setShowScale',
+        ];
+        const nonBoolean: any = 49;
+
+        stateMethods.forEach((method) => {
+          model[method](nonBoolean);
+        });
+
+        listeners.forEach((listener) => {
+          expect(listener).not.toBeCalled();
+        });
+        expect(model.getOptions()).toEqual(defaultOptions);
       });
     });
 
