@@ -702,23 +702,43 @@ describe('slider-plugin', () => {
 
   describe('subscribe & unsubscribe API methods', () => {
     let controlContainer: HTMLElement;
+    let inputElement1: UnsubHTMLInputElement;
+    let inputElement2: UnsubHTMLInputElement;
 
     beforeEach(() => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
+      $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true });
       [controlContainer] = $sliderInstance.find('.slider__control-container');
       definePropertiesForControlContainer(controlContainer, 'offsetWidth');
+      inputElement1 = document.createElement('input');
+      inputElement1.type = 'number';
+      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement1 });
+      inputElement2 = document.createElement('input');
+      inputElement2.type = 'number';
+      $sliderInstance.subscribe({ event: 'value2Changed', subscriber: inputElement2 });
     });
 
-    test('should subscribe HTMLInputElement and change its value after DOM interaction w/ slider instance', () => {
-      const inputElement: UnsubHTMLInputElement = document.createElement('input');
-      inputElement.type = 'number';
-      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement });
+    test('should change inputs values after pointerdown event on controlContainer', () => {
+      makePointerdown(controlContainer, 'offsetX', 251);
+      makePointerdown(controlContainer, 'offsetX', 415);
 
-      makePointerdown(controlContainer, 'offsetX', 465);
+      const { value1, value2 } = $sliderInstance.getOptions();
+      expect(value1).toBe(-30);
+      expect(value2).toBe(20);
+      expect(inputElement1.valueAsNumber).toBe(value1);
+      expect(inputElement2.valueAsNumber).toBe(value2);
 
-      const { value1 } = $sliderInstance.getOptions();
-      expect(value1).toBe(40);
-      expect(inputElement.valueAsNumber).toBe(value1);
+      $sliderInstance.unsubscribe(inputElement1);
+      makePointerdown(controlContainer, 'offsetX', 96);
+
+      expect($sliderInstance.getOptions().value1).toBe(-70);
+      expect(inputElement1.valueAsNumber).toBe(value1);
+
+      expect(inputElement2.unsubscribe).toBeDefined();
+      if (inputElement2.unsubscribe !== undefined) inputElement2.unsubscribe();
+      makePointerdown(controlContainer, 'offsetX', 568);
+
+      expect($sliderInstance.getOptions().value2).toBe(70);
+      expect(inputElement2.valueAsNumber).toBe(value2);
     });
   });
 
