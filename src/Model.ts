@@ -91,12 +91,20 @@ class Model extends EventEmitter implements IModel {
     this.emit({ event: 'isIntervalChanged', value: isInterval });
 
     if (value1Fixed) {
-      this.emit({ event: 'value1Changed', value: this.options.value1, options: { changeTipValue: true } });
+      this.emit({
+        event: 'value1Changed',
+        value: this.options.value1,
+        options: { changeTipValue: true },
+      });
     }
 
     if (isInterval) {
       if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
-        this.emit({ event: 'value2Changed', value: this.options.value2, options: { changeTipValue: false } });
+        this.emit({
+          event: 'value2Changed',
+          value: this.options.value2,
+          options: { changeTipValue: false },
+        });
       }
     }
   }
@@ -238,12 +246,20 @@ class Model extends EventEmitter implements IModel {
     const { value1Fixed, value2Fixed } = this.fixValues();
 
     if (ignoreIsFixed || value1Fixed) {
-      this.emit({ event: 'value1Changed', value: this.options.value1, options: { changeTipValue: true } });
+      this.emit({
+        event: 'value1Changed',
+        value: this.options.value1,
+        options: { changeTipValue: true },
+      });
     }
 
     if (this.options.isInterval) {
       if (ignoreIsFixed || value2Fixed) {
-        this.emit({ event: 'value2Changed', value: this.options.value2, options: { changeTipValue: true } });
+        this.emit({
+          event: 'value2Changed',
+          value: this.options.value2,
+          options: { changeTipValue: true },
+        });
       }
     }
   }

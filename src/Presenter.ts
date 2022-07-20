@@ -441,10 +441,17 @@ class Presenter {
         }
       }
 
-      this.view.controlContainerElem.addEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
-      this.view.controlContainerElem.addEventListener('pointerup', this.viewEventHandlers.sliderPointerUp, {
-        once: true,
-      });
+      this.view.controlContainerElem.addEventListener(
+        'pointermove',
+        this.viewEventHandlers.sliderPointerMove,
+      );
+      this.view.controlContainerElem.addEventListener(
+        'pointerup',
+        this.viewEventHandlers.sliderPointerUp,
+        {
+          once: true,
+        },
+      );
     },
 
     sliderPointerMove: (e: PointerEvent): void => {
@@ -466,7 +473,10 @@ class Presenter {
     },
 
     sliderPointerUp: (): void => {
-      this.view.controlContainerElem.removeEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
+      this.view.controlContainerElem.removeEventListener(
+        'pointermove',
+        this.viewEventHandlers.sliderPointerMove,
+      );
     },
 
     scaleValueSelect: (value: number): void => {

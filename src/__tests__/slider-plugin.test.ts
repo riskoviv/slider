@@ -369,9 +369,7 @@ describe('slider-plugin', () => {
         [2, 510, 0, 30, -40],
       ])(
         'should not set active thumb (%i) position beyond passive thumb position by pointermove',
-        async (
-          activeThumb, startPoint, activeThumbEndPoint, expectedPosition, tipValue,
-        ) => {
+        async (activeThumb, startPoint, activeThumbEndPoint, expectedPosition, tipValue) => {
           expect.assertions(6);
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
@@ -642,7 +640,8 @@ describe('slider-plugin', () => {
     };
 
     const areDifferencesBetweenAllScaleValuesEqualToStepSize = (
-      $scale: JQuery, stepSize: number,
+      $scale: JQuery,
+      stepSize: number,
     ) => {
       const scaleValues = $scale.find('.slider__scale-text')
         .map((idx, scaleElement) => Number(scaleElement.textContent)).get();
