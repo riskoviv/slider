@@ -130,7 +130,7 @@ abstract class EventEmitter implements IEventEmitter {
     }
 
     [...eventMap.values()].forEach((handler) => {
-      if (options) {
+      if (options !== undefined) {
         handler(value, options);
       } else {
         handler(value);
