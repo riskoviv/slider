@@ -781,5 +781,11 @@ describe('Model', () => {
         );
       });
     });
+
+    test('unsubscribe() should return false if received value is other than HTMLInputElement or Function', () => {
+      initModelWithDefaultOptions();
+      const notUnsubscribable: any = { test: true };
+      expect(model.unsubscribe(notUnsubscribable)).toBe(false);
+    });
   });
 });
