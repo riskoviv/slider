@@ -48,6 +48,7 @@ class Panel {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
         const boundStepSize = Panel.getStepPrecision(target.value);
+        target.min = String(boundStepSize);
         bounds.forEach((bound) => {
           this.panelElements[bound].children().prop('step', boundStepSize);
         });
