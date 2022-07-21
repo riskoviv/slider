@@ -61,9 +61,10 @@ class Model extends EventEmitter implements IModel {
   }
 
   getAllowedValuesCount(): number {
-    return Math.ceil(
+    const lastIndex = Math.ceil(
       (this.options.maxValue - this.options.minValue) / this.options.stepSize,
-    ) + 1;
+    );
+    return lastIndex + 1;
   }
 
   setValue1(value: number): void {
