@@ -86,22 +86,20 @@ class Panel {
       ['max', this.pluginOptions.maxValue, 'maxValueChanged', 'setMaxValue'],
       ['step', this.pluginOptions.stepSize, 'stepSizeChanged', 'setStepSize'],
     ];
-    stateOptions.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputCheckboxElement(label, value, event, method);
+    stateOptions.forEach((elementData) => {
+      this.panelElements[elementData[0]] = this.makeInputCheckboxElement(...elementData);
     });
-    values.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputNumberElement(
-        label,
-        value,
-        event,
-        method,
+    values.forEach((elementData) => {
+      this.panelElements[elementData[0]] = this.makeInputNumberElement(
+        ...elementData,
         this.pluginOptions.stepSize,
         this.pluginOptions.minValue,
       );
     });
-    valueOptions.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputNumberElement(
-        label, value, event, method, Panel.getStepPrecision(this.pluginOptions.stepSize),
+    valueOptions.forEach((elementData) => {
+      this.panelElements[elementData[0]] = this.makeInputNumberElement(
+        ...elementData,
+        Panel.getStepPrecision(this.pluginOptions.stepSize),
       );
     });
   }
