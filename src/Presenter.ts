@@ -239,11 +239,11 @@ class Presenter {
     }
   }
 
-  private makeNewScaleValueElement = (value: number, position: number): JQuery<HTMLDivElement> => (
-    $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
+  private makeNewScaleValueElement(value: number, position: number): JQuery<HTMLDivElement> {
+    return $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
       <span class="slider__scale-text">${this.fixValue(value)}</span>
-    </div>`)
-  );
+    </div>`);
+  }
   // ***********************************
   // *
   // * scale values creation methods end
@@ -406,7 +406,7 @@ class Presenter {
       if (position > 100) return 100;
       return position;
     },
-  }
+  };
 
   private viewEventHandlers = {
     sliderPointerDown: (data: SliderPointerDownData): void => {
@@ -494,7 +494,7 @@ class Presenter {
         });
       }
     },
-  }
+  };
 
   private currentThumbData: {
     thumbNumber: 1 | 2,

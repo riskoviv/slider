@@ -18,7 +18,11 @@ class ScaleView extends SubView implements IScaleView {
     const [$lastElem] = this.scaleValueElements.slice(-1);
     let $currentElem = $firstElem;
     let curElemPosition = $currentElem.position()[positionAxis];
-    let curElemEdgeBound = this.getElementEdgeBound($currentElem, curElemPosition, sizeDimension);
+    let curElemEdgeBound = ScaleView.getElementEdgeBound(
+      $currentElem,
+      curElemPosition,
+      sizeDimension,
+    );
 
     this.scaleValueElements.slice(1).forEach(($elem) => {
       const elemPosition = $elem.position()[positionAxis];
@@ -31,17 +35,19 @@ class ScaleView extends SubView implements IScaleView {
       } else {
         $currentElem = $elem;
         curElemPosition = elemPosition;
-        curElemEdgeBound = this.getElementEdgeBound($elem, elemPosition, sizeDimension);
+        curElemEdgeBound = ScaleView.getElementEdgeBound($elem, elemPosition, sizeDimension);
         $elem.removeClass('slider__scale-block_unnumbered');
       }
     });
   }
 
-  private getElementEdgeBound = (
+  private static getElementEdgeBound(
     element: JQuery<HTMLSpanElement>,
     position: number,
     sizeDimension: SizeDimension,
-  ) => position + (element[0][sizeDimension]);
+  ): number {
+    return position + (element[0][sizeDimension]);
+  }
 
   private bindClickListener() {
     this.$elem[0].addEventListener('pointerdown', this.scaleValueClick);
@@ -55,7 +61,7 @@ class ScaleView extends SubView implements IScaleView {
         value: Number(target.textContent),
       });
     }
-  }
+  };
 }
 
 export default ScaleView;

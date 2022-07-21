@@ -220,7 +220,7 @@ class Model extends EventEmitter implements IModel {
     setMaxValue: this.setMaxValue.bind(this),
     subscribe: this.subscribe.bind(this),
     unsubscribe: this.unsubscribe.bind(this),
-  }
+  };
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
     if (!Number.isFinite(value)) return;

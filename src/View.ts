@@ -64,7 +64,7 @@ class View extends EventEmitter implements IView {
 
   private bindEventListeners() {
     this.controlContainerElem.addEventListener('pointerdown', this.pointerDown);
-    this.$controlContainer.on('contextmenu', this.preventContextMenu);
+    this.$controlContainer.on('contextmenu', View.preventContextMenu);
   }
 
   private pointerDown = (e: PointerEvent): void => {
@@ -86,9 +86,9 @@ class View extends EventEmitter implements IView {
         },
       });
     }
-  }
+  };
 
-  private preventContextMenu = () => false;
+  private static preventContextMenu = () => false;
 }
 
 export default View;
