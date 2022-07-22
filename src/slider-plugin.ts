@@ -37,19 +37,35 @@ $.fn.sliderPlugin = function sliderPlugin(
 
   ({
     getOptions: $sliderElem.getOptions,
-    setValue1: $sliderElem.setValue1,
-    setValue2: $sliderElem.setValue2,
-    setVerticalState: $sliderElem.setVerticalState,
-    setInterval: $sliderElem.setInterval,
-    setShowProgress: $sliderElem.setShowProgress,
-    setShowTip: $sliderElem.setShowTip,
-    setShowScale: $sliderElem.setShowScale,
-    setStepSize: $sliderElem.setStepSize,
-    setMinValue: $sliderElem.setMinValue,
-    setMaxValue: $sliderElem.setMaxValue,
     subscribe: $sliderElem.subscribe,
     unsubscribe: $sliderElem.unsubscribe,
-  } = model.publicMethods);
+  } = model.publicDataMethods);
+
+  const makeValueMethodChainable = (method: ValueHandler) => {
+    const chainedMethod = (arg: number) => {
+      method(arg);
+      return $sliderElem;
+    };
+    Object.defineProperty(chainedMethod, 'name', { value: method.name.substring(6) });
+    return chainedMethod;
+  };
+
+  const makeStateMethodChainable = (method: StateHandler) => {
+    const chainedMethod = (arg: boolean) => {
+      method(arg);
+      return $sliderElem;
+    };
+    Object.defineProperty(chainedMethod, 'name', { value: method.name.substring(6) });
+    return chainedMethod;
+  };
+
+  getEntriesWithTypedKeys(model.publicValueMethods).forEach(([methodName, method]) => {
+    $sliderElem[methodName] = makeValueMethodChainable(method);
+  });
+
+  getEntriesWithTypedKeys(model.publicStateMethods).forEach(([methodName, method]) => {
+    $sliderElem[methodName] = makeStateMethodChainable(method);
+  });
 
   return $sliderElem;
 };
