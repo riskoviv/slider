@@ -138,7 +138,7 @@ abstract class EventEmitter implements IEventEmitter {
     });
   }
 
-  private stateEmit({ event, value }: StateEmit) {
+  private stateEmit({ event, value, options }: StateEmit) {
     const eventMap = this.stateHandlers[event];
     if (eventMap === undefined) {
       EventEmitter.throwEmitError(event, value);
@@ -146,7 +146,11 @@ abstract class EventEmitter implements IEventEmitter {
     }
 
     [...eventMap.values()].forEach((handler) => {
-      handler(value);
+      if (options !== undefined) {
+        handler(value, options);
+      } else {
+        handler(value);
+      }
     });
   }
 

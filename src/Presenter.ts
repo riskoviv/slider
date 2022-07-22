@@ -307,7 +307,10 @@ class Presenter {
       this.showJointOrSeparateTips();
     },
 
-    changeInterval: (isInterval: boolean): void => {
+    changeInterval: (
+      isInterval: boolean,
+      options?: ChangeIntervalEventOptions,
+    ): void => {
       if (isInterval) {
         this.createSubView('thumb');
         if (this.options.showTip) {
@@ -324,7 +327,7 @@ class Presenter {
         this.removeSubView('tip3');
       }
 
-      this.showJointOrSeparateTips();
+      if (options?.checkTipsOverlap) this.showJointOrSeparateTips();
       this.view.toggleInterval(isInterval);
     },
 
@@ -341,7 +344,7 @@ class Presenter {
         this.setPosition(number, position);
       }
 
-      if (this.options.showTip) {
+      if (this.options.showTip && options?.checkTipsOverlap !== false) {
         this.showJointOrSeparateTips();
       }
     }),
@@ -368,6 +371,7 @@ class Presenter {
             number: 3,
             value: `${this.options.value1} – ${this.options.value2}`,
           });
+          this.showJointOrSeparateTips();
         }
       } else {
         this.removeSubView('tip1');
@@ -576,9 +580,6 @@ class Presenter {
     this.currentThumbData.thumbNumber = number;
     this.setPosition(number, position);
     this.saveCurrentValue(number, value);
-    if (this.options.showTip) {
-      this.setTipValue({ number, value });
-    }
   }
 
   private setPosition(number: 1 | 2, position: number): void {
@@ -594,14 +595,10 @@ class Presenter {
 
   private setTipValue(options: { number: 1 | 2 | 3, value: number | string }): void {
     const { number: tipNumber, value } = options;
-    const tipName: 'tip1' | 'tip2' | 'tip3' = `tip${tipNumber}`;
+    const tipName: `tip${'1' | '2' | '3'}` = `tip${tipNumber}`;
     const tip = this.subViews[tipName];
     if (tip !== undefined) {
       tip.setValue(value);
-    }
-
-    if (this.options.isInterval && this.subViews.tip2 !== undefined) {
-      this.showJointOrSeparateTips();
     }
   }
 

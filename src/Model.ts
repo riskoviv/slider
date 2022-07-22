@@ -89,22 +89,30 @@ class Model extends EventEmitter implements IModel {
 
     this.options.isInterval = isInterval;
     const { value1Fixed, value2Fixed } = this.fixValues();
-    this.emit({ event: 'isIntervalChanged', value: isInterval });
+    const doEmitValue2Changed = value2Fixed || Number.isNaN(this.viewValues.positions[2]);
+    this.emit({
+      event: 'isIntervalChanged',
+      value: isInterval,
+      options: { checkTipsOverlap: !(value1Fixed || doEmitValue2Changed) },
+    });
 
     if (value1Fixed) {
       this.emit({
         event: 'value1Changed',
         value: this.options.value1,
-        options: { changeTipValue: true },
+        options: {
+          changeTipValue: true,
+          checkTipsOverlap: value1Fixed && !doEmitValue2Changed,
+        },
       });
     }
 
     if (isInterval) {
-      if (value2Fixed || Number.isNaN(this.viewValues.positions[2])) {
+      if (doEmitValue2Changed) {
         this.emit({
           event: 'value2Changed',
           value: this.options.value2,
-          options: { changeTipValue: false },
+          options: { changeTipValue: false, checkTipsOverlap: true },
         });
       }
     }
@@ -235,6 +243,7 @@ class Model extends EventEmitter implements IModel {
       options: {
         changeTipValue: true,
         onlySaveValue,
+        checkTipsOverlap: this.options.isInterval,
       },
     });
   }
@@ -245,21 +254,26 @@ class Model extends EventEmitter implements IModel {
     this.emit({ event: eventName, value });
 
     const { value1Fixed, value2Fixed } = this.fixValues();
+    const doEmitValue1Changed = ignoreIsFixed || value1Fixed;
+    const doEmitValue2Changed = ignoreIsFixed || value2Fixed;
 
-    if (ignoreIsFixed || value1Fixed) {
+    if (doEmitValue1Changed) {
       this.emit({
         event: 'value1Changed',
         value: this.options.value1,
-        options: { changeTipValue: true },
+        options: {
+          changeTipValue: true,
+          checkTipsOverlap: doEmitValue1Changed && !doEmitValue2Changed,
+        },
       });
     }
 
     if (this.options.isInterval) {
-      if (ignoreIsFixed || value2Fixed) {
+      if (doEmitValue2Changed) {
         this.emit({
           event: 'value2Changed',
           value: this.options.value2,
-          options: { changeTipValue: true },
+          options: { changeTipValue: true, checkTipsOverlap: true },
         });
       }
     }

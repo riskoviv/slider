@@ -52,6 +52,11 @@ type SliderPointerDownData = {
 type SetValueEventOptions = {
   changeTipValue: boolean,
   onlySaveValue?: boolean,
+  checkTipsOverlap?: boolean,
+};
+
+type ChangeIntervalEventOptions = {
+  checkTipsOverlap?: boolean,
 };
 
 interface Unsubscribable {
@@ -64,7 +69,7 @@ interface ValueHandler extends Unsubscribable {
   (value: number, options?: SetValueEventOptions): void;
 }
 interface StateHandler extends Unsubscribable {
-  (value: boolean): void;
+  (value: boolean, options?: ChangeIntervalEventOptions): void;
 }
 interface SliderPointerDownHandler extends Unsubscribable {
   (value: SliderPointerDownData): void;
@@ -119,7 +124,7 @@ interface IEventEmitter {
 }
 
 type ValueEmit = { event: ValueEvent, value: number, options?: SetValueEventOptions };
-type StateEmit = { event: StateEvent, value: boolean };
+type StateEmit = { event: StateEvent, value: boolean, options?: ChangeIntervalEventOptions };
 type SliderPointerDownEmit = { event: SliderPointerDownEvent, value: SliderPointerDownData };
 type ScaleValueSelectEmit = { event: ScaleValueSelectEvent, value: number };
 type ViewEmit = SliderPointerDownEmit | ScaleValueSelectEmit;
