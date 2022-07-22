@@ -14,8 +14,8 @@ $(() => {
     minValue: 12.3,
     maxValue: 54.5,
     stepSize: 3.49,
-    value1: 20,
-    value2: 40,
+    value1: 29.75,
+    value2: 36.73,
   });
   window.panel2 = new Panel(window.slider2);
 
