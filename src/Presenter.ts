@@ -124,6 +124,7 @@ class Presenter {
       if (this.options.showTip) {
         this.setTipValue({ number: 2, value: value2 });
       }
+      this.showJointOrSeparateTips();
     }
   }
 
