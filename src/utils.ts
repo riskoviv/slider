@@ -17,8 +17,8 @@ const defaultOptions: SliderOptions = {
  * @param obj object to get keys from
  * @returns array of object's keys but of original type
  */
-const getTypedKeys = <T extends Record<string, unknown>>(obj: T):
-(keyof T)[] => Object.keys(obj);
+const getTypedKeys = <Obj extends Record<string, unknown>>(obj: Obj):
+(keyof Obj)[] => Object.keys(obj);
 
 /**
  * uses Object.entries method but returns entries of passed object
@@ -27,8 +27,14 @@ const getTypedKeys = <T extends Record<string, unknown>>(obj: T):
  * @param obj object to get entries from
  * @returns array of arrays each containing key & value of obj
  */
-const getEntriesWithTypedKeys = <T extends Record<string, TypeOfValues<T>>>(obj: T):
-[keyof T, TypeOfValues<T>][] => Object.entries(obj);
+const getEntriesWithTypedKeys = <Obj extends Partial<Record<keyof Obj, TypeOfValues<Obj>>>>(
+  obj: Obj,
+): [keyof Obj, TypeOfValues<Obj>][] => {
+  const keys = getTypedKeys(obj);
+  const values: TypeOfValues<Obj>[] = Object.values(obj);
+  const entries: [keyof Obj, TypeOfValues<Obj>][] = keys.map((key, idx) => [key, values[idx]]);
+  return entries;
+};
 
 /**
  * used in cases when is needed to define size of fractional part of min, max, stepSize
