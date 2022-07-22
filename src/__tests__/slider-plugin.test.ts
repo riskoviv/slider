@@ -261,6 +261,7 @@ describe('slider-plugin', () => {
     let controlContainer: HTMLElement;
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
+    const positionDimension = isVertical ? 'offsetTop' : 'offsetLeft';
 
     describe('DOM interaction on control-container with isInterval: false, showTip: true', () => {
       let tipElem: HTMLElement;
@@ -325,6 +326,74 @@ describe('slider-plugin', () => {
           expect(tipElem.textContent).toBe(`${value}`);
         },
       );
+
+      describe('joining and separating of tips', () => {
+        const tipHiddenClass = 'slider__tip_hidden';
+        const tips: HTMLElement[] = [];
+
+        const setTipPositionAndSize = (
+          tipElement: HTMLElement,
+          position: number,
+          size: number,
+        ) => {
+          Object.defineProperties(tipElement, {
+            [positionDimension]: { value: position, writable: true },
+            [offsetDimension]: { value: size, writable: true },
+          });
+        };
+
+        beforeEach(() => {
+          $sliderInstance = $sliderContainer.sliderPlugin({
+            isInterval: true, isVertical, showTip: true, stepSize: 5,
+          });
+          const $controlContainer = $sliderInstance.find('.slider__control-container');
+          [controlContainer] = $controlContainer;
+          definePropertiesForControlContainer($controlContainer[0], offsetDimension);
+          [1, 2, 3].forEach((number) => {
+            [tips[number]] = $controlContainer.find(`.slider__tip_${number}`);
+          });
+        });
+
+        const areTipsJoinedToOne = (): boolean => {
+          const tipsVisibilities = [1, 2, 3].map((n) => tips[n].classList.contains(tipHiddenClass));
+          const joinedTips = [true, true, false];
+          return tipsVisibilities.every((tipStatus, idx) => tipStatus === joinedTips[idx]);
+        };
+
+        test('because positions & sizes of tips in test initially will be all at 0 and they cannot be set before initialization, tip1 & tip2 will be hidden and tip3 will be shown', () => {
+          expect(areTipsJoinedToOne()).toBe(true);
+        });
+
+        test('tip1&2 should be hidden and tip3 shown when tip1&2 overlapping each other and should be vice versa when they\'re not overlapping', async () => {
+          const [thumb1] = $sliderInstance.find('.slider__thumb_1');
+          const [thumb2] = $sliderInstance.find('.slider__thumb_2');
+          const dragStart1 = 170;
+          const dragEnd1 = 487;
+          const tip1Position1 = 493;
+          const tip2Position1 = 510;
+          setTipPositionAndSize(tips[1], tip1Position1, isVertical ? 21 : 37);
+          setTipPositionAndSize(tips[2], tip2Position1, isVertical ? 21 : 37);
+
+          makePointerdown(controlContainer, offsetAxis, dragStart1, false, thumb1);
+          await makePointermove(controlContainer, offsetAxis, dragStart1, dragEnd1);
+
+          expect(tips[1].textContent).toBe('45');
+          expect(tips[2].textContent).toBe('50');
+          expect(areTipsJoinedToOne()).toBe(true);
+
+          const dragStart2 = 512;
+          const dragEnd2 = 577;
+          const tip2Position2 = 578;
+          setTipPositionAndSize(tips[2], tip2Position2, isVertical ? 21 : 37);
+
+          makePointerdown(controlContainer, offsetAxis, dragStart2, false, thumb2);
+          await makePointermove(controlContainer, offsetAxis, dragStart2, dragEnd2);
+
+          expect(tips[1].textContent).toBe('45');
+          expect(tips[2].textContent).toBe('70');
+          expect(areTipsJoinedToOne()).toBe(false);
+        });
+      });
     });
 
     describe('DOM interaction on control-container with isInterval: true', () => {
