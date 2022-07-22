@@ -653,17 +653,56 @@ describe('slider-plugin', () => {
       expect($tipElements[1].textContent).toBe('80');
     });
 
-    test('setVerticalState() should toggle slider_vertical class on slider instance element', () => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
-      expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+    describe('setVerticalState()', () => {
+      test('should toggle slider_vertical class on slider instance element', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin();
+        expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
 
-      $sliderInstance.setVerticalState(true);
+        $sliderInstance.setVerticalState(true);
 
-      expect($sliderInstance.hasClass('slider_vertical')).toBe(true);
+        expect($sliderInstance.hasClass('slider_vertical')).toBe(true);
 
-      $sliderInstance.setVerticalState(false);
+        $sliderInstance.setVerticalState(false);
 
-      expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+        expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+      });
+
+      const setTipPositionAndSize = (
+        tipElement: HTMLElement,
+        position: number,
+        size: number,
+        positionDimension: PositionDimension,
+        offsetDimension: SizeDimension,
+      ) => {
+        Object.defineProperties(tipElement, {
+          [positionDimension]: { value: position, writable: true },
+          [offsetDimension]: { value: size, writable: true },
+        });
+      };
+
+      test('should join/separate tips, when in horizontal they\'re joined but in vertical not', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          isInterval: true,
+          showTip: true,
+        });
+        const tips: HTMLElement[] = [];
+        [1, 2, 3].forEach((number) => {
+          [tips[number]] = $sliderInstance.find(`.slider__tip_${number}`);
+        });
+
+        setTipPositionAndSize(tips[1], 204, 42, 'offsetLeft', 'offsetWidth');
+        setTipPositionAndSize(tips[2], 238, 42, 'offsetLeft', 'offsetWidth');
+        $sliderInstance.setValue1(-40).setValue2(-30);
+
+        expect(areTipsJoinedToOne(tips)).toBe(true);
+
+        setTipPositionAndSize(tips[1], 204, 21, 'offsetTop', 'offsetHeight');
+        setTipPositionAndSize(tips[2], 238, 21, 'offsetTop', 'offsetHeight');
+        $sliderInstance.setVerticalState(true);
+
+        expect(areTipsJoinedToOne(tips)).toBe(false);
+      });
+
     });
 
     test.each([false, true])(
