@@ -71,18 +71,18 @@ class Panel {
   }
 
   private makePanelElements() {
-    const stateOptions: [string, boolean, ModelEvent, keyof IPluginPublicStateMethods][] = [
+    const stateOptions: [string, boolean, ModelEvent, keyof PluginStateMethods][] = [
       ['vertical', this.pluginOptions.isVertical, 'isVerticalChanged', 'setVerticalState'],
       ['interval', this.pluginOptions.isInterval, 'isIntervalChanged', 'setInterval'],
       ['bar', this.pluginOptions.showProgressBar, 'showProgressChanged', 'setShowProgress'],
       ['scale', this.pluginOptions.showScale, 'showScaleChanged', 'setShowScale'],
       ['tip', this.pluginOptions.showTip, 'showTipChanged', 'setShowTip'],
     ];
-    const values: [string, number, ModelEvent, keyof IPluginPublicValueMethods][] = [
+    const values: [string, number, ModelEvent, keyof PluginValueMethods][] = [
       ['from', this.pluginOptions.value1, 'value1Changed', 'setValue1'],
       ['to', this.pluginOptions.value2, 'value2Changed', 'setValue2'],
     ];
-    const valueOptions: [string, number, ModelEvent, keyof IPluginPublicValueMethods][] = [
+    const valueOptions: [string, number, ModelEvent, keyof PluginValueMethods][] = [
       ['min', this.pluginOptions.minValue, 'minValueChanged', 'setMinValue'],
       ['max', this.pluginOptions.maxValue, 'maxValueChanged', 'setMaxValue'],
       ['step', this.pluginOptions.stepSize, 'stepSizeChanged', 'setStepSize'],
@@ -109,7 +109,7 @@ class Panel {
     label: string,
     checked: boolean,
     event: ModelEvent,
-    method: keyof IPluginPublicStateMethods,
+    method: keyof PluginStateMethods,
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;
@@ -122,7 +122,7 @@ class Panel {
     label: string,
     value: number,
     event: ModelEvent,
-    method: keyof IPluginPublicValueMethods,
+    method: keyof PluginValueMethods,
     step?: number,
     min?: number,
   ) {
@@ -145,10 +145,10 @@ class Panel {
     sliderEvent: ModelEvent,
   } & ({
     inputEventType: 'input',
-    sliderMethod: keyof IPluginPublicValueMethods,
+    sliderMethod: keyof PluginValueMethods,
   } | {
     inputEventType: 'change',
-    sliderMethod: keyof IPluginPublicStateMethods,
+    sliderMethod: keyof PluginStateMethods,
   })) {
     const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
       .append($inputElement);

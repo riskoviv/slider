@@ -627,7 +627,7 @@ describe('Model', () => {
           model.on({ event: eventName, handler: listener });
           listeners.push(listener);
         });
-        const stateMethods: (keyof IPluginPublicStateMethods)[] = [
+        const stateMethods: (keyof ModelStateMethods)[] = [
           'setVerticalState',
           'setInterval',
           'setShowProgress',
@@ -670,14 +670,14 @@ describe('Model', () => {
           value1: number,
           value2: number,
           inputProperty: 'valueAsNumber',
-          method: keyof IPluginPublicValueMethods,
+          method: keyof ModelValueMethods,
         } | {
           inputType: 'checkbox',
           event: StateEvent,
           value1: boolean,
           value2: boolean,
           inputProperty: 'checked',
-          method: keyof IPluginPublicStateMethods,
+          method: keyof ModelStateMethods,
         }) => {
           const inputElement: UnsubHTMLInputElement = document.createElement('input');
           inputElement.type = inputType;
@@ -736,12 +736,12 @@ describe('Model', () => {
             event: ValueEvent;
             value1: number;
             value2: number;
-            method: keyof IPluginPublicValueMethods;
+            method: keyof ModelValueMethods;
           } | {
             event: StateEvent;
             value1: boolean;
             value2: boolean;
-            method: keyof IPluginPublicStateMethods;
+            method: keyof ModelStateMethods;
           }) => {
             const callback: Callback<typeof value1> = (value: typeof value1) => {
               variableChangedByCallback = value;

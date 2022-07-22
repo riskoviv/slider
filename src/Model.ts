@@ -215,7 +215,7 @@ class Model extends EventEmitter implements IModel {
     return this.off(subscriber);
   }
 
-  publicValueMethods: IPluginPublicValueMethods = {
+  publicValueMethods: ModelValueMethods = {
     setValue1: this.setValue1.bind(this),
     setValue2: this.setValue2.bind(this),
     setStepSize: this.setStepSize.bind(this),
@@ -223,7 +223,7 @@ class Model extends EventEmitter implements IModel {
     setMaxValue: this.setMaxValue.bind(this),
   };
 
-  publicStateMethods: IPluginPublicStateMethods = {
+  publicStateMethods: ModelStateMethods = {
     setVerticalState: this.setVerticalState.bind(this),
     setInterval: this.setInterval.bind(this),
     setShowProgress: this.setShowProgress.bind(this),
@@ -231,7 +231,7 @@ class Model extends EventEmitter implements IModel {
     setShowScale: this.setShowScale.bind(this),
   };
 
-  publicDataMethods: IPluginPublicDataMethods = {
+  publicDataMethods: PluginDataMethods = {
     getOptions: this.getOptions.bind(this),
     subscribe: this.subscribe.bind(this),
     unsubscribe: this.unsubscribe.bind(this),

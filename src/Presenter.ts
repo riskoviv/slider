@@ -29,7 +29,7 @@ class Presenter {
 
   private sizeDimension: SizeDimension = 'offsetWidth';
 
-  private positionDimension: 'offsetLeft' | 'offsetTop' = 'offsetLeft';
+  private positionDimension: PositionDimension = 'offsetLeft';
 
   private positionAxis: PositionAxis = 'left';
 

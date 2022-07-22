@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-redeclare */
 type ValueOptions = {
   stepSize: number,
@@ -132,7 +133,7 @@ type ViewEmit = SliderPointerDownEmit | ScaleValueSelectEmit;
 type ValueSubscribe = Required<Omit<ValueOn, 'handler'>>;
 type StateSubscribe = Required<Omit<StateOn, 'handler'>>;
 
-interface IPluginPublicStateMethods {
+interface ModelStateMethods {
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
@@ -140,7 +141,7 @@ interface IPluginPublicStateMethods {
   setShowScale(showScale: boolean): void;
 }
 
-interface IPluginPublicValueMethods {
+interface ModelValueMethods {
   setValue1(value: number): void;
   setValue2(value: number): void;
   setStepSize(stepSize: number): void;
@@ -148,7 +149,7 @@ interface IPluginPublicValueMethods {
   setMaxValue(maxValue: number): void;
 }
 
-interface IPluginPublicDataMethods {
+interface PluginDataMethods {
   getOptions(): SliderOptions;
   subscribe(options: ValueSubscribe): void;
   subscribe(options: StateSubscribe): void;
@@ -156,17 +157,30 @@ interface IPluginPublicDataMethods {
   unsubscribe(subscriber: Subscriber): boolean;
 }
 
-interface IPluginPublicMethods extends
-IPluginPublicStateMethods,
-IPluginPublicValueMethods,
-IPluginPublicDataMethods {}
+interface ModelMethods extends ModelStateMethods, ModelValueMethods, PluginDataMethods {}
+
+type ArgumentTypes<T> = T extends (...args: infer U) => infer R ? U : never;
+type ReplaceReturnType<T, TNewReturn> = (...a: ArgumentTypes<T>) => TNewReturn;
+
+type PluginStateMethods = {
+  [methodName in keyof ModelStateMethods]: ReplaceReturnType<
+    ModelStateMethods[methodName], JQuery<HTMLElement>
+  >;
+};
+
+type PluginValueMethods = {
+  [methodName in keyof ModelValueMethods]: ReplaceReturnType<
+    ModelValueMethods[methodName], JQuery<HTMLElement>
+  >;
+};
+
+interface PluginMethods extends PluginStateMethods, PluginValueMethods, PluginDataMethods {}
 
 interface IPluginFunction {
-  // eslint-disable-next-line no-use-before-define
   (options?: Partial<SliderOptions>): JQuery;
 }
 
-interface JQuery extends IPluginPublicMethods {
+interface JQuery extends PluginMethods {
   sliderPlugin: IPluginFunction;
 }
 
@@ -176,15 +190,15 @@ type ViewValues = {
   stepInPercents: number,
 };
 
-interface IModel extends IEventEmitter, IPluginPublicMethods {
+interface IModel extends IEventEmitter, ModelMethods {
   options: SliderOptions;
   allowedValuesCount: number;
   fractionalPrecision: number;
   penultimateValue: number;
   viewValues: ViewValues;
-  publicValueMethods: IPluginPublicValueMethods;
-  publicStateMethods: IPluginPublicStateMethods;
-  publicDataMethods: IPluginPublicDataMethods;
+  publicValueMethods: ModelValueMethods;
+  publicStateMethods: ModelStateMethods;
+  publicDataMethods: PluginDataMethods;
   getIndexByValueNumber(valueNumber: 1 | 2): number;
   getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;
@@ -196,6 +210,7 @@ interface IModel extends IEventEmitter, IPluginPublicMethods {
 
 type PositionAxis = 'left' | 'top';
 type SizeDimension = 'offsetWidth' | 'offsetHeight';
+type PositionDimension = 'offsetTop' | 'offsetLeft';
 
 interface ISubView extends IEventEmitter {
   $elem: JQuery<HTMLElement>;

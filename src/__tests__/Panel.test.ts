@@ -96,7 +96,7 @@ describe('Panel', () => {
       },
     );
 
-    test.each<[keyof IPluginPublicValueMethods, string, number]>([
+    test.each<[keyof PluginValueMethods, string, number]>([
       ['setMinValue', 'min', 68], ['setStepSize', 'step', 7.1],
     ])(
       'changing value by %s slider method should change %s attr of from and to inputs',
