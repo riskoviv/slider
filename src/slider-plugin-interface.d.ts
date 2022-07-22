@@ -148,13 +148,18 @@ interface IPluginPublicValueMethods {
   setMaxValue(maxValue: number): void;
 }
 
-interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
+interface IPluginPublicDataMethods {
   getOptions(): SliderOptions;
   subscribe(options: ValueSubscribe): void;
   subscribe(options: StateSubscribe): void;
   subscribe(options: ValueSubscribe | StateSubscribe): void;
   unsubscribe(subscriber: Subscriber): boolean;
 }
+
+interface IPluginPublicMethods extends
+IPluginPublicStateMethods,
+IPluginPublicValueMethods,
+IPluginPublicDataMethods {}
 
 interface IPluginFunction {
   // eslint-disable-next-line no-use-before-define
@@ -177,7 +182,9 @@ interface IModel extends IEventEmitter, IPluginPublicMethods {
   fractionalPrecision: number;
   penultimateValue: number;
   viewValues: ViewValues;
-  publicMethods: IPluginPublicMethods;
+  publicValueMethods: IPluginPublicValueMethods;
+  publicStateMethods: IPluginPublicStateMethods;
+  publicDataMethods: IPluginPublicDataMethods;
   getIndexByValueNumber(valueNumber: 1 | 2): number;
   getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;

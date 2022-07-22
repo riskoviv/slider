@@ -215,18 +215,24 @@ class Model extends EventEmitter implements IModel {
     return this.off(subscriber);
   }
 
-  publicMethods: IPluginPublicMethods = {
-    getOptions: this.getOptions.bind(this),
+  publicValueMethods: IPluginPublicValueMethods = {
     setValue1: this.setValue1.bind(this),
     setValue2: this.setValue2.bind(this),
+    setStepSize: this.setStepSize.bind(this),
+    setMinValue: this.setMinValue.bind(this),
+    setMaxValue: this.setMaxValue.bind(this),
+  };
+
+  publicStateMethods: IPluginPublicStateMethods = {
     setVerticalState: this.setVerticalState.bind(this),
     setInterval: this.setInterval.bind(this),
     setShowProgress: this.setShowProgress.bind(this),
     setShowTip: this.setShowTip.bind(this),
     setShowScale: this.setShowScale.bind(this),
-    setStepSize: this.setStepSize.bind(this),
-    setMinValue: this.setMinValue.bind(this),
-    setMaxValue: this.setMaxValue.bind(this),
+  };
+
+  publicDataMethods: IPluginPublicDataMethods = {
+    getOptions: this.getOptions.bind(this),
     subscribe: this.subscribe.bind(this),
     unsubscribe: this.unsubscribe.bind(this),
   };
