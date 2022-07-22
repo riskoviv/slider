@@ -27,6 +27,16 @@ const getRandomInt = (min: number, max: number) => (
   Math.floor(Math.random() * (max - min + 1) + min)
 );
 
+const tipHiddenClass = 'slider__tip_hidden';
+
+const areTipsJoinedToOne = (tipElements: HTMLElement[]): boolean => {
+  const tipsVisibilities = [1, 2, 3].map(
+    (n) => tipElements[n].classList.contains(tipHiddenClass),
+  );
+  const joinedTips = [true, true, false];
+  return tipsVisibilities.every((tipStatus, idx) => tipStatus === joinedTips[idx]);
+};
+
 describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   const pointerupEvent = new MouseEvent('pointerup');
@@ -328,7 +338,6 @@ describe('slider-plugin', () => {
       );
 
       describe('joining and separating of tips', () => {
-        const tipHiddenClass = 'slider__tip_hidden';
         const tips: HTMLElement[] = [];
 
         const setTipPositionAndSize = (
@@ -354,17 +363,12 @@ describe('slider-plugin', () => {
           });
         });
 
-        const areTipsJoinedToOne = (): boolean => {
-          const tipsVisibilities = [1, 2, 3].map((n) => tips[n].classList.contains(tipHiddenClass));
-          const joinedTips = [true, true, false];
-          return tipsVisibilities.every((tipStatus, idx) => tipStatus === joinedTips[idx]);
-        };
-
         test('because positions & sizes of tips in test initially will be all at 0 and they cannot be set before initialization, tip1 & tip2 will be hidden and tip3 will be shown', () => {
-          expect(areTipsJoinedToOne()).toBe(true);
+          expect(areTipsJoinedToOne(tips)).toBe(true);
         });
 
         test('tip1&2 should be hidden and tip3 shown when tip1&2 overlapping each other and should be vice versa when they\'re not overlapping', async () => {
+          expect.assertions(6);
           const [thumb1] = $sliderInstance.find('.slider__thumb_1');
           const [thumb2] = $sliderInstance.find('.slider__thumb_2');
           const dragStart1 = 170;
@@ -379,7 +383,7 @@ describe('slider-plugin', () => {
 
           expect(tips[1].textContent).toBe('45');
           expect(tips[2].textContent).toBe('50');
-          expect(areTipsJoinedToOne()).toBe(true);
+          expect(areTipsJoinedToOne(tips)).toBe(true);
 
           const dragStart2 = 512;
           const dragEnd2 = 577;
@@ -391,7 +395,7 @@ describe('slider-plugin', () => {
 
           expect(tips[1].textContent).toBe('45');
           expect(tips[2].textContent).toBe('70');
-          expect(areTipsJoinedToOne()).toBe(false);
+          expect(areTipsJoinedToOne(tips)).toBe(false);
         });
       });
     });
