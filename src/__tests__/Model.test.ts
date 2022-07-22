@@ -354,8 +354,15 @@ describe('Model', () => {
             expect(customModel.options[valueName]).toBe(value);
             const number = Number(valueName.slice(-1));
             const changeTipValue = number === 1;
-            if (number === 1) expect(value1ChangedSpy).toBeCalledWith(value, { changeTipValue });
-            else expect(value2ChangedSpy).toBeCalledWith(value, { changeTipValue });
+            if (number === 1) {
+              expect(value1ChangedSpy).toBeCalledWith(value, {
+                changeTipValue, checkTipsOverlap: false,
+              });
+            } else {
+              expect(value2ChangedSpy).toBeCalledWith(value, {
+                changeTipValue, checkTipsOverlap: true,
+              });
+            }
           });
         },
       );
