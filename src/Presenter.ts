@@ -304,7 +304,8 @@ class Presenter {
       if (this.options.showScale && this.subViews.scale !== undefined) {
         this.initResizeObserver();
       }
-      this.showJointOrSeparateTips();
+
+      if (this.options.isInterval) this.showJointOrSeparateTips();
     },
 
     changeInterval: (
