@@ -126,8 +126,8 @@ class Panel {
     step?: number,
     min?: number,
   ) {
-    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}" value="${value}"></input>`);
-    $inputElement.prop({ step, min });
+    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}"></input>`);
+    $inputElement.prop({ value, step, min });
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderMethod: method,
     });
