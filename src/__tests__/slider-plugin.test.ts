@@ -1,10 +1,10 @@
 import $ from 'jquery';
+import './mocks/ResizeObserver';
 import '../slider-plugin';
 import { getByText } from '@testing-library/dom';
 import {
   getTypedKeys, getFractionalPartSize, defaultOptions, invalidValues,
 } from '../utils';
-import './mocks/ResizeObserver';
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   const childrenCountInParent = children.reduce((childCount, childClass) => (
@@ -703,6 +703,13 @@ describe('slider-plugin', () => {
         expect(areTipsJoinedToOne(tips)).toBe(false);
       });
 
+      test('should init resize observer when showScale is true', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin({ showScale: true });
+
+        $sliderInstance.setVerticalState(true);
+
+        expect(ResizeObserver).toHaveBeenCalledTimes(1);
+      });
     });
 
     test.each([false, true])(
