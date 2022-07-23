@@ -38,13 +38,13 @@ describe('View', () => {
       ['isVertical', 'vertical', [true, false, false]],
       ['isInterval', 'interval', [false, true, false]],
       ['showProgressBar', 'show-progress', [false, false, true]],
-    ])('if options has %s: true, view element should contain class slider_%s', (option, modifier, classes) => {
+    ])('if options has %s: true, view element should contain class slider_%s', (option, modifier, [verticalState, intervalState, progressState]) => {
       view = new View({ [option]: true });
       $viewElem = view.$elem;
 
-      expect($viewElem.hasClass('slider_vertical')).toBe(classes[0]);
-      expect($viewElem.hasClass('slider_interval')).toBe(classes[1]);
-      expect($viewElem.hasClass('slider_show-progress')).toBe(classes[2]);
+      expect($viewElem.hasClass('slider_vertical')).toBe(verticalState);
+      expect($viewElem.hasClass('slider_interval')).toBe(intervalState);
+      expect($viewElem.hasClass('slider_show-progress')).toBe(progressState);
     });
   });
 
