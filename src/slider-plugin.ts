@@ -145,17 +145,6 @@ checkOptionsValues = (options: SliderOptions) => {
     console.warn(`Warning: maxValue is equal to minValue in plugin options. maxValue is now increased by stepSize (${pluginOptions.stepSize}).${warnMsgEnd}.`);
   }
 
-  if (pluginOptions.isInterval && pluginOptions.value1 > pluginOptions.value2) {
-    [
-      pluginOptions.value1,
-      pluginOptions.value2,
-    ] = [
-      pluginOptions.value2,
-      pluginOptions.value1,
-    ];
-    console.warn(`Warning: value1 > value2 in plugin options. Values are now swapped.${warnMsgEnd}.`);
-  }
-
   if (pluginOptions.value1 < pluginOptions.minValue) {
     pluginOptions.value1 = pluginOptions.minValue;
     console.warn(`Warning: value1 < minValue in plugin options. value1 is now set to minValue.${warnMsgEnd}.`);
@@ -176,6 +165,17 @@ checkOptionsValues = (options: SliderOptions) => {
     } else if (pluginOptions.value2 > pluginOptions.maxValue) {
       pluginOptions.value2 = pluginOptions.maxValue;
       console.warn(`Warning: value2 > maxValue in plugin options. value2 is now set to maxValue.${warnMsgEnd}.`);
+    }
+
+    if (pluginOptions.value1 > pluginOptions.value2) {
+      [
+        pluginOptions.value1,
+        pluginOptions.value2,
+      ] = [
+        pluginOptions.value2,
+        pluginOptions.value1,
+      ];
+      console.warn(`Warning: value1 > value2 in plugin options. Values are now swapped.${warnMsgEnd}.`);
     }
   }
 
