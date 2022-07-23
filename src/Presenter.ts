@@ -51,16 +51,11 @@ class Presenter {
     const {
       value1,
       value2,
-      isVertical,
-      isInterval,
-      showProgressBar,
     } = this.options;
 
     this.updateDimensionAndAxis();
     this.defineViewValues();
-    this.view = new View({ isVertical, isInterval, showProgressBar });
-    this.view.setThumbThickness(this.model.viewValues.stepInPercents);
-    this.view.on({ event: 'sliderPointerDown', handler: this.viewEventHandlers.sliderPointerDown });
+    this.view = this.createView();
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
@@ -69,6 +64,17 @@ class Presenter {
       value1,
       value2,
     });
+  }
+
+  private createView(): View {
+    const view = new View({
+      isVertical: this.options.isVertical,
+      isInterval: this.options.isInterval,
+      showProgressBar: this.options.showProgressBar,
+    });
+    view.setThumbThickness(this.model.viewValues.stepInPercents);
+    view.on({ event: 'sliderPointerDown', handler: this.viewEventHandlers.sliderPointerDown });
+    return view;
   }
 
   private bindModelEventListeners(): void {
