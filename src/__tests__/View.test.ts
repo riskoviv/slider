@@ -46,6 +46,14 @@ describe('View', () => {
       expect($viewElem.hasClass('slider_interval')).toBe(intervalState);
       expect($viewElem.hasClass('slider_show-progress')).toBe(progressState);
     });
+
+    test('if created w/ all options to true, $elem should have all custom classes', () => {
+      view = new View({ isVertical: true, isInterval: true, showProgressBar: true });
+
+      expect(view.$elem.hasClass('slider_vertical')).toBe(true);
+      expect(view.$elem.hasClass('slider_interval')).toBe(true);
+      expect(view.$elem.hasClass('slider_show-progress')).toBe(true);
+    });
   });
 
   describe('View methods', () => {
