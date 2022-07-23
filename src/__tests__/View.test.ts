@@ -155,6 +155,27 @@ describe('View', () => {
         expect(preventDefaultSpy).not.toBeCalled();
         expect(sliderPointerDownSpy).not.toBeCalled();
       });
+
+      test('should call console.error if pointerDown event is ocurred on controlContainer and there is no listeners attached to sliderPointerDown event', () => {
+        view = new View();
+        const pointerDownEvent = new MouseEvent('pointerdown');
+        Object.defineProperties(pointerDownEvent, {
+          pointerId: { value: 1 },
+          target: { value: view.controlContainerElem },
+          offsetX: { value: 42 },
+          offsetY: { value: 0 },
+        });
+        Object.defineProperty(view.controlContainerElem, 'setPointerCapture', { value: jest.fn() });
+        jest.spyOn(console, 'error');
+        const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
+        const emitError = new Error();
+        emitError.name = 'EmitError';
+        emitError.message = 'sliderPointerDown event is not registered. arg = { target: [object HTMLDivElement], offsetX: 42, offsetY: 0 }';
+
+        view.controlContainerElem.dispatchEvent(pointerDownEvent);
+
+        expect(mockConsoleError).toBeCalledWith(emitError);
+      });
     });
   });
 });
