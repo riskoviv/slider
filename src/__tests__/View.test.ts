@@ -119,7 +119,7 @@ describe('View', () => {
       expect(eventResult).toBe(false);
     });
 
-    describe('pointerdown event', () => {
+    describe('pointerdown DOM event & sliderPointerDown event that it causes', () => {
       let sliderPointerDownSpy: jest.Mock;
 
       beforeAll(() => {
@@ -128,13 +128,22 @@ describe('View', () => {
       });
 
       test('if e.button === 0 (LMB), pointerdown event should call preventDefault() & emit sliderPointerDown event', () => {
-        const pointerEvent = new MouseEvent('pointerdown', { button: 0 });
-        const preventDefaultSpy = jest.spyOn(pointerEvent, 'preventDefault');
-
-        controlContainerElem.dispatchEvent(pointerEvent);
+        const pointerDownEvent = new MouseEvent('pointerdown');
+        const preventDefaultSpy = jest.spyOn(pointerDownEvent, 'preventDefault');
+        Object.defineProperties(pointerDownEvent, {
+          pointerId: { value: 1 },
+          target: { value: view.$elem[0] },
+          offsetX: { value: 100 },
+          offsetY: { value: 0 },
+        });
+        controlContainerElem.dispatchEvent(pointerDownEvent);
 
         expect(preventDefaultSpy).toBeCalled();
-        expect(sliderPointerDownSpy).toBeCalled();
+        expect(sliderPointerDownSpy).toBeCalledWith({
+          target: view.$elem[0],
+          offsetX: 100,
+          offsetY: 0,
+        });
       });
 
       test('if e.button !== 0 (LMB), pointerdown event should NOT call preventDefault() & emit sliderPointerDown event', () => {
