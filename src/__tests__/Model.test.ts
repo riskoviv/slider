@@ -689,6 +689,8 @@ describe('Model', () => {
           const inputElement: UnsubHTMLInputElement = document.createElement('input');
           inputElement.type = inputType;
           model.subscribe({ event, subscriber: inputElement });
+          model.on({ event: 'value1Changed', handler: jest.fn() });
+          model.on({ event: 'value2Changed', handler: jest.fn() });
 
           switch (inputType) {
             case 'number':
