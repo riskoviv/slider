@@ -35,7 +35,7 @@ class Presenter {
 
   private offset: 'offsetX' | 'offsetY' = 'offsetX';
 
-  private sliderResizeObserver: ResizeObserver | undefined;
+  private sliderResizeObserver?: ResizeObserver;
 
   private fixValue = this.model.fixValueToPrecision.bind(this.model);
 
@@ -229,8 +229,7 @@ class Presenter {
 
     const [lastScaleElem] = scale.scaleValueElements.slice(-1)[0];
     const lastScaleElemPosition = lastScaleElem.style.getPropertyValue('--scale-block-position');
-    const lastScaleElemPositionIs100Percent = lastScaleElemPosition === '100%';
-    if (!lastScaleElemPositionIs100Percent) {
+    if (lastScaleElemPosition !== '100%') {
       scale.scaleValueElements.push(
         this.makeNewScaleValueElement(
           this.options.maxValue,
