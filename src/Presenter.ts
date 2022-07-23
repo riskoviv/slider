@@ -42,6 +42,8 @@ class Presenter {
 
   private tipHiddenClass = 'slider__tip_hidden';
 
+  private resizeObserverActive = false;
+
   constructor(
     private readonly $pluginRootElem: JQuery<HTMLElement>,
     private readonly model: IModel,
@@ -60,6 +62,9 @@ class Presenter {
     this.insertSliderToContainer();
     this.bindModelEventListeners();
     if (this.options.showScale) this.updateScale();
+    if (this.options.showTip && this.options.isInterval && !this.resizeObserverActive) {
+      this.activateResizeObserver();
+    }
     this.passInitialValuesToSubViews({
       value1,
       value2,
@@ -91,18 +96,26 @@ class Presenter {
       .on({ event: 'maxValueChanged', handler: listeners.updateBounds });
   }
 
-  private initResizeObserver(): void {
+  private activateResizeObserver(): void {
     if (this.sliderResizeObserver === undefined) {
       this.sliderResizeObserver = new ResizeObserver(() => {
         if (this.subViews.scale !== undefined) {
           this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
         }
+
+        if (this.options.showTip) this.showJointOrSeparateTips();
       });
     } else {
       this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     }
 
     this.sliderResizeObserver.observe(this.view.$elem[0]);
+    this.resizeObserverActive = true;
+  }
+
+  private deactivateResizeObserver(): void {
+    this.sliderResizeObserver?.disconnect();
+    this.resizeObserverActive = false;
   }
 
   private updateDimensionAndAxis() {
@@ -202,7 +215,11 @@ class Presenter {
     if (scale !== undefined) {
       this.createScaleValuesElements(scale);
       scale.insertScaleValueElements();
-      this.initResizeObserver();
+      if (this.resizeObserverActive) {
+        scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
+      } else {
+        this.activateResizeObserver();
+      }
     }
   }
 
@@ -308,8 +325,10 @@ class Presenter {
     changeOrientation: (isVertical: boolean): void => {
       this.updateDimensionAndAxis();
       this.view.toggleVertical(isVertical);
-      if (this.options.showScale && this.subViews.scale !== undefined) {
-        this.initResizeObserver();
+      const resizeObserverIsNeeded = this.options.showScale
+        || (this.options.showTip && this.options.isInterval);
+      if (resizeObserverIsNeeded) {
+        this.activateResizeObserver();
       }
 
       if (this.options.isInterval) this.showJointOrSeparateTips();
@@ -328,11 +347,17 @@ class Presenter {
             number: 2,
             value: this.options.value2,
           });
+          if (!this.resizeObserverActive) {
+            this.activateResizeObserver();
+          }
         }
       } else {
         this.removeSubView('thumb2');
         this.removeSubView('tip2');
         this.removeSubView('tip3');
+        if (!this.options.showScale && this.resizeObserverActive) {
+          this.deactivateResizeObserver();
+        }
       }
 
       if (options?.checkTipsOverlap) this.showJointOrSeparateTips();
@@ -380,12 +405,19 @@ class Presenter {
             value: `${this.options.value1} – ${this.options.value2}`,
           });
           this.showJointOrSeparateTips();
+          if (!this.resizeObserverActive) {
+            this.activateResizeObserver();
+          }
         }
       } else {
         this.removeSubView('tip1');
         if (this.options.isInterval) {
           this.removeSubView('tip2');
           this.removeSubView('tip3');
+        }
+
+        if (!this.options.showScale && this.resizeObserverActive) {
+          this.deactivateResizeObserver();
         }
       }
     },
@@ -396,7 +428,9 @@ class Presenter {
         this.updateScale();
       } else {
         this.removeSubView('scale');
-        this.sliderResizeObserver?.disconnect();
+        if (!(this.options.showTip && this.options.isInterval) && this.resizeObserverActive) {
+          this.deactivateResizeObserver();
+        }
       }
     },
   };
