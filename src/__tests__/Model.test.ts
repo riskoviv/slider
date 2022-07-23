@@ -794,5 +794,42 @@ describe('Model', () => {
       const notUnsubscribable: any = { test: true };
       expect(model.unsubscribe(notUnsubscribable)).toBe(false);
     });
+
+    test('should throw error on emit when event is not registered and has no listeners', () => {
+      initModelWithDefaultOptions();
+      const stateMethods: [keyof ModelStateMethods, StateEvent][] = [
+        ['setVerticalState', 'isVerticalChanged'],
+        ['setInterval', 'isIntervalChanged'],
+        ['setShowProgress', 'showProgressChanged'],
+        ['setShowTip', 'showTipChanged'],
+        ['setShowScale', 'showScaleChanged'],
+      ];
+      const valueMethods: [keyof ModelValueMethods, ValueEvent][] = [
+        ['setValue1', 'value1Changed'],
+        ['setValue2', 'value2Changed'],
+        ['setStepSize', 'stepSizeChanged'],
+        ['setMinValue', 'minValueChanged'],
+        ['setMaxValue', 'maxValueChanged'],
+      ];
+      jest.spyOn(console, 'error');
+      const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
+      const emitError = new Error();
+      emitError.name = 'EmitError';
+
+      stateMethods.forEach(([stateMethod, stateEvent]) => {
+        model[stateMethod](true);
+        emitError.message = `${stateEvent} event is not registered. arg = true`;
+        expect(mockConsoleError.mock.calls).toContainEqual([emitError]);
+      });
+
+      mockConsoleError.mockClear();
+      let numberValue = 10;
+      valueMethods.forEach(([valueMethod, valueEvent]) => {
+        model[valueMethod](numberValue);
+        emitError.message = `${valueEvent} event is not registered. arg = ${numberValue}`;
+        expect(mockConsoleError.mock.calls).toContainEqual([emitError]);
+        numberValue += 10;
+      });
+    });
   });
 });
