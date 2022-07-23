@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import '@testing-library/jest-dom';
+
 import ScaleView from '../subviews/ScaleView';
 
 const makeNewScaleValueElement = (value: number): JQuery<HTMLDivElement> => (

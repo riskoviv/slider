@@ -1,10 +1,11 @@
 /* eslint-disable no-dupe-class-members */
 /* eslint-disable lines-between-class-members */
 import $ from 'jquery';
+
+import View from './View';
 import TrackView from './subviews/TrackView';
 import ThumbView from './subviews/ThumbView';
 import ScaleView from './subviews/ScaleView';
-import View from './View';
 import TipView from './subviews/TipView';
 
 type SubViews = {

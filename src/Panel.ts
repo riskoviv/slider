@@ -1,5 +1,6 @@
-import './styles/panel-styles.scss';
 import $ from 'jquery';
+
+import './styles/panel-styles.scss';
 import { getFractionalPartSize } from './utils';
 
 class Panel {

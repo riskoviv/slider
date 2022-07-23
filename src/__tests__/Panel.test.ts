@@ -1,4 +1,5 @@
 import $ from 'jquery';
+
 import Panel from '../Panel';
 import '../slider-plugin';
 import { getFractionalPartSize } from '../utils';

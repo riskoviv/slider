@@ -1,4 +1,5 @@
 import $ from 'jquery';
+
 import EventEmitter from './EventEmitter';
 
 type SliderViewOptions = {

@@ -1,7 +1,8 @@
 import $ from 'jquery';
+import { getByText } from '@testing-library/dom';
+
 import './mocks/ResizeObserver';
 import '../slider-plugin';
-import { getByText } from '@testing-library/dom';
 import {
   getTypedKeys, getFractionalPartSize, defaultOptions, invalidValues,
 } from '../utils';
