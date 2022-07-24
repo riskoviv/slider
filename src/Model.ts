@@ -112,7 +112,10 @@ class Model extends EventEmitter implements IModel {
         this.emit({
           event: 'value2Changed',
           value: this.options.value2,
-          options: { changeTipValue: false, checkTipsOverlap: true },
+          options: {
+            changeTipValue: false,
+            checkTipsOverlap: true,
+          },
         });
       }
     }
@@ -279,7 +282,10 @@ class Model extends EventEmitter implements IModel {
         this.emit({
           event: 'value2Changed',
           value: this.options.value2,
-          options: { changeTipValue: true, checkTipsOverlap: true },
+          options: {
+            changeTipValue: true,
+            checkTipsOverlap: true,
+          },
         });
       }
     }
