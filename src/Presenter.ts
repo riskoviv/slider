@@ -226,36 +226,20 @@ class Presenter implements IPresenter {
     const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
     const isEveryValueAllowed = [0, 1].includes(quotient);
-    const { stepInPercents } = this.model.viewValues;
     scale.scaleValueElements.length = 0;
 
     if (isEveryValueAllowed) {
-      for (
-        let position = 0, index = 0;
-        position <= 100;
-        index += 1, position = stepInPercents * index
-      ) {
+      for (let index = 0; index <= lastElemIndex; index += 1) {
         const value = this.model.getValueByIndex(index);
+        const position = this.getPositionByIndex(index);
         scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
       }
     } else {
       for (let index = 0; index <= lastElemIndex; index += quotient) {
-        scale.scaleValueElements.push(this.makeNewScaleValueElement(
-          this.model.getValueByIndex(index),
-          this.getPositionByIndex(index),
-        ));
+        const value = this.model.getValueByIndex(index);
+        const position = this.getPositionByIndex(index);
+        scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
       }
-    }
-
-    const [lastScaleElem] = scale.scaleValueElements.slice(-1)[0];
-    const lastScaleElemPosition = lastScaleElem.style.getPropertyValue('--scale-block-position');
-    if (lastScaleElemPosition !== '100%') {
-      scale.scaleValueElements.push(
-        this.makeNewScaleValueElement(
-          this.options.maxValue,
-          100,
-        ),
-      );
     }
   }
 
@@ -296,7 +280,8 @@ class Presenter implements IPresenter {
   }
 
   private getPositionByIndex(index: number): number {
-    return this.model.viewValues.stepInPercents * index;
+    const position = this.model.viewValues.stepInPercents * index;
+    return position > 100 ? 100 : position;
   }
 
   private getValueByPosition(position: number): number {
