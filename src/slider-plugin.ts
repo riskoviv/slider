@@ -80,7 +80,8 @@ cleanContainerIfNotEmpty = (container: JQuery): void => {
 
 fixCustomOptions = (options: Partial<SliderOptions>) => {
   const notAnObject = typeof options !== 'object' || options === null;
-  if (notAnObject || Object.prototype.hasOwnProperty.call(options, 'length')) {
+  const isArrayOrNotAnObject = notAnObject || Object.prototype.hasOwnProperty.call(options, 'length');
+  if (isArrayOrNotAnObject) {
     console.warn('Warning: options object passed to plugin has wrong type (must be an object)');
     return null;
   }

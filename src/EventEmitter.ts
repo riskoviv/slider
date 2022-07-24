@@ -200,7 +200,9 @@ abstract class EventEmitter implements IEventEmitter {
       return updateNumericInput;
     };
 
-    if (subscriber instanceof HTMLInputElement && subscriber.type === 'number') {
+    const subscriberIsInputTypeNumber = subscriber instanceof HTMLInputElement
+      && subscriber.type === 'number';
+    if (subscriberIsInputTypeNumber) {
       this.valueOn({ event, handler: makeNumericInputElementUpdater(subscriber), subscriber });
     } else if (subscriber instanceof Function) {
       this.valueOn({ event, handler: subscriber, subscriber });
@@ -218,7 +220,9 @@ abstract class EventEmitter implements IEventEmitter {
       return updateCheckbox;
     };
 
-    if (subscriber instanceof HTMLInputElement && subscriber.type === 'checkbox') {
+    const subscriberIsInputTypeCheckbox = subscriber instanceof HTMLInputElement
+      && subscriber.type === 'checkbox';
+    if (subscriberIsInputTypeCheckbox) {
       this.stateOn({ event, handler: makeCheckboxElementUpdater(subscriber), subscriber });
     } else if (subscriber instanceof Function) {
       this.stateOn({ event, handler: subscriber, subscriber });

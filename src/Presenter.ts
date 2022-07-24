@@ -55,11 +55,20 @@ class Presenter implements IPresenter {
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
+    this.checkThatScaleAndResizeObserverIsNeeded();
+    this.passInitialValuesToSubViews(this.options.value1, this.options.value2);
+  }
+
+  private isTwoTips() {
+    return this.options.showTip && this.options.isInterval;
+  }
+
+  private checkThatScaleAndResizeObserverIsNeeded() {
     if (this.options.showScale) this.updateScale();
-    if (this.options.showTip && this.options.isInterval && !this.resizeObserverActive) {
+    const needToActivateResizeObserverForTwoTips = this.isTwoTips() && !this.resizeObserverActive;
+    if (needToActivateResizeObserverForTwoTips) {
       this.activateResizeObserver();
     }
-    this.passInitialValuesToSubViews(this.options.value1, this.options.value2);
   }
 
   private createView(): View {
@@ -316,8 +325,7 @@ class Presenter implements IPresenter {
     changeOrientation: (isVertical: boolean): void => {
       this.updateDimensionAndAxis();
       this.view.toggleVertical(isVertical);
-      const resizeObserverIsNeeded = this.options.showScale
-        || (this.options.showTip && this.options.isInterval);
+      const resizeObserverIsNeeded = this.options.showScale || this.isTwoTips();
       if (resizeObserverIsNeeded) {
         this.activateResizeObserver();
       }
@@ -346,7 +354,8 @@ class Presenter implements IPresenter {
         this.removeSubView('thumb2');
         this.removeSubView('tip2');
         this.removeSubView('tip3');
-        if (!this.options.showScale && this.resizeObserverActive) {
+        const resizeObserverIsNotNeeded = !this.options.showScale && this.resizeObserverActive;
+        if (resizeObserverIsNotNeeded) {
           this.deactivateResizeObserver();
         }
       }
@@ -359,7 +368,8 @@ class Presenter implements IPresenter {
       value: number,
       options?: SetValueEventOptions,
     ): void => {
-      if (this.options.showTip && options?.changeTipValue) {
+      const needToChangeTipValue = this.options.showTip && options?.changeTipValue;
+      if (needToChangeTipValue) {
         this.setTipValue({ number, value });
       }
 
@@ -368,7 +378,8 @@ class Presenter implements IPresenter {
         this.setPosition(number, position);
       }
 
-      if (this.options.showTip && options?.checkTipsOverlap !== false) {
+      const needToCheckTipsOverlap = this.options.showTip && options?.checkTipsOverlap !== false;
+      if (needToCheckTipsOverlap) {
         this.showJointOrSeparateTips();
       }
     }),
@@ -407,7 +418,9 @@ class Presenter implements IPresenter {
           this.removeSubView('tip3');
         }
 
-        if (!this.options.showScale && this.resizeObserverActive) {
+        const noScaleButResizeObserverIsActive = !this.options.showScale
+          && this.resizeObserverActive;
+        if (noScaleButResizeObserverIsActive) {
           this.deactivateResizeObserver();
         }
       }
@@ -420,7 +433,7 @@ class Presenter implements IPresenter {
       } else {
         this.removeSubView('scale');
         const allowedToDeactivateResizeObserver = this.resizeObserverActive
-          && !(this.options.showTip && this.options.isInterval);
+          && !this.isTwoTips();
         if (allowedToDeactivateResizeObserver) {
           this.deactivateResizeObserver();
         }
@@ -452,7 +465,8 @@ class Presenter implements IPresenter {
       const { target } = data;
       if (target.classList.contains('slider__thumb')) {
         const thumbNumber = Number(target.dataset.number);
-        if (thumbNumber === 1 || thumbNumber === 2) {
+        const thumbNumberIs1Or2 = thumbNumber === 1 || thumbNumber === 2;
+        if (thumbNumberIs1Or2) {
           this.saveCurrentThumbData(thumbNumber);
         }
       } else if (target === this.view.controlContainerElem) {
@@ -464,9 +478,11 @@ class Presenter implements IPresenter {
         this.saveCurrentThumbData(closestThumb);
         const allowedPosition = this.findClosestAllowedPosition(position);
         const allowedValue = this.getValueByPosition(allowedPosition);
-
-        if (allowedPosition !== this.currentThumbData.currentPosition
-            && allowedValue !== this.currentThumbData.currentValue) {
+        const allowedToChangeThumbPosition = (
+          allowedPosition !== this.currentThumbData.currentPosition
+          && allowedValue !== this.currentThumbData.currentValue
+        );
+        if (allowedToChangeThumbPosition) {
           const isFirstThumbAwayFromSecondThumb = this.options.isInterval
             ? this.thumbChecks.isThumbKeepsDistance(allowedPosition)
             : true;
@@ -501,7 +517,11 @@ class Presenter implements IPresenter {
       const isThumbAwayFromOtherThumb = this.options.isInterval
         ? this.thumbChecks.isThumbKeepsDistance(newPosition)
         : true;
-      if (isThumbAwayFromOtherThumb && newPosition !== this.currentThumbData.currentPosition) {
+      const allowedToChangeThumbPosition = (
+        newPosition !== this.currentThumbData.currentPosition
+        && isThumbAwayFromOtherThumb
+      );
+      if (allowedToChangeThumbPosition) {
         const newValue = this.fixValue(this.getValueByPosition(newPosition));
         this.setPositionAndCurrentValue({
           number: thumbNumber,
@@ -566,6 +586,7 @@ class Presenter implements IPresenter {
       }
       return 100;
     }
+
     const step = this.model.viewValues.stepInPercents;
     return Math.round(position / step) * step;
   }
@@ -589,7 +610,8 @@ class Presenter implements IPresenter {
   private areTipsOverlap(): boolean {
     const { tip1 } = this.subViews;
     const { tip2 } = this.subViews;
-    if (tip1 !== undefined && tip2 !== undefined) {
+    const bothTipsExists = tip1 !== undefined && tip2 !== undefined;
+    if (bothTipsExists) {
       const [tip1Elem] = tip1.$elem;
       const [tip2Elem] = tip2.$elem;
       const tip1Bound = tip1Elem[this.positionDimension] + tip1Elem[this.sizeDimension];
@@ -638,7 +660,7 @@ class Presenter implements IPresenter {
   }
 
   private showJointOrSeparateTips() {
-    if (this.options.isInterval && this.options.showTip) {
+    if (this.isTwoTips()) {
       if (this.areTipsOverlap()) {
         this.showJointTip();
       } else {
@@ -654,7 +676,8 @@ class Presenter implements IPresenter {
 
   private showJointTip() {
     const { tip1, tip2, tip3 } = this.subViews;
-    if (tip1 !== undefined && tip2 !== undefined && tip3 !== undefined) {
+    const allThreeTipsExists = tip1 !== undefined && tip2 !== undefined && tip3 !== undefined;
+    if (allThreeTipsExists) {
       tip3.setValue(`${this.options.value1} – ${this.options.value2}`);
       tip3.$elem.removeClass(this.tipHiddenClass);
       tip1.$elem.addClass(this.tipHiddenClass);
@@ -664,7 +687,8 @@ class Presenter implements IPresenter {
 
   private showSeparateTips() {
     const { tip1, tip2, tip3 } = this.subViews;
-    if (tip1 !== undefined && tip2 !== undefined && tip3 !== undefined) {
+    const allThreeTipsExists = tip1 !== undefined && tip2 !== undefined && tip3 !== undefined;
+    if (allThreeTipsExists) {
       tip3.$elem.addClass(this.tipHiddenClass);
       tip1.$elem.removeClass(this.tipHiddenClass);
       tip2.$elem.removeClass(this.tipHiddenClass);

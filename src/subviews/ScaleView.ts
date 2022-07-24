@@ -27,7 +27,9 @@ class ScaleView extends SubView implements IScaleView {
     this.scaleValueElements.slice(1).forEach(($elem) => {
       const elemPosition = $elem.position()[positionAxis];
       if (elemPosition - 5 <= curElemEdgeBound) {
-        if ($elem === $lastElem && $currentElem !== $firstElem) {
+        const isLastElemAndOverlappingIsNotFirstElem = $elem === $lastElem
+          && $currentElem !== $firstElem;
+        if (isLastElemAndOverlappingIsNotFirstElem) {
           $currentElem.addClass('slider__scale-block_unnumbered');
         } else if ($elem !== $lastElem) {
           $elem.addClass('slider__scale-block_unnumbered');
@@ -55,7 +57,9 @@ class ScaleView extends SubView implements IScaleView {
 
   private scaleValueClick = (e: PointerEvent): void => {
     const { target } = e;
-    if (target instanceof HTMLSpanElement && e.button === 0) {
+    const scaleValueIsClickedByMainPointerButton = target instanceof HTMLSpanElement
+      && e.button === 0;
+    if (scaleValueIsClickedByMainPointerButton) {
       this.emit({
         event: 'scaleValueSelect',
         value: Number(target.textContent),

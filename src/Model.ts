@@ -287,7 +287,8 @@ class Model extends EventEmitter implements IModel {
 
   private isValueAllowed(value: number): boolean {
     if (!this.isValueInRange(value)) return false;
-    if (value === this.options.minValue || value === this.options.maxValue) return true;
+    const valueIsEdgeValue = value === this.options.minValue || value === this.options.maxValue;
+    if (valueIsEdgeValue) return true;
     const valueIndex = this.getIndexByValue(
       value,
       Math.max(getFractionalPartSize(value), this.fractionalPrecision) + 1,
