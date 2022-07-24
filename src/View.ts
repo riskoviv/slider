@@ -65,7 +65,7 @@ class View extends EventEmitter implements IView {
 
   private bindEventListeners() {
     this.controlContainerElem.addEventListener('pointerdown', this.pointerDown);
-    this.$controlContainer.on('contextmenu', View.preventContextMenu);
+    this.$controlContainer.on('contextmenu.controlContainer', View.preventContextMenu);
   }
 
   private pointerDown = (e: PointerEvent): void => {
@@ -76,15 +76,11 @@ class View extends EventEmitter implements IView {
     e.preventDefault();
     this.controlContainerElem.setPointerCapture(e.pointerId);
 
-    const { target } = e;
+    const { target, offsetX, offsetY } = e;
     if (target instanceof HTMLDivElement) {
       this.emit({
         event: 'sliderPointerDown',
-        value: {
-          target,
-          offsetX: e.offsetX,
-          offsetY: e.offsetY,
-        },
+        value: { target, offsetX, offsetY },
       });
     }
   };

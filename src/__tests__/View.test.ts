@@ -119,9 +119,9 @@ describe('View', () => {
       const contextMenuListenerSpy = jest.fn((event) => {
         eventResult = event.result;
       });
-      $controlContainer.on('contextmenu', contextMenuListenerSpy);
+      $controlContainer.on('contextmenu.controlContainer', contextMenuListenerSpy);
 
-      $controlContainer.trigger('contextmenu');
+      $controlContainer.trigger('contextmenu.controlContainer');
 
       expect(eventResult).toBe(false);
     });
