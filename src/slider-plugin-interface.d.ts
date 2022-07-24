@@ -51,7 +51,7 @@ type SliderPointerDownData = {
 };
 
 type SetValueEventOptions = {
-  changeTipValue: boolean,
+  changeTipValue?: boolean,
   onlySaveValue?: boolean,
   checkTipsOverlap?: boolean,
 };

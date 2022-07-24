@@ -179,13 +179,11 @@ class Presenter implements IPresenter {
   private createSubView(subViewName: 'tip', number: 1 | 2 | 3): void;
   private createSubView(subViewName: 'thumb'): void;
   private createSubView(subViewName: 'scale'): void;
-  private createSubView(subViewName: 'tip' | 'thumb' | 'scale', number?: 1 | 2 | 3): void {
+  private createSubView(subViewName: 'tip' | 'thumb' | 'scale', number: 1 | 2 | 3 = 1): void {
     switch (subViewName) {
       case 'tip': {
-        if (number !== undefined) {
-          this.subViews[`tip${number}`] = new TipView(number);
-          this.appendSubViewElementToControlContainer(`tip${number}`);
-        }
+        this.subViews[`tip${number}`] = new TipView(number);
+        this.appendSubViewElementToControlContainer(`tip${number}`);
         break;
       }
       case 'thumb': {
@@ -313,7 +311,7 @@ class Presenter implements IPresenter {
 
     changeInterval: (
       isInterval: boolean,
-      options?: ChangeIntervalEventOptions,
+      options: ChangeIntervalEventOptions = { checkTipsOverlap: false },
     ): void => {
       if (isInterval) {
         this.createSubView('thumb');
@@ -338,25 +336,30 @@ class Presenter implements IPresenter {
         }
       }
 
-      if (options?.checkTipsOverlap) this.showJointOrSeparateTips();
+      if (options.checkTipsOverlap) this.showJointOrSeparateTips();
       this.view.toggleInterval(isInterval);
     },
 
     makeSetValueAndPosition: (number: 1 | 2) => ((
       value: number,
-      options?: SetValueEventOptions,
+      options: SetValueEventOptions = {},
     ): void => {
-      const needToChangeTipValue = this.options.showTip && options?.changeTipValue;
+      const {
+        changeTipValue = true,
+        onlySaveValue = false,
+        checkTipsOverlap = true,
+      } = options;
+      const needToChangeTipValue = this.options.showTip && changeTipValue;
       if (needToChangeTipValue) {
         this.setTipValue({ number, value });
       }
 
       const position = this.getPositionByValue(value);
-      if (!options?.onlySaveValue) {
+      if (!onlySaveValue) {
         this.setPosition(number, position);
       }
 
-      const needToCheckTipsOverlap = this.options.showTip && options?.checkTipsOverlap !== false;
+      const needToCheckTipsOverlap = this.options.showTip && checkTipsOverlap !== false;
       if (needToCheckTipsOverlap) {
         this.showJointOrSeparateTips();
       }
@@ -601,17 +604,15 @@ class Presenter implements IPresenter {
     return false;
   }
 
-  private setPositionAndCurrentValue(options: {
+  private setPositionAndCurrentValue({
+    number,
+    position,
+    value,
+  }: {
     number: 1 | 2,
     position: number,
     value: number,
   }): void {
-    const {
-      number,
-      position,
-      value,
-    } = options;
-
     this.currentThumbData.thumbNumber = number;
     this.setPosition(number, position);
     this.saveCurrentValue(number, value);
@@ -628,8 +629,13 @@ class Presenter implements IPresenter {
     this.model.setValue(number, value, true);
   }
 
-  private setTipValue(options: { number: 1 | 2 | 3, value: number | string }): void {
-    const { number: tipNumber, value } = options;
+  private setTipValue({
+    number: tipNumber,
+    value,
+  }: {
+    number: 1 | 2 | 3,
+    value: number | string,
+  }): void {
     const tipName: `tip${'1' | '2' | '3'}` = `tip${tipNumber}`;
     const tip = this.subViews[tipName];
     if (tip !== undefined) {
