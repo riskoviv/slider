@@ -205,11 +205,7 @@ class Presenter implements IPresenter {
     }
   }
 
-  // **************************************
-  // *
-  // * scale values creation methods start
-  // *
-  // **************************************
+  // #region scale values creation methods
   private updateScale(): void {
     const { scale } = this.subViews;
     if (scale !== undefined) {
@@ -268,11 +264,7 @@ class Presenter implements IPresenter {
       <span class="slider__scale-text">${this.fixValue(value)}</span>
     </div>`);
   }
-  // ***********************************
-  // *
-  // * scale values creation methods end
-  // *
-  // ***********************************
+  // #endregion scale values creation methods
 
   private removeSubView(subViewName: keyof SubViews): void {
     const subView = this.subViews[subViewName];
