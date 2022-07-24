@@ -734,19 +734,31 @@ describe('slider-plugin', () => {
       },
     );
 
-    test('setShowScale(true) should create scale element and fill w/ value elements; setShowScale(false) should remove scale element', () => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
-      expect($sliderInstance.find('.slider__scale').length).toBe(0);
+    describe('setShowScale()', () => {
+      let mockResizeObserver: jest.MockedClass<typeof ResizeObserver>;
 
-      $sliderInstance.setShowScale(true);
+      beforeAll(() => {
+        mockResizeObserver = ResizeObserver as jest.MockedClass<typeof ResizeObserver>;
+      });
 
-      const $sliderScaleElem = $sliderInstance.find('.slider__scale');
-      expect($sliderScaleElem.length).toBe(1);
-      expect($sliderScaleElem.children().length).toBe(21);
+      test('setShowScale(true) should create scale element and fill w/ value elements; setShowScale(false) should remove scale element', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin();
+        expect($sliderInstance.find('.slider__scale').length).toBe(0);
 
-      $sliderInstance.setShowScale(false);
+        $sliderInstance.setShowScale(true);
 
-      expect($sliderInstance.find('.slider__scale').length).toBe(0);
+        const $sliderScaleElem = $sliderInstance.find('.slider__scale');
+        expect($sliderScaleElem.length).toBe(1);
+        expect($sliderScaleElem.children().length).toBe(21);
+        expect(mockResizeObserver).toBeCalled();
+        const [resizeObserverInstance] = mockResizeObserver.mock.instances;
+        expect(resizeObserverInstance.observe).toBeCalledTimes(1);
+
+        $sliderInstance.setShowScale(false);
+
+        expect($sliderInstance.find('.slider__scale').length).toBe(0);
+        expect(resizeObserverInstance.disconnect).toBeCalledTimes(1);
+      });
     });
 
     const getScaleValuesMaxFractionalPrecision = ($scale: JQuery) => {
