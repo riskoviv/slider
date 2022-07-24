@@ -49,12 +49,6 @@ class Presenter implements IPresenter {
     private readonly model: IModel,
   ) {
     this.options = this.model.options;
-
-    const {
-      value1,
-      value2,
-    } = this.options;
-
     this.updateDimensionAndAxis();
     this.defineViewValues();
     this.view = this.createView();
@@ -65,10 +59,7 @@ class Presenter implements IPresenter {
     if (this.options.showTip && this.options.isInterval && !this.resizeObserverActive) {
       this.activateResizeObserver();
     }
-    this.passInitialValuesToSubViews({
-      value1,
-      value2,
-    });
+    this.passInitialValuesToSubViews(this.options.value1, this.options.value2);
   }
 
   private createView(): View {
@@ -132,7 +123,7 @@ class Presenter implements IPresenter {
     }
   }
 
-  private passInitialValuesToSubViews({ value1, value2 }: { value1: number, value2: number }) {
+  private passInitialValuesToSubViews(value1: number, value2: number) {
     const position1 = this.getPositionByValue(value1);
     const position2 = this.getPositionByValue(value2);
     this.setPosition(1, position1);
