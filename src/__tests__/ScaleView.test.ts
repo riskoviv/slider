@@ -155,4 +155,27 @@ describe('ScaleView', () => {
       expect(scaleValueSelectSpy).not.toBeCalled();
     });
   });
+
+  describe('scaleValueSelect emit error test', () => {
+    test('should call console.error if scaleValueSelect event has no subscribers', () => {
+      scale = new ScaleView();
+      [scaleElement] = scale.$elem;
+      scale.scaleValueElements = getScaleElementsWithValues([0]);
+      scale.insertScaleValueElements();
+      const firstScaleTextElement = scaleElement.querySelector('.slider__scale-block:first-child > .slider__scale-text');
+      const pointerDownEvent = new MouseEvent('pointerdown');
+      Object.defineProperty(pointerDownEvent, 'target', {
+        value: firstScaleTextElement,
+      });
+      jest.spyOn(console, 'error');
+      const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
+      const emitError = new Error();
+      emitError.name = 'EmitError';
+      emitError.message = 'scaleValueSelect event is not registered. arg = 0';
+
+      scaleElement.dispatchEvent(pointerDownEvent);
+
+      expect(mockConsoleError).toBeCalledWith(emitError);
+    });
+  });
 });
