@@ -759,6 +759,20 @@ describe('slider-plugin', () => {
         expect($sliderInstance.find('.slider__scale').length).toBe(0);
         expect(resizeObserverInstance.disconnect).toBeCalledTimes(1);
       });
+
+      test('if showTip: true & isInterval: true, setShowScale(false) should remove scale but remain ResizeObserver', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          showTip: true, isInterval: true, showScale: true,
+        });
+
+        expect(mockResizeObserver).toBeCalled();
+
+        const [resizeObserverInstance] = mockResizeObserver.mock.instances;
+
+        $sliderInstance.setShowScale(false);
+
+        expect(resizeObserverInstance.disconnect).not.toBeCalled();
+      });
     });
 
     const getScaleValuesMaxFractionalPrecision = ($scale: JQuery) => {
