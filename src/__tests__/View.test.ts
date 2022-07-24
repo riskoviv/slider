@@ -70,11 +70,11 @@ describe('View', () => {
       $controlContainer = view.$controlContainer;
     });
 
-    test.each([
+    test.each<[keyof ViewStateMethods, string]>([
       ['toggleVertical', 'vertical'],
       ['toggleInterval', 'interval'],
       ['toggleProgressBar', 'show-progress'],
-    ] as const)('%s method should toggle modifier class slider_%s', (method, modifier) => {
+    ])('%s method should toggle modifier class slider_%s', (method, modifier) => {
       expect(view.$elem.hasClass(`slider_${modifier}`)).toBe(false);
 
       view[method](true);

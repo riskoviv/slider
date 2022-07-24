@@ -231,15 +231,23 @@ interface ITipView extends ISubView {
   setValue(value: number): void;
 }
 
-interface IView extends IEventEmitter {
-  $elem: JQuery<HTMLElement>;
-  $controlContainer: JQuery<HTMLElement>;
-  controlContainerElem: HTMLDivElement;
+interface ViewValueMethods {
+  setPosition(valueNumber: 1 | 2, position: number): void;
+  setThumbThickness(thickness: number): void;
+}
+
+interface ViewStateMethods {
   toggleVertical(isVertical: boolean): void;
   toggleInterval(isInterval: boolean): void;
   toggleProgressBar(showProgress: boolean): void;
-  setPosition(valueNumber: 1 | 2, position: number): void;
-  setThumbThickness(thickness: number): void;
+}
+
+interface ViewMethods extends ViewValueMethods, ViewStateMethods {}
+
+interface IView extends ViewMethods, IEventEmitter {
+  $elem: JQuery<HTMLElement>;
+  $controlContainer: JQuery<HTMLElement>;
+  controlContainerElem: HTMLDivElement;
 }
 
 type ViewType = (
