@@ -54,7 +54,7 @@ const config = {
   devtool: isDev ? 'eval-cheap-module-source-map' : false,
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Slider plugin test',
+      title: 'Slider plugin demo page',
       template: './src/demo/demo-page.html',
       filename: 'demo/demo-page.html',
     }),
