@@ -34,18 +34,25 @@ describe('View', () => {
   });
 
   describe('if instantiated with some custom options', () => {
-    test.each([
-      ['isVertical', 'vertical', [true, false, false]],
-      ['isInterval', 'interval', [false, true, false]],
-      ['showProgressBar', 'show-progress', [false, false, true]],
-    ])('if options has %s: true, view element should contain class slider_%s', (option, modifier, [verticalState, intervalState, progressState]) => {
-      view = new View({ [option]: true });
-      $viewElem = view.$elem;
+    test.each`
+      option               | modifier           | viewOptions
+      ${'isVertical'}      | ${'vertical'}      | ${[true, false, false]}
+      ${'isInterval'}      | ${'interval'}      | ${[false, true, false]}
+      ${'showProgressBar'} | ${'show-progress'} | ${[false, false, true]}
+    `(
+      'if options has $option: true, view element should contain class slider_$modifier',
+      ({ option, viewOptions: [verticalState, intervalState, progressState] }: {
+        option: keyof StateOptions,
+        viewOptions: boolean[],
+      }) => {
+        view = new View({ [option]: true });
+        $viewElem = view.$elem;
 
-      expect($viewElem.hasClass('slider_vertical')).toBe(verticalState);
-      expect($viewElem.hasClass('slider_interval')).toBe(intervalState);
-      expect($viewElem.hasClass('slider_show-progress')).toBe(progressState);
-    });
+        expect($viewElem.hasClass('slider_vertical')).toBe(verticalState);
+        expect($viewElem.hasClass('slider_interval')).toBe(intervalState);
+        expect($viewElem.hasClass('slider_show-progress')).toBe(progressState);
+      },
+    );
 
     test('if created w/ all options to true, $elem should have all custom classes', () => {
       view = new View({ isVertical: true, isInterval: true, showProgressBar: true });
