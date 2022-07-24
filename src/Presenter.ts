@@ -226,21 +226,22 @@ class Presenter implements IPresenter {
     const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
     const isEveryValueAllowed = [0, 1].includes(quotient);
-    scale.scaleValueElements.length = 0;
 
     if (isEveryValueAllowed) {
-      for (let index = 0; index <= lastElemIndex; index += 1) {
-        const value = this.model.getValueByIndex(index);
-        const position = this.getPositionByIndex(index);
-        scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
-      }
+      scale.scaleValueElements = this.getScaleValueElements(lastElemIndex);
     } else {
-      for (let index = 0; index <= lastElemIndex; index += quotient) {
-        const value = this.model.getValueByIndex(index);
-        const position = this.getPositionByIndex(index);
-        scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
-      }
+      scale.scaleValueElements = this.getScaleValueElements(lastElemIndex, quotient);
     }
+  }
+
+  private getScaleValueElements(lastElemIndex: number, quotient = 1): JQuery<HTMLDivElement>[] {
+    const scaleValueElements: JQuery<HTMLDivElement>[] = [];
+    for (let index = 0; index <= lastElemIndex; index += quotient) {
+      const value = this.model.getValueByIndex(index);
+      const position = this.getPositionByIndex(index);
+      scaleValueElements.push(this.makeNewScaleValueElement(value, position));
+    }
+    return scaleValueElements;
   }
 
   private makeNewScaleValueElement(value: number, position: number): JQuery<HTMLDivElement> {
