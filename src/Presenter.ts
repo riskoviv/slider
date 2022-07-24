@@ -18,7 +18,7 @@ type SubViews = {
   scale?: ScaleView,
 };
 
-class Presenter {
+class Presenter implements IPresenter {
   private options: SliderOptions;
 
   readonly view: IView;

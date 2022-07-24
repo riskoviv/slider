@@ -184,6 +184,10 @@ interface JQuery extends PluginMethods {
   sliderPlugin: IPluginFunction;
 }
 
+interface IPresenter {
+  readonly view: IView;
+}
+
 type ViewValues = {
   positions: { 1: number, 2: number },
   penultimatePosition: number,
