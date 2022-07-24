@@ -419,7 +419,9 @@ class Presenter implements IPresenter {
         this.updateScale();
       } else {
         this.removeSubView('scale');
-        if (!(this.options.showTip && this.options.isInterval) && this.resizeObserverActive) {
+        const allowedToDeactivateResizeObserver = this.resizeObserverActive
+          && !(this.options.showTip && this.options.isInterval);
+        if (allowedToDeactivateResizeObserver) {
           this.deactivateResizeObserver();
         }
       }
