@@ -503,7 +503,7 @@ class Presenter implements IPresenter {
         && isThumbAwayFromOtherThumb
       );
       if (allowedToChangeThumbPosition) {
-        const newValue = this.fixValue(this.getValueByPosition(newPosition));
+        const newValue = this.getValueByPosition(newPosition);
         this.setPositionAndCurrentValue({
           number: thumbNumber,
           position: newPosition,
