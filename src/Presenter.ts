@@ -239,6 +239,9 @@ class Presenter implements IPresenter {
       const position = this.getPositionByIndex(index);
       scaleValueElements.push(this.makeNewScaleValueElement(value, position));
     }
+    if (scaleValueElements.at(-1)?.text() !== String(this.options.maxValue)) {
+      scaleValueElements.push(this.makeNewScaleValueElement(this.options.maxValue, 100));
+    }
     return scaleValueElements;
   }
 
