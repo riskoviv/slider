@@ -27,7 +27,6 @@ class Model extends EventEmitter implements IModel {
     this.fixValues();
   }
 
-  // debug method
   getOptions(): SliderOptions {
     return { ...this.options };
   }
@@ -36,22 +35,20 @@ class Model extends EventEmitter implements IModel {
     const value = this.options[`value${valueNumber}`];
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
     const index = Math.round((value - this.options.minValue) / this.options.stepSize);
-
     return index;
   }
 
-  getIndexByValue(value: number, precision?: number): number {
+  getIndexByValue(value: number, precision = this.fractionalPrecision): number {
     if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    return this.fixValueToPrecision(
-      (value - this.options.minValue) / this.options.stepSize,
-      precision,
-    );
+    const index = (value - this.options.minValue) / this.options.stepSize;
+    return this.fixValueToPrecision(index, precision);
   }
 
   getValueByIndex(index: number): number {
-    const value = this.keepValueInRange(this.options.minValue + this.options.stepSize * index);
-    const fixedValue = this.fixValueToPrecision(value);
-    return fixedValue;
+    if (index >= this.allowedValuesCount - 1) return this.options.maxValue;
+    if (index <= 0) return this.options.minValue;
+    const rawValue = this.options.minValue + this.options.stepSize * index;
+    return this.fixValueToPrecision(rawValue);
   }
 
   getPenultimateValue(): number {
@@ -185,8 +182,8 @@ class Model extends EventEmitter implements IModel {
     this.updateValues('maxValueChanged', maxValue, true);
   }
 
-  fixValueToPrecision(value: number, customPrecision?: number): number {
-    return Number.parseFloat(value.toFixed(customPrecision ?? this.fractionalPrecision));
+  fixValueToPrecision(value: number, precision = this.fractionalPrecision): number {
+    return Number.parseFloat(value.toFixed(precision));
   }
 
   subscribe(options: ValueSubscribe): void;
@@ -245,7 +242,7 @@ class Model extends EventEmitter implements IModel {
     const valueNumber: 'value1' | 'value2' = `value${number}`;
     if (this.options[valueNumber] === value) return;
 
-    this.options[valueNumber] = this.fixValue(number, value);
+    this.options[valueNumber] = onlySaveValue ? value : this.fixValue(number, value, true);
     this.emit({
       event: `${valueNumber}Changed`,
       value: this.options[valueNumber],
@@ -264,7 +261,7 @@ class Model extends EventEmitter implements IModel {
 
     const { value1Fixed, value2Fixed } = this.fixValues();
     const doEmitValue1Changed = ignoreIsFixed || value1Fixed;
-    const doEmitValue2Changed = ignoreIsFixed || value2Fixed;
+    const doEmitValue2Changed = (ignoreIsFixed || value2Fixed) && this.options.isInterval;
 
     if (doEmitValue1Changed) {
       this.emit({
@@ -277,17 +274,15 @@ class Model extends EventEmitter implements IModel {
       });
     }
 
-    if (this.options.isInterval) {
-      if (doEmitValue2Changed) {
-        this.emit({
-          event: 'value2Changed',
-          value: this.options.value2,
-          options: {
-            changeTipValue: true,
-            checkTipsOverlap: true,
-          },
-        });
-      }
+    if (doEmitValue2Changed) {
+      this.emit({
+        event: 'value2Changed',
+        value: this.options.value2,
+        options: {
+          changeTipValue: true,
+          checkTipsOverlap: true,
+        },
+      });
     }
   }
 
@@ -344,17 +339,13 @@ class Model extends EventEmitter implements IModel {
     };
   }
 
-  private fixValue(number: 1 | 2, value: number): number {
-    const warnMsgEnd = [];
+  private fixValue(number: 1 | 2, value: number, checkIsAllowed = false): number {
+    const fixReasons = [];
     let fixedValue = value;
-    if (!this.isValueInRange(fixedValue)) {
-      fixedValue = this.keepValueInRange(fixedValue);
-      warnMsgEnd.push(' to keep it in range');
-    }
-
-    if (!this.isValueAllowed(fixedValue)) {
+    const needToFindAllowed = !checkIsAllowed || !this.isValueAllowed(fixedValue);
+    if (needToFindAllowed) {
       fixedValue = this.findClosestAllowedValue(fixedValue);
-      warnMsgEnd.push(' to satisfy stepSize');
+      fixReasons.push('to satisfy stepSize or keep in range');
     }
 
     if (this.options.isInterval) {
@@ -365,18 +356,18 @@ class Model extends EventEmitter implements IModel {
           } else {
             fixedValue = this.getValueByIndex(this.getIndexByValueNumber(2) - 1);
           }
-          warnMsgEnd.push(' to make it less than value2');
+          fixReasons.push('to make it less than value2');
         }
       } else if (fixedValue <= this.options.value1) {
         fixedValue = this.getValueByIndex(this.getIndexByValueNumber(1) + 1);
-        warnMsgEnd.push(' to make it more than value1');
+        fixReasons.push('to make it more than value1');
       }
     }
 
     fixedValue = this.fixValueToPrecision(fixedValue);
 
     if (fixedValue !== value) {
-      console.warn(`Note: value${number} (${value}) is changed to ${fixedValue}${warnMsgEnd.join(' and')}.`);
+      console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} ${fixReasons.join(' and ')}.`);
     }
     return fixedValue;
   }
@@ -385,17 +376,11 @@ class Model extends EventEmitter implements IModel {
     return value >= this.options.minValue && value <= this.options.maxValue;
   }
 
-  private keepValueInRange(value: number): number {
-    if (value > this.options.maxValue) return this.options.maxValue;
-    if (value < this.options.minValue) return this.options.minValue;
-    return value;
-  }
-
   private findClosestAllowedValue(initialValue: number): number {
     const min = this.options.minValue;
     const step = this.options.stepSize;
     const index = Math.round((initialValue - min) / step);
-    return index * step + min;
+    return this.getValueByIndex(index);
   }
 
   private identifyMaxFractionalPrecision(): number {
