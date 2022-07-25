@@ -239,6 +239,9 @@ class Presenter implements IPresenter {
       const position = this.getPositionByIndex(index);
       scaleValueElements.push(this.makeNewScaleValueElement(value, position));
     }
+    if (scaleValueElements.at(-1)?.text() !== String(this.options.maxValue)) {
+      scaleValueElements.push(this.makeNewScaleValueElement(this.options.maxValue, 100));
+    }
     return scaleValueElements;
   }
 
@@ -685,6 +688,7 @@ class Presenter implements IPresenter {
   private defineViewValues(): void {
     const { minValue, maxValue, stepSize } = this.options;
     const totalSliderRange = maxValue - minValue;
+    this.model.allowedValues = this.model.createAllowedValuesArray();
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.allowedValuesCount = this.model.getAllowedValuesCount();
     this.model.penultimateValue = this.model.getPenultimateValue();
