@@ -47,7 +47,7 @@ class Model extends EventEmitter implements IModel {
 
   getIndexByValueNumber(valueNumber: 1 | 2): number {
     const value = this.options[`value${valueNumber}`];
-    return this.allowedValues.indexOf(value);
+    return this.getIndexByValue(value);
   }
 
   getIndexByValue(value: number): number {
