@@ -163,10 +163,7 @@ class Model extends EventEmitter implements IModel {
   setMinValue(minValue: number): void {
     if (!Number.isFinite(minValue)) return;
     if (this.options.minValue === minValue) return;
-    if (minValue > this.options.maxValue) return;
-    if (minValue === this.options.maxValue) {
-      this.options.maxValue = minValue + this.options.stepSize;
-    }
+    if (minValue > this.options.maxValue - this.options.stepSize) return;
 
     this.options.minValue = minValue;
 
@@ -176,12 +173,9 @@ class Model extends EventEmitter implements IModel {
   setMaxValue(maxValue: number): void {
     if (!Number.isFinite(maxValue)) return;
     if (maxValue === this.options.maxValue) return;
-    if (maxValue < this.options.minValue) return;
-    if (maxValue === this.options.minValue) {
-      this.options.maxValue = maxValue + this.options.stepSize;
-    } else {
-      this.options.maxValue = maxValue;
-    }
+    if (maxValue < this.options.minValue + this.options.stepSize) return;
+
+    this.options.maxValue = maxValue;
 
     this.updateValues('maxValueChanged', maxValue, true);
   }
