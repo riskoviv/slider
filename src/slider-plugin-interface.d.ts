@@ -196,6 +196,7 @@ type ViewValues = {
 
 interface IModel extends IEventEmitter, ModelMethods {
   options: SliderOptions;
+  allowedValues: number[];
   allowedValuesCount: number;
   fractionalPrecision: number;
   penultimateValue: number;
@@ -203,6 +204,7 @@ interface IModel extends IEventEmitter, ModelMethods {
   publicValueMethods: ModelValueMethods;
   publicStateMethods: ModelStateMethods;
   publicDataMethods: PluginDataMethods;
+  createAllowedValuesArray(): number[];
   getIndexByValueNumber(valueNumber: 1 | 2): number;
   getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;

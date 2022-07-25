@@ -6,6 +6,8 @@ import { getFractionalPartSize } from './utils';
 class Model extends EventEmitter implements IModel {
   options: SliderOptions;
 
+  allowedValues: number[];
+
   allowedValuesCount: number;
 
   fractionalPrecision: number;
@@ -21,10 +23,22 @@ class Model extends EventEmitter implements IModel {
   constructor(options: SliderOptions) {
     super();
     this.options = { ...options };
-    this.allowedValuesCount = this.getAllowedValuesCount();
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
+    this.allowedValues = this.createAllowedValuesArray();
+    this.allowedValuesCount = this.getAllowedValuesCount();
     this.penultimateValue = this.getPenultimateValue();
     this.fixValues();
+  }
+
+  createAllowedValuesArray(): number[] {
+    const allowedValues: number[] = [];
+    const { minValue, maxValue, stepSize } = this.options;
+    for (let value = minValue; value <= maxValue; value += stepSize) {
+      allowedValues.push(this.fixValueToPrecision(value));
+    }
+    if (allowedValues.at(-1) !== maxValue) allowedValues.push(maxValue);
+
+    return allowedValues;
   }
 
   getOptions(): SliderOptions {
@@ -33,35 +47,25 @@ class Model extends EventEmitter implements IModel {
 
   getIndexByValueNumber(valueNumber: 1 | 2): number {
     const value = this.options[`value${valueNumber}`];
-    if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    const index = Math.round((value - this.options.minValue) / this.options.stepSize);
-    return index;
+    return this.allowedValues.indexOf(value);
   }
 
-  getIndexByValue(value: number, precision = this.fractionalPrecision): number {
-    if (value === this.options.maxValue) return this.allowedValuesCount - 1;
-    const index = (value - this.options.minValue) / this.options.stepSize;
-    return this.fixValueToPrecision(index, precision);
+  getIndexByValue(value: number): number {
+    return this.allowedValues.indexOf(value);
   }
 
   getValueByIndex(index: number): number {
     if (index >= this.allowedValuesCount - 1) return this.options.maxValue;
     if (index <= 0) return this.options.minValue;
-    const rawValue = this.options.minValue + this.options.stepSize * index;
-    return this.fixValueToPrecision(rawValue);
+    return this.allowedValues[index];
   }
 
   getPenultimateValue(): number {
-    return this.fixValueToPrecision(
-      this.options.minValue + this.options.stepSize * (this.allowedValuesCount - 2),
-    );
+    return this.allowedValues.slice(-2)[0];
   }
 
   getAllowedValuesCount(): number {
-    const lastIndex = Math.ceil(
-      (this.options.maxValue - this.options.minValue) / this.options.stepSize,
-    );
-    return lastIndex + 1;
+    return this.allowedValues.length;
   }
 
   setValue1(value: number): void {
@@ -287,18 +291,11 @@ class Model extends EventEmitter implements IModel {
   }
 
   private isValueAllowed(value: number): boolean {
-    if (!this.isValueInRange(value)) return false;
-    const valueIsEdgeValue = value === this.options.minValue || value === this.options.maxValue;
-    if (valueIsEdgeValue) return true;
-    const valueIndex = this.getIndexByValue(
-      value,
-      Math.max(getFractionalPartSize(value), this.fractionalPrecision) + 1,
-    );
-    return Number.isInteger(valueIndex);
+    return this.allowedValues.includes(value);
   }
 
   private getSecondValue(): number {
-    return this.options.minValue + this.options.stepSize;
+    return this.allowedValues[1];
   }
 
   private fixValues() {
@@ -372,15 +369,12 @@ class Model extends EventEmitter implements IModel {
     return fixedValue;
   }
 
-  private isValueInRange(value: number): boolean {
-    return value >= this.options.minValue && value <= this.options.maxValue;
-  }
-
   private findClosestAllowedValue(initialValue: number): number {
     const min = this.options.minValue;
     const step = this.options.stepSize;
     const index = Math.round((initialValue - min) / step);
-    return this.getValueByIndex(index);
+    const closestValue = this.getValueByIndex(index);
+    return closestValue;
   }
 
   private identifyMaxFractionalPrecision(): number {
