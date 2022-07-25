@@ -24,18 +24,19 @@ class View extends EventEmitter implements IView {
     this.bindEventListeners();
   }
 
-  private render(options: SliderViewOptions = {
-    isVertical: false,
-    isInterval: false,
-    showProgressBar: false,
-  }): JQuery<HTMLElement> {
+  private render(options: SliderViewOptions): JQuery<HTMLElement> {
+    const {
+      isVertical = false,
+      isInterval = false,
+      showProgressBar = false,
+    } = options;
     return $(
       `<div class="slider${
-        options.isVertical ? ' slider_vertical' : ''
+        isVertical ? ' slider_vertical' : ''
       }${
-        options.isInterval ? ' slider_interval' : ''
+        isInterval ? ' slider_interval' : ''
       }${
-        options.showProgressBar ? ' slider_show-progress' : ''
+        showProgressBar ? ' slider_show-progress' : ''
       }"></div>`,
     ).append(this.$controlContainer);
   }
