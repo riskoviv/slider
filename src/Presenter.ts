@@ -340,30 +340,33 @@ class Presenter implements IPresenter {
       this.view.toggleInterval(isInterval);
     },
 
-    makeSetValueAndPosition: (number: 1 | 2) => ((
-      value: number,
-      options: SetValueEventOptions = {},
-    ): void => {
-      const {
-        changeTipValue = true,
-        onlySaveValue = false,
-        checkTipsOverlap = true,
-      } = options;
-      const needToChangeTipValue = this.options.showTip && changeTipValue;
-      if (needToChangeTipValue) {
-        this.setTipValue({ number, value });
-      }
+    makeSetValueAndPosition: (number: 1 | 2): ValueHandler => {
+      const setValueAndPosition: ValueHandler = (
+        value: number,
+        options: SetValueEventOptions = {},
+      ): void => {
+        const {
+          changeTipValue = true,
+          onlySaveValue = false,
+          checkTipsOverlap = true,
+        } = options;
+        const needToChangeTipValue = this.options.showTip && changeTipValue;
+        if (needToChangeTipValue) {
+          this.setTipValue({ number, value });
+        }
 
-      const position = this.getPositionByValue(value);
-      if (!onlySaveValue) {
-        this.setPosition(number, position);
-      }
+        if (!onlySaveValue) {
+          const position = this.getPositionByValue(value);
+          this.setPosition(number, position);
+        }
 
-      const needToCheckTipsOverlap = this.options.showTip && checkTipsOverlap !== false;
-      if (needToCheckTipsOverlap) {
-        this.showJointOrSeparateTips();
-      }
-    }),
+        const needToCheckTipsOverlap = this.options.showTip && checkTipsOverlap !== false;
+        if (needToCheckTipsOverlap) {
+          this.showJointOrSeparateTips();
+        }
+      };
+      return setValueAndPosition;
+    },
 
     changeShowProgress: (showProgress: boolean): void => {
       this.view.toggleProgressBar(showProgress);
