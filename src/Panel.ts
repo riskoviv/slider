@@ -92,11 +92,7 @@ class Panel {
       this.panelElements[elementData[0]] = this.makeInputCheckboxElement(...elementData);
     });
     values.forEach((elementData) => {
-      this.panelElements[elementData[0]] = this.makeInputNumberElement(
-        ...elementData,
-        this.pluginOptions.stepSize,
-        this.pluginOptions.minValue,
-      );
+      this.panelElements[elementData[0]] = this.makeInputNumberElement(...elementData);
     });
     valueOptions.forEach((elementData) => {
       this.panelElements[elementData[0]] = this.makeInputNumberElement(
@@ -124,11 +120,18 @@ class Panel {
     value: number,
     event: ModelEvent,
     method: keyof PluginValueMethods,
-    step?: number,
-    min?: number,
+    step: number = this.pluginOptions.stepSize,
+    min: number = this.pluginOptions.minValue,
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}"></input>`);
-    $inputElement.prop({ value, step, min });
+    switch (label) {
+      case 'from':
+      case 'to':
+        $inputElement.prop({ value, step, min });
+        break;
+      default:
+        $inputElement.prop({ value, step });
+    }
     return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderMethod: method,
     });
