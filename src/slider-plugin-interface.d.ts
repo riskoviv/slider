@@ -199,7 +199,6 @@ interface IModel extends IEventEmitter, ModelMethods {
   allowedValues: number[];
   allowedValuesCount: number;
   fractionalPrecision: number;
-  penultimateValue: number;
   viewValues: ViewValues;
   publicValueMethods: ModelValueMethods;
   publicStateMethods: ModelStateMethods;

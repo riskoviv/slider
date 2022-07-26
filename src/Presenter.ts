@@ -691,7 +691,6 @@ class Presenter implements IPresenter {
     this.model.allowedValues = this.model.createAllowedValuesArray();
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
     this.model.allowedValuesCount = this.model.getAllowedValuesCount();
-    this.model.penultimateValue = this.model.getPenultimateValue();
     this.model.viewValues.penultimatePosition = this.getPenultimatePosition();
   }
 }
