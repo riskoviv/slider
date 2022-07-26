@@ -44,6 +44,7 @@
     "mini-css-extract-plugin": "^1.6.2",
     "sass": "^1.5.1",
     "sass-loader": "^11.1.1",
+    "terser-webpack-plugin": "^5.3.3",
     "ts-jest": "^27.1.4",
     "ts-loader": "^8.3.0",
     "ts-node": "^10.7.0",

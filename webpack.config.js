@@ -4,8 +4,7 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
-
-let isDev = true;
+import TerserPlugin from 'terser-webpack-plugin';
 
 const filepath = (pathData, ext) => {
   switch (pathData.chunk.name) {
@@ -17,7 +16,7 @@ const filepath = (pathData, ext) => {
   }
 };
 
-const config = {
+const getConfig = (isDev) => ({
   mode: 'development',
   entry: {
     'slider-plugin': './src/slider-plugin.ts',
@@ -51,7 +50,19 @@ const config = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  devtool: isDev ? 'eval-cheap-module-source-map' : false,
+  devtool: isDev ? 'eval-cheap-module-source-map' : 'hidden-nosources-source-map',
+  optimization: {
+    minimize: !isDev,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            pure_funcs: ['console.warn'],
+          },
+        },
+      }),
+    ],
+  },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Slider plugin demo page',
@@ -86,12 +97,13 @@ const config = {
     static: './dist',
   },
   stats: 'minimal',
-};
+});
 
 export default (env, argv) => {
+  let isDev = true;
   if (argv.mode === 'production') {
     isDev = false;
   }
 
-  return config;
+  return getConfig(isDev);
 };
