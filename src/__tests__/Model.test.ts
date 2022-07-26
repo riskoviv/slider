@@ -31,10 +31,6 @@ describe('Model', () => {
       expect(model.fractionalPrecision).toBe(0);
     });
 
-    test('should set penultimateValue to 90', () => {
-      expect(model.penultimateValue).toBe(90);
-    });
-
     describe('if one of following options is not integer', () => {
       test.each`
         option        | value      | precision
