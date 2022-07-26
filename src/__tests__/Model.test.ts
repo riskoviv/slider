@@ -1,5 +1,10 @@
 import Model from '../Model';
-import { getEntriesWithTypedKeys, defaultOptions, invalidValues } from '../utils';
+import {
+  getEntriesWithTypedKeys,
+  defaultOptions,
+  nonFiniteNumbers,
+  anyTypeValues,
+} from '../utils';
 
 let model: Model;
 
@@ -171,7 +176,7 @@ describe('Model', () => {
         const currentValue1 = model.options.value1;
         const currentValue2 = model.options.value2;
 
-        invalidValues.forEach((value: any) => {
+        anyTypeValues.forEach((value: any) => {
           model.setValue1(value);
           model.setValue2(value);
         });
@@ -473,7 +478,7 @@ describe('Model', () => {
       test('should not set any non-finite, non-number value and 0', () => {
         const currentStepSize = model.options.stepSize;
 
-        [0, ...invalidValues].forEach((value: any) => model.setStepSize(value));
+        [0, ...anyTypeValues].forEach((value: any) => model.setStepSize(value));
 
         expect(model.options.stepSize).toBe(currentStepSize);
         expect(stepSizeChangedSpy).not.toBeCalled();
@@ -521,7 +526,7 @@ describe('Model', () => {
       );
 
       test('should not set new minValue if it is more than maxValue or is not finite number or not a number', () => {
-        [123, ...invalidValues].forEach((minValue: any) => {
+        [123, ...anyTypeValues].forEach((minValue: any) => {
           model.setMinValue(minValue);
         });
 
@@ -563,7 +568,7 @@ describe('Model', () => {
       );
 
       test('should not set new maxValue if it is less than minValue or is not finite number or not a number', () => {
-        [-105, ...invalidValues].forEach((maxValue: any) => {
+        [-105, ...anyTypeValues].forEach((maxValue: any) => {
           model.setMaxValue(maxValue);
         });
 

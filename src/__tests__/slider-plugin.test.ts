@@ -4,7 +4,7 @@ import { getByText } from '@testing-library/dom';
 import './mocks/ResizeObserver';
 import '../slider-plugin';
 import {
-  getTypedKeys, getFractionalPartSize, defaultOptions, invalidValues,
+  getTypedKeys, getFractionalPartSize, defaultOptions, anyTypeValues,
 } from '../utils';
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
@@ -101,7 +101,7 @@ describe('slider-plugin', () => {
   });
 
   describe('if options arg passed to plugin is not an object or if it is an array (object that has length property)', () => {
-    test.each([42, ...invalidValues])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
+    test.each([42, ...anyTypeValues])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
       $sliderInstance = $sliderContainer.sliderPlugin(arg);
 
       expect($sliderInstance.getOptions()).toStrictEqual(defaultOptions);

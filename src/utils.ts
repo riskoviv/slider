@@ -48,10 +48,10 @@ const getFractionalPartSize = (value: number | string): number => {
   return valueAsString.split('.')[1].length;
 };
 
-const invalidValues = [
-  NaN,
-  -Infinity,
-  Infinity,
+const nonFiniteNumbers = [NaN, -Infinity, Infinity];
+
+const anyTypeValues = [
+  ...nonFiniteNumbers,
   'string',
   [123],
   1n,
@@ -67,5 +67,6 @@ export {
   getTypedKeys,
   getEntriesWithTypedKeys,
   getFractionalPartSize,
-  invalidValues,
+  nonFiniteNumbers,
+  anyTypeValues,
 };
