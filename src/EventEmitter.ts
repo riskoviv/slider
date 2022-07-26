@@ -128,14 +128,16 @@ abstract class EventEmitter implements IEventEmitter {
       EventEmitter.throwEmitError(event, value);
       return;
     }
-
-    [...eventMap.values()].forEach((handler) => {
-      if (options !== undefined) {
-        handler(value, options);
-      } else {
+    const valueHandlers = [...eventMap.values()];
+    if (options === undefined) {
+      valueHandlers.forEach((handler) => {
         handler(value);
-      }
-    });
+      });
+    } else {
+      valueHandlers.forEach((handler) => {
+        handler(value, options);
+      });
+    }
   }
 
   private stateEmit({ event, value, options }: StateEmit) {
@@ -145,13 +147,16 @@ abstract class EventEmitter implements IEventEmitter {
       return;
     }
 
-    [...eventMap.values()].forEach((handler) => {
-      if (options !== undefined) {
-        handler(value, options);
-      } else {
+    const stateHandlers = [...eventMap.values()];
+    if (options === undefined) {
+      stateHandlers.forEach((handler) => {
         handler(value);
-      }
-    });
+      });
+    } else {
+      stateHandlers.forEach((handler) => {
+        handler(value, options);
+      });
+    }
   }
 
   private sliderPointerDownEmit({ event, value }: SliderPointerDownEmit) {
