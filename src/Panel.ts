@@ -159,7 +159,10 @@ class Panel {
     this.sliderPlugin.subscribe({ event: sliderEvent, subscriber: $inputElement[0] });
     const panelInputListener = (e: Event) => {
       const { target } = e;
-      if (target instanceof HTMLInputElement) {
+      const isHTMLInputElement = target instanceof HTMLInputElement;
+      const isEventTrusted = e.isTrusted;
+      const canPassValueToPlugin = isHTMLInputElement && isEventTrusted;
+      if (canPassValueToPlugin) {
         if (inputEventType === 'input') {
           this.sliderPlugin[sliderMethod](target.valueAsNumber);
         } else if (inputEventType === 'change') {
