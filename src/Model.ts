@@ -65,29 +65,27 @@ class Model extends EventEmitter implements IModel {
     return this.allowedValues.length;
   }
 
-  setValue1(value: number): void {
-    this.setValue(1, value);
-  }
-
-  setValue2(value: number): void {
-    this.setValue(2, value);
-  }
-
   setVerticalState(isVertical: boolean): void {
-    if (typeof isVertical !== 'boolean') return;
-    if (this.options.isVertical === isVertical) return;
+    const isBoolean = typeof isVertical === 'boolean';
+    const isSameAsCurrent = this.options.isVertical === isVertical;
+    const isAllowed = isBoolean && !isSameAsCurrent;
+    if (!isAllowed) return;
 
     this.options.isVertical = isVertical;
     this.emit({ event: 'isVerticalChanged', value: isVertical });
   }
 
   setInterval(isInterval: boolean): void {
-    if (typeof isInterval !== 'boolean') return;
-    if (this.options.isInterval === isInterval) return;
+    const isBoolean = typeof isInterval === 'boolean';
+    const isSameAsCurrent = this.options.isInterval === isInterval;
+    const isAllowed = isBoolean && !isSameAsCurrent;
+    if (!isAllowed) return;
 
     this.options.isInterval = isInterval;
+
     const { value1Fixed, value2Fixed } = this.fixValues();
-    const doEmitValue2Changed = value2Fixed || Number.isNaN(this.viewValues.positions[2]);
+    const doEmitValue2Changed = this.options.isInterval
+      && (value2Fixed || Number.isNaN(this.viewValues.positions[2]));
     this.emit({
       event: 'isIntervalChanged',
       value: isInterval,
@@ -105,80 +103,114 @@ class Model extends EventEmitter implements IModel {
       });
     }
 
-    if (isInterval) {
-      if (doEmitValue2Changed) {
-        this.emit({
-          event: 'value2Changed',
-          value: this.options.value2,
-          options: {
-            changeTipValue: false,
-            checkTipsOverlap: true,
-          },
-        });
-      }
+    if (doEmitValue2Changed) {
+      this.emit({
+        event: 'value2Changed',
+        value: this.options.value2,
+        options: {
+          changeTipValue: false,
+          checkTipsOverlap: true,
+        },
+      });
     }
   }
 
   setShowProgress(showProgressBar: boolean): void {
-    if (typeof showProgressBar !== 'boolean') return;
-    if (this.options.showProgressBar === showProgressBar) return;
+    const isBoolean = typeof showProgressBar === 'boolean';
+    const isSameAsCurrent = this.options.showProgressBar === showProgressBar;
+    const isAllowed = isBoolean && !isSameAsCurrent;
+    if (!isAllowed) return;
 
     this.options.showProgressBar = showProgressBar;
     this.emit({ event: 'showProgressChanged', value: showProgressBar });
   }
 
   setShowTip(showTip: boolean): void {
-    if (typeof showTip !== 'boolean') return;
-    if (this.options.showTip === showTip) return;
+    const isBoolean = typeof showTip === 'boolean';
+    const isSameAsCurrent = this.options.showTip === showTip;
+    const isAllowed = isBoolean && !isSameAsCurrent;
+    if (!isAllowed) return;
 
     this.options.showTip = showTip;
     this.emit({ event: 'showTipChanged', value: showTip });
   }
 
   setShowScale(showScale: boolean): void {
-    if (typeof showScale !== 'boolean') return;
-    if (this.options.showScale === showScale) return;
+    const isBoolean = typeof showScale === 'boolean';
+    const isSameAsCurrent = this.options.showScale === showScale;
+    const isAllowed = isBoolean && !isSameAsCurrent;
+    if (!isAllowed) return;
 
     this.options.showScale = showScale;
     this.emit({ event: 'showScaleChanged', value: showScale });
   }
 
   setStepSize(stepSize: number): void {
-    if (!Number.isFinite(stepSize)) return;
-    if (this.options.stepSize === stepSize) return;
-    if (stepSize > this.options.maxValue - this.options.minValue) return;
-    if (stepSize === 0) return;
-    if (stepSize < 0) {
-      this.options.stepSize = -stepSize;
-    } else {
-      this.options.stepSize = stepSize;
-    }
+    const isFiniteNumber = Number.isFinite(stepSize);
+    const isSameAsCurrent = this.options.stepSize === stepSize;
+    const isMoreThanRange = stepSize > this.options.maxValue - this.options.minValue;
+    const isZero = stepSize === 0;
+    const isAllowed = isFiniteNumber && !isSameAsCurrent && !isMoreThanRange && !isZero;
+    if (!isAllowed) return;
 
-    this.updateValues('stepSizeChanged', stepSize);
+    this.options.stepSize = stepSize < 0 ? -stepSize : stepSize;
+    this.updateValues('stepSizeChanged', this.options.stepSize);
   }
 
   setMinValue(minValue: number): void {
-    if (!Number.isFinite(minValue)) return;
-    if (this.options.minValue === minValue) return;
-    if (minValue > this.options.maxValue - this.options.stepSize) return;
+    const isFiniteNumber = Number.isFinite(minValue);
+    const isSameAsCurrent = this.options.minValue === minValue;
+    const moreThanMaxMinusStep = minValue > this.options.maxValue - this.options.stepSize;
+    const isAllowed = isFiniteNumber && !isSameAsCurrent && !moreThanMaxMinusStep;
+    if (!isAllowed) return;
 
     this.options.minValue = minValue;
-
     this.updateValues('minValueChanged', minValue, true);
   }
 
   setMaxValue(maxValue: number): void {
-    if (!Number.isFinite(maxValue)) return;
-    if (maxValue === this.options.maxValue) return;
-    if (maxValue < this.options.minValue + this.options.stepSize) return;
+    const isFiniteNumber = Number.isFinite(maxValue);
+    const isSameAsCurrent = maxValue === this.options.maxValue;
+    const lessThanMinPlusStep = maxValue < this.options.minValue + this.options.stepSize;
+    const isAllowed = isFiniteNumber && !isSameAsCurrent && !lessThanMinPlusStep;
+    if (!isAllowed) return;
 
     this.options.maxValue = maxValue;
-
     this.updateValues('maxValueChanged', maxValue, true);
   }
 
+  setValue1(value: number): void {
+    this.setValue(1, value);
+  }
+
+  setValue2(value: number): void {
+    this.setValue(2, value);
+  }
+
+  setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
+    const isAllowedNumber = Number.isFinite(value) && [1, 2].includes(number);
+    if (!isAllowedNumber) return;
+
+    const valueNumber: 'value1' | 'value2' = `value${number}`;
+    const isSameAsCurrent = this.options[valueNumber] === value;
+    if (isSameAsCurrent) return;
+
+    this.options[valueNumber] = onlySaveValue ? value : this.fixValue(number, value, true);
+    this.emit({
+      event: `${valueNumber}Changed`,
+      value: this.options[valueNumber],
+      options: {
+        changeTipValue: true,
+        onlySaveValue,
+        checkTipsOverlap: this.options.isInterval,
+      },
+    });
+  }
+
   fixValueToPrecision(value: number, precision = this.fractionalPrecision): number {
-    return Number.parseFloat(value.toFixed(precision));
+    const valueAsFixedString = Number.prototype.toFixed.call(value, precision);
+    const valueAsFixedNumber = Number.parseFloat(valueAsFixedString);
+    return valueAsFixedNumber;
   }
 
   subscribe(options: ValueSubscribe): void;
@@ -199,10 +231,10 @@ class Model extends EventEmitter implements IModel {
   }
 
   unsubscribe(subscriber: Subscriber): boolean {
-    if (!(subscriber instanceof HTMLInputElement
-      || subscriber instanceof Function)) {
-      return false;
-    }
+    const isHTMLInputElement = subscriber instanceof HTMLInputElement;
+    const isFunction = subscriber instanceof Function;
+    const isInputElementOrFunction = isHTMLInputElement || isFunction;
+    if (!isInputElementOrFunction) return false;
 
     // eslint-disable-next-line no-param-reassign
     delete subscriber.unsubscribe;
@@ -232,23 +264,6 @@ class Model extends EventEmitter implements IModel {
     unsubscribe: this.unsubscribe.bind(this),
   };
 
-  setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
-    if (!Number.isFinite(value)) return;
-    const valueNumber: 'value1' | 'value2' = `value${number}`;
-    if (this.options[valueNumber] === value) return;
-
-    this.options[valueNumber] = onlySaveValue ? value : this.fixValue(number, value, true);
-    this.emit({
-      event: `${valueNumber}Changed`,
-      value: this.options[valueNumber],
-      options: {
-        changeTipValue: true,
-        onlySaveValue,
-        checkTipsOverlap: this.options.isInterval,
-      },
-    });
-  }
-
   private updateValues(eventName: ValueEvent, value: number, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
 
@@ -256,7 +271,8 @@ class Model extends EventEmitter implements IModel {
 
     const { value1Fixed, value2Fixed } = this.fixValues();
     const doEmitValue1Changed = ignoreIsFixed || value1Fixed;
-    const doEmitValue2Changed = (ignoreIsFixed || value2Fixed) && this.options.isInterval;
+    const doEmitValue2Changed = this.options.isInterval
+      && (ignoreIsFixed || value2Fixed);
 
     if (doEmitValue1Changed) {
       this.emit({
