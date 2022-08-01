@@ -90,8 +90,8 @@ type StateHandlers = {
   [stateEvent in StateEvent]?: Map<StateSubscriber, StateHandler>;
 };
 type ViewHandlers = {
-  sliderPointerDown?: Map<undefined, (value: SliderPointerDownData) => void>;
-  scaleValueSelect?: Map<undefined, (data: number) => void>;
+  sliderPointerDown?: Map<undefined, SliderPointerDownHandler>;
+  scaleValueSelect?: Map<undefined, ScaleValueSelectHandler>;
 };
 
 type ValueOn = {
