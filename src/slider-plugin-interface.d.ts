@@ -122,7 +122,6 @@ interface IEventEmitter {
   on(options: ValueOn): this;
   on(options: StateOn): this;
   on(options: ViewOn): this;
-  // on(options: ValueOn | StateOn | ViewOn): this;
 }
 
 type ValueEmit = { event: ValueEvent, value: number, options?: SetValueEventOptions };

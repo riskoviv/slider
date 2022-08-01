@@ -213,9 +213,6 @@ class Model extends EventEmitter implements IModel {
     return valueAsFixedNumber;
   }
 
-  subscribe(options: ValueSubscribe): void;
-  subscribe(options: StateSubscribe): void;
-  subscribe(options: ValueSubscribe | StateSubscribe): void;
   subscribe(options: ValueSubscribe | StateSubscribe): void {
     this.eventsSwitch({ options, type: 'subscribe' });
     const { subscriber } = options;
