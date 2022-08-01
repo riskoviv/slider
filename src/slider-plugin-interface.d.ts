@@ -80,13 +80,14 @@ interface ScaleValueSelectHandler extends Unsubscribable {
   (value: number): void;
 }
 
-type Subscriber = UnsubHTMLInputElement | ValueHandler | StateHandler;
+type ValueSubscriber = UnsubHTMLInputElement | ValueHandler | undefined;
+type StateSubscriber = UnsubHTMLInputElement | StateHandler | undefined;
 
 type ValueHandlers = {
-  [valueEvent in ValueEvent]?: Map<UnsubHTMLInputElement | ValueHandler | undefined, ValueHandler>;
+  [valueEvent in ValueEvent]?: Map<ValueSubscriber, ValueHandler>;
 };
 type StateHandlers = {
-  [stateEvent in StateEvent]?: Map<UnsubHTMLInputElement | StateHandler | undefined, StateHandler>;
+  [stateEvent in StateEvent]?: Map<StateSubscriber, StateHandler>;
 };
 type ViewHandlers = {
   sliderPointerDown?: Map<undefined, (value: SliderPointerDownData) => void>;

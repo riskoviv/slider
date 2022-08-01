@@ -67,18 +67,14 @@ abstract class EventEmitter implements IEventEmitter {
 
   protected valueOn({ event, handler, subscriber }: ValueOn): void {
     if (this.valueHandlers[event] === undefined) {
-      this.valueHandlers[event] = new Map<
-        UnsubHTMLInputElement | ValueHandler | undefined, ValueHandler
-      >();
+      this.valueHandlers[event] = new Map<ValueSubscriber, ValueHandler>();
     }
     this.valueHandlers[event]?.set(subscriber, handler);
   }
 
   protected stateOn({ event, handler, subscriber }: StateOn): void {
     if (this.stateHandlers[event] === undefined) {
-      this.stateHandlers[event] = new Map<
-        UnsubHTMLInputElement | StateHandler | undefined, StateHandler
-      >();
+      this.stateHandlers[event] = new Map<StateSubscriber, StateHandler>();
     }
     this.stateHandlers[event]?.set(subscriber, handler);
   }
