@@ -69,9 +69,13 @@ interface UnsubHTMLInputElement extends HTMLInputElement, Unsubscribable {}
 interface ValueHandler extends Unsubscribable {
   (value: number, options?: SetValueEventOptions): void;
 }
+
 interface StateHandler extends Unsubscribable {
   (value: boolean, options?: ChangeIntervalEventOptions): void;
 }
+
+type Subscriber = UnsubHTMLInputElement | ValueHandler | StateHandler;
+
 interface SliderPointerDownHandler extends Unsubscribable {
   (value: SliderPointerDownData): void;
 }
