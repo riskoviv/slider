@@ -94,21 +94,31 @@ abstract class EventEmitter implements IEventEmitter {
   }
 
   protected off(subscriber: Subscriber): boolean {
-    return [this.valueHandlers, this.stateHandlers].some(
-      (handlersStorage) => (Object.values(handlersStorage)
-        .reduce<boolean>((mapUnsubscribeState, handlersMap) => {
-          const foundSubscriberInMap = [...handlersMap.keys()]
-            .reduce<boolean>((subscriberUnsubscribeState, registeredSubscriber) => {
+    type ModelHandlersMap = Map<ValueSubscriber | StateSubscriber, ValueHandler | StateHandler>;
+    const modelHandlers = [this.valueHandlers, this.stateHandlers];
+    const isSubscriberDeleted = modelHandlers.some((handlersStorage) => {
+      const handlersMaps = Object.values(handlersStorage);
+      const foundSubscriberInThisStorage = handlersMaps.reduce<boolean>(
+        (isSubscriberInThisStorage, handlersMap: ModelHandlersMap) => {
+          const subscribers = [...handlersMap.keys()];
+          const foundSubscriberInThisMap = subscribers.reduce(
+            (isSubscriberInThisMap, registeredSubscriber) => {
               if (registeredSubscriber === subscriber) {
                 handlersMap.delete(registeredSubscriber);
                 return true;
               }
-              return subscriberUnsubscribeState;
-            }, false);
-          if (foundSubscriberInMap) return true;
-          return mapUnsubscribeState;
-        }, false)),
-    );
+              return isSubscriberInThisMap;
+            },
+            false,
+          );
+          if (foundSubscriberInThisMap) return true;
+          return isSubscriberInThisStorage;
+        },
+        false,
+      );
+      return foundSubscriberInThisStorage;
+    });
+    return isSubscriberDeleted;
   }
 
   protected emit(options: ValueEmit): void;
@@ -182,11 +192,13 @@ abstract class EventEmitter implements IEventEmitter {
   private static throwEmitError<Event, Value>(event: Event, value: Value) {
     const emitError = new Error();
     emitError.name = 'EmitError';
-    emitError.message = `${event} event is not registered. arg = ${typeof value === 'object' && value !== null
+    const emitValueIsObject = typeof value === 'object' && value !== null;
+    const emitValueAsString = emitValueIsObject
       ? `{ ${Object.entries(value).map(
         ([argKey, argValue]) => `${argKey}: ${argValue}`,
       ).join(', ')} }`
-      : value}`;
+      : value;
+    emitError.message = `${event} event is not registered. value = ${emitValueAsString}`;
     console.error(emitError);
   }
 
