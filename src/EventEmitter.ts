@@ -96,27 +96,18 @@ abstract class EventEmitter implements IEventEmitter {
   protected off(subscriber: Subscriber): boolean {
     type ModelHandlersMap = Map<ValueSubscriber | StateSubscriber, ValueHandler | StateHandler>;
     const modelHandlers = [this.valueHandlers, this.stateHandlers];
-    const isSubscriberDeleted = modelHandlers.some((handlersStorage) => {
-      const handlersMaps = Object.values(handlersStorage);
-      const foundSubscriberInThisStorage = handlersMaps.reduce<boolean>(
-        (isSubscriberInThisStorage, handlersMap: ModelHandlersMap) => {
-          const subscribers = [...handlersMap.keys()];
-          const foundSubscriberInThisMap = subscribers.reduce(
-            (isSubscriberInThisMap, registeredSubscriber) => {
-              if (registeredSubscriber === subscriber) {
-                handlersMap.delete(registeredSubscriber);
-                return true;
-              }
-              return isSubscriberInThisMap;
-            },
-            false,
-          );
-          if (foundSubscriberInThisMap) return true;
-          return isSubscriberInThisStorage;
-        },
-        false,
+    let isSubscriberDeleted = false;
+    modelHandlers.forEach((handlersStorage) => {
+      const handlersMaps: ModelHandlersMap[] = Object.values(handlersStorage);
+      const continueToSearchForSubscriber = (idx: number) => (
+        isSubscriberDeleted === false && idx < handlersMaps.length
       );
-      return foundSubscriberInThisStorage;
+      for (let mapIdx = 0; continueToSearchForSubscriber(mapIdx); mapIdx += 1) {
+        const currentMap = handlersMaps[mapIdx];
+        if (currentMap.has(subscriber)) {
+          isSubscriberDeleted = currentMap.delete(subscriber);
+        }
+      }
     });
     return isSubscriberDeleted;
   }
