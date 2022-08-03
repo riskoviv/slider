@@ -347,7 +347,7 @@ class Model extends EventEmitter implements IModel {
     const needToFindAllowed = !checkIsAllowed || !this.isValueAllowed(fixedValue);
     if (needToFindAllowed) {
       fixedValue = this.findClosestAllowedValue(fixedValue);
-      fixReasons.push('to satisfy stepSize or keep in range');
+      fixReasons.push('change to closest allowed value');
     }
 
     if (this.options.isInterval) {
@@ -358,18 +358,21 @@ class Model extends EventEmitter implements IModel {
           } else {
             fixedValue = this.getValueByIndex(this.getIndexByValueNumber(2) - 1);
           }
-          fixReasons.push('to make it less than value2');
+          fixReasons.push('make it less than value2');
         }
       } else if (fixedValue <= this.options.value1) {
         fixedValue = this.getValueByIndex(this.getIndexByValueNumber(1) + 1);
-        fixReasons.push('to make it more than value1');
+        fixReasons.push('make it more than value1');
       }
     }
 
-    fixedValue = this.fixValueToPrecision(fixedValue);
+    if (getFractionalPartSize(fixedValue) !== this.fractionalPrecision) {
+      fixedValue = this.fixValueToPrecision(fixedValue);
+      fixReasons.push('fix fractional precision');
+    }
 
     if (fixedValue !== value) {
-      console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} ${fixReasons.join(' and ')}.`);
+      console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} in order to ${fixReasons.join(' and to ')}.`);
     }
     return fixedValue;
   }
