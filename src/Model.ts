@@ -214,8 +214,9 @@ class Model extends EventEmitter implements IModel {
   }
 
   subscribe(options: ValueSubscribe | StateSubscribe): void {
-    this.eventsSwitch({ options, type: 'subscribe' });
     const { subscriber } = options;
+    this.unsubscribe(subscriber);
+    this.eventsSwitch({ options, type: 'subscribe' });
     if (subscriber instanceof HTMLInputElement) {
       Object.defineProperty(subscriber, 'unsubscribe', {
         value: this.unsubscribe.bind(this, subscriber),
