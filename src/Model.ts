@@ -207,8 +207,8 @@ class Model extends EventEmitter implements IModel {
     });
   }
 
-  fixValueToPrecision(value: number, precision = this.fractionalPrecision): number {
-    const valueAsFixedString = Number.prototype.toFixed.call(value, precision);
+  fixValueToPrecision(value: number): number {
+    const valueAsFixedString = Number.prototype.toFixed.call(value, this.fractionalPrecision);
     const valueAsFixedNumber = Number.parseFloat(valueAsFixedString);
     return valueAsFixedNumber;
   }
