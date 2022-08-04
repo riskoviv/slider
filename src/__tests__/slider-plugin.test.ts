@@ -86,7 +86,7 @@ describe('slider-plugin', () => {
     });
 
     test('slider should have all needed elements', () => {
-      const childElements = ['control-container', 'track', 'thumb_1', 'thumb_2', 'tip_1', 'tip_2', 'scale'];
+      const childElements = ['control-container', 'track', 'thumb_1', 'thumb_2', 'tip_1', 'tip_2', 'tip_3', 'scale'];
       expect(parentHaveAllChildren($sliderInstance, childElements)).toBe(true);
       expect($scaleElem.children().length).toBe(21);
     });
