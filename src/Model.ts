@@ -6,9 +6,9 @@ import { getFractionalPartSize } from './utils';
 class Model extends EventEmitter implements IModel {
   options: SliderOptions;
 
-  allowedValues: number[];
+  allowedValues: number[] = [];
 
-  allowedValuesCount: number;
+  allowedValuesCount = 0;
 
   fractionalPrecision: number;
 
@@ -22,8 +22,7 @@ class Model extends EventEmitter implements IModel {
     super();
     this.options = { ...options };
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
-    this.allowedValues = this.createAllowedValuesArray();
-    this.allowedValuesCount = this.getAllowedValuesCount();
+    this.updateAllowedValues();
     this.fixValues();
   }
 
@@ -262,9 +261,14 @@ class Model extends EventEmitter implements IModel {
     unsubscribe: this.unsubscribe.bind(this),
   };
 
+  private updateAllowedValues(): void {
+    this.allowedValues = this.createAllowedValuesArray();
+    this.allowedValuesCount = this.getAllowedValuesCount();
+  }
+
   private updateValues(eventName: ValueEvent, value: number, ignoreIsFixed = false) {
     this.fractionalPrecision = this.identifyMaxFractionalPrecision();
-
+    this.updateAllowedValues();
     this.emit({ event: eventName, value });
 
     const { value1Fixed, value2Fixed } = this.fixValues();

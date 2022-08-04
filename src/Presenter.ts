@@ -688,9 +688,7 @@ class Presenter implements IPresenter {
   private defineViewValues(): void {
     const { minValue, maxValue, stepSize } = this.options;
     const totalSliderRange = maxValue - minValue;
-    this.model.allowedValues = this.model.createAllowedValuesArray();
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
-    this.model.allowedValuesCount = this.model.getAllowedValuesCount();
     this.model.viewValues.penultimatePosition = this.getPenultimatePosition();
   }
 }
