@@ -157,11 +157,14 @@ class Panel {
     const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
       .append($inputElement);
     this.sliderPlugin.subscribe({ event: sliderEvent, subscriber: $inputElement[0] });
-    const panelInputListener = (e: Event) => {
+    interface SubscribeSetEvent extends Event {
+      isSubscribeSet?: boolean;
+    }
+    const panelInputListener = (e: SubscribeSetEvent) => {
       const { target } = e;
       const isHTMLInputElement = target instanceof HTMLInputElement;
-      const isEventTrusted = e.isTrusted;
-      const canPassValueToPlugin = isHTMLInputElement && isEventTrusted;
+      const isSubscribeSetEvent = e.isSubscribeSet;
+      const canPassValueToPlugin = isHTMLInputElement && !isSubscribeSetEvent;
       if (canPassValueToPlugin) {
         if (inputEventType === 'input') {
           this.sliderPlugin[sliderMethod](target.valueAsNumber);

@@ -196,9 +196,10 @@ abstract class EventEmitter implements IEventEmitter {
   private valueSubscribe({ event, subscriber }: ValueSubscribe): void {
     const makeNumericInputElementUpdater = (inputElement: UnsubHTMLInputElement) => {
       const subscribedElement = inputElement;
+      const inputEvent = new InputEvent('input');
+      Object.defineProperty(inputEvent, 'isSubscribeSet', { value: true });
       const updateNumericInput = (value: number) => {
         subscribedElement.value = String(value);
-        const inputEvent = new InputEvent('input');
         subscribedElement.dispatchEvent(inputEvent);
       };
       return updateNumericInput;
@@ -216,9 +217,10 @@ abstract class EventEmitter implements IEventEmitter {
   private stateSubscribe({ event, subscriber }: StateSubscribe): void {
     const makeCheckboxElementUpdater = (inputElement: UnsubHTMLInputElement) => {
       const subscribedElement = inputElement;
+      const changeEvent = new InputEvent('change');
+      Object.defineProperty(changeEvent, 'isSubscribeSet', { value: true });
       const updateCheckbox = (value: boolean) => {
         subscribedElement.checked = value;
-        const changeEvent = new InputEvent('change');
         subscribedElement.dispatchEvent(changeEvent);
       };
       return updateCheckbox;
