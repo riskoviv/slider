@@ -808,12 +808,12 @@ describe('Model', () => {
         ['setShowTip', 'showTipChanged'],
         ['setShowScale', 'showScaleChanged'],
       ];
-      const valueMethods: [keyof ModelValueMethods, ValueEvent][] = [
-        ['setValue1', 'value1Changed'],
-        ['setValue2', 'value2Changed'],
-        ['setStepSize', 'stepSizeChanged'],
-        ['setMinValue', 'minValueChanged'],
-        ['setMaxValue', 'maxValueChanged'],
+      const valueMethods: [keyof ModelValueMethods, ValueEvent, number][] = [
+        ['setValue1', 'value1Changed', -40],
+        ['setValue2', 'value2Changed', 20],
+        ['setStepSize', 'stepSizeChanged', 20],
+        ['setMinValue', 'minValueChanged', -60],
+        ['setMaxValue', 'maxValueChanged', 80],
       ];
       jest.spyOn(console, 'error');
       const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
@@ -827,12 +827,10 @@ describe('Model', () => {
       });
 
       mockConsoleError.mockClear();
-      let numberValue = 10;
-      valueMethods.forEach(([valueMethod, valueEvent]) => {
-        model[valueMethod](numberValue);
-        emitError.message = `${valueEvent} event is not registered. arg = ${numberValue}`;
+      valueMethods.forEach(([valueMethod, valueEvent, value]) => {
+        model[valueMethod](value);
+        emitError.message = `${valueEvent} event is not registered. value = ${value}`;
         expect(mockConsoleError.mock.calls).toContainEqual([emitError]);
-        numberValue += 10;
       });
     });
   });
