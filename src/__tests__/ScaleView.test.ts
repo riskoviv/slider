@@ -171,7 +171,7 @@ describe('ScaleView', () => {
       const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
       const emitError = new Error();
       emitError.name = 'EmitError';
-      emitError.message = 'scaleValueSelect event is not registered. arg = 0';
+      emitError.message = 'scaleValueSelect event is not registered. value = 0';
 
       scaleElement.dispatchEvent(pointerDownEvent);
 

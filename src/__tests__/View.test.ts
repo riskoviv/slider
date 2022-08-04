@@ -177,7 +177,7 @@ describe('View', () => {
         const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
         const emitError = new Error();
         emitError.name = 'EmitError';
-        emitError.message = 'sliderPointerDown event is not registered. arg = { target: [object HTMLDivElement], offsetX: 42, offsetY: 0 }';
+        emitError.message = 'sliderPointerDown event is not registered. value = { target: [object HTMLDivElement], offsetX: 42, offsetY: 0 }';
 
         view.controlContainerElem.dispatchEvent(pointerDownEvent);
 

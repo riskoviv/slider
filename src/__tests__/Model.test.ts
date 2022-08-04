@@ -821,7 +821,7 @@ describe('Model', () => {
 
       stateMethods.forEach(([stateMethod, stateEvent]) => {
         model[stateMethod](true);
-        emitError.message = `${stateEvent} event is not registered. arg = true`;
+        emitError.message = `${stateEvent} event is not registered. value = true`;
         expect(mockConsoleError.mock.calls).toContainEqual([emitError]);
       });
 
