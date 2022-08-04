@@ -494,6 +494,7 @@ describe('Model', () => {
         expect(stepSizeChangedSpy).toBeCalled();
         expect(value1ChangedSpy).toBeCalled();
         expect(value2ChangedSpy).toBeCalled();
+        expect(customModel.options.stepSize).toBe(4.12);
         expect(customModel.fractionalPrecision).toBe(2);
         expect(customModel.options.value1).toBe(-50.56);
         expect(customModel.options.value2).toBe(48.32);
@@ -531,11 +532,11 @@ describe('Model', () => {
         expect(value1ChangedSpy).not.toBeCalled();
       });
 
-      test('if new minValue === maxValue, should set maxValue to new minValue + stepSize and save minValue', () => {
+      test('if new minValue === maxValue, should not change minValue; maximum allowed is maxValue - stepSize', () => {
         model.setMinValue(defaultOptions.maxValue);
 
-        expect(model.options.minValue).toBe(defaultOptions.maxValue);
-        expect(model.options.maxValue).toBe(defaultOptions.maxValue + model.options.stepSize);
+        expect(model.options.minValue).toBe(defaultOptions.minValue);
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue);
       });
     });
 
@@ -573,10 +574,10 @@ describe('Model', () => {
         expect(value1ChangedSpy).not.toBeCalled();
       });
 
-      test('if new maxValue === minValue, should set maxValue to minValue + stepSize', () => {
+      test('if new maxValue === minValue, should not change maxValue; minimum allowed is minValue + stepSize', () => {
         model.setMaxValue(defaultOptions.minValue);
 
-        expect(model.options.maxValue).toBe(defaultOptions.minValue + defaultOptions.stepSize);
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue);
       });
     });
 
