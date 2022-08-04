@@ -145,34 +145,37 @@ class Model extends EventEmitter implements IModel {
   }
 
   setStepSize(stepSize: number): void {
+    if (typeof stepSize !== 'number') return;
     const isFiniteNumber = Number.isFinite(stepSize);
     const isSameAsCurrent = this.options.stepSize === stepSize;
     const isMoreThanRange = stepSize > this.options.maxValue - this.options.minValue;
     const isZero = stepSize === 0;
-    const isAllowed = isFiniteNumber && !isSameAsCurrent && !isMoreThanRange && !isZero;
-    if (!isAllowed) return;
+    const isAllowedNumber = isFiniteNumber && !isSameAsCurrent && !isMoreThanRange && !isZero;
+    if (!isAllowedNumber) return;
 
     this.options.stepSize = stepSize < 0 ? -stepSize : stepSize;
     this.updateValues('stepSizeChanged', this.options.stepSize);
   }
 
   setMinValue(minValue: number): void {
+    if (typeof minValue !== 'number') return;
     const isFiniteNumber = Number.isFinite(minValue);
     const isSameAsCurrent = this.options.minValue === minValue;
     const moreThanMaxMinusStep = minValue > this.options.maxValue - this.options.stepSize;
-    const isAllowed = isFiniteNumber && !isSameAsCurrent && !moreThanMaxMinusStep;
-    if (!isAllowed) return;
+    const isAllowedNumber = isFiniteNumber && !isSameAsCurrent && !moreThanMaxMinusStep;
+    if (!isAllowedNumber) return;
 
     this.options.minValue = minValue;
     this.updateValues('minValueChanged', minValue, true);
   }
 
   setMaxValue(maxValue: number): void {
+    if (typeof maxValue !== 'number') return;
     const isFiniteNumber = Number.isFinite(maxValue);
     const isSameAsCurrent = maxValue === this.options.maxValue;
     const lessThanMinPlusStep = maxValue < this.options.minValue + this.options.stepSize;
-    const isAllowed = isFiniteNumber && !isSameAsCurrent && !lessThanMinPlusStep;
-    if (!isAllowed) return;
+    const isAllowedNumber = isFiniteNumber && !isSameAsCurrent && !lessThanMinPlusStep;
+    if (!isAllowedNumber) return;
 
     this.options.maxValue = maxValue;
     this.updateValues('maxValueChanged', maxValue, true);
@@ -187,6 +190,7 @@ class Model extends EventEmitter implements IModel {
   }
 
   setValue(number: 1 | 2, value: number, onlySaveValue = false): void {
+    if (typeof value !== 'number') return;
     const isAllowedNumber = Number.isFinite(value) && [1, 2].includes(number);
     if (!isAllowedNumber) return;
 
