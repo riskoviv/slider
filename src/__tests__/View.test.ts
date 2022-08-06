@@ -1,5 +1,6 @@
 import View from '../View';
 import { getEntriesWithTypedKeys } from '../utils';
+import Logger from '../Logger';
 
 describe('View', () => {
   let view: View;
@@ -173,15 +174,14 @@ describe('View', () => {
           offsetY: { value: 0 },
         });
         Object.defineProperty(view.controlContainerElem, 'setPointerCapture', { value: jest.fn() });
-        jest.spyOn(console, 'error');
-        const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
+        const loggerEmitError = jest.spyOn(Logger, 'emitError');
         const emitError = new Error();
         emitError.name = 'EmitError';
         emitError.message = 'sliderPointerDown event is not registered. value = { target: [object HTMLDivElement], offsetX: 42, offsetY: 0 }';
 
         view.controlContainerElem.dispatchEvent(pointerDownEvent);
 
-        expect(mockConsoleError).toBeCalledWith(emitError);
+        expect(loggerEmitError).toBeCalledWith(emitError);
       });
     });
   });

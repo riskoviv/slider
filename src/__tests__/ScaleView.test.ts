@@ -2,6 +2,7 @@ import $ from 'jquery';
 import '@testing-library/jest-dom';
 
 import ScaleView from '../subviews/ScaleView';
+import Logger from '../Logger';
 
 const makeNewScaleValueElement = (value: number): JQuery<HTMLDivElement> => (
   $(`<div class="slider__scale-block">
@@ -167,15 +168,14 @@ describe('ScaleView', () => {
       Object.defineProperty(pointerDownEvent, 'target', {
         value: firstScaleTextElement,
       });
-      jest.spyOn(console, 'error');
-      const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
+      const loggerEmitError = jest.spyOn(Logger, 'emitError');
       const emitError = new Error();
       emitError.name = 'EmitError';
       emitError.message = 'scaleValueSelect event is not registered. value = 0';
 
       scaleElement.dispatchEvent(pointerDownEvent);
 
-      expect(mockConsoleError).toBeCalledWith(emitError);
+      expect(loggerEmitError).toBeCalledWith(emitError);
     });
   });
 });

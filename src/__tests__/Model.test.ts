@@ -1,3 +1,4 @@
+import Logger from '../Logger';
 import Model from '../Model';
 import {
   getEntriesWithTypedKeys,
@@ -815,22 +816,21 @@ describe('Model', () => {
         ['setMinValue', 'minValueChanged', -60],
         ['setMaxValue', 'maxValueChanged', 80],
       ];
-      jest.spyOn(console, 'error');
-      const mockConsoleError = console.error as jest.MockedFunction<typeof console.error>;
+      const loggerEmitError = jest.spyOn(Logger, 'emitError');
       const emitError = new Error();
       emitError.name = 'EmitError';
 
       stateMethods.forEach(([stateMethod, stateEvent]) => {
         model[stateMethod](true);
         emitError.message = `${stateEvent} event is not registered. value = true`;
-        expect(mockConsoleError.mock.calls).toContainEqual([emitError]);
+        expect(loggerEmitError.mock.calls).toContainEqual([emitError]);
       });
 
-      mockConsoleError.mockClear();
+      loggerEmitError.mockClear();
       valueMethods.forEach(([valueMethod, valueEvent, value]) => {
         model[valueMethod](value);
         emitError.message = `${valueEvent} event is not registered. value = ${value}`;
-        expect(mockConsoleError.mock.calls).toContainEqual([emitError]);
+        expect(loggerEmitError.mock.calls).toContainEqual([emitError]);
       });
     });
   });
