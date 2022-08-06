@@ -15,14 +15,14 @@ type ErrorLog = {
 type Log = WarnLog | ErrorLog;
 
 class Logger {
-  static logs: Log[] = [];
+  static #logs: Log[] = [];
 
   static pluginWarn(message: string) {
-    Logger.warn(message, 'slider-plugin');
+    Logger.#warn(message, 'slider-plugin');
   }
 
   static modelWarn(message: string) {
-    Logger.warn(message, 'Model');
+    Logger.#warn(message, 'Model');
   }
 
   static emitError(error: Error) {
@@ -32,18 +32,18 @@ class Logger {
       module: 'EventEmitter',
       timestamp: Date.now(),
     };
-    Logger.logs.push(log);
-    Logger.printErrorMessage(log);
+    Logger.#logs.push(log);
+    Logger.#printErrorMessage(log);
   }
 
   static printLogs() {
-    Logger.logs.forEach((log) => {
+    Logger.#logs.forEach((log) => {
       switch (log.type) {
         case 'warn':
-          Logger.printWarnMessage(log);
+          Logger.#printWarnMessage(log);
           break;
         case 'error':
-          Logger.printErrorMessage(log);
+          Logger.#printErrorMessage(log);
           break;
         default: break;
       }
@@ -51,36 +51,50 @@ class Logger {
   }
 
   static deleteLogs() {
-    Logger.logs = [];
+    Logger.#logs = [];
     console.info(
       '%cAll Logger\'s logs has been deleted',
       'background-color: #25d; color: white; border-radius: 3px;',
     );
   }
 
-  private static warn(message: string, module: 'slider-plugin' | 'Model') {
+  static #warn(message: string, module: 'slider-plugin' | 'Model') {
     const log: WarnLog = {
       type: 'warn',
       message,
       module,
       timestamp: Date.now(),
     };
-    Logger.logs.push(log);
-    Logger.printWarnMessage(log);
+    Logger.#logs.push(log);
+    Logger.#printWarnMessage(log);
   }
 
-  private static getFullTime(timestamp: number): string {
+  static #formatTimePart(timePart: number): string {
+    return timePart < 10 ? `0${timePart}` : String(timePart);
+  }
+
+  static #getFullTime(timestamp: number): string {
     const date = new Date(timestamp);
-    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`;
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const minutesStr = Logger.#formatTimePart(minutes);
+    const secondsStr = Logger.#formatTimePart(seconds);
+    const milliseconds = date.getMilliseconds();
+    return `${hours}:${minutesStr}:${secondsStr}.${milliseconds}`;
   }
 
-  private static printWarnMessage(log: WarnLog) {
-    console.warn(`${log.module} at ${Logger.getFullTime(log.timestamp)}: ${log.message}`);
+  static #printWarnMessage(log: WarnLog) {
+    console.warn(
+      `%c${log.module} at ${Logger.#getFullTime(log.timestamp)}:`,
+      'border: 1px solid #d95; border-radius: 3px; background-color: #fff1',
+      log.message,
+    );
   }
 
-  private static printErrorMessage(log: ErrorLog) {
+  static #printErrorMessage(log: ErrorLog) {
     console.error(
-      `%c${log.module} at ${Logger.getFullTime(log.timestamp)}:`,
+      `%c${log.module} at ${Logger.#getFullTime(log.timestamp)}:`,
       'border: 1px solid #d25; border-radius: 3px; background-color: #fff1',
       log.message,
     );
