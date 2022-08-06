@@ -1,5 +1,8 @@
 /* eslint-disable no-dupe-class-members */
 /* eslint-disable lines-between-class-members */
+
+import Logger from './Logger';
+
 abstract class EventEmitter implements IEventEmitter {
   private valueHandlers: ValueHandlers = {};
 
@@ -190,7 +193,7 @@ abstract class EventEmitter implements IEventEmitter {
       ).join(', ')} }`
       : value;
     emitError.message = `${event} event is not registered. value = ${emitValueAsString}`;
-    console.error(emitError);
+    Logger.emitError(emitError);
   }
 
   private valueSubscribe({ event, subscriber }: ValueSubscribe): void {

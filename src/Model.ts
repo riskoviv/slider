@@ -1,6 +1,7 @@
 /* eslint-disable lines-between-class-members */
 /* eslint-disable no-dupe-class-members */
 import EventEmitter from './EventEmitter';
+import Logger from './Logger';
 import { getFractionalPartSize } from './utils';
 
 class Model extends EventEmitter implements IModel {
@@ -328,18 +329,18 @@ class Model extends EventEmitter implements IModel {
 
         if (this.options.value1 === this.options.maxValue) {
           this.options.value1 = this.getPenultimateValue();
-          console.warn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
+          Logger.modelWarn(`${warnMsgStart} Also value1 was too close to maxValue, so value1 is now set to previous closest allowed value.${warnMsgEnd}`);
         } else if (this.options.value2 === this.options.minValue) {
           this.options.value2 = this.getSecondValue();
-          console.warn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
+          Logger.modelWarn(`${warnMsgStart} Also value2 was too close to minValue, so value2 is now set to next closest allowed value.${warnMsgEnd}`);
         } else {
           const value1Index = this.getIndexByValueNumber(1);
           this.options.value2 = this.getValueByIndex(value1Index + 1);
-          console.warn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
+          Logger.modelWarn(`${warnMsgStart} value2 is now set to next closest allowed value.${warnMsgEnd}`);
         }
       } else if (this.options.value2 < this.options.value1) {
         [this.options.value1, this.options.value2] = [this.options.value2, this.options.value1];
-        console.warn('value1 & value2 were swapped');
+        Logger.modelWarn('value1 & value2 were swapped');
       }
     }
 
@@ -380,7 +381,7 @@ class Model extends EventEmitter implements IModel {
     }
 
     if (fixedValue !== value) {
-      console.warn(`Note: value${number} (${value}) is changed to ${fixedValue} in order to ${fixReasons.join(' and to ')}.`);
+      Logger.modelWarn(`Note: value${number} (${value}) is changed to ${fixedValue} in order to ${fixReasons.join(' and to ')}.`);
     }
     return fixedValue;
   }
