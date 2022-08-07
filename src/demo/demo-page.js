@@ -30,4 +30,14 @@ $(() => {
     value2: 5000,
   });
   window.panel3 = new Panel(window.slider3);
+
+  window.slider4 = $('#slider4').sliderPlugin({
+    isVertical: true,
+    showScale: true,
+    showTip: true,
+    minValue: 0,
+    maxValue: 100,
+    value1: 0,
+  });
+  window.panel4 = new Panel(window.slider4);
 });

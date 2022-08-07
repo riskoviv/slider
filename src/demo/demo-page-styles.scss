@@ -14,23 +14,25 @@ html, body {
   box-sizing: border-box;
   background-color: var(--page-color);
   margin: 0;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  justify-items: center;
   align-items: center;
   gap: 2%;
   padding: 1% 0;
 
   &__slider-container {
     position: relative;
-    width: 31%;
-    height: 90%;
-    max-height: 670px;
+    min-width: 60%;
+    max-width: 95%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     row-gap: 3%;
 
-    > :first-child {
-      flex-basis: 90%;
+    > .slider {
+      flex-basis: 85%;
     }
   }
 }
