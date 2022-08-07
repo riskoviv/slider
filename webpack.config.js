@@ -57,7 +57,7 @@ const getConfig = (isDev) => ({
       new TerserPlugin({
         terserOptions: {
           compress: {
-            pure_funcs: ['console.warn'],
+            pure_funcs: ['console.warn', 'console.error'],
           },
         },
       }),
