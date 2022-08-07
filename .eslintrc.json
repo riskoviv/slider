@@ -39,13 +39,7 @@
     "no-unused-vars": "off",
     "no-undef": "off",
     "no-console": [
-      "warn",
-      {
-        "allow": [
-          "warn",
-          "error"
-        ]
-      }
+      "warn"
     ],
     "@typescript-eslint/adjacent-overload-signatures": "error"
   },
