@@ -54,7 +54,7 @@ class Logger {
     Logger.#logs = [];
     console.info(
       '%cAll Logger\'s logs has been deleted',
-      'background-color: #25d; color: white; border-radius: 3px;',
+      'background-color: #25d2; color: #25f; border-radius: 3px; border: 1px solid #25d; padding: 3px;',
     );
   }
 
