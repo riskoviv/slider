@@ -20,6 +20,8 @@ const defaultOptions: SliderOptions = {
 const getTypedKeys = <Obj extends Record<string, unknown>>(obj: Obj):
 (keyof Obj)[] => Object.keys(obj);
 
+type TypedObj<Obj> = Partial<Record<keyof Obj, TypeOfValues<Obj>>>;
+
 /**
  * uses Object.entries method but returns entries of passed object
  * with keys in original type
@@ -27,7 +29,7 @@ const getTypedKeys = <Obj extends Record<string, unknown>>(obj: Obj):
  * @param obj object to get entries from
  * @returns array of arrays each containing key & value of obj
  */
-const getEntriesWithTypedKeys = <Obj extends Partial<Record<keyof Obj, TypeOfValues<Obj>>>>(
+const getEntriesWithTypedKeys = <Obj extends TypedObj<Obj>>(
   obj: Obj,
 ): [keyof Obj, TypeOfValues<Obj>][] => {
   const keys = getTypedKeys(obj);
