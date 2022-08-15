@@ -42,10 +42,9 @@ class Logger {
         case 'warn':
           Logger.#printWarnMessage(log);
           break;
-        case 'error':
+        default:
           Logger.#printErrorMessage(log);
           break;
-        default: break;
       }
     });
   }
