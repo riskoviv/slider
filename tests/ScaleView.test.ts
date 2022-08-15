@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import '@testing-library/jest-dom';
 
-import ScaleView from '../subviews/ScaleView';
-import Logger from '../Logger';
+import ScaleView from '../src/subviews/ScaleView';
+import Logger from '../src/Logger';
 
 const makeNewScaleValueElement = (value: number): JQuery<HTMLDivElement> => (
   $(`<div class="slider__scale-block">

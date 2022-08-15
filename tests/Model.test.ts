@@ -1,11 +1,11 @@
-import Logger from '../Logger';
-import Model from '../Model';
+import Logger from '../src/Logger';
+import Model from '../src/Model';
 import {
   getEntriesWithTypedKeys,
   defaultOptions,
   nonFiniteNumbers,
   anyTypeValues,
-} from '../utils';
+} from '../src/utils';
 
 let model: Model;
 

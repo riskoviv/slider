@@ -1,4 +1,4 @@
-import Logger from '../Logger';
+import Logger from '../src/Logger';
 
 jest.spyOn(console, 'info');
 const consoleInfoMock = console.info as jest.MockedFunction<typeof console.info>;

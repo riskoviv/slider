@@ -2,10 +2,10 @@ import $ from 'jquery';
 import { getByText } from '@testing-library/dom';
 
 import './mocks/ResizeObserver';
-import '../slider-plugin';
+import '../src/slider-plugin';
 import {
   getTypedKeys, getFractionalPartSize, defaultOptions, anyTypeValues,
-} from '../utils';
+} from '../src/utils';
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   const childrenCountInParent = children.reduce((childCount, childClass) => (

@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
-import Presenter from '../Presenter';
-import Model from '../Model';
+import Presenter from '../src/Presenter';
+import Model from '../src/Model';
 import './mocks/ResizeObserver';
 
 describe('Presenter', () => {

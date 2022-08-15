@@ -1,8 +1,8 @@
 import $ from 'jquery';
 
-import Panel from '../Panel';
-import '../slider-plugin';
-import { getFractionalPartSize } from '../utils';
+import Panel from '../src/Panel';
+import '../src/slider-plugin';
+import { getFractionalPartSize } from '../src/utils';
 import './mocks/ResizeObserver';
 
 describe('Panel', () => {

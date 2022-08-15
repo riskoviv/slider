@@ -1,6 +1,6 @@
-import View from '../View';
-import { getEntriesWithTypedKeys } from '../utils';
-import Logger from '../Logger';
+import View from '../src/View';
+import { getEntriesWithTypedKeys } from '../src/utils';
+import Logger from '../src/Logger';
 
 describe('View', () => {
   let view: View;
