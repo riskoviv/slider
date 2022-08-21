@@ -1,11 +1,8 @@
 import Logger from '../src/Logger';
 
-jest.spyOn(console, 'info');
-const consoleInfoMock = console.info as jest.MockedFunction<typeof console.info>;
-jest.spyOn(console, 'warn');
-const consoleWarnMock = console.warn as jest.MockedFunction<typeof console.warn>;
-jest.spyOn(console, 'error');
-const consoleErrorMock = console.error as jest.MockedFunction<typeof console.error>;
+const consoleInfoMock = jest.spyOn(console, 'info');
+const consoleWarnMock = jest.spyOn(console, 'warn');
+const consoleErrorMock = jest.spyOn(console, 'error');
 
 describe('Logger', () => {
   test('pluginWarn() should emit console.warn on behalf of slider-plugin', () => {
