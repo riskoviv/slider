@@ -50,7 +50,7 @@ const getConfig = (isDev) => ({
   resolve: {
     extensions: ['.ts', '.js'],
   },
-  devtool: isDev ? 'eval-cheap-module-source-map' : 'hidden-nosources-source-map',
+  devtool: isDev ? 'eval-cheap-module-source-map' : false,
   optimization: {
     minimize: !isDev,
     minimizer: [
