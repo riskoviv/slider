@@ -1,7 +1,7 @@
 # Slider jQuery-плагин
 [![readme in english](https://img.shields.io/badge/lang-en-green)](README.en.md)
 
-Кастомизируемый **jQuery**-плагин, реализующий функционал бегунка (слайдера), написанный на TypeScript с использованием архитектуры **MVP** и css custom properties.
+Кастомизируемый **jQuery**-плагин, реализующий функционал бегунка (слайдера). Написан на TypeScript с использованием архитектуры **MVP** и SCSS c использованием CSS custom properties.
 
 ## Совместимость с nodejs и jQuery
 Для работы с исходным кодом проекта и успешной сборки необходим nodejs версии не ниже 12.
