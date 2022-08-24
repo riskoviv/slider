@@ -1,6 +1,6 @@
 {
   "name": "slider",
-  "version": "0.10.9",
+  "version": "0.10.10",
   "description": "slider jQuery plugin written in TypeScript using MVP architecture",
   "main": "slider-plugin.ts",
   "private": true,
@@ -17,7 +17,7 @@
     "typescript",
     "mvp"
   ],
-  "author": "",
+  "author": "Ivan Riskov",
   "license": "ISC",
   "dependencies": {
     "identity-obj-proxy": "^3.0.0",
