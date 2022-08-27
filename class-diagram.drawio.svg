@@ -1,0 +1,55 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="261px" height="188px" viewBox="-0.5 -0.5 261 188" content="&lt;mxfile scale=&quot;1&quot; border=&quot;10&quot;&gt;&lt;diagram id=&quot;ACyvmmISSzLk5fQ_mcjH&quot; name=&quot;Page-1&quot;&gt;7ZhNb6MwEIZ/DVJ76Apw0qbHQNP20KpVs9o9O+CAVWMj43z11+/YmABxsu1uvy4hUcS89mBm5rEN8VBcrG8kLvN7kRLmhX669tCVF4aD8AJ+tbCxwvCyFjJJ01oKWmFKX4gVfasuaEqqXkclBFO07IuJ4JwkqqdhKcWq320uWH/UEmfEEaYJZq76m6Yqr9VRE5bWbwnN8mbk4NzGN8PJcybFgtvxvBBdm6NuLnBzLRtoleNUrDoSmngolkKo+qxYx4Tp1DZpq/2uD7Ru71sSrt7igGxES8wWNvbJEnwnBVWKSHuTatMkplrRgmEOVjQXXE1tCwIbM5pxOE/AHTxRtCRSUcjp2DYoUYKa5JSld3gjFvoGKwUJa6woF5K+wGUxg6YABGiWyuIRnvd6TLUnyD6oklTQ57GJOtiR7vG61/EOV8oKiWAMlxWdmTC0Y4FlRnkklBJF46XrSVJrbUtmjGeiktwaOiOxYEKaXKFwrD8mCimeSaelPrQHZayjW1RQ5JbRVlbnlKw7ki3rDREFUXIDXZpW3yJmp2A4sPaqBXqr5V2Yzwd2ItlJlG2vvR3uCSYd5hkk7Z/GC4I940Fde8NhBvhwrEik01518YWTTqitZKA+APjIAfysMW8xTxmRMO7Yi0Nv7P/qqbvsQ+KVU00u6snQKaSVmvnAyFwdnA1ViRPKszvT52rQKk82QVoS4DtnhrmcpinhhkmFFa6x1eyVgnJlMjiM4At5jv0fQ28INx6DHbQ2fHV3CahyiAVTgxiBObEiel68G3cX3u0q8zq9mz4Ur8G6C0+X1R41f0FksA8RwwMsP8qlZNpTj5S8hxKHiH3gHKRkGH4hJZeHKFlSsnKXkq54ZOT7GLkYfR0jyGXEqT2jpqZ17ZuHy+C/Cl9ACRlpK/1Tg3B1Fjg0IJcGtKfyDM8IexQVVVTo68u67w4Rn11052nJN8cHbSyBP3gbD6MPWDL8PThAFL7gJ+ZR44GD4V3AhepNpWPr9eOBn+r1BN59cnpcRL7zcSQIvnCnGe7DBoFA9JtZNV1RCPqk+5o2TvSMPT0i8o37TIA+b6MBs/1LoH4Jav92QZM/&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);">
+    <defs>
+        <clipPath id="mx-clip-14-41-232-26-0">
+            <rect x="14" y="41" width="232" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-67-232-26-0">
+            <rect x="14" y="67" width="232" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-93-232-26-0">
+            <rect x="14" y="93" width="232" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-127-232-26-0">
+            <rect x="14" y="127" width="232" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-153-232-26-0">
+            <rect x="14" y="153" width="232" height="26"/>
+        </clipPath>
+    </defs>
+    <g>
+        <path d="M 10 36 L 10 10 L 250 10 L 250 36" fill="#ffffff" stroke="#333333" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 10 36 L 10 174 L 250 174 L 250 36" fill="none" stroke="#333333" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 10 36 L 250 36" fill="none" stroke="#333333" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#2A2A2A" font-family="Helvetica" font-weight="bold" font-style="italic" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="129.5" y="27.5">
+                EventEmitter
+            </text>
+        </g>
+        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-41-232-26-0)" font-size="12px">
+            <text x="15.5" y="53.5">
+                - valueHandlers: ValueHandlers
+            </text>
+        </g>
+        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-67-232-26-0)" font-size="12px">
+            <text x="15.5" y="79.5">
+                - stateHandlers: StateHandlers
+            </text>
+        </g>
+        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-93-232-26-0)" font-size="12px">
+            <text x="15.5" y="105.5">
+                - viewHandlers: ViewHandlers
+            </text>
+        </g>
+        <path d="M 10 118 L 250 118" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-127-232-26-0)" font-size="12px">
+            <text x="15.5" y="139.5">
+                + on(ValueOn | StateOn | ViewOn): this
+            </text>
+        </g>
+        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-153-232-26-0)" font-size="12px">
+            <text x="15.5" y="165.5">
+                # eventsSwitch(EventEmitterAction)
+            </text>
+        </g>
+    </g>
+</svg>
