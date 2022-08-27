@@ -15,16 +15,7 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  protected eventsSwitch({ options, type }: {
-    options: ValueOn | StateOn | ViewOn,
-    type: 'on',
-  } | {
-    options: ValueEmit | StateEmit | ViewEmit,
-    type: 'emit',
-  } | {
-    options: ValueSubscribe | StateSubscribe,
-    type: 'subscribe',
-  }): void {
+  protected eventsSwitch({ options, type }: EventEmitterAction): void {
     switch (options.event) {
       case 'value1Changed':
       case 'value2Changed':

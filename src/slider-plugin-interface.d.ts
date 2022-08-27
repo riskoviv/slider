@@ -137,6 +137,23 @@ type ViewEmit = SliderPointerDownEmit | ScaleValueSelectEmit;
 type ValueSubscribe = Required<Omit<ValueOn, 'handler'>>;
 type StateSubscribe = Required<Omit<StateOn, 'handler'>>;
 
+type OnAction = {
+  options: ValueOn | StateOn | ViewOn,
+  type: 'on',
+};
+
+type EmitAction = {
+  options: ValueEmit | StateEmit | ViewEmit,
+  type: 'emit',
+};
+
+type SubscribeAction = {
+  options: ValueSubscribe | StateSubscribe,
+  type: 'subscribe',
+};
+
+type EventEmitterAction = OnAction | EmitAction | SubscribeAction;
+
 interface ModelStateMethods {
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
