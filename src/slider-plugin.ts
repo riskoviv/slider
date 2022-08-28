@@ -4,20 +4,8 @@ import Logger from './Logger';
 import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
-import { getEntriesWithTypedKeys } from './utils';
+import { defaultOptions, getEntriesWithTypedKeys } from './utils';
 
-const defaultOptions: SliderOptions = {
-  stepSize: 10,
-  minValue: -100,
-  maxValue: 100,
-  value1: -50,
-  value2: 50,
-  isVertical: false,
-  isInterval: false,
-  showTip: false,
-  showScale: false,
-  showProgressBar: false,
-};
 let cleanContainerIfNotEmpty: (container: JQuery) => void;
 let fixCustomOptions: (options: Partial<SliderOptions>) => null | Partial<SliderOptions>;
 let checkOptionsValues: (options: SliderOptions) => SliderOptions;
