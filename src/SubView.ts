@@ -13,6 +13,10 @@ abstract class SubView extends EventEmitter implements ISubView {
     this.$elem = this.render();
   }
 
+  removeView(): void {
+    this.$elem.remove();
+  }
+
   protected render(): JQuery<HTMLDivElement> {
     let numberModifier = '';
     let numberDataAttr = '';
@@ -28,10 +32,6 @@ abstract class SubView extends EventEmitter implements ISubView {
       ></div>
     `);
     return $elem;
-  }
-
-  removeView(): void {
-    this.$elem.remove();
   }
 }
 
