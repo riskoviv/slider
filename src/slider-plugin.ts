@@ -6,68 +6,14 @@ import Presenter from './Presenter';
 import './styles/styles.scss';
 import { defaultOptions, getEntriesWithTypedKeys } from './utils';
 
-let cleanContainerIfNotEmpty: (container: JQuery) => void;
-let fixCustomOptions: (options: Partial<SliderOptions>) => null | Partial<SliderOptions>;
-let checkOptionsValues: (options: SliderOptions) => SliderOptions;
-
-$.fn.sliderPlugin = function sliderPlugin(
-  this: JQuery,
-  options: Partial<SliderOptions> = {},
-): JQuery {
-  cleanContainerIfNotEmpty(this);
-
-  const pluginOptions = checkOptionsValues({
-    ...defaultOptions,
-    ...fixCustomOptions(options),
-  });
-
-  const model = new Model(pluginOptions);
-  const presenter = new Presenter(this, model);
-  const $sliderElem = presenter.view.$elem;
-
-  ({
-    getOptions: $sliderElem.getOptions,
-    subscribe: $sliderElem.subscribe,
-    unsubscribe: $sliderElem.unsubscribe,
-  } = model.publicDataMethods);
-
-  const makeValueMethodChainable = (method: ValueHandler) => {
-    const chainedMethod = (arg: number) => {
-      method(arg);
-      return $sliderElem;
-    };
-    Object.defineProperty(chainedMethod, 'name', { value: method.name.substring(6) });
-    return chainedMethod;
-  };
-
-  const makeStateMethodChainable = (method: StateHandler) => {
-    const chainedMethod = (arg: boolean) => {
-      method(arg);
-      return $sliderElem;
-    };
-    Object.defineProperty(chainedMethod, 'name', { value: method.name.substring(6) });
-    return chainedMethod;
-  };
-
-  getEntriesWithTypedKeys(model.publicValueMethods).forEach(([methodName, method]) => {
-    $sliderElem[methodName] = makeValueMethodChainable(method);
-  });
-
-  getEntriesWithTypedKeys(model.publicStateMethods).forEach(([methodName, method]) => {
-    $sliderElem[methodName] = makeStateMethodChainable(method);
-  });
-
-  return $sliderElem;
-};
-
-cleanContainerIfNotEmpty = (container: JQuery): void => {
+const cleanContainerIfNotEmpty = (container: JQuery): void => {
   if (container.not(':empty').length > 0) {
     container.empty();
     Logger.pluginWarn('Warning: The element where you intended to initialize the plugin has contained something. It was cleared and now has only the new slider-plugin instance.');
   }
 };
 
-fixCustomOptions = (options: Partial<SliderOptions>) => {
+const fixCustomOptions = (options: Partial<SliderOptions>) => {
   const notAnObject = typeof options !== 'object' || options === null;
   const isArrayOrNotAnObject = notAnObject || Object.prototype.hasOwnProperty.call(options, 'length');
   if (isArrayOrNotAnObject) {
@@ -108,7 +54,7 @@ fixCustomOptions = (options: Partial<SliderOptions>) => {
   return checkedOptions;
 };
 
-checkOptionsValues = (options: SliderOptions) => {
+const checkOptionsValues = (options: SliderOptions) => {
   const pluginOptions = { ...options };
   const warnMsgEnd = '\nPlease check values that you passed to plugin options';
 
@@ -178,4 +124,54 @@ checkOptionsValues = (options: SliderOptions) => {
   }
 
   return pluginOptions;
+};
+
+$.fn.sliderPlugin = function sliderPlugin(
+  this: JQuery,
+  options: Partial<SliderOptions> = {},
+): JQuery {
+  cleanContainerIfNotEmpty(this);
+
+  const pluginOptions = checkOptionsValues({
+    ...defaultOptions,
+    ...fixCustomOptions(options),
+  });
+
+  const model = new Model(pluginOptions);
+  const presenter = new Presenter(this, model);
+  const $sliderElem = presenter.view.$elem;
+
+  ({
+    getOptions: $sliderElem.getOptions,
+    subscribe: $sliderElem.subscribe,
+    unsubscribe: $sliderElem.unsubscribe,
+  } = model.publicDataMethods);
+
+  const makeValueMethodChainable = (method: ValueHandler) => {
+    const chainedMethod = (arg: number) => {
+      method(arg);
+      return $sliderElem;
+    };
+    Object.defineProperty(chainedMethod, 'name', { value: method.name.substring(6) });
+    return chainedMethod;
+  };
+
+  const makeStateMethodChainable = (method: StateHandler) => {
+    const chainedMethod = (arg: boolean) => {
+      method(arg);
+      return $sliderElem;
+    };
+    Object.defineProperty(chainedMethod, 'name', { value: method.name.substring(6) });
+    return chainedMethod;
+  };
+
+  getEntriesWithTypedKeys(model.publicValueMethods).forEach(([methodName, method]) => {
+    $sliderElem[methodName] = makeValueMethodChainable(method);
+  });
+
+  getEntriesWithTypedKeys(model.publicStateMethods).forEach(([methodName, method]) => {
+    $sliderElem[methodName] = makeStateMethodChainable(method);
+  });
+
+  return $sliderElem;
 };
