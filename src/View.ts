@@ -24,23 +24,6 @@ class View extends EventEmitter implements IView {
     this.bindEventListeners();
   }
 
-  private render(options: SliderViewOptions): JQuery<HTMLElement> {
-    const {
-      isVertical = false,
-      isInterval = false,
-      showProgressBar = false,
-    } = options;
-    return $(
-      `<div class="slider${
-        isVertical ? ' slider_vertical' : ''
-      }${
-        isInterval ? ' slider_interval' : ''
-      }${
-        showProgressBar ? ' slider_show-progress' : ''
-      }"></div>`,
-    ).append(this.$controlContainer);
-  }
-
   toggleVertical(isVertical: boolean): void {
     this.$elem.toggleClass('slider_vertical', isVertical);
   }
@@ -62,6 +45,23 @@ class View extends EventEmitter implements IView {
       '--thumb-thickness',
       `${thickness}%`,
     );
+  }
+
+  private render(options: SliderViewOptions): JQuery<HTMLElement> {
+    const {
+      isVertical = false,
+      isInterval = false,
+      showProgressBar = false,
+    } = options;
+    return $(
+      `<div class="slider${
+        isVertical ? ' slider_vertical' : ''
+      }${
+        isInterval ? ' slider_interval' : ''
+      }${
+        showProgressBar ? ' slider_show-progress' : ''
+      }"></div>`,
+    ).append(this.$controlContainer);
   }
 
   private bindEventListeners() {
