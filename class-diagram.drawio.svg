@@ -1,55 +1,179 @@
-<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="261px" height="188px" viewBox="-0.5 -0.5 261 188" content="&lt;mxfile scale=&quot;1&quot; border=&quot;10&quot;&gt;&lt;diagram id=&quot;ACyvmmISSzLk5fQ_mcjH&quot; name=&quot;Page-1&quot;&gt;7ZhNb6MwEIZ/DVJ76Apw0qbHQNP20KpVs9o9O+CAVWMj43z11+/YmABxsu1uvy4hUcS89mBm5rEN8VBcrG8kLvN7kRLmhX669tCVF4aD8AJ+tbCxwvCyFjJJ01oKWmFKX4gVfasuaEqqXkclBFO07IuJ4JwkqqdhKcWq320uWH/UEmfEEaYJZq76m6Yqr9VRE5bWbwnN8mbk4NzGN8PJcybFgtvxvBBdm6NuLnBzLRtoleNUrDoSmngolkKo+qxYx4Tp1DZpq/2uD7Ru71sSrt7igGxES8wWNvbJEnwnBVWKSHuTatMkplrRgmEOVjQXXE1tCwIbM5pxOE/AHTxRtCRSUcjp2DYoUYKa5JSld3gjFvoGKwUJa6woF5K+wGUxg6YABGiWyuIRnvd6TLUnyD6oklTQ57GJOtiR7vG61/EOV8oKiWAMlxWdmTC0Y4FlRnkklBJF46XrSVJrbUtmjGeiktwaOiOxYEKaXKFwrD8mCimeSaelPrQHZayjW1RQ5JbRVlbnlKw7ki3rDREFUXIDXZpW3yJmp2A4sPaqBXqr5V2Yzwd2ItlJlG2vvR3uCSYd5hkk7Z/GC4I940Fde8NhBvhwrEik01518YWTTqitZKA+APjIAfysMW8xTxmRMO7Yi0Nv7P/qqbvsQ+KVU00u6snQKaSVmvnAyFwdnA1ViRPKszvT52rQKk82QVoS4DtnhrmcpinhhkmFFa6x1eyVgnJlMjiM4At5jv0fQ28INx6DHbQ2fHV3CahyiAVTgxiBObEiel68G3cX3u0q8zq9mz4Ur8G6C0+X1R41f0FksA8RwwMsP8qlZNpTj5S8hxKHiH3gHKRkGH4hJZeHKFlSsnKXkq54ZOT7GLkYfR0jyGXEqT2jpqZ17ZuHy+C/Cl9ACRlpK/1Tg3B1Fjg0IJcGtKfyDM8IexQVVVTo68u67w4Rn11052nJN8cHbSyBP3gbD6MPWDL8PThAFL7gJ+ZR44GD4V3AhepNpWPr9eOBn+r1BN59cnpcRL7zcSQIvnCnGe7DBoFA9JtZNV1RCPqk+5o2TvSMPT0i8o37TIA+b6MBs/1LoH4Jav92QZM/&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);">
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="331px" height="526px" viewBox="-0.5 -0.5 331 526" content="&lt;mxfile scale=&quot;1&quot; border=&quot;10&quot;&gt;&lt;diagram id=&quot;ACyvmmISSzLk5fQ_mcjH&quot; name=&quot;Page-1&quot;&gt;7Zpdc5s4FIZ/DTPZi3YA2di5tB23vUgnmXpn91oGGTQRkkfIX/31ewTiy0Cbbg3JTHEyGc4rCVnnPJKOCBZaxefPEu+jryIgzHLt4GyhB8t13bkLf7VwyYQ5sjMhlDTIJKcUNvQ7MWJe7UADktQqKiGYovu66AvOia9qGpZSnOrVdoLVe93jkDSEjY9ZU/2XBioyo3Bnpf6F0DDKe3a8+6xki/2XUIoDN/1ZLvqUfrLiGOf3MgNNIhyIU0VCawutpBAqu4rPK8K0a3O3Ze0+dZQW31sSrl7TAJkRHTE7mLGvj9B2HVOliDRfUl1yxyQnGjPMwVruBFcbU4LAxoyGHK59aA4t0fJIpKLg04UpUGIPqh9RFjziizjoL5gocFhuLSMh6Xe4LWZQ5IAAxVIZPFyvVmOjW4JsgypJAnWe81E7V9JXfK5VfMSJMoIvGMP7hG7TYeiGMZYh5UuhlIjzVjqeJDBWEbLUeCHKj4yhPbISTMjUV8hOP+kopHghlZLso1tQxiq6QQUtm2E0kdU+JeeKZML6mYiYKHmBKnmpbRAzU9CdGPtUAo3y+RZVYJ7aZvJiM4nC4t5Fd99g0mEegtN+qT+nrT+Ia607zAAfjhVZarcnVXzhojLUUkqh7gB83gD8Q25+wTxgREK/C2vlWgv7n5p6zT44XjWiyUU2GSqBNFI+HxjZqc7ZkOyxT3n4mNZ5mJTKN+MgLQlou2MpcxENAsJTJhVWOMNWM7YXlKvUg9Ml/IKfV/bHqTWFL74C2ylt+NXVJaDKYSyYpogRmBMnoufFb+PehLdYZX5O76UOxc9gvYanymqNmh8gMmlDJOUBlh/VpGRTU0dKfoeSBhFt4HRSMnUHpOS+i5IjJafmUlIVR0bejpHZfDhGUJORRuwZTWOaxT5PLp3/FfgYQshIGem/NQgPH5wGDahJA2qJPMNbwp5FQhUV+v4yq3tFRE9Bdxf6py1buunG4tiT1/Ewv8GSYbfgAKOwBb9LU40nDoY1gxtlm0rF1uvHE/9Lrydw9onouIi8ZTriOAPuNNM2bBAIRJ/Mks2JwqDvqse0ha9nrIHlKOBGIyxvt+M4aMAtZ+o0YCnON0/FMjOi8U7Q8F65+9wEjfajb5LtNHdmxxnReCdo3L/y+cxN0Og8zCSMBkQ+a98S+SBOXJPS1EZq3gc1sKIMR43XTExyavSj83Sv2RBGfKWhaUgjM++EmcmAyazndiSzYre72xy2iS/plkjDxlYIRjD/Y/HoNezegGmph1rDni4WBA4tWWKqjy/1E3BN0WdgLYwLR89k3A+YlXrT7gPLukbGGPZ+w47cATNOz+s+jKRhL6b/GPaewz4ZMmVsvl/QddDIKGhTRyJ6JmI2ZELY/d/WqxNDBkSLOPLQMw/3Q2aKbY8iXA/H2vN8m+zTQXlMD/oAF6G+UJEUaWq4lhJcYIqhq6LGCM4vghOpOH/r6hYMTdwBc8rZDx6CF2fMLLEszJGFfheRyXTA7DLfwDpe4SkZ2NTMkYGeGZj1l2qCWb4mm70YWL6KjNb/AQ==&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);">
     <defs>
-        <clipPath id="mx-clip-14-41-232-26-0">
-            <rect x="14" y="41" width="232" height="26"/>
+        <clipPath id="mx-clip-14-41-302-26-0">
+            <rect x="14" y="41" width="302" height="26"/>
         </clipPath>
-        <clipPath id="mx-clip-14-67-232-26-0">
-            <rect x="14" y="67" width="232" height="26"/>
+        <clipPath id="mx-clip-14-67-302-26-0">
+            <rect x="14" y="67" width="302" height="26"/>
         </clipPath>
-        <clipPath id="mx-clip-14-93-232-26-0">
-            <rect x="14" y="93" width="232" height="26"/>
+        <clipPath id="mx-clip-14-93-302-26-0">
+            <rect x="14" y="93" width="302" height="26"/>
         </clipPath>
-        <clipPath id="mx-clip-14-127-232-26-0">
-            <rect x="14" y="127" width="232" height="26"/>
+        <clipPath id="mx-clip-14-127-302-26-0">
+            <rect x="14" y="127" width="302" height="26"/>
         </clipPath>
-        <clipPath id="mx-clip-14-153-232-26-0">
-            <rect x="14" y="153" width="232" height="26"/>
+        <clipPath id="mx-clip-14-153-302-26-0">
+            <rect x="14" y="153" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-179-302-26-0">
+            <rect x="14" y="179" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-205-302-26-0">
+            <rect x="14" y="205" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-231-302-26-0">
+            <rect x="14" y="231" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-257-302-26-0">
+            <rect x="14" y="257" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-283-302-26-0">
+            <rect x="14" y="283" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-309-302-26-0">
+            <rect x="14" y="309" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-335-302-26-0">
+            <rect x="14" y="335" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-361-302-26-0">
+            <rect x="14" y="361" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-387-302-26-0">
+            <rect x="14" y="387" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-413-302-26-0">
+            <rect x="14" y="413" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-465-302-26-0">
+            <rect x="14" y="465" width="302" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-14-491-302-26-0">
+            <rect x="14" y="491" width="302" height="26"/>
         </clipPath>
     </defs>
     <g>
-        <path d="M 10 36 L 10 10 L 250 10 L 250 36" fill="#ffffff" stroke="#333333" stroke-miterlimit="10" pointer-events="all"/>
-        <path d="M 10 36 L 10 174 L 250 174 L 250 36" fill="none" stroke="#333333" stroke-miterlimit="10" pointer-events="none"/>
-        <path d="M 10 36 L 250 36" fill="none" stroke="#333333" stroke-miterlimit="10" pointer-events="none"/>
-        <g fill="#2A2A2A" font-family="Helvetica" font-weight="bold" font-style="italic" pointer-events="none" text-anchor="middle" font-size="12px">
-            <text x="129.5" y="27.5">
+        <path d="M 10 36 L 10 10 L 320 10 L 320 36" fill="#ffffff" stroke="#333333" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 10 36 L 10 512 L 320 512 L 320 36" fill="none" stroke="#333333" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 10 36 L 320 36" fill="none" stroke="#333333" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" font-style="italic" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="164.5" y="27.5">
                 EventEmitter
             </text>
         </g>
-        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-41-232-26-0)" font-size="12px">
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-41-302-26-0)" font-size="12px">
             <text x="15.5" y="53.5">
                 - valueHandlers: ValueHandlers
             </text>
         </g>
-        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-67-232-26-0)" font-size="12px">
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-67-302-26-0)" font-size="12px">
             <text x="15.5" y="79.5">
                 - stateHandlers: StateHandlers
             </text>
         </g>
-        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-93-232-26-0)" font-size="12px">
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-93-302-26-0)" font-size="12px">
             <text x="15.5" y="105.5">
                 - viewHandlers: ViewHandlers
             </text>
         </g>
-        <path d="M 10 118 L 250 118" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
-        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-127-232-26-0)" font-size="12px">
+        <path d="M 10 118 L 320 118" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-127-302-26-0)" font-size="12px">
             <text x="15.5" y="139.5">
                 + on(ValueOn | StateOn | ViewOn): this
             </text>
         </g>
-        <g fill="#2A2A2A" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-153-232-26-0)" font-size="12px">
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-153-302-26-0)" font-size="12px">
             <text x="15.5" y="165.5">
-                # eventsSwitch(EventEmitterAction)
+                # eventsSwitch(EventEmitterAction): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-179-302-26-0)" font-size="12px">
+            <text x="15.5" y="191.5">
+                - valueOn(ValueOn): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-205-302-26-0)" font-size="12px">
+            <text x="15.5" y="217.5">
+                - stateOn(StateOn): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-231-302-26-0)" font-size="12px">
+            <text x="15.5" y="243.5">
+                - sliderPointerDownOn(SliderPointerDownOn): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-257-302-26-0)" font-size="12px">
+            <text x="15.5" y="269.5">
+                - scaleValueSelectOn(ScaleValueSelectOn): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-283-302-26-0)" font-size="12px">
+            <text x="15.5" y="295.5">
+                # off(Subscriber): boolean
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-309-302-26-0)" font-size="12px">
+            <text x="15.5" y="321.5">
+                # emit(ValueEmit | StateEmit | ViewEmit): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-335-302-26-0)" font-size="12px">
+            <text x="15.5" y="347.5">
+                - valueEmit(ValueEmit): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-361-302-26-0)" font-size="12px">
+            <text x="15.5" y="373.5">
+                - stateEmit(StateEmit): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-387-302-26-0)" font-size="12px">
+            <text x="15.5" y="399.5">
+                - sliderPointerDownEmit(SliderPointerDownEmit): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-413-302-26-0)" font-size="12px">
+            <text x="15.5" y="425.5">
+                - scaleValueSelectEmit(ScaleValueSelectEmit): void
+            </text>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-start; justify-content: unsafe flex-start; width: 300px; height: 1px; padding-top: 441px; margin-left: 16px;">
+                        <div data-drawio-colors="color: #000000; " style="box-sizing: border-box; font-size: 0px; text-align: left; max-height: 22px; overflow: hidden;">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: none; white-space: nowrap;">
+                                -
+                                <u>
+                                    throwEmitError
+                                </u>
+                                (ScaleValueSelectEmit): void
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="16" y="453" fill="#000000" font-family="Helvetica" font-size="12px">
+                    - throwEmitError(ScaleValueSelectEmit): void
+                </text>
+            </switch>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-465-302-26-0)" font-size="12px">
+            <text x="15.5" y="477.5">
+                - valueSubscribe(ValueSubscribe): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-14-491-302-26-0)" font-size="12px">
+            <text x="15.5" y="503.5">
+                - stateSubscribe(StateSubscribe): void
             </text>
         </g>
     </g>
+    <switch>
+        <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/>
+        <a transform="translate(0,-5)" xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems" target="_blank">
+            <text text-anchor="middle" font-size="10px" x="50%" y="100%">
+                Viewer does not support full SVG 1.1
+            </text>
+        </a>
+    </switch>
 </svg>
