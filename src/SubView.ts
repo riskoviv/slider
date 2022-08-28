@@ -7,7 +7,7 @@ abstract class SubView extends EventEmitter implements ISubView {
 
   constructor(
     private readonly viewType: ViewType,
-    private readonly elementNumber?: 1 | 2 | 3,
+    private readonly elementNumber: 1 | 2 | 3 = 1,
   ) {
     super();
     this.$elem = this.render();
@@ -18,19 +18,19 @@ abstract class SubView extends EventEmitter implements ISubView {
   }
 
   protected render(): JQuery<HTMLDivElement> {
-    let numberModifier = '';
-    let numberDataAttr = '';
-    if (this.elementNumber !== undefined) {
-      numberModifier = ` slider__${this.viewType}_${this.elementNumber}`;
-      numberDataAttr = ` data-number="${this.elementNumber}"`;
+    const isNumberedView = this.viewType === 'thumb' || this.viewType === 'tip';
+    let $elem: JQuery<HTMLDivElement>;
+    if (isNumberedView) {
+      $elem = $(`
+        <div
+          class="slider__${this.viewType} slider__${this.viewType}_${this.elementNumber}"
+          data-number="${this.elementNumber}"
+        ></div>
+      `);
+    } else {
+      $elem = $(`<div class="slider__${this.viewType}"></div>`);
     }
 
-    const $elem: JQuery<HTMLDivElement> = $(`
-      <div
-        class="slider__${this.viewType}${numberModifier}"
-        ${numberDataAttr}
-      ></div>
-    `);
     return $elem;
   }
 }
