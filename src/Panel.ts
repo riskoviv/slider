@@ -110,7 +110,7 @@ class Panel {
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;
-    return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+    return this.syncElementWithSlider({
       label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderMethod: method,
     });
   }
@@ -132,12 +132,12 @@ class Panel {
       default:
         $inputElement.prop({ value, step });
     }
-    return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+    return this.syncElementWithSlider({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderMethod: method,
     });
   }
 
-  private appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+  private syncElementWithSlider({
     label,
     $inputElement,
     sliderEvent,
