@@ -89,23 +89,9 @@ Model перед отправкой события проверяет посту
 Для подписки на событие нужно вызвать метод `subscribe` на элементе плагина, возвращённом функцией инициализации `sliderPlugin`. Метод subscribe принимает 2 аргумента:
 1. [Название события](#события-плагина-на-которые-можно-подписаться)
 2. Подписчик. Это может быть:
-   1. При подписке на событие изменения **значения** – элемент `<input type="number">` или функция, принимающая 1 аргумент типа **number**
+   1. При подписке на событие изменения **числового значения** – элемент `<input type="number">` или функция, принимающая 1 аргумент типа **number**
    2. При подписке на событие изменения **состояния** – элемент `<input type="checkbox">` или функция, принимающая 1 аргумент типа **boolean**
 
-Пример подписки функции на событие плагина:
-```js
-// сохраняем экземпляр плагина в переменную slider1
-const slider1 = $('#slider1').sliderPlugin();
-let changeableValue;
-
-// чтобы потом была возможность отписать эту функцию от события,
-// нужно её заранее сохранить в переменную (numberCallback в данном случае)
-const numberCallback = (value1) => { changeableValue = value1 };
-
-// значение переменной changeableValue будет меняться на новое значение value1
-// в callback-функции при срабатывании события value1Changed
-slider1.subscribe('value1Changed', numberCallback);
-```
 Пример подписки HTML-элемента `<input type="number">` на событие изменения значения:
 ```js
 // здесь используется виртуальный элемент,
@@ -122,6 +108,20 @@ slider2.subscribe('value2Changed', inputNumberElement);
 const inputCheckboxElement = document.querySelector('input[type="checkbox"]');
 const slider3 = $('#slider3').sliderPlugin();
 slider3.subscribe('isIntervalChanged', inputCheckboxElement);
+```
+Пример подписки функции на событие плагина:
+```js
+// сохраняем экземпляр плагина в переменную slider1
+const slider1 = $('#slider1').sliderPlugin();
+let changeableValue;
+
+// чтобы потом была возможность отписать эту функцию от события,
+// нужно её заранее сохранить в переменную (numberCallback в данном случае)
+const numberCallback = (value1) => { changeableValue = value1 };
+
+// значение переменной changeableValue будет меняться на новое значение value1
+// в callback-функции при срабатывании события value1Changed
+slider1.subscribe('value1Changed', numberCallback);
 ```
 
 ### События плагина, на которые можно подписаться:
