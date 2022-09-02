@@ -3,6 +3,18 @@ import $ from 'jquery';
 import './styles/panel-styles.scss';
 import { getFractionalPartSize } from './utils';
 
+type ElementSyncData = {
+  label: string,
+  $inputElement: JQuery<HTMLInputElement>,
+  sliderEvent: ModelEvent,
+} & ({
+  inputEventType: 'input',
+  sliderMethod: keyof PluginValueMethods,
+} | {
+  inputEventType: 'change',
+  sliderMethod: keyof PluginStateMethods,
+});
+
 class Panel {
   private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"><div class="panel__options panel__options_group_values"></div><div class="panel__options panel__options_group_states"></div></div>');
 
@@ -138,22 +150,8 @@ class Panel {
   }
 
   private syncElementWithSlider({
-    label,
-    $inputElement,
-    sliderEvent,
-    inputEventType,
-    sliderMethod,
-  }: {
-    label: string,
-    $inputElement: JQuery<HTMLInputElement>,
-    sliderEvent: ModelEvent,
-  } & ({
-    inputEventType: 'input',
-    sliderMethod: keyof PluginValueMethods,
-  } | {
-    inputEventType: 'change',
-    sliderMethod: keyof PluginStateMethods,
-  })) {
+    label, $inputElement, sliderEvent, inputEventType, sliderMethod,
+  }: ElementSyncData) {
     const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
       .append($inputElement);
     this.sliderPlugin.subscribe({ event: sliderEvent, subscriber: $inputElement[0] });
