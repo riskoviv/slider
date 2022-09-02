@@ -160,20 +160,39 @@ class Panel {
     interface SubscribeSetEvent extends Event {
       isSubscribeSet?: boolean;
     }
-    const panelInputListener = (e: SubscribeSetEvent) => {
-      const { target } = e;
+    const checkEventIsSubscribeSet = (event: SubscribeSetEvent) => {
+      const { target } = event;
       const isHTMLInputElement = target instanceof HTMLInputElement;
-      const isSubscribeSetEvent = e.isSubscribeSet;
+      const isSubscribeSetEvent = event.isSubscribeSet;
       const canPassValueToPlugin = isHTMLInputElement && !isSubscribeSetEvent;
       if (canPassValueToPlugin) {
-        if (inputEventType === 'input') {
-          this.sliderPlugin[sliderMethod](target.valueAsNumber);
-        } else if (inputEventType === 'change') {
-          this.sliderPlugin[sliderMethod](target.checked);
-        }
+        return { canPassValueToPlugin, target };
       }
+      return { canPassValueToPlugin, target: null };
     };
-    $inputElement[0].addEventListener(inputEventType, panelInputListener);
+    const makePanelInputNumberListener = (valueMethod: keyof PluginValueMethods) => {
+      const panelInputNumberListener = (event: SubscribeSetEvent) => {
+        const { canPassValueToPlugin, target } = checkEventIsSubscribeSet(event);
+        if (canPassValueToPlugin) {
+          this.sliderPlugin[valueMethod](target.valueAsNumber);
+        }
+      };
+      return panelInputNumberListener;
+    };
+    const makePanelInputCheckboxListener = (stateMethod: keyof PluginStateMethods) => {
+      const panelInputCheckboxListener = (event: SubscribeSetEvent) => {
+        const { canPassValueToPlugin, target } = checkEventIsSubscribeSet(event);
+        if (canPassValueToPlugin) {
+          this.sliderPlugin[stateMethod](target.checked);
+        }
+      };
+      return panelInputCheckboxListener;
+    };
+    if (inputEventType === 'input') {
+      $inputElement[0].addEventListener('input', makePanelInputNumberListener(sliderMethod));
+    } else if (inputEventType === 'change') {
+      $inputElement[0].addEventListener('change', makePanelInputCheckboxListener(sliderMethod));
+    }
 
     return $labelElement;
   }
