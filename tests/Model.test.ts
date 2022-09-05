@@ -116,13 +116,6 @@ describe('Model', () => {
     });
   });
 
-  test('getOptions returns the same object as defaultOptions (by content)', () => {
-    const modelOptions = model.getOptions();
-
-    expect(modelOptions).toEqual(defaultOptions);
-    expect(modelOptions).not.toBe(model.options);
-  });
-
   describe('getIndexByValueNumber(valueNumber: 1 | 2)', () => {
     test.each<[1 | 2, number]>([
       [1, 5],
@@ -559,7 +552,7 @@ describe('Model', () => {
           expect(model.options.maxValue).toBe(maxValue);
           expect(maxValueChangedSpy).toBeCalled();
           if (maxValue < defaultOptions.value1) {
-            expect(model.getOptions().value1).toBe(maxValue);
+            expect(model.options.value1).toBe(maxValue);
           }
           expect(value1ChangedSpy).toBeCalled();
         },
@@ -653,151 +646,8 @@ describe('Model', () => {
         listeners.forEach((listener) => {
           expect(listener).not.toBeCalled();
         });
-        expect(model.getOptions()).toEqual(defaultOptions);
+        expect(model.options).toEqual(defaultOptions);
       });
-    });
-
-    describe('subscribe() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
-      let isUnsubscribed: boolean;
-
-      beforeEach(() => {
-        initModelWithDefaultOptions();
-        isUnsubscribed = false;
-      });
-
-      test.concurrent.each`
-        inputType     | event                  | inputProperty      | value1  | value2   | method
-        ${'number'}   | ${'value1Changed'}     | ${'valueAsNumber'} | ${20}   | ${30}    | ${'setValue1'}
-        ${'number'}   | ${'stepSizeChanged'}   | ${'valueAsNumber'} | ${2}    | ${6}     | ${'setStepSize'}
-        ${'checkbox'} | ${'isIntervalChanged'} | ${'checked'}       | ${true} | ${false} | ${'setInterval'}
-      `(
-        'should subscribe input[type="$inputType"] element to $event event and change its $inputProperty property to value ($value1) emitted on event dispatch, but after unsubscribe() new value ($value2) passed to method should not be set on inputElement',
-        ({
-          inputType, event, inputProperty, value1, value2, method,
-        }: {
-          inputType: 'number',
-          event: ValueEvent,
-          value1: number,
-          value2: number,
-          inputProperty: 'valueAsNumber',
-          method: keyof ModelValueMethods,
-        } | {
-          inputType: 'checkbox',
-          event: StateEvent,
-          value1: boolean,
-          value2: boolean,
-          inputProperty: 'checked',
-          method: keyof ModelStateMethods,
-        }) => {
-          const inputElement: UnsubHTMLInputElement = document.createElement('input');
-          inputElement.type = inputType;
-          model.subscribe({ event, subscriber: inputElement });
-          model.on({ event: 'value1Changed', handler: jest.fn() });
-          model.on({ event: 'value2Changed', handler: jest.fn() });
-
-          switch (inputType) {
-            case 'number':
-              model[method](value1);
-              break;
-            case 'checkbox':
-              model[method](value1);
-              break;
-            default: break;
-          }
-
-          expect(inputElement[inputProperty]).toBe(value1);
-
-          if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(inputElement);
-          else if (inputElement.unsubscribe) isUnsubscribed = inputElement.unsubscribe();
-
-          expect(isUnsubscribed).toBe(true);
-
-          switch (inputType) {
-            case 'number':
-              model[method](value2);
-              break;
-            case 'checkbox':
-              model[method](value2);
-              break;
-            default: break;
-          }
-
-          expect(inputElement[inputProperty]).toBe(value1);
-        },
-      );
-
-      type Primitive = number | boolean;
-      type Callback<Value> = ((value: Value) => void) & Unsubscribable;
-
-      describe('callback subscribe / unsubscribe', () => {
-        let variableChangedByCallback: Primitive | undefined;
-
-        beforeEach(() => {
-          variableChangedByCallback = undefined;
-        });
-
-        test.each`
-          event                    | value1  | value2   | method
-          ${'value1Changed'}       | ${30}   | ${40}    | ${'setValue1'}
-          ${'showProgressChanged'} | ${true} | ${false} | ${'setShowProgress'}
-        `(
-          "should subscribe callback function to event and call it on event passing it value changed during event, and don't call callback after unsubscribe",
-          ({
-            event, value1, value2, method,
-          }: {
-            event: ValueEvent;
-            value1: number;
-            value2: number;
-            method: keyof ModelValueMethods;
-          } | {
-            event: StateEvent;
-            value1: boolean;
-            value2: boolean;
-            method: keyof ModelStateMethods;
-          }) => {
-            const callback: Callback<typeof value1> = (value: typeof value1) => {
-              variableChangedByCallback = value;
-            };
-            model.subscribe({ event, subscriber: callback });
-
-            switch (event) {
-              case 'value1Changed':
-                model[method](value1);
-                break;
-              case 'showProgressChanged':
-                model[method](value1);
-                break;
-              default:
-                break;
-            }
-
-            expect(variableChangedByCallback).toBe(value1);
-
-            if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(callback);
-            else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
-
-            switch (event) {
-              case 'value1Changed':
-                model[method](value2);
-                break;
-              case 'showProgressChanged':
-                model[method](value2);
-                break;
-              default:
-                break;
-            }
-
-            expect(isUnsubscribed).toBe(true);
-            expect(variableChangedByCallback).toBe(value1);
-          },
-        );
-      });
-    });
-
-    test('unsubscribe() should return false if received value is other than HTMLInputElement or Function', () => {
-      initModelWithDefaultOptions();
-      const notUnsubscribable: any = { test: true };
-      expect(model.unsubscribe(notUnsubscribable)).toBe(false);
     });
 
     test('should throw error on emit when event is not registered and has no listeners', () => {

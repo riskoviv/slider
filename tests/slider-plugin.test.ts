@@ -65,6 +65,12 @@ describe('slider-plugin', () => {
       expect($sliderInstance.hasClass('slider')).toBe(true);
     });
 
+    test('getOptions returns the same object as defaultOptions (by content)', () => {
+      const sliderOptions = $sliderInstance.getOptions();
+
+      expect(sliderOptions).toEqual(defaultOptions);
+    });
+
     test('should have controlContainer element that has 2 subViews', () => {
       const $controlContainer = $('.slider__control-container', $sliderInstance);
       const childClasses = ['track', 'thumb'];
@@ -848,22 +854,21 @@ describe('slider-plugin', () => {
 
   describe('subscribe & unsubscribe API methods', () => {
     let controlContainer: HTMLElement;
-    let inputElement1: UnsubHTMLInputElement;
-    let inputElement2: UnsubHTMLInputElement;
 
     beforeEach(() => {
       $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true });
       [controlContainer] = $sliderInstance.find('.slider__control-container');
       definePropertiesForControlContainer(controlContainer, 'offsetWidth');
-      inputElement1 = document.createElement('input');
-      inputElement1.type = 'number';
-      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement1 });
-      inputElement2 = document.createElement('input');
-      inputElement2.type = 'number';
-      $sliderInstance.subscribe({ event: 'value2Changed', subscriber: inputElement2 });
     });
 
     test('should change inputs values after pointerdown event on controlContainer', () => {
+      const inputElement1: UnsubHTMLInputElement = document.createElement('input');
+      inputElement1.type = 'number';
+      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement1 });
+      const inputElement2: UnsubHTMLInputElement = document.createElement('input');
+      inputElement2.type = 'number';
+      $sliderInstance.subscribe({ event: 'value2Changed', subscriber: inputElement2 });
+
       makePointerdown(controlContainer, 'offsetX', 251);
       makePointerdown(controlContainer, 'offsetX', 415);
 
@@ -885,6 +890,142 @@ describe('slider-plugin', () => {
 
       expect($sliderInstance.getOptions().value2).toBe(70);
       expect(inputElement2.valueAsNumber).toBe(value2);
+    });
+
+    test.concurrent.each`
+      inputType     | event                  | inputProperty      | value1   | value2  | method
+      ${'number'}   | ${'value1Changed'}     | ${'valueAsNumber'} | ${20}    | ${30}   | ${'setValue1'}
+      ${'number'}   | ${'stepSizeChanged'}   | ${'valueAsNumber'} | ${2}     | ${6}    | ${'setStepSize'}
+      ${'checkbox'} | ${'isIntervalChanged'} | ${'checked'}       | ${false} | ${true} | ${'setInterval'}
+    `(
+      'should subscribe input[type="$inputType"] element to $event event and change its $inputProperty property to value ($value1) emitted on event dispatch, but after unsubscribe() new value ($value2) passed to method should not be set on inputElement',
+      ({
+        inputType, event, inputProperty, value1, value2, method,
+      }: {
+        inputType: 'number',
+        event: ValueEvent,
+        value1: number,
+        value2: number,
+        inputProperty: 'valueAsNumber',
+        method: keyof ModelValueMethods,
+      } | {
+        inputType: 'checkbox',
+        event: StateEvent,
+        value1: boolean,
+        value2: boolean,
+        inputProperty: 'checked',
+        method: keyof ModelStateMethods,
+      }) => {
+        let isUnsubscribed = false;
+        const inputElement: UnsubHTMLInputElement = document.createElement('input');
+        inputElement.type = inputType;
+        $sliderInstance.subscribe({ event, subscriber: inputElement });
+
+        switch (inputType) {
+          case 'number':
+            $sliderInstance[method](value1);
+            break;
+          case 'checkbox':
+            $sliderInstance[method](value1);
+            break;
+          default: break;
+        }
+
+        expect(inputElement[inputProperty]).toBe(value1);
+
+        if (Math.round(Math.random())) {
+          isUnsubscribed = $sliderInstance.unsubscribe(inputElement);
+        } else if (inputElement.unsubscribe !== undefined) {
+          isUnsubscribed = inputElement.unsubscribe();
+        }
+
+        expect(isUnsubscribed).toBe(true);
+
+        switch (inputType) {
+          case 'number':
+            $sliderInstance[method](value2);
+            break;
+          case 'checkbox':
+            $sliderInstance[method](value2);
+            break;
+          default: break;
+        }
+
+        expect(inputElement[inputProperty]).toBe(value1);
+      },
+    );
+
+    type Primitive = number | boolean;
+    type Callback<Value> = ((value: Value) => void) & Unsubscribable;
+
+    describe('callback subscribe / unsubscribe', () => {
+      let variableChangedByCallback: Primitive | undefined;
+
+      beforeEach(() => {
+        variableChangedByCallback = undefined;
+      });
+
+      test.each`
+        event                    | value1  | value2   | method
+        ${'value1Changed'}       | ${30}   | ${40}    | ${'setValue1'}
+        ${'showProgressChanged'} | ${true} | ${false} | ${'setShowProgress'}
+      `(
+        "should subscribe callback function to event and call it on event passing it value changed during event, and don't call callback after unsubscribe",
+        ({
+          event, value1, value2, method,
+        }: {
+          event: ValueEvent;
+          value1: number;
+          value2: number;
+          method: keyof ModelValueMethods;
+        } | {
+          event: StateEvent;
+          value1: boolean;
+          value2: boolean;
+          method: keyof ModelStateMethods;
+        }) => {
+          let isUnsubscribed = false;
+          const callback: Callback<typeof value1> = (value: typeof value1) => {
+            variableChangedByCallback = value;
+          };
+          $sliderInstance.subscribe({ event, subscriber: callback });
+
+          switch (event) {
+            case 'value1Changed':
+              $sliderInstance[method](value1);
+              break;
+            case 'showProgressChanged':
+              $sliderInstance[method](value1);
+              break;
+            default:
+              break;
+          }
+
+          expect(variableChangedByCallback).toBe(value1);
+
+          if (Math.round(Math.random())) isUnsubscribed = $sliderInstance.unsubscribe(callback);
+          else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
+
+          switch (event) {
+            case 'value1Changed':
+              $sliderInstance[method](value2);
+              break;
+            case 'showProgressChanged':
+              $sliderInstance[method](value2);
+              break;
+            default:
+              break;
+          }
+
+          expect(isUnsubscribed).toBe(true);
+          expect(variableChangedByCallback).toBe(value1);
+        },
+      );
+    });
+
+    test('unsubscribe() should return false if received value is other than HTMLInputElement or Function', () => {
+      const notUnsubscribable: any = { test: true };
+      expect($sliderInstance.unsubscribe(notUnsubscribable)).toBe(false);
     });
   });
 
