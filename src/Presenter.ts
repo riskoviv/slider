@@ -18,6 +18,22 @@ type SubViews = {
   scale?: ScaleView,
 };
 
+type StateChangeHandlers = {
+  stateChangeEvent: StateEvent,
+  stateChangeHandler: StateHandler,
+}[];
+
+type NumericBoundsChangeHandler = {
+  boundsChangeEvents: ValueEvent[],
+  boundsChangeHandler: (() => void),
+};
+
+type ValueChangeHandler = {
+  valueChangeEvents: ValueEvent[],
+  valueNumbers: [1, 2],
+  makeValueChangeHandler: (number: 1 | 2) => ValueHandler
+};
+
 class Presenter implements IPresenter {
   readonly view: IView;
 
@@ -83,17 +99,22 @@ class Presenter implements IPresenter {
   }
 
   private bindModelEventListeners(): void {
-    const listeners = this.modelEventListeners;
-    this.model.on({ event: 'isVerticalChanged', handler: listeners.changeOrientation })
-      .on({ event: 'isIntervalChanged', handler: listeners.changeInterval })
-      .on({ event: 'value1Changed', handler: listeners.makeSetValueAndPosition(1) })
-      .on({ event: 'value2Changed', handler: listeners.makeSetValueAndPosition(2) })
-      .on({ event: 'showProgressChanged', handler: listeners.changeShowProgress })
-      .on({ event: 'showTipChanged', handler: listeners.changeShowTip })
-      .on({ event: 'showScaleChanged', handler: listeners.changeShowScale })
-      .on({ event: 'stepSizeChanged', handler: listeners.updateBounds })
-      .on({ event: 'minValueChanged', handler: listeners.updateBounds })
-      .on({ event: 'maxValueChanged', handler: listeners.updateBounds });
+    this.stateChangeHandlers.forEach(({ stateChangeEvent, stateChangeHandler }) => {
+      this.model.on({ event: stateChangeEvent, handler: stateChangeHandler });
+    });
+
+    const { boundsChangeEvents, boundsChangeHandler } = this.numericBoundsChangeHandler;
+    boundsChangeEvents.forEach((boundChangeEvent) => {
+      this.model.on({ event: boundChangeEvent, handler: boundsChangeHandler });
+    });
+
+    const { valueChangeEvents, valueNumbers, makeValueChangeHandler } = this.valueChangeHandler;
+    valueChangeEvents.forEach((valueChangeEvent, index) => {
+      this.model.on({
+        event: valueChangeEvent,
+        handler: makeValueChangeHandler(valueNumbers[index]),
+      });
+    });
   }
 
   private activateResizeObserver(): void {
@@ -292,58 +313,132 @@ class Presenter implements IPresenter {
     return this.fixValue(this.model.getValueByIndex(index));
   }
 
-  private modelEventListeners = {
-    updateBounds: (): void => {
+  private stateChangeHandlers: StateChangeHandlers = [
+    {
+      stateChangeEvent: 'isVerticalChanged',
+      stateChangeHandler: (isVertical: boolean): void => {
+        this.updateDimensionAndAxis();
+        this.view.toggleVertical(isVertical);
+        const resizeObserverIsNeeded = this.options.showScale || this.isTwoTips();
+        if (resizeObserverIsNeeded) {
+          this.activateResizeObserver();
+        }
+
+        if (this.options.isInterval) this.showJointOrSeparateTips();
+      },
+    },
+    {
+      stateChangeEvent: 'isIntervalChanged',
+      stateChangeHandler: (
+        isInterval: boolean,
+        options: ChangeIntervalEventOptions = { checkTipsOverlap: false },
+      ): void => {
+        if (isInterval) {
+          this.createSubView('thumb');
+          if (this.options.showTip) {
+            this.createSubView('tip', 2);
+            this.createSubView('tip', 3);
+            this.setTipValue({
+              number: 2,
+              value: this.options.value2,
+            });
+            if (!this.resizeObserverActive) {
+              this.activateResizeObserver();
+            }
+          }
+        } else {
+          this.removeSubView('thumb2');
+          this.removeSubView('tip2');
+          this.removeSubView('tip3');
+          const resizeObserverIsNotNeeded = !this.options.showScale && this.resizeObserverActive;
+          if (resizeObserverIsNotNeeded) {
+            this.deactivateResizeObserver();
+          }
+        }
+
+        if (options.checkTipsOverlap) this.showJointOrSeparateTips();
+        this.view.toggleInterval(isInterval);
+      },
+    },
+    {
+      stateChangeEvent: 'showProgressChanged',
+      stateChangeHandler: (showProgress: boolean): void => {
+        this.view.toggleProgressBar(showProgress);
+      },
+    },
+    {
+      stateChangeEvent: 'showTipChanged',
+      stateChangeHandler: (showTip: boolean): void => {
+        if (showTip) {
+          this.createSubView('tip', 1);
+          this.setTipValue({
+            number: 1,
+            value: this.options.value1,
+          });
+          if (this.options.isInterval) {
+            this.createSubView('tip', 2);
+            this.createSubView('tip', 3);
+            this.setTipValue({
+              number: 2,
+              value: this.options.value2,
+            });
+            this.setTipValue({
+              number: 3,
+              value: `${this.options.value1} – ${this.options.value2}`,
+            });
+            this.showJointOrSeparateTips();
+            if (!this.resizeObserverActive) {
+              this.activateResizeObserver();
+            }
+          }
+        } else {
+          this.removeSubView('tip1');
+          if (this.options.isInterval) {
+            this.removeSubView('tip2');
+            this.removeSubView('tip3');
+          }
+
+          const noScaleButResizeObserverIsActive = !this.options.showScale
+            && this.resizeObserverActive;
+          if (noScaleButResizeObserverIsActive) {
+            this.deactivateResizeObserver();
+          }
+        }
+      },
+    },
+    {
+      stateChangeEvent: 'showScaleChanged',
+      stateChangeHandler: (showScale: boolean): void => {
+        if (showScale) {
+          this.createSubView('scale');
+          this.updateScale();
+        } else {
+          this.removeSubView('scale');
+          const allowedToDeactivateResizeObserver = this.resizeObserverActive
+            && !this.isTwoTips();
+          if (allowedToDeactivateResizeObserver) {
+            this.deactivateResizeObserver();
+          }
+        }
+      },
+    },
+  ];
+
+  private numericBoundsChangeHandler: NumericBoundsChangeHandler = {
+    boundsChangeEvents: ['stepSizeChanged', 'minValueChanged', 'maxValueChanged'],
+    boundsChangeHandler: (): void => {
       this.defineViewValues();
       this.view.setThumbThickness(this.model.viewValues.stepInPercents);
       if (this.options.showScale) {
         this.updateScale();
       }
     },
+  };
 
-    changeOrientation: (isVertical: boolean): void => {
-      this.updateDimensionAndAxis();
-      this.view.toggleVertical(isVertical);
-      const resizeObserverIsNeeded = this.options.showScale || this.isTwoTips();
-      if (resizeObserverIsNeeded) {
-        this.activateResizeObserver();
-      }
-
-      if (this.options.isInterval) this.showJointOrSeparateTips();
-    },
-
-    changeInterval: (
-      isInterval: boolean,
-      options: ChangeIntervalEventOptions = { checkTipsOverlap: false },
-    ): void => {
-      if (isInterval) {
-        this.createSubView('thumb');
-        if (this.options.showTip) {
-          this.createSubView('tip', 2);
-          this.createSubView('tip', 3);
-          this.setTipValue({
-            number: 2,
-            value: this.options.value2,
-          });
-          if (!this.resizeObserverActive) {
-            this.activateResizeObserver();
-          }
-        }
-      } else {
-        this.removeSubView('thumb2');
-        this.removeSubView('tip2');
-        this.removeSubView('tip3');
-        const resizeObserverIsNotNeeded = !this.options.showScale && this.resizeObserverActive;
-        if (resizeObserverIsNotNeeded) {
-          this.deactivateResizeObserver();
-        }
-      }
-
-      if (options.checkTipsOverlap) this.showJointOrSeparateTips();
-      this.view.toggleInterval(isInterval);
-    },
-
-    makeSetValueAndPosition: (number: 1 | 2): ValueHandler => {
+  private valueChangeHandler: ValueChangeHandler = {
+    valueChangeEvents: ['value1Changed', 'value2Changed'],
+    valueNumbers: [1, 2],
+    makeValueChangeHandler: (number: 1 | 2): ValueHandler => {
       const setValueAndPosition: ValueHandler = (
         value: number,
         options: SetValueEventOptions = {},
@@ -369,62 +464,6 @@ class Presenter implements IPresenter {
         }
       };
       return setValueAndPosition;
-    },
-
-    changeShowProgress: (showProgress: boolean): void => {
-      this.view.toggleProgressBar(showProgress);
-    },
-
-    changeShowTip: (showTip: boolean): void => {
-      if (showTip) {
-        this.createSubView('tip', 1);
-        this.setTipValue({
-          number: 1,
-          value: this.options.value1,
-        });
-        if (this.options.isInterval) {
-          this.createSubView('tip', 2);
-          this.createSubView('tip', 3);
-          this.setTipValue({
-            number: 2,
-            value: this.options.value2,
-          });
-          this.setTipValue({
-            number: 3,
-            value: `${this.options.value1} – ${this.options.value2}`,
-          });
-          this.showJointOrSeparateTips();
-          if (!this.resizeObserverActive) {
-            this.activateResizeObserver();
-          }
-        }
-      } else {
-        this.removeSubView('tip1');
-        if (this.options.isInterval) {
-          this.removeSubView('tip2');
-          this.removeSubView('tip3');
-        }
-
-        const noScaleButResizeObserverIsActive = !this.options.showScale
-          && this.resizeObserverActive;
-        if (noScaleButResizeObserverIsActive) {
-          this.deactivateResizeObserver();
-        }
-      }
-    },
-
-    changeShowScale: (showScale: boolean): void => {
-      if (showScale) {
-        this.createSubView('scale');
-        this.updateScale();
-      } else {
-        this.removeSubView('scale');
-        const allowedToDeactivateResizeObserver = this.resizeObserverActive
-          && !this.isTwoTips();
-        if (allowedToDeactivateResizeObserver) {
-          this.deactivateResizeObserver();
-        }
-      }
     },
   };
 
