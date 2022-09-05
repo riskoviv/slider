@@ -178,7 +178,7 @@ interface PluginDataMethods {
   unsubscribe(subscriber: Subscriber): boolean;
 }
 
-interface ModelMethods extends ModelStateMethods, ModelValueMethods, PluginDataMethods {}
+interface ModelMethods extends ModelStateMethods, ModelValueMethods {}
 
 type ArgumentTypes<T> = T extends (...args: infer U) => infer R ? U : never;
 type ReplaceReturnType<T, TNewReturn> = (...a: ArgumentTypes<T>) => TNewReturn;

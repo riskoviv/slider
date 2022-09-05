@@ -19,6 +19,28 @@ class Model extends EventEmitter implements IModel {
     penultimatePosition: NaN,
   };
 
+  publicValueMethods: ModelValueMethods = {
+    setValue1: this.setValue1.bind(this),
+    setValue2: this.setValue2.bind(this),
+    setStepSize: this.setStepSize.bind(this),
+    setMinValue: this.setMinValue.bind(this),
+    setMaxValue: this.setMaxValue.bind(this),
+  };
+
+  publicStateMethods: ModelStateMethods = {
+    setVerticalState: this.setVerticalState.bind(this),
+    setInterval: this.setInterval.bind(this),
+    setShowProgress: this.setShowProgress.bind(this),
+    setShowTip: this.setShowTip.bind(this),
+    setShowScale: this.setShowScale.bind(this),
+  };
+
+  publicDataMethods: PluginDataMethods = {
+    getOptions: this.getOptions.bind(this),
+    subscribe: this.subscribe.bind(this),
+    unsubscribe: this.unsubscribe.bind(this),
+  };
+
   constructor(options: SliderOptions) {
     super();
     this.options = { ...options };
@@ -36,10 +58,6 @@ class Model extends EventEmitter implements IModel {
     if (allowedValues.at(-1) !== maxValue) allowedValues.push(maxValue);
 
     return allowedValues;
-  }
-
-  getOptions(): SliderOptions {
-    return { ...this.options };
   }
 
   getIndexByValueNumber(valueNumber: 1 | 2): number {
@@ -217,7 +235,11 @@ class Model extends EventEmitter implements IModel {
     return valueAsFixedNumber;
   }
 
-  subscribe(options: ValueSubscribe | StateSubscribe): void {
+  private getOptions(): SliderOptions {
+    return { ...this.options };
+  }
+
+  private subscribe(options: ValueSubscribe | StateSubscribe): void {
     const { subscriber } = options;
     this.unsubscribe(subscriber);
     this.eventsSwitch({ options, type: 'subscribe' });
@@ -232,7 +254,7 @@ class Model extends EventEmitter implements IModel {
     }
   }
 
-  unsubscribe(subscriber: Subscriber): boolean {
+  private unsubscribe(subscriber: Subscriber): boolean {
     const isHTMLInputElement = subscriber instanceof HTMLInputElement;
     const isFunction = subscriber instanceof Function;
     const isInputElementOrFunction = isHTMLInputElement || isFunction;
@@ -243,28 +265,6 @@ class Model extends EventEmitter implements IModel {
 
     return this.off(subscriber);
   }
-
-  publicValueMethods: ModelValueMethods = {
-    setValue1: this.setValue1.bind(this),
-    setValue2: this.setValue2.bind(this),
-    setStepSize: this.setStepSize.bind(this),
-    setMinValue: this.setMinValue.bind(this),
-    setMaxValue: this.setMaxValue.bind(this),
-  };
-
-  publicStateMethods: ModelStateMethods = {
-    setVerticalState: this.setVerticalState.bind(this),
-    setInterval: this.setInterval.bind(this),
-    setShowProgress: this.setShowProgress.bind(this),
-    setShowTip: this.setShowTip.bind(this),
-    setShowScale: this.setShowScale.bind(this),
-  };
-
-  publicDataMethods: PluginDataMethods = {
-    getOptions: this.getOptions.bind(this),
-    subscribe: this.subscribe.bind(this),
-    unsubscribe: this.unsubscribe.bind(this),
-  };
 
   private updateAllowedValues(): void {
     this.allowedValues = this.createAllowedValuesArray();
