@@ -19,9 +19,9 @@ type SubViews = {
 };
 
 class Presenter implements IPresenter {
-  private options: SliderOptions;
-
   readonly view: IView;
+
+  private options: SliderOptions;
 
   private subViews: SubViews = {
     track: new TrackView(),
