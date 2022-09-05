@@ -49,7 +49,7 @@ Panel – это класс для демонстрации динамическ
 
 ### UML-диаграмма классовой структуры плагина
 
-![UML class diagram](./class-diagram.drawio.svg)
+[![UML class diagram](./class-diagram.drawio.svg)](https://github.com/riskoviv/slider/raw/experimental/class-diagram.drawio.svg)
 
 ### Устройство механизма внутренней подписки на события и оповещения о них
 Presenter может обращаться ко всем публичным свойствам и методам остальных классов, включая метод `on` (унаследованный от класса EventEmitter), который позволяет ему подписываться на события этих классов.
