@@ -18,10 +18,10 @@ type SubViews = {
   scale?: ScaleView,
 };
 
-type StateChangeHandlers = {
+type StateChangeHandler = {
   stateChangeEvent: StateEvent,
   stateChangeHandler: StateHandler,
-}[];
+};
 
 type NumericBoundsChangeHandler = {
   boundsChangeEvents: ValueEvent[],
@@ -313,7 +313,7 @@ class Presenter implements IPresenter {
     return this.fixValue(this.model.getValueByIndex(index));
   }
 
-  private stateChangeHandlers: StateChangeHandlers = [
+  private stateChangeHandlers: StateChangeHandler[] = [
     {
       stateChangeEvent: 'isVerticalChanged',
       stateChangeHandler: (isVertical: boolean): void => {
