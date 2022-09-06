@@ -53,15 +53,14 @@ class View extends EventEmitter implements IView {
       isInterval = false,
       showProgressBar = false,
     } = options;
-    return $(
-      `<div class="slider${
-        isVertical ? ' slider_vertical' : ''
-      }${
-        isInterval ? ' slider_interval' : ''
-      }${
-        showProgressBar ? ' slider_show-progress' : ''
-      }"></div>`,
-    ).append(this.$controlContainer);
+    const sliderModifiers = [
+      isVertical ? 'slider_vertical' : '',
+      isInterval ? 'slider_interval' : '',
+      showProgressBar ? 'slider_show-progress' : '',
+    ];
+    const sliderClassName = ['slider', ...sliderModifiers].join(' ').trim();
+    const $sliderElem = $(`<div class="${sliderClassName}"></div>`).append(this.$controlContainer);
+    return $sliderElem;
   }
 
   private bindEventListeners() {
