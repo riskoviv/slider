@@ -195,7 +195,9 @@ type PluginValueMethods = {
   >;
 };
 
-interface PluginMethods extends PluginStateMethods, PluginValueMethods, PluginDataMethods {}
+interface PluginMethods extends PluginStateMethods, PluginValueMethods, PluginDataMethods {
+  destroySlider(): boolean;
+}
 
 interface IPluginFunction {
   (options?: Partial<SliderOptions>): JQuery;

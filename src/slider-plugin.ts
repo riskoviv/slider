@@ -147,6 +147,24 @@ $.fn.sliderPlugin = function sliderPlugin(
     unsubscribe: $sliderElem.unsubscribe,
   } = model.publicDataMethods);
 
+  $sliderElem.destroySlider = (): boolean => {
+    this.empty();
+    Object.freeze(model.options);
+    Object.defineProperty(this[0], 'destroySlider', {
+      value: undefined,
+      writable: true,
+    });
+    if (this.is(':empty')) {
+      return true;
+    }
+    return false;
+  };
+
+  Object.defineProperty(this[0], 'destroySlider', {
+    value: $sliderElem.destroySlider,
+    writable: true,
+  });
+
   const makeValueMethodChainable = (method: ValueHandler) => {
     const chainedMethod = (arg: number) => {
       method(arg);
