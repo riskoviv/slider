@@ -41,7 +41,7 @@ const areTipsJoinedToOne = (tipElements: HTMLElement[]): boolean => {
 describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   const pointerupEvent = new MouseEvent('pointerup');
-  let $sliderInstance: JQuery<HTMLElement>;
+  let $sliderInstance: JQuery;
 
   beforeAll(() => {
     Object.defineProperties($sliderContainer[0], {

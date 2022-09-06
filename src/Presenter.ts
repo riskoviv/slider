@@ -61,7 +61,7 @@ class Presenter implements IPresenter {
   private resizeObserverActive = false;
 
   constructor(
-    private readonly $pluginRootElem: JQuery<HTMLElement>,
+    private readonly $pluginRootElem: JQuery,
     private readonly model: IModel,
   ) {
     this.options = this.model.options;
@@ -281,7 +281,7 @@ class Presenter implements IPresenter {
     }
   }
 
-  private renderSubView(subViewName: keyof SubViews): JQuery<HTMLElement> | null {
+  private renderSubView(subViewName: keyof SubViews): JQuery | null {
     const subView = this.subViews[subViewName];
     if (subView !== undefined) {
       return subView.$elem;

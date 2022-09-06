@@ -185,13 +185,13 @@ type ReplaceReturnType<T, TNewReturn> = (...a: ArgumentTypes<T>) => TNewReturn;
 
 type PluginStateMethods = {
   [methodName in keyof ModelStateMethods]: ReplaceReturnType<
-    ModelStateMethods[methodName], JQuery<HTMLElement>
+    ModelStateMethods[methodName], JQuery
   >;
 };
 
 type PluginValueMethods = {
   [methodName in keyof ModelValueMethods]: ReplaceReturnType<
-    ModelValueMethods[methodName], JQuery<HTMLElement>
+    ModelValueMethods[methodName], JQuery
   >;
 };
 
@@ -239,7 +239,7 @@ type SizeDimension = 'offsetWidth' | 'offsetHeight';
 type PositionDimension = 'offsetTop' | 'offsetLeft';
 
 interface ISubView extends IEventEmitter {
-  $elem: JQuery<HTMLElement>;
+  $elem: JQuery;
   removeView(): void;
 }
 
@@ -267,8 +267,8 @@ interface ViewStateMethods {
 interface ViewMethods extends ViewValueMethods, ViewStateMethods {}
 
 interface IView extends ViewMethods, IEventEmitter {
-  $elem: JQuery<HTMLElement>;
-  $controlContainer: JQuery<HTMLElement>;
+  $elem: JQuery;
+  $controlContainer: JQuery;
   controlContainerElem: HTMLDivElement;
 }
 

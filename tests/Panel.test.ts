@@ -9,9 +9,9 @@ describe('Panel', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   const changeEvent = new InputEvent('change');
   const inputEvent = new InputEvent('input');
-  let $sliderInstance: JQuery<HTMLElement>;
+  let $sliderInstance: JQuery;
   let panel: Panel;
-  let $panelElement: JQuery<HTMLElement>;
+  let $panelElement: JQuery;
 
   describe('initialized w/ default options', () => {
     beforeEach(() => {

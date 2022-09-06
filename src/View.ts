@@ -9,7 +9,7 @@ type SliderViewOptions = {
 };
 
 class View extends EventEmitter implements IView {
-  readonly $elem: JQuery<HTMLElement>;
+  readonly $elem: JQuery;
 
   readonly $controlContainer: JQuery<HTMLDivElement> = $(
     '<div class="slider__control-container"></div>',
@@ -47,7 +47,7 @@ class View extends EventEmitter implements IView {
     );
   }
 
-  private render(options: SliderViewOptions): JQuery<HTMLElement> {
+  private render(options: SliderViewOptions): JQuery {
     const {
       isVertical = false,
       isInterval = false,

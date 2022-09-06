@@ -17,7 +17,7 @@ describe('Presenter', () => {
     showScale: false,
     showProgressBar: false,
   };
-  let $element: JQuery<HTMLElement>;
+  let $element: JQuery;
 
   beforeAll(() => {
     $element = $('<div class="slider-container"></div>');
