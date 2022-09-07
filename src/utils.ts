@@ -12,13 +12,21 @@ const defaultOptions: SliderOptions = {
 };
 
 /**
- * uses Object.keys method but returns array of keys
+ * passes through obj using for..in and returns array of keys
  * of passed object in original type that keys of object has
  * @param obj object to get keys from
  * @returns array of object's keys but of original type
  */
-const getTypedKeys = <Obj extends Record<string, unknown>>(obj: Obj):
-(keyof Obj)[] => Object.keys(obj);
+const getTypedKeys = <Obj extends Record<keyof Obj, unknown>>(obj: Obj): (keyof Obj)[] => {
+  const keys: (keyof Obj)[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+};
 
 type TypedObj<Obj> = Partial<Record<keyof Obj, TypeOfValues<Obj>>>;
 
