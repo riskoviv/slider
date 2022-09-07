@@ -1031,21 +1031,50 @@ describe('slider-plugin', () => {
       });
     });
 
-    describe('destroySlider', () => {
-      beforeEach(() => {
-        $sliderInstance = $sliderContainer.sliderPlugin();
+    describe('destroySlider clears container & instance from its elements, instance methods (including destroySlider) should be deleted and options should become unchangeable', () => {
+      type HTMLElementWithDestroy = HTMLElement & {
+        destroySlider?(): boolean
+      };
+      type JQueryHTMLElementWithDestroy = JQuery & {
+        0?: HTMLElementWithDestroy
+      };
+      let $sliderContainerForDestroy: JQueryHTMLElementWithDestroy = $('<div class="slider-container"></div>');
+      let $sliderInstanceForDestroy = $sliderContainerForDestroy.sliderPlugin();
+
+      afterEach(() => {
+        $sliderContainerForDestroy = $('<div class="slider-container"></div>');
+        $sliderInstanceForDestroy = $sliderContainerForDestroy.sliderPlugin();
       });
 
-      test('should destroy slider: clear container, instance and its methods should not be available', () => {
-        expect($sliderContainer[0]).toHaveProperty('destroySlider');
-        expect($sliderContainer[0]).not.toBeEmptyDOMElement();
+      test('should destroy slider if method is called on slider instance', () => {
+        expect($sliderContainerForDestroy[0]).toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).not.toBeEmptyDOMElement();
+        expect($sliderInstanceForDestroy[0]).not.toBeEmptyDOMElement();
 
-        $sliderInstance.destroySlider();
+        $sliderInstanceForDestroy.destroySlider();
 
-        expect(Object.getOwnPropertyDescriptor($sliderContainer[0], 'destroySlider')?.value).toBe(undefined);
-        expect($sliderContainer[0]).toBeEmptyDOMElement();
+        expect($sliderContainerForDestroy[0]).not.toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).toBeEmptyDOMElement();
+        expect(Object.keys($sliderInstanceForDestroy)).toEqual(['length']);
         expect(() => {
-          $sliderInstance.setValue1(1);
+          $sliderInstanceForDestroy.setValue1(1);
+        }).toThrow(TypeError);
+      });
+
+      test('should destroy slider if method is called on slider container', () => {
+        expect($sliderContainerForDestroy[0]).toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).not.toBeEmptyDOMElement();
+        expect($sliderInstanceForDestroy[0]).not.toBeEmptyDOMElement();
+
+        if ($sliderContainerForDestroy[0]?.destroySlider !== undefined) {
+          $sliderContainerForDestroy[0]?.destroySlider();
+        }
+
+        expect($sliderContainerForDestroy[0]).not.toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).toBeEmptyDOMElement();
+        expect(Object.keys($sliderInstanceForDestroy)).toEqual(['length']);
+        expect(() => {
+          $sliderInstanceForDestroy.setValue1(1);
         }).toThrow(TypeError);
       });
     });

@@ -4,7 +4,7 @@ import Logger from './Logger';
 import Model from './Model';
 import Presenter from './Presenter';
 import './styles/styles.scss';
-import { defaultOptions, getEntriesWithTypedKeys } from './utils';
+import { defaultOptions, getEntriesWithTypedKeys, getTypedKeys } from './utils';
 
 const cleanContainerIfNotEmpty = (container: JQuery): void => {
   if (container.not(':empty').length > 0) {
@@ -127,7 +127,7 @@ const checkOptionsValues = (options: SliderOptions) => {
 };
 
 $.fn.sliderPlugin = function sliderPlugin(
-  this: JQuery,
+  this: JQuery & { 0: HTMLElement & { destroySlider?(): boolean } },
   options: Partial<SliderOptions> = {},
 ): JQuery {
   cleanContainerIfNotEmpty(this);
@@ -147,13 +147,27 @@ $.fn.sliderPlugin = function sliderPlugin(
     unsubscribe: $sliderElem.unsubscribe,
   } = model.publicDataMethods);
 
-  $sliderElem.destroySlider = (): boolean => {
-    this.empty();
-    Object.freeze(model.options);
-    Object.defineProperty(this[0], 'destroySlider', {
-      value: undefined,
-      writable: true,
+  const deleteInstanceMethods = () => {
+    const publicPluginMethodsNames: (keyof PluginMethods)[] = [
+      ...[
+        model.publicDataMethods,
+        model.publicValueMethods,
+        model.publicStateMethods,
+      ].flatMap(getTypedKeys),
+      'destroySlider',
+    ];
+    publicPluginMethodsNames.forEach((methodName) => {
+      delete $sliderElem[methodName];
     });
+  };
+
+  $sliderElem.destroySlider = (): boolean => {
+    delete $sliderElem[0];
+    $sliderElem.length = 0;
+    deleteInstanceMethods();
+    Object.freeze(model.options);
+    this.empty();
+    delete this[0].destroySlider;
     if (this.is(':empty')) {
       return true;
     }
@@ -163,6 +177,7 @@ $.fn.sliderPlugin = function sliderPlugin(
   Object.defineProperty(this[0], 'destroySlider', {
     value: $sliderElem.destroySlider,
     writable: true,
+    configurable: true,
   });
 
   const makeValueMethodChainable = (method: ValueHandler) => {
