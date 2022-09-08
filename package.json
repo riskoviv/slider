@@ -8,7 +8,8 @@
     "start": "webpack serve",
     "test": "jest",
     "dev": "webpack",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "keywords": [
     "slider",
@@ -37,8 +38,9 @@
     "eslint": "^8.20.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "favicons": "^7.0.0-beta.4",
+    "favicons": "^6.2.2",
     "favicons-webpack-plugin": "^5.0.2",
+    "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^27.5.1",
     "mini-css-extract-plugin": "^1.6.2",
