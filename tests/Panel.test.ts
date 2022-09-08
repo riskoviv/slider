@@ -1,16 +1,17 @@
 import $ from 'jquery';
-import Panel from '../Panel';
-import '../slider-plugin';
-import { getFractionalPartSize } from '../utils';
+
+import Panel from '../src/Panel';
+import '../src/slider-plugin';
+import { getFractionalPartSize } from '../src/utils';
 import './mocks/ResizeObserver';
 
 describe('Panel', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   const changeEvent = new InputEvent('change');
   const inputEvent = new InputEvent('input');
-  let $sliderInstance: JQuery<HTMLElement>;
+  let $sliderInstance: JQuery;
   let panel: Panel;
-  let $panelElement: JQuery<HTMLElement>;
+  let $panelElement: JQuery;
 
   describe('initialized w/ default options', () => {
     beforeEach(() => {
@@ -96,7 +97,7 @@ describe('Panel', () => {
       },
     );
 
-    test.each<[keyof IPluginPublicValueMethods, string, number]>([
+    test.each<[keyof PluginValueMethods, string, number]>([
       ['setMinValue', 'min', 68], ['setStepSize', 'step', 7.1],
     ])(
       'changing value by %s slider method should change %s attr of from and to inputs',

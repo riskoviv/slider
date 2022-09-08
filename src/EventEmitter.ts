@@ -1,5 +1,8 @@
 /* eslint-disable no-dupe-class-members */
 /* eslint-disable lines-between-class-members */
+
+import Logger from './Logger';
+
 abstract class EventEmitter implements IEventEmitter {
   private valueHandlers: ValueHandlers = {};
 
@@ -12,16 +15,7 @@ abstract class EventEmitter implements IEventEmitter {
     return this;
   }
 
-  protected eventsSwitch({ options, type }: {
-    options: ValueOn | StateOn | ViewOn,
-    type: 'on',
-  } | {
-    options: ValueEmit | StateEmit | ViewEmit,
-    type: 'emit',
-  } | {
-    options: ValueSubscribe | StateSubscribe,
-    type: 'subscribe',
-  }): void {
+  protected eventsSwitch({ options, type }: EventEmitterAction): void {
     switch (options.event) {
       case 'value1Changed':
       case 'value2Changed':
@@ -65,28 +59,16 @@ abstract class EventEmitter implements IEventEmitter {
     }
   }
 
-  protected valueOn({ event, handler, subscriber }: ValueOn): void {
+  private valueOn({ event, handler, subscriber }: ValueOn): void {
     if (this.valueHandlers[event] === undefined) {
-      if (subscriber instanceof HTMLInputElement) {
-        this.valueHandlers[event] = new Map<HTMLInputElement, ValueHandler>();
-      } else if (subscriber instanceof Function) {
-        this.valueHandlers[event] = new Map<ValueHandler, ValueHandler>();
-      } else {
-        this.valueHandlers[event] = new Map<undefined, ValueHandler>();
-      }
+      this.valueHandlers[event] = new Map<ValueSubscriber, ValueHandler>();
     }
     this.valueHandlers[event]?.set(subscriber, handler);
   }
 
-  protected stateOn({ event, handler, subscriber }: StateOn): void {
+  private stateOn({ event, handler, subscriber }: StateOn): void {
     if (this.stateHandlers[event] === undefined) {
-      if (subscriber instanceof HTMLInputElement) {
-        this.stateHandlers[event] = new Map<HTMLInputElement, StateHandler>();
-      } else if (subscriber instanceof Function) {
-        this.stateHandlers[event] = new Map<StateHandler, StateHandler>();
-      } else {
-        this.stateHandlers[event] = new Map<undefined, StateHandler>();
-      }
+      this.stateHandlers[event] = new Map<StateSubscriber, StateHandler>();
     }
     this.stateHandlers[event]?.set(subscriber, handler);
   }
@@ -106,23 +88,22 @@ abstract class EventEmitter implements IEventEmitter {
   }
 
   protected off(subscriber: Subscriber): boolean {
-    return [this.valueHandlers, this.stateHandlers].some(
-      (handlersStorage) => (Object.values(handlersStorage).reduce<boolean>((
-        mapUnsubscribeState, handlersMap,
-      ) => {
-        const foundSubscriberInMap = [...handlersMap.keys()].reduce<boolean>((
-          subscriberUnsubscribeState, registeredSubscriber,
-        ) => {
-          if (registeredSubscriber === subscriber) {
-            handlersMap.delete(registeredSubscriber);
-            return true;
-          }
-          return subscriberUnsubscribeState;
-        }, false);
-        if (foundSubscriberInMap) return true;
-        return mapUnsubscribeState;
-      }, false)),
-    );
+    type ModelHandlersMap = Map<ValueSubscriber | StateSubscriber, ValueHandler | StateHandler>;
+    const modelHandlers = [this.valueHandlers, this.stateHandlers];
+    let isSubscriberDeleted = false;
+    modelHandlers.forEach((handlersStorage) => {
+      const handlersMaps: ModelHandlersMap[] = Object.values(handlersStorage);
+      const continueToSearchForSubscriber = (idx: number) => (
+        isSubscriberDeleted === false && idx < handlersMaps.length
+      );
+      for (let mapIdx = 0; continueToSearchForSubscriber(mapIdx); mapIdx += 1) {
+        const currentMap = handlersMaps[mapIdx];
+        if (currentMap.has(subscriber)) {
+          isSubscriberDeleted = currentMap.delete(subscriber);
+        }
+      }
+    });
+    return isSubscriberDeleted;
   }
 
   protected emit(options: ValueEmit): void;
@@ -138,26 +119,35 @@ abstract class EventEmitter implements IEventEmitter {
       EventEmitter.throwEmitError(event, value);
       return;
     }
-
-    [...eventMap.values()].forEach((handler) => {
-      if (options) {
-        handler(value, options);
-      } else {
+    const valueHandlers = [...eventMap.values()];
+    if (options === undefined) {
+      valueHandlers.forEach((handler) => {
         handler(value);
-      }
-    });
+      });
+    } else {
+      valueHandlers.forEach((handler) => {
+        handler(value, options);
+      });
+    }
   }
 
-  private stateEmit({ event, value }: StateEmit) {
+  private stateEmit({ event, value, options }: StateEmit) {
     const eventMap = this.stateHandlers[event];
     if (eventMap === undefined) {
       EventEmitter.throwEmitError(event, value);
       return;
     }
 
-    [...eventMap.values()].forEach((handler) => {
-      handler(value);
-    });
+    const stateHandlers = [...eventMap.values()];
+    if (options === undefined) {
+      stateHandlers.forEach((handler) => {
+        handler(value);
+      });
+    } else {
+      stateHandlers.forEach((handler) => {
+        handler(value, options);
+      });
+    }
   }
 
   private sliderPointerDownEmit({ event, value }: SliderPointerDownEmit) {
@@ -187,26 +177,31 @@ abstract class EventEmitter implements IEventEmitter {
   private static throwEmitError<Event, Value>(event: Event, value: Value) {
     const emitError = new Error();
     emitError.name = 'EmitError';
-    emitError.message = `${event} event is not registered. arg = ${typeof value === 'object' && value !== null
+    const emitValueIsObject = typeof value === 'object' && value !== null;
+    const emitValueAsString = emitValueIsObject
       ? `{ ${Object.entries(value).map(
         ([argKey, argValue]) => `${argKey}: ${argValue}`,
       ).join(', ')} }`
-      : value}`;
-    console.error(emitError);
+      : value;
+    emitError.message = `${event} event is not registered. value = ${emitValueAsString}`;
+    Logger.emitError(emitError);
   }
 
   private valueSubscribe({ event, subscriber }: ValueSubscribe): void {
     const makeNumericInputElementUpdater = (inputElement: UnsubHTMLInputElement) => {
       const subscribedElement = inputElement;
+      const inputEvent = new InputEvent('input');
+      Object.defineProperty(inputEvent, 'isSubscribeSet', { value: true });
       const updateNumericInput = (value: number) => {
         subscribedElement.value = String(value);
-        const inputEvent = new InputEvent('input');
         subscribedElement.dispatchEvent(inputEvent);
       };
       return updateNumericInput;
     };
 
-    if (subscriber instanceof HTMLInputElement && subscriber.type === 'number') {
+    const subscriberIsInputTypeNumber = subscriber instanceof HTMLInputElement
+      && subscriber.type === 'number';
+    if (subscriberIsInputTypeNumber) {
       this.valueOn({ event, handler: makeNumericInputElementUpdater(subscriber), subscriber });
     } else if (subscriber instanceof Function) {
       this.valueOn({ event, handler: subscriber, subscriber });
@@ -216,15 +211,18 @@ abstract class EventEmitter implements IEventEmitter {
   private stateSubscribe({ event, subscriber }: StateSubscribe): void {
     const makeCheckboxElementUpdater = (inputElement: UnsubHTMLInputElement) => {
       const subscribedElement = inputElement;
+      const changeEvent = new InputEvent('change');
+      Object.defineProperty(changeEvent, 'isSubscribeSet', { value: true });
       const updateCheckbox = (value: boolean) => {
         subscribedElement.checked = value;
-        const changeEvent = new InputEvent('change');
         subscribedElement.dispatchEvent(changeEvent);
       };
       return updateCheckbox;
     };
 
-    if (subscriber instanceof HTMLInputElement && subscriber.type === 'checkbox') {
+    const subscriberIsInputTypeCheckbox = subscriber instanceof HTMLInputElement
+      && subscriber.type === 'checkbox';
+    if (subscriberIsInputTypeCheckbox) {
       this.stateOn({ event, handler: makeCheckboxElementUpdater(subscriber), subscriber });
     } else if (subscriber instanceof Function) {
       this.stateOn({ event, handler: subscriber, subscriber });

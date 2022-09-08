@@ -1,6 +1,19 @@
-import './styles/panel-styles.scss';
 import $ from 'jquery';
+
+import './styles/panel-styles.scss';
 import { getFractionalPartSize } from './utils';
+
+type ElementSyncData = {
+  label: string,
+  $inputElement: JQuery<HTMLInputElement>,
+  sliderEvent: ModelEvent,
+} & ({
+  inputEventType: 'input',
+  sliderMethod: keyof PluginValueMethods,
+} | {
+  inputEventType: 'change',
+  sliderMethod: keyof PluginStateMethods,
+});
 
 class Panel {
   private panelRootElement: JQuery<HTMLDivElement> = $('<div class="panel"><div class="panel__options panel__options_group_values"></div><div class="panel__options panel__options_group_states"></div></div>');
@@ -48,6 +61,7 @@ class Panel {
       const { target } = e;
       if (target instanceof HTMLInputElement) {
         const boundStepSize = Panel.getStepPrecision(target.value);
+        target.min = String(boundStepSize);
         bounds.forEach((bound) => {
           this.panelElements[bound].children().prop('step', boundStepSize);
         });
@@ -70,38 +84,32 @@ class Panel {
   }
 
   private makePanelElements() {
-    const stateOptions: [string, boolean, ModelEvent, keyof IPluginPublicStateMethods][] = [
+    const stateOptions: [string, boolean, ModelEvent, keyof PluginStateMethods][] = [
       ['vertical', this.pluginOptions.isVertical, 'isVerticalChanged', 'setVerticalState'],
       ['interval', this.pluginOptions.isInterval, 'isIntervalChanged', 'setInterval'],
       ['bar', this.pluginOptions.showProgressBar, 'showProgressChanged', 'setShowProgress'],
       ['scale', this.pluginOptions.showScale, 'showScaleChanged', 'setShowScale'],
       ['tip', this.pluginOptions.showTip, 'showTipChanged', 'setShowTip'],
     ];
-    const values: [string, number, ModelEvent, keyof IPluginPublicValueMethods][] = [
+    const values: [string, number, ModelEvent, keyof PluginValueMethods][] = [
       ['from', this.pluginOptions.value1, 'value1Changed', 'setValue1'],
       ['to', this.pluginOptions.value2, 'value2Changed', 'setValue2'],
     ];
-    const valueOptions: [string, number, ModelEvent, keyof IPluginPublicValueMethods][] = [
+    const valueOptions: [string, number, ModelEvent, keyof PluginValueMethods][] = [
       ['min', this.pluginOptions.minValue, 'minValueChanged', 'setMinValue'],
       ['max', this.pluginOptions.maxValue, 'maxValueChanged', 'setMaxValue'],
       ['step', this.pluginOptions.stepSize, 'stepSizeChanged', 'setStepSize'],
     ];
-    stateOptions.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputCheckboxElement(label, value, event, method);
+    stateOptions.forEach((elementData) => {
+      this.panelElements[elementData[0]] = this.makeInputCheckboxElement(...elementData);
     });
-    values.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputNumberElement(
-        label,
-        value,
-        event,
-        method,
-        this.pluginOptions.stepSize,
-        this.pluginOptions.minValue,
-      );
+    values.forEach((elementData) => {
+      this.panelElements[elementData[0]] = this.makeInputNumberElement(...elementData);
     });
-    valueOptions.forEach(([label, value, event, method]) => {
-      this.panelElements[label] = this.makeInputNumberElement(
-        label, value, event, method, Panel.getStepPrecision(this.pluginOptions.stepSize),
+    valueOptions.forEach((elementData) => {
+      this.panelElements[elementData[0]] = this.makeInputNumberElement(
+        ...elementData,
+        Panel.getStepPrecision(this.pluginOptions.stepSize),
       );
     });
   }
@@ -110,11 +118,11 @@ class Panel {
     label: string,
     checked: boolean,
     event: ModelEvent,
-    method: keyof IPluginPublicStateMethods,
+    method: keyof PluginStateMethods,
   ) {
     const $inputElement: JQuery<HTMLInputElement> = $(`<input type="checkbox" class="panel__input panel__input_type_checkbox" data-role="${label}"></input>`);
     $inputElement[0].checked = checked;
-    return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+    return this.syncElementWithSlider({
       label, $inputElement, sliderEvent: event, inputEventType: 'change', sliderMethod: method,
     });
   }
@@ -123,48 +131,66 @@ class Panel {
     label: string,
     value: number,
     event: ModelEvent,
-    method: keyof IPluginPublicValueMethods,
-    step?: number,
-    min?: number,
+    method: keyof PluginValueMethods,
+    step: number = this.pluginOptions.stepSize,
+    min: number = this.pluginOptions.minValue,
   ) {
-    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}" value="${value}"></input>`);
-    $inputElement.prop({ step, min });
-    return this.appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
+    const $inputElement: JQuery<HTMLInputElement> = $(`<input type="number" class="panel__input panel__input_type_number" data-role="${label}"></input>`);
+    switch (label) {
+      case 'from':
+      case 'to':
+        $inputElement.prop({ value, step, min });
+        break;
+      default:
+        $inputElement.prop({ value, step });
+    }
+    return this.syncElementWithSlider({
       label, $inputElement, sliderEvent: event, inputEventType: 'input', sliderMethod: method,
     });
   }
 
-  private appendElementToLabelAndSubscribeToSliderEventAndAddEventListener({
-    label,
-    $inputElement,
-    sliderEvent,
-    inputEventType,
-    sliderMethod,
-  }: {
-    label: string,
-    $inputElement: JQuery<HTMLInputElement>,
-    sliderEvent: ModelEvent,
-  } & ({
-    inputEventType: 'input',
-    sliderMethod: keyof IPluginPublicValueMethods,
-  } | {
-    inputEventType: 'change',
-    sliderMethod: keyof IPluginPublicStateMethods,
-  })) {
+  private syncElementWithSlider({
+    label, $inputElement, sliderEvent, inputEventType, sliderMethod,
+  }: ElementSyncData) {
     const $labelElement = $(`<label class="panel__label" data-role="${label}">${label}</label>`)
       .append($inputElement);
     this.sliderPlugin.subscribe({ event: sliderEvent, subscriber: $inputElement[0] });
-    const panelInputListener = (e: Event) => {
-      const { target } = e;
-      if (target instanceof HTMLInputElement) {
-        if (inputEventType === 'input') {
-          this.sliderPlugin[sliderMethod](target.valueAsNumber);
-        } else if (inputEventType === 'change') {
-          this.sliderPlugin[sliderMethod](target.checked);
-        }
+    interface SubscribeSetEvent extends Event {
+      isSubscribeSet?: boolean;
+    }
+    const checkEventIsSubscribeSet = (event: SubscribeSetEvent) => {
+      const { target } = event;
+      const isHTMLInputElement = target instanceof HTMLInputElement;
+      const isSubscribeSetEvent = event.isSubscribeSet;
+      const canPassValueToPlugin = isHTMLInputElement && !isSubscribeSetEvent;
+      if (canPassValueToPlugin) {
+        return { canPassValueToPlugin, target };
       }
+      return { canPassValueToPlugin, target: null };
     };
-    $inputElement[0].addEventListener(inputEventType, panelInputListener);
+    const makePanelInputNumberListener = (valueMethod: keyof PluginValueMethods) => {
+      const panelInputNumberListener = (event: SubscribeSetEvent) => {
+        const { canPassValueToPlugin, target } = checkEventIsSubscribeSet(event);
+        if (canPassValueToPlugin) {
+          this.sliderPlugin[valueMethod](target.valueAsNumber);
+        }
+      };
+      return panelInputNumberListener;
+    };
+    const makePanelInputCheckboxListener = (stateMethod: keyof PluginStateMethods) => {
+      const panelInputCheckboxListener = (event: SubscribeSetEvent) => {
+        const { canPassValueToPlugin, target } = checkEventIsSubscribeSet(event);
+        if (canPassValueToPlugin) {
+          this.sliderPlugin[stateMethod](target.checked);
+        }
+      };
+      return panelInputCheckboxListener;
+    };
+    if (inputEventType === 'input') {
+      $inputElement[0].addEventListener('input', makePanelInputNumberListener(sliderMethod));
+    } else if (inputEventType === 'change') {
+      $inputElement[0].addEventListener('change', makePanelInputCheckboxListener(sliderMethod));
+    }
 
     return $labelElement;
   }

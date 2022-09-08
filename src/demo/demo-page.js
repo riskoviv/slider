@@ -14,8 +14,8 @@ $(() => {
     minValue: 12.3,
     maxValue: 54.5,
     stepSize: 3.49,
-    value1: 20,
-    value2: 40,
+    value1: 29.75,
+    value2: 36.73,
   });
   window.panel2 = new Panel(window.slider2);
 
@@ -30,4 +30,14 @@ $(() => {
     value2: 5000,
   });
   window.panel3 = new Panel(window.slider3);
+
+  window.slider4 = $('#slider4').sliderPlugin({
+    isVertical: true,
+    showScale: true,
+    showTip: true,
+    minValue: 0,
+    maxValue: 100,
+    value1: 0,
+  });
+  window.panel4 = new Panel(window.slider4);
 });

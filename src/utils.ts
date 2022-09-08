@@ -12,13 +12,23 @@ const defaultOptions: SliderOptions = {
 };
 
 /**
- * uses Object.keys method but returns array of keys
+ * passes through obj using for..in and returns array of keys
  * of passed object in original type that keys of object has
  * @param obj object to get keys from
  * @returns array of object's keys but of original type
  */
-const getTypedKeys = <T extends Record<string, unknown>>(obj: T):
-(keyof T)[] => Object.keys(obj);
+const getTypedKeys = <Obj extends Record<keyof Obj, unknown>>(obj: Obj): (keyof Obj)[] => {
+  const keys: (keyof Obj)[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+};
+
+type TypedObj<Obj> = Partial<Record<keyof Obj, TypeOfValues<Obj>>>;
 
 /**
  * uses Object.entries method but returns entries of passed object
@@ -27,8 +37,14 @@ const getTypedKeys = <T extends Record<string, unknown>>(obj: T):
  * @param obj object to get entries from
  * @returns array of arrays each containing key & value of obj
  */
-const getEntriesWithTypedKeys = <T extends Record<string, TypeOfValues<T>>>(obj: T):
-[keyof T, TypeOfValues<T>][] => Object.entries(obj);
+const getEntriesWithTypedKeys = <Obj extends TypedObj<Obj>>(
+  obj: Obj,
+): [keyof Obj, TypeOfValues<Obj>][] => {
+  const keys = getTypedKeys(obj);
+  const values: TypeOfValues<Obj>[] = Object.values(obj);
+  const entries: [keyof Obj, TypeOfValues<Obj>][] = keys.map((key, idx) => [key, values[idx]]);
+  return entries;
+};
 
 /**
  * used in cases when is needed to define size of fractional part of min, max, stepSize
@@ -42,10 +58,10 @@ const getFractionalPartSize = (value: number | string): number => {
   return valueAsString.split('.')[1].length;
 };
 
-const invalidValues = [
-  NaN,
-  -Infinity,
-  Infinity,
+const nonFiniteNumbers = [NaN, -Infinity, Infinity];
+
+const anyTypeValues = [
+  ...nonFiniteNumbers,
   'string',
   [123],
   1n,
@@ -61,5 +77,6 @@ export {
   getTypedKeys,
   getEntriesWithTypedKeys,
   getFractionalPartSize,
-  invalidValues,
+  nonFiniteNumbers,
+  anyTypeValues,
 };

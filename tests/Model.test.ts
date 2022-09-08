@@ -1,5 +1,11 @@
-import Model from '../Model';
-import { getEntriesWithTypedKeys, defaultOptions, invalidValues } from '../utils';
+import Logger from '../src/Logger';
+import Model from '../src/Model';
+import {
+  getEntriesWithTypedKeys,
+  defaultOptions,
+  nonFiniteNumbers,
+  anyTypeValues,
+} from '../src/utils';
 
 let model: Model;
 
@@ -24,10 +30,6 @@ describe('Model', () => {
 
     test('should set fractionalPrecision to 0', () => {
       expect(model.fractionalPrecision).toBe(0);
-    });
-
-    test('should set penultimateValue to 90', () => {
-      expect(model.penultimateValue).toBe(90);
     });
 
     describe('if one of following options is not integer', () => {
@@ -114,13 +116,6 @@ describe('Model', () => {
     });
   });
 
-  test('getOptions returns the same object as defaultOptions (by content)', () => {
-    const modelOptions = model.getOptions();
-
-    expect(modelOptions).toEqual(defaultOptions);
-    expect(modelOptions).not.toBe(model.options);
-  });
-
   describe('getIndexByValueNumber(valueNumber: 1 | 2)', () => {
     test.each<[1 | 2, number]>([
       [1, 5],
@@ -171,7 +166,7 @@ describe('Model', () => {
         const currentValue1 = model.options.value1;
         const currentValue2 = model.options.value2;
 
-        invalidValues.forEach((value: any) => {
+        anyTypeValues.forEach((value: any) => {
           model.setValue1(value);
           model.setValue2(value);
         });
@@ -354,8 +349,15 @@ describe('Model', () => {
             expect(customModel.options[valueName]).toBe(value);
             const number = Number(valueName.slice(-1));
             const changeTipValue = number === 1;
-            if (number === 1) expect(value1ChangedSpy).toBeCalledWith(value, { changeTipValue });
-            else expect(value2ChangedSpy).toBeCalledWith(value, { changeTipValue });
+            if (number === 1) {
+              expect(value1ChangedSpy).toBeCalledWith(value, {
+                changeTipValue, checkTipsOverlap: false,
+              });
+            } else {
+              expect(value2ChangedSpy).toBeCalledWith(value, {
+                changeTipValue, checkTipsOverlap: true,
+              });
+            }
           });
         },
       );
@@ -466,7 +468,7 @@ describe('Model', () => {
       test('should not set any non-finite, non-number value and 0', () => {
         const currentStepSize = model.options.stepSize;
 
-        [0, ...invalidValues].forEach((value: any) => model.setStepSize(value));
+        [0, ...anyTypeValues].forEach((value: any) => model.setStepSize(value));
 
         expect(model.options.stepSize).toBe(currentStepSize);
         expect(stepSizeChangedSpy).not.toBeCalled();
@@ -486,6 +488,7 @@ describe('Model', () => {
         expect(stepSizeChangedSpy).toBeCalled();
         expect(value1ChangedSpy).toBeCalled();
         expect(value2ChangedSpy).toBeCalled();
+        expect(customModel.options.stepSize).toBe(4.12);
         expect(customModel.fractionalPrecision).toBe(2);
         expect(customModel.options.value1).toBe(-50.56);
         expect(customModel.options.value2).toBe(48.32);
@@ -514,7 +517,7 @@ describe('Model', () => {
       );
 
       test('should not set new minValue if it is more than maxValue or is not finite number or not a number', () => {
-        [123, ...invalidValues].forEach((minValue: any) => {
+        [123, ...anyTypeValues].forEach((minValue: any) => {
           model.setMinValue(minValue);
         });
 
@@ -523,11 +526,11 @@ describe('Model', () => {
         expect(value1ChangedSpy).not.toBeCalled();
       });
 
-      test('if new minValue === maxValue, should set maxValue to new minValue + stepSize and save minValue', () => {
+      test('if new minValue === maxValue, should not change minValue; maximum allowed is maxValue - stepSize', () => {
         model.setMinValue(defaultOptions.maxValue);
 
-        expect(model.options.minValue).toBe(defaultOptions.maxValue);
-        expect(model.options.maxValue).toBe(defaultOptions.maxValue + model.options.stepSize);
+        expect(model.options.minValue).toBe(defaultOptions.minValue);
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue);
       });
     });
 
@@ -549,14 +552,14 @@ describe('Model', () => {
           expect(model.options.maxValue).toBe(maxValue);
           expect(maxValueChangedSpy).toBeCalled();
           if (maxValue < defaultOptions.value1) {
-            expect(model.getOptions().value1).toBe(maxValue);
+            expect(model.options.value1).toBe(maxValue);
           }
           expect(value1ChangedSpy).toBeCalled();
         },
       );
 
       test('should not set new maxValue if it is less than minValue or is not finite number or not a number', () => {
-        [-105, ...invalidValues].forEach((maxValue: any) => {
+        [-105, ...anyTypeValues].forEach((maxValue: any) => {
           model.setMaxValue(maxValue);
         });
 
@@ -565,19 +568,19 @@ describe('Model', () => {
         expect(value1ChangedSpy).not.toBeCalled();
       });
 
-      test('if new maxValue === minValue, should set maxValue to minValue + stepSize', () => {
+      test('if new maxValue === minValue, should not change maxValue; minimum allowed is minValue + stepSize', () => {
         model.setMaxValue(defaultOptions.minValue);
 
-        expect(model.options.maxValue).toBe(defaultOptions.minValue + defaultOptions.stepSize);
+        expect(model.options.maxValue).toBe(defaultOptions.maxValue);
       });
     });
 
-    describe('should not emit their events if the value passed on call is the same as already set', () => {
-      beforeAll(() => {
+    describe('should not emit their events and no listeners should be called, just return and do nothing', () => {
+      beforeEach(() => {
         initModelWithDefaultOptions();
       });
 
-      test('none of methods should emit event and no listeners should be called', () => {
+      test('if the value passed on call is the same as already set', () => {
         const listeners: jest.Mock[] = [];
         const eventNames: ModelEvent[] = [
           'value1Changed',
@@ -612,120 +615,72 @@ describe('Model', () => {
           expect(listener).not.toBeCalled();
         });
       });
-    });
 
-    describe('subscribe() receives an HTMLInputElement or callback function. If it is an HTMLInputElement, depending on its type (checkbox or number) makes a function that will be called when event w/ received name is emitted', () => {
-      let isUnsubscribed: boolean;
+      test('if argument passed to every state method has wrong type', () => {
+        const listeners: jest.Mock[] = [];
+        const eventNames: StateEvent[] = [
+          'isVerticalChanged',
+          'isIntervalChanged',
+          'showProgressChanged',
+          'showTipChanged',
+          'showScaleChanged',
+        ];
+        eventNames.forEach((eventName) => {
+          const listener = jest.fn();
+          model.on({ event: eventName, handler: listener });
+          listeners.push(listener);
+        });
+        const stateMethods: (keyof ModelStateMethods)[] = [
+          'setVerticalState',
+          'setInterval',
+          'setShowProgress',
+          'setShowTip',
+          'setShowScale',
+        ];
+        const nonBoolean: any = 49;
 
-      beforeEach(() => {
-        initModelWithDefaultOptions();
-        isUnsubscribed = false;
-      });
-
-      test.concurrent.each`
-        inputType     | event                  | inputProperty      | value1  | value2   | method
-        ${'number'}   | ${'value1Changed'}     | ${'valueAsNumber'} | ${20}   | ${30}    | ${'setValue1'}
-        ${'number'}   | ${'stepSizeChanged'}   | ${'valueAsNumber'} | ${2}    | ${6}     | ${'setStepSize'}
-        ${'checkbox'} | ${'isIntervalChanged'} | ${'checked'}       | ${true} | ${false} | ${'setInterval'}
-      `(
-        'should subscribe input[type="$inputType"] element to $event event and change its $inputProperty property to value ($value1) emitted on event dispatch, but after unsubscribe() new value ($value2) passed to method should not be set on inputElement',
-        ({
-          inputType, event, inputProperty, value1, value2, method,
-        }: {
-          inputType: 'number',
-          event: ValueEvent,
-          value1: number,
-          value2: number,
-          inputProperty: 'valueAsNumber',
-          method: keyof IPluginPublicValueMethods,
-        } | {
-          inputType: 'checkbox',
-          event: StateEvent,
-          value1: boolean,
-          value2: boolean,
-          inputProperty: 'checked',
-          method: keyof IPluginPublicStateMethods,
-        }) => {
-          const inputElement: UnsubHTMLInputElement = document.createElement('input');
-          inputElement.type = inputType;
-          model.subscribe({ event, subscriber: inputElement });
-
-          switch (inputType) {
-            case 'number':
-              model[method](value1);
-              break;
-            case 'checkbox':
-              model[method](value1);
-              break;
-            default: break;
-          }
-
-          expect(inputElement[inputProperty]).toBe(value1);
-
-          if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(inputElement);
-          else if (inputElement.unsubscribe) isUnsubscribed = inputElement.unsubscribe();
-
-          expect(isUnsubscribed).toBe(true);
-
-          switch (inputType) {
-            case 'number':
-              model[method](value2);
-              break;
-            case 'checkbox':
-              model[method](value2);
-              break;
-            default: break;
-          }
-
-          expect(inputElement[inputProperty]).toBe(value1);
-        },
-      );
-
-      type Primitive = number | boolean;
-      type Callback<Value> = ((value: Value) => void) & Unsubscribable;
-
-      describe('callback subscribe / unsubscribe', () => {
-        let variableChangedByCallback: Primitive | undefined;
-
-        beforeEach(() => {
-          variableChangedByCallback = undefined;
+        stateMethods.forEach((method) => {
+          model[method](nonBoolean);
         });
 
-        test.each<[ModelEvent, Primitive, Primitive, {
-          numberMethod?: keyof IPluginPublicValueMethods,
-          booleanMethod?: keyof IPluginPublicStateMethods,
-        }]>([
-          ['value1Changed', 30, 40, { numberMethod: 'setValue1' }],
-          ['showProgressChanged', true, false, { booleanMethod: 'setShowProgress' }],
-        ])(
-          'should subscribe callback function to event and call it on event passing it value changed during event, and don\'t call callback after unsubscribe',
-          (event, value1, value2, { numberMethod, booleanMethod }) => {
-            const callback: Callback<Primitive> = (value: Primitive) => {
-              variableChangedByCallback = value;
-            };
-            model.subscribe({ event, subscriber: callback });
+        listeners.forEach((listener) => {
+          expect(listener).not.toBeCalled();
+        });
+        expect(model.options).toEqual(defaultOptions);
+      });
+    });
 
-            if (typeof value1 === 'number' && numberMethod) {
-              model[numberMethod](value1);
-            } else if (typeof value1 === 'boolean' && booleanMethod) {
-              model[booleanMethod](value1);
-            }
+    test('should throw error on emit when event is not registered and has no listeners', () => {
+      initModelWithDefaultOptions();
+      const stateMethods: [keyof ModelStateMethods, StateEvent][] = [
+        ['setVerticalState', 'isVerticalChanged'],
+        ['setInterval', 'isIntervalChanged'],
+        ['setShowProgress', 'showProgressChanged'],
+        ['setShowTip', 'showTipChanged'],
+        ['setShowScale', 'showScaleChanged'],
+      ];
+      const valueMethods: [keyof ModelValueMethods, ValueEvent, number][] = [
+        ['setValue1', 'value1Changed', -40],
+        ['setValue2', 'value2Changed', 20],
+        ['setStepSize', 'stepSizeChanged', 20],
+        ['setMinValue', 'minValueChanged', -60],
+        ['setMaxValue', 'maxValueChanged', 80],
+      ];
+      const loggerEmitError = jest.spyOn(Logger, 'emitError');
+      const emitError = new Error();
+      emitError.name = 'EmitError';
 
-            expect(variableChangedByCallback).toBe(value1);
+      stateMethods.forEach(([stateMethod, stateEvent]) => {
+        model[stateMethod](true);
+        emitError.message = `${stateEvent} event is not registered. value = true`;
+        expect(loggerEmitError.mock.calls).toContainEqual([emitError]);
+      });
 
-            if (Math.round(Math.random())) isUnsubscribed = model.unsubscribe(callback);
-            else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
-
-            if (typeof value2 === 'number' && numberMethod) {
-              model[numberMethod](value2);
-            } else if (typeof value2 === 'boolean' && booleanMethod) {
-              model[booleanMethod](value2);
-            }
-
-            expect(isUnsubscribed).toBe(true);
-            expect(variableChangedByCallback).toBe(value1);
-          },
-        );
+      loggerEmitError.mockClear();
+      valueMethods.forEach(([valueMethod, valueEvent, value]) => {
+        model[valueMethod](value);
+        emitError.message = `${valueEvent} event is not registered. value = ${value}`;
+        expect(loggerEmitError.mock.calls).toContainEqual([emitError]);
       });
     });
   });

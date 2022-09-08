@@ -1,4 +1,5 @@
 import $ from 'jquery';
+
 import EventEmitter from './EventEmitter';
 
 type SliderViewOptions = {
@@ -8,7 +9,7 @@ type SliderViewOptions = {
 };
 
 class View extends EventEmitter implements IView {
-  readonly $elem: JQuery<HTMLElement>;
+  readonly $elem: JQuery;
 
   readonly $controlContainer: JQuery<HTMLDivElement> = $(
     '<div class="slider__control-container"></div>',
@@ -21,22 +22,6 @@ class View extends EventEmitter implements IView {
     this.$elem = this.render(options);
     [this.controlContainerElem] = this.$controlContainer;
     this.bindEventListeners();
-  }
-
-  private render(options: SliderViewOptions = {
-    isVertical: false,
-    isInterval: false,
-    showProgressBar: false,
-  }): JQuery<HTMLElement> {
-    return $(
-      `<div class="slider${
-        options.isVertical ? ' slider_vertical' : ''
-      }${
-        options.isInterval ? ' slider_interval' : ''
-      }${
-        options.showProgressBar ? ' slider_show-progress' : ''
-      }"></div>`,
-    ).append(this.$controlContainer);
   }
 
   toggleVertical(isVertical: boolean): void {
@@ -62,9 +47,25 @@ class View extends EventEmitter implements IView {
     );
   }
 
+  private render(options: SliderViewOptions): JQuery {
+    const {
+      isVertical = false,
+      isInterval = false,
+      showProgressBar = false,
+    } = options;
+    const sliderModifiers = [
+      isVertical ? 'slider_vertical' : '',
+      isInterval ? 'slider_interval' : '',
+      showProgressBar ? 'slider_show-progress' : '',
+    ];
+    const sliderClassName = ['slider', ...sliderModifiers].join(' ').trim();
+    const $sliderElem = $(`<div class="${sliderClassName}"></div>`).append(this.$controlContainer);
+    return $sliderElem;
+  }
+
   private bindEventListeners() {
     this.controlContainerElem.addEventListener('pointerdown', this.pointerDown);
-    this.$controlContainer.on('contextmenu', this.preventContextMenu);
+    this.$controlContainer.on('contextmenu.controlContainer', View.preventContextMenu);
   }
 
   private pointerDown = (e: PointerEvent): void => {
@@ -75,20 +76,16 @@ class View extends EventEmitter implements IView {
     e.preventDefault();
     this.controlContainerElem.setPointerCapture(e.pointerId);
 
-    const { target } = e;
+    const { target, offsetX, offsetY } = e;
     if (target instanceof HTMLDivElement) {
       this.emit({
         event: 'sliderPointerDown',
-        value: {
-          target,
-          offsetX: e.offsetX,
-          offsetY: e.offsetY,
-        },
+        value: { target, offsetX, offsetY },
       });
     }
-  }
+  };
 
-  private preventContextMenu = () => false;
+  private static preventContextMenu = () => false;
 }
 
 export default View;

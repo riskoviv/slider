@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import '@testing-library/jest-dom';
-import ScaleView from '../subviews/ScaleView';
+
+import ScaleView from '../src/subviews/ScaleView';
+import Logger from '../src/Logger';
 
 const makeNewScaleValueElement = (value: number): JQuery<HTMLDivElement> => (
   $(`<div class="slider__scale-block">
@@ -152,6 +154,28 @@ describe('ScaleView', () => {
       scaleElement.dispatchEvent(pointerDownEvent);
 
       expect(scaleValueSelectSpy).not.toBeCalled();
+    });
+  });
+
+  describe('scaleValueSelect emit error test', () => {
+    test('should call console.error if scaleValueSelect event has no subscribers', () => {
+      scale = new ScaleView();
+      [scaleElement] = scale.$elem;
+      scale.scaleValueElements = getScaleElementsWithValues([0]);
+      scale.insertScaleValueElements();
+      const firstScaleTextElement = scaleElement.querySelector('.slider__scale-block:first-child > .slider__scale-text');
+      const pointerDownEvent = new MouseEvent('pointerdown');
+      Object.defineProperty(pointerDownEvent, 'target', {
+        value: firstScaleTextElement,
+      });
+      const loggerEmitError = jest.spyOn(Logger, 'emitError');
+      const emitError = new Error();
+      emitError.name = 'EmitError';
+      emitError.message = 'scaleValueSelect event is not registered. value = 0';
+
+      scaleElement.dispatchEvent(pointerDownEvent);
+
+      expect(loggerEmitError).toBeCalledWith(emitError);
     });
   });
 });

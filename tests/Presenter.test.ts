@@ -1,6 +1,7 @@
 import $ from 'jquery';
-import Presenter from '../Presenter';
-import Model from '../Model';
+
+import Presenter from '../src/Presenter';
+import Model from '../src/Model';
 import './mocks/ResizeObserver';
 
 describe('Presenter', () => {
@@ -16,7 +17,7 @@ describe('Presenter', () => {
     showScale: false,
     showProgressBar: false,
   };
-  let $element: JQuery<HTMLElement>;
+  let $element: JQuery;
 
   beforeAll(() => {
     $element = $('<div class="slider-container"></div>');

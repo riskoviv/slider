@@ -1,10 +1,12 @@
 import $ from 'jquery';
-import '../slider-plugin';
+import '@testing-library/jest-dom';
 import { getByText } from '@testing-library/dom';
-import {
-  getTypedKeys, getFractionalPartSize, defaultOptions, invalidValues,
-} from '../utils';
+
 import './mocks/ResizeObserver';
+import '../src/slider-plugin';
+import {
+  getTypedKeys, getFractionalPartSize, defaultOptions, anyTypeValues,
+} from '../src/utils';
 
 const parentHaveAllChildren = (parent: JQuery, children: string[]) => {
   const childrenCountInParent = children.reduce((childCount, childClass) => (
@@ -27,10 +29,20 @@ const getRandomInt = (min: number, max: number) => (
   Math.floor(Math.random() * (max - min + 1) + min)
 );
 
+const tipHiddenClass = 'slider__tip_hidden';
+
+const areTipsJoinedToOne = (tipElements: HTMLElement[]): boolean => {
+  const tipsVisibilities = [1, 2, 3].map(
+    (n) => tipElements[n].classList.contains(tipHiddenClass),
+  );
+  const joinedTips = [true, true, false];
+  return tipsVisibilities.every((tipStatus, idx) => tipStatus === joinedTips[idx]);
+};
+
 describe('slider-plugin', () => {
   const $sliderContainer = $('<div class="slider-container"></div>');
   const pointerupEvent = new MouseEvent('pointerup');
-  let $sliderInstance: JQuery<HTMLElement>;
+  let $sliderInstance: JQuery;
 
   beforeAll(() => {
     Object.defineProperties($sliderContainer[0], {
@@ -54,6 +66,12 @@ describe('slider-plugin', () => {
       expect($sliderInstance.hasClass('slider')).toBe(true);
     });
 
+    test('getOptions returns the same object as defaultOptions (by content)', () => {
+      const sliderOptions = $sliderInstance.getOptions();
+
+      expect(sliderOptions).toEqual(defaultOptions);
+    });
+
     test('should have controlContainer element that has 2 subViews', () => {
       const $controlContainer = $('.slider__control-container', $sliderInstance);
       const childClasses = ['track', 'thumb'];
@@ -75,7 +93,7 @@ describe('slider-plugin', () => {
     });
 
     test('slider should have all needed elements', () => {
-      const childElements = ['control-container', 'track', 'thumb_1', 'thumb_2', 'tip_1', 'tip_2', 'scale'];
+      const childElements = ['control-container', 'track', 'thumb_1', 'thumb_2', 'tip_1', 'tip_2', 'tip_3', 'scale'];
       expect(parentHaveAllChildren($sliderInstance, childElements)).toBe(true);
       expect($scaleElem.children().length).toBe(21);
     });
@@ -90,7 +108,7 @@ describe('slider-plugin', () => {
   });
 
   describe('if options arg passed to plugin is not an object or if it is an array (object that has length property)', () => {
-    test.each([42, ...invalidValues])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
+    test.each([42, ...anyTypeValues])('should ignore %s argument and instantiate w/ default options', (arg: any) => {
       $sliderInstance = $sliderContainer.sliderPlugin(arg);
 
       expect($sliderInstance.getOptions()).toStrictEqual(defaultOptions);
@@ -176,6 +194,7 @@ describe('slider-plugin', () => {
     element: HTMLElement,
     offsetAxis: 'offsetX' | 'offsetY',
     offset: number,
+    makePointerup?: boolean,
     target?: HTMLElement,
     button?: number,
   ) => {
@@ -187,6 +206,7 @@ describe('slider-plugin', () => {
       button: { value: button ?? 0 },
     });
     element.dispatchEvent(pointerdownEvent);
+    if (makePointerup !== false) element.dispatchEvent(pointerupEvent);
   };
 
   const makePointermove = async (
@@ -194,6 +214,7 @@ describe('slider-plugin', () => {
     offsetAxis: 'offsetX' | 'offsetY',
     startPoint: number,
     endPoint: number,
+    makePointerup = true,
   ) => {
     const pointermoveEvent = new MouseEvent('pointermove');
     let cursorOffset = startPoint;
@@ -208,6 +229,7 @@ describe('slider-plugin', () => {
         targetElement.dispatchEvent(pointermoveEvent);
         if (cursorOffset === endPoint) {
           clearInterval(moveIntervalId);
+          if (makePointerup) targetElement.dispatchEvent(pointerupEvent);
           resolve();
         }
       }, 20);
@@ -230,7 +252,6 @@ describe('slider-plugin', () => {
 
       [[102, 15], [219, 30], [-10, 0], [730, 100]].forEach(([offsetX, position]) => {
         makePointerdown(controlContainer, 'offsetX', offsetX);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${position}%`);
@@ -245,9 +266,8 @@ describe('slider-plugin', () => {
         expect.assertions(2);
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
 
-        makePointerdown(controlContainer, 'offsetX', startPoint, thumbElem);
+        makePointerdown(controlContainer, 'offsetX', startPoint, false, thumbElem);
         await makePointermove(controlContainer, 'offsetX', startPoint, endPoint);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue('--value-1-position'))
           .toBe(`${expectedPosition}%`);
@@ -259,6 +279,7 @@ describe('slider-plugin', () => {
     let controlContainer: HTMLElement;
     const offsetAxis = isVertical ? 'offsetY' : 'offsetX';
     const offsetDimension = isVertical ? 'offsetHeight' : 'offsetWidth';
+    const positionDimension = isVertical ? 'offsetTop' : 'offsetLeft';
 
     describe('DOM interaction on control-container with isInterval: false, showTip: true', () => {
       let tipElem: HTMLElement;
@@ -279,7 +300,6 @@ describe('slider-plugin', () => {
         [[359, 55, 10], [101, 15, -70], [16, 0, -100], [665, 100, 100]]
           .forEach(([offset, position, value]) => {
             makePointerdown(controlContainer, offsetAxis, offset);
-            controlContainer.dispatchEvent(pointerupEvent);
 
             expect(controlContainer.style.getPropertyValue('--value-1-position'))
               .toBe(`${position}%`);
@@ -298,9 +318,8 @@ describe('slider-plugin', () => {
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(tipElem.textContent).toBe('-50');
 
-          makePointerdown(controlContainer, offsetAxis, startPoint, thumbElem);
+          makePointerdown(controlContainer, offsetAxis, startPoint, false, thumbElem);
           await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
-          controlContainer.dispatchEvent(pointerupEvent);
 
           expect(controlContainer.style.getPropertyValue('--value-1-position'))
             .toBe(`${expectedPosition}%`);
@@ -317,15 +336,76 @@ describe('slider-plugin', () => {
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(tipElem.textContent).toBe('-50');
 
-          makePointerdown(controlContainer, offsetAxis, startPoint);
+          makePointerdown(controlContainer, offsetAxis, startPoint, false);
           await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
-          controlContainer.dispatchEvent(pointerupEvent);
 
           expect(controlContainer.style.getPropertyValue('--value-1-position'))
             .toBe(`${expectedPosition}%`);
           expect(tipElem.textContent).toBe(`${value}`);
         },
       );
+
+      describe('joining and separating of tips', () => {
+        const tips: HTMLElement[] = [];
+
+        const setTipPositionAndSize = (
+          tipElement: HTMLElement,
+          position: number,
+          size: number,
+        ) => {
+          Object.defineProperties(tipElement, {
+            [positionDimension]: { value: position, writable: true },
+            [offsetDimension]: { value: size, writable: true },
+          });
+        };
+
+        beforeEach(() => {
+          $sliderInstance = $sliderContainer.sliderPlugin({
+            isInterval: true, isVertical, showTip: true, stepSize: 5,
+          });
+          const $controlContainer = $sliderInstance.find('.slider__control-container');
+          [controlContainer] = $controlContainer;
+          definePropertiesForControlContainer($controlContainer[0], offsetDimension);
+          [1, 2, 3].forEach((number) => {
+            [tips[number]] = $controlContainer.find(`.slider__tip_${number}`);
+          });
+        });
+
+        test('because positions & sizes of tips in test initially will be all at 0 and they cannot be set before initialization, tip1 & tip2 will be hidden and tip3 will be shown', () => {
+          expect(areTipsJoinedToOne(tips)).toBe(true);
+        });
+
+        test('tip1&2 should be hidden and tip3 shown when tip1&2 overlapping each other and should be vice versa when they\'re not overlapping', async () => {
+          expect.assertions(6);
+          const [thumb1] = $sliderInstance.find('.slider__thumb_1');
+          const [thumb2] = $sliderInstance.find('.slider__thumb_2');
+          const dragStart1 = 170;
+          const dragEnd1 = 487;
+          const tip1Position1 = 493;
+          const tip2Position1 = 510;
+          setTipPositionAndSize(tips[1], tip1Position1, isVertical ? 21 : 37);
+          setTipPositionAndSize(tips[2], tip2Position1, isVertical ? 21 : 37);
+
+          makePointerdown(controlContainer, offsetAxis, dragStart1, false, thumb1);
+          await makePointermove(controlContainer, offsetAxis, dragStart1, dragEnd1);
+
+          expect(tips[1].textContent).toBe('45');
+          expect(tips[2].textContent).toBe('50');
+          expect(areTipsJoinedToOne(tips)).toBe(true);
+
+          const dragStart2 = 512;
+          const dragEnd2 = 577;
+          const tip2Position2 = 578;
+          setTipPositionAndSize(tips[2], tip2Position2, isVertical ? 21 : 37);
+
+          makePointerdown(controlContainer, offsetAxis, dragStart2, false, thumb2);
+          await makePointermove(controlContainer, offsetAxis, dragStart2, dragEnd2);
+
+          expect(tips[1].textContent).toBe('45');
+          expect(tips[2].textContent).toBe('70');
+          expect(areTipsJoinedToOne(tips)).toBe(false);
+        });
+      });
     });
 
     describe('DOM interaction on control-container with isInterval: true', () => {
@@ -369,9 +449,7 @@ describe('slider-plugin', () => {
         [2, 510, 0, 30, -40],
       ])(
         'should not set active thumb (%i) position beyond passive thumb position by pointermove',
-        async (
-          activeThumb, startPoint, activeThumbEndPoint, expectedPosition, tipValue,
-        ) => {
+        async (activeThumb, startPoint, activeThumbEndPoint, expectedPosition, tipValue) => {
           expect.assertions(6);
           expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('25%');
           expect(controlContainer.style.getPropertyValue('--value-2-position')).toBe('75%');
@@ -379,9 +457,13 @@ describe('slider-plugin', () => {
           expect(tipElements[2].textContent).toBe('50');
           const [activeThumbElem] = $sliderInstance.find(`.slider__thumb_${activeThumb}`);
 
-          makePointerdown(controlContainer, offsetAxis, startPoint, activeThumbElem);
-          await makePointermove(controlContainer, offsetAxis, startPoint, activeThumbEndPoint);
-          controlContainer.dispatchEvent(pointerupEvent);
+          makePointerdown(controlContainer, offsetAxis, startPoint, false, activeThumbElem);
+          await makePointermove(
+            controlContainer,
+            offsetAxis,
+            startPoint,
+            activeThumbEndPoint,
+          );
 
           expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
             .toBe(`${expectedPosition}%`);
@@ -410,7 +492,7 @@ describe('slider-plugin', () => {
       test('if isInterval: false, should set thumb1 on every clicked scale value position and set value for tip1', () => {
         initForScale(false);
 
-        [...scaleElem.children].forEach((scaleValueElem, index) => {
+        [...scaleElem.children].forEach((scaleValueElem) => {
           if (scaleValueElem instanceof HTMLDivElement) {
             Object.defineProperty(pointerdownEvent, 'target', {
               value: scaleValueElem.firstElementChild, writable: true,
@@ -419,10 +501,8 @@ describe('slider-plugin', () => {
             scaleElem.dispatchEvent(pointerupEvent);
 
             const scaleBlockPosition = scaleValueElem.style.getPropertyValue('--scale-block-position');
-            expect(controlContainer.style.getPropertyValue('--value-1-position'))
-              .toBe(scaleBlockPosition);
-            expect(tipElements[1].textContent)
-              .toBe(String(defaultOptions.minValue + defaultOptions.stepSize * index));
+            expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe(scaleBlockPosition);
+            expect(tipElements[1].textContent).toBe(scaleValueElem.firstElementChild?.textContent);
           }
         });
       });
@@ -462,13 +542,11 @@ describe('slider-plugin', () => {
         expect(tipElem?.textContent).toBe('80');
 
         makePointerdown(controlContainer, offsetAxis, 648);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('100%');
         expect(tipElem?.textContent).toBe('100');
 
         makePointerdown(controlContainer, offsetAxis, 645);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
         expect(tipElem?.textContent).toBe('80');
@@ -480,16 +558,14 @@ describe('slider-plugin', () => {
         const tipElem = controlContainer.querySelector('.slider__tip_1');
         expect(tipElem?.textContent).toBe('80');
 
-        makePointerdown(controlContainer, offsetAxis, 612);
+        makePointerdown(controlContainer, offsetAxis, 612, false);
         await makePointermove(controlContainer, offsetAxis, 612, 648);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('100%');
         expect(tipElem?.textContent).toBe('100');
 
-        makePointerdown(controlContainer, offsetAxis, 680);
+        makePointerdown(controlContainer, offsetAxis, 680, false);
         await makePointermove(controlContainer, offsetAxis, 680, 645);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue('--value-1-position')).toBe('90%');
         expect(tipElem?.textContent).toBe('80');
@@ -514,8 +590,7 @@ describe('slider-plugin', () => {
           const $controlContainer = $sliderInstance.find('.slider__control-container');
           expect($controlContainer.css('--value-1-position')).toBe('25%');
 
-          makePointerdown(element, offsetAxis, randomClickPoint, element, randomButton);
-          element.dispatchEvent(pointerupEvent);
+          makePointerdown(element, offsetAxis, randomClickPoint, true, element, randomButton);
 
           expect($controlContainer.css('--value-1-position')).toBe('25%');
         },
@@ -586,17 +661,63 @@ describe('slider-plugin', () => {
       expect($tipElements[1].textContent).toBe('80');
     });
 
-    test('setVerticalState() should toggle slider_vertical class on slider instance element', () => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
-      expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+    describe('setVerticalState()', () => {
+      test('should toggle slider_vertical class on slider instance element', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin();
+        expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
 
-      $sliderInstance.setVerticalState(true);
+        $sliderInstance.setVerticalState(true);
 
-      expect($sliderInstance.hasClass('slider_vertical')).toBe(true);
+        expect($sliderInstance.hasClass('slider_vertical')).toBe(true);
 
-      $sliderInstance.setVerticalState(false);
+        $sliderInstance.setVerticalState(false);
 
-      expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+        expect($sliderInstance.hasClass('slider_vertical')).toBe(false);
+      });
+
+      const setTipPositionAndSize = (
+        tipElement: HTMLElement,
+        position: number,
+        size: number,
+        positionDimension: PositionDimension,
+        offsetDimension: SizeDimension,
+      ) => {
+        Object.defineProperties(tipElement, {
+          [positionDimension]: { value: position, writable: true },
+          [offsetDimension]: { value: size, writable: true },
+        });
+      };
+
+      test('should join/separate tips, when in horizontal they\'re joined but in vertical not', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          isInterval: true,
+          showTip: true,
+        });
+        const tips: HTMLElement[] = [];
+        [1, 2, 3].forEach((number) => {
+          [tips[number]] = $sliderInstance.find(`.slider__tip_${number}`);
+        });
+
+        setTipPositionAndSize(tips[1], 204, 42, 'offsetLeft', 'offsetWidth');
+        setTipPositionAndSize(tips[2], 238, 42, 'offsetLeft', 'offsetWidth');
+        $sliderInstance.setValue1(-40).setValue2(-30);
+
+        expect(areTipsJoinedToOne(tips)).toBe(true);
+
+        setTipPositionAndSize(tips[1], 204, 21, 'offsetTop', 'offsetHeight');
+        setTipPositionAndSize(tips[2], 238, 21, 'offsetTop', 'offsetHeight');
+        $sliderInstance.setVerticalState(true);
+
+        expect(areTipsJoinedToOne(tips)).toBe(false);
+      });
+
+      test('should init resize observer when showScale is true', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin({ showScale: true });
+
+        $sliderInstance.setVerticalState(true);
+
+        expect(ResizeObserver).toHaveBeenCalledTimes(1);
+      });
     });
 
     test.each([false, true])(
@@ -620,19 +741,45 @@ describe('slider-plugin', () => {
       },
     );
 
-    test('setShowScale(true) should create scale element and fill w/ value elements; setShowScale(false) should remove scale element', () => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
-      expect($sliderInstance.find('.slider__scale').length).toBe(0);
+    describe('setShowScale()', () => {
+      let mockResizeObserver: jest.MockedClass<typeof ResizeObserver>;
 
-      $sliderInstance.setShowScale(true);
+      beforeAll(() => {
+        mockResizeObserver = ResizeObserver as jest.MockedClass<typeof ResizeObserver>;
+      });
 
-      const $sliderScaleElem = $sliderInstance.find('.slider__scale');
-      expect($sliderScaleElem.length).toBe(1);
-      expect($sliderScaleElem.children().length).toBe(21);
+      test('setShowScale(true) should create scale element and fill w/ value elements; setShowScale(false) should remove scale element', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin();
+        expect($sliderInstance.find('.slider__scale').length).toBe(0);
 
-      $sliderInstance.setShowScale(false);
+        $sliderInstance.setShowScale(true);
 
-      expect($sliderInstance.find('.slider__scale').length).toBe(0);
+        const $sliderScaleElem = $sliderInstance.find('.slider__scale');
+        expect($sliderScaleElem.length).toBe(1);
+        expect($sliderScaleElem.children().length).toBe(21);
+        expect(mockResizeObserver).toBeCalled();
+        const [resizeObserverInstance] = mockResizeObserver.mock.instances;
+        expect(resizeObserverInstance.observe).toBeCalledTimes(1);
+
+        $sliderInstance.setShowScale(false);
+
+        expect($sliderInstance.find('.slider__scale').length).toBe(0);
+        expect(resizeObserverInstance.disconnect).toBeCalledTimes(1);
+      });
+
+      test('if showTip: true & isInterval: true, setShowScale(false) should remove scale but remain ResizeObserver', () => {
+        $sliderInstance = $sliderContainer.sliderPlugin({
+          showTip: true, isInterval: true, showScale: true,
+        });
+
+        expect(mockResizeObserver).toBeCalled();
+
+        const [resizeObserverInstance] = mockResizeObserver.mock.instances;
+
+        $sliderInstance.setShowScale(false);
+
+        expect(resizeObserverInstance.disconnect).not.toBeCalled();
+      });
     });
 
     const getScaleValuesMaxFractionalPrecision = ($scale: JQuery) => {
@@ -642,7 +789,8 @@ describe('slider-plugin', () => {
     };
 
     const areDifferencesBetweenAllScaleValuesEqualToStepSize = (
-      $scale: JQuery, stepSize: number,
+      $scale: JQuery,
+      stepSize: number,
     ) => {
       const scaleValues = $scale.find('.slider__scale-text')
         .map((idx, scaleElement) => Number(scaleElement.textContent)).get();
@@ -705,26 +853,230 @@ describe('slider-plugin', () => {
     );
   });
 
-  describe('subscribe & unsubscribe API methods', () => {
-    let controlContainer: HTMLElement;
+  describe('API methods', () => {
+    describe('subscribe & unsubscribe', () => {
+      let controlContainer: HTMLElement;
 
-    beforeEach(() => {
-      $sliderInstance = $sliderContainer.sliderPlugin();
-      [controlContainer] = $sliderInstance.find('.slider__control-container');
-      definePropertiesForControlContainer(controlContainer, 'offsetWidth');
+      beforeEach(() => {
+        $sliderInstance = $sliderContainer.sliderPlugin({ isInterval: true });
+        [controlContainer] = $sliderInstance.find('.slider__control-container');
+        definePropertiesForControlContainer(controlContainer, 'offsetWidth');
+      });
+
+      test('should change inputs values after pointerdown event on controlContainer', () => {
+        const inputElement1: UnsubHTMLInputElement = document.createElement('input');
+        inputElement1.type = 'number';
+        $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement1 });
+        const inputElement2: UnsubHTMLInputElement = document.createElement('input');
+        inputElement2.type = 'number';
+        $sliderInstance.subscribe({ event: 'value2Changed', subscriber: inputElement2 });
+
+        makePointerdown(controlContainer, 'offsetX', 251);
+        makePointerdown(controlContainer, 'offsetX', 415);
+
+        const { value1, value2 } = $sliderInstance.getOptions();
+        expect(value1).toBe(-30);
+        expect(value2).toBe(20);
+        expect(inputElement1.valueAsNumber).toBe(value1);
+        expect(inputElement2.valueAsNumber).toBe(value2);
+
+        $sliderInstance.unsubscribe(inputElement1);
+        makePointerdown(controlContainer, 'offsetX', 96);
+
+        expect($sliderInstance.getOptions().value1).toBe(-70);
+        expect(inputElement1.valueAsNumber).toBe(value1);
+
+        expect(inputElement2.unsubscribe).toBeDefined();
+        if (inputElement2.unsubscribe !== undefined) inputElement2.unsubscribe();
+        makePointerdown(controlContainer, 'offsetX', 568);
+
+        expect($sliderInstance.getOptions().value2).toBe(70);
+        expect(inputElement2.valueAsNumber).toBe(value2);
+      });
+
+      test.concurrent.each`
+        inputType     | event                  | inputProperty      | value1   | value2  | method
+        ${'number'}   | ${'value1Changed'}     | ${'valueAsNumber'} | ${20}    | ${30}   | ${'setValue1'}
+        ${'number'}   | ${'stepSizeChanged'}   | ${'valueAsNumber'} | ${2}     | ${6}    | ${'setStepSize'}
+        ${'checkbox'} | ${'isIntervalChanged'} | ${'checked'}       | ${false} | ${true} | ${'setInterval'}
+      `(
+        'should subscribe input[type="$inputType"] element to $event event and change its $inputProperty property to value ($value1) emitted on event dispatch, but after unsubscribe() new value ($value2) passed to method should not be set on inputElement',
+        ({
+          inputType, event, inputProperty, value1, value2, method,
+        }: {
+          inputType: 'number',
+          event: ValueEvent,
+          value1: number,
+          value2: number,
+          inputProperty: 'valueAsNumber',
+          method: keyof ModelValueMethods,
+        } | {
+          inputType: 'checkbox',
+          event: StateEvent,
+          value1: boolean,
+          value2: boolean,
+          inputProperty: 'checked',
+          method: keyof ModelStateMethods,
+        }) => {
+          let isUnsubscribed = false;
+          const inputElement: UnsubHTMLInputElement = document.createElement('input');
+          inputElement.type = inputType;
+          $sliderInstance.subscribe({ event, subscriber: inputElement });
+
+          switch (inputType) {
+            case 'number':
+              $sliderInstance[method](value1);
+              break;
+            case 'checkbox':
+              $sliderInstance[method](value1);
+              break;
+            default: break;
+          }
+
+          expect(inputElement[inputProperty]).toBe(value1);
+
+          if (Math.round(Math.random())) {
+            isUnsubscribed = $sliderInstance.unsubscribe(inputElement);
+          } else if (inputElement.unsubscribe !== undefined) {
+            isUnsubscribed = inputElement.unsubscribe();
+          }
+
+          expect(isUnsubscribed).toBe(true);
+
+          switch (inputType) {
+            case 'number':
+              $sliderInstance[method](value2);
+              break;
+            case 'checkbox':
+              $sliderInstance[method](value2);
+              break;
+            default: break;
+          }
+
+          expect(inputElement[inputProperty]).toBe(value1);
+        },
+      );
+
+      type Primitive = number | boolean;
+      type Callback<Value> = ((value: Value) => void) & Unsubscribable;
+
+      describe('callback subscribe / unsubscribe', () => {
+        let variableChangedByCallback: Primitive | undefined;
+
+        beforeEach(() => {
+          variableChangedByCallback = undefined;
+        });
+
+        test.each`
+          event                    | value1  | value2   | method
+          ${'value1Changed'}       | ${30}   | ${40}    | ${'setValue1'}
+          ${'showProgressChanged'} | ${true} | ${false} | ${'setShowProgress'}
+        `(
+          "should subscribe callback function to event and call it on event passing it value changed during event, and don't call callback after unsubscribe",
+          ({
+            event, value1, value2, method,
+          }: {
+            event: ValueEvent;
+            value1: number;
+            value2: number;
+            method: keyof ModelValueMethods;
+          } | {
+            event: StateEvent;
+            value1: boolean;
+            value2: boolean;
+            method: keyof ModelStateMethods;
+          }) => {
+            let isUnsubscribed = false;
+            const callback: Callback<typeof value1> = (value: typeof value1) => {
+              variableChangedByCallback = value;
+            };
+            $sliderInstance.subscribe({ event, subscriber: callback });
+
+            switch (event) {
+              case 'value1Changed':
+                $sliderInstance[method](value1);
+                break;
+              case 'showProgressChanged':
+                $sliderInstance[method](value1);
+                break;
+              default:
+                break;
+            }
+
+            expect(variableChangedByCallback).toBe(value1);
+
+            if (Math.round(Math.random())) isUnsubscribed = $sliderInstance.unsubscribe(callback);
+            else if (callback.unsubscribe) isUnsubscribed = callback.unsubscribe();
+
+            switch (event) {
+              case 'value1Changed':
+                $sliderInstance[method](value2);
+                break;
+              case 'showProgressChanged':
+                $sliderInstance[method](value2);
+                break;
+              default:
+                break;
+            }
+
+            expect(isUnsubscribed).toBe(true);
+            expect(variableChangedByCallback).toBe(value1);
+          },
+        );
+      });
+
+      test('unsubscribe() should return false if received value is other than HTMLInputElement or Function', () => {
+        const notUnsubscribable: any = { test: true };
+        expect($sliderInstance.unsubscribe(notUnsubscribable)).toBe(false);
+      });
     });
 
-    test('should subscribe HTMLInputElement and change its value after DOM interaction w/ slider instance', () => {
-      const inputElement: UnsubHTMLInputElement = document.createElement('input');
-      inputElement.type = 'number';
-      $sliderInstance.subscribe({ event: 'value1Changed', subscriber: inputElement });
+    describe('destroySlider clears container & instance from its elements, instance methods (including destroySlider) should be deleted and options should become unchangeable', () => {
+      type HTMLElementWithDestroy = HTMLElement & {
+        destroySlider?(): boolean
+      };
+      type JQueryHTMLElementWithDestroy = JQuery & {
+        0?: HTMLElementWithDestroy
+      };
+      let $sliderContainerForDestroy: JQueryHTMLElementWithDestroy = $('<div class="slider-container"></div>');
+      let $sliderInstanceForDestroy = $sliderContainerForDestroy.sliderPlugin();
 
-      makePointerdown(controlContainer, 'offsetX', 465);
-      controlContainer.dispatchEvent(pointerupEvent);
+      afterEach(() => {
+        $sliderContainerForDestroy = $('<div class="slider-container"></div>');
+        $sliderInstanceForDestroy = $sliderContainerForDestroy.sliderPlugin();
+      });
 
-      const { value1 } = $sliderInstance.getOptions();
-      expect(value1).toBe(40);
-      expect(inputElement.valueAsNumber).toBe(value1);
+      test('should destroy slider if method is called on slider instance', () => {
+        expect($sliderContainerForDestroy[0]).toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).not.toBeEmptyDOMElement();
+        expect($sliderInstanceForDestroy[0]).not.toBeEmptyDOMElement();
+
+        $sliderInstanceForDestroy.destroySlider();
+
+        expect($sliderContainerForDestroy[0]).not.toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).toBeEmptyDOMElement();
+        expect(Object.keys($sliderInstanceForDestroy)).toEqual(['length']);
+        expect(() => {
+          $sliderInstanceForDestroy.setValue1(1);
+        }).toThrow(TypeError);
+      });
+
+      test('should destroy slider if method is called on slider container', () => {
+        expect($sliderContainerForDestroy[0]).toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).not.toBeEmptyDOMElement();
+        expect($sliderInstanceForDestroy[0]).not.toBeEmptyDOMElement();
+
+        if ($sliderContainerForDestroy[0]?.destroySlider !== undefined) {
+          $sliderContainerForDestroy[0]?.destroySlider();
+        }
+
+        expect($sliderContainerForDestroy[0]).not.toHaveProperty('destroySlider');
+        expect($sliderContainerForDestroy[0]).toBeEmptyDOMElement();
+        expect(Object.keys($sliderInstanceForDestroy)).toEqual(['length']);
+        expect(() => {
+          $sliderInstanceForDestroy.setValue1(1);
+        }).toThrow(TypeError);
+      });
     });
   });
 
@@ -784,9 +1136,8 @@ describe('slider-plugin', () => {
         expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
           .toBe(activePosition);
 
-        makePointerdown(controlContainer, offsetAxis, startPoint, movedThumb);
+        makePointerdown(controlContainer, offsetAxis, startPoint, false, movedThumb);
         await makePointermove(controlContainer, offsetAxis, startPoint, endPoint);
-        controlContainer.dispatchEvent(pointerupEvent);
 
         expect(controlContainer.style.getPropertyValue(`--value-${activeThumb}-position`))
           .toBe(activePosition);

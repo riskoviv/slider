@@ -1,5 +1,6 @@
-import View from '../View';
-import { getEntriesWithTypedKeys } from '../utils';
+import View from '../src/View';
+import { getEntriesWithTypedKeys } from '../src/utils';
+import Logger from '../src/Logger';
 
 describe('View', () => {
   let view: View;
@@ -34,17 +35,32 @@ describe('View', () => {
   });
 
   describe('if instantiated with some custom options', () => {
-    test.each([
-      ['isVertical', 'vertical', [true, false, false]],
-      ['isInterval', 'interval', [false, true, false]],
-      ['showProgressBar', 'show-progress', [false, false, true]],
-    ])('if options has %s: true, view element should contain class slider_%s', (option, modifier, classes) => {
-      view = new View({ [option]: true });
-      $viewElem = view.$elem;
+    test.each`
+      option               | modifier           | viewOptions
+      ${'isVertical'}      | ${'vertical'}      | ${[true, false, false]}
+      ${'isInterval'}      | ${'interval'}      | ${[false, true, false]}
+      ${'showProgressBar'} | ${'show-progress'} | ${[false, false, true]}
+    `(
+      'if options has $option: true, view element should contain class slider_$modifier',
+      ({ option, viewOptions: [verticalState, intervalState, progressState] }: {
+        option: keyof StateOptions,
+        viewOptions: boolean[],
+      }) => {
+        view = new View({ [option]: true });
+        $viewElem = view.$elem;
 
-      expect($viewElem.hasClass('slider_vertical')).toBe(classes[0]);
-      expect($viewElem.hasClass('slider_interval')).toBe(classes[1]);
-      expect($viewElem.hasClass('slider_show-progress')).toBe(classes[2]);
+        expect($viewElem.hasClass('slider_vertical')).toBe(verticalState);
+        expect($viewElem.hasClass('slider_interval')).toBe(intervalState);
+        expect($viewElem.hasClass('slider_show-progress')).toBe(progressState);
+      },
+    );
+
+    test('if created w/ all options to true, $elem should have all custom classes', () => {
+      view = new View({ isVertical: true, isInterval: true, showProgressBar: true });
+
+      expect(view.$elem.hasClass('slider_vertical')).toBe(true);
+      expect(view.$elem.hasClass('slider_interval')).toBe(true);
+      expect(view.$elem.hasClass('slider_show-progress')).toBe(true);
     });
   });
 
@@ -55,11 +71,11 @@ describe('View', () => {
       $controlContainer = view.$controlContainer;
     });
 
-    test.each([
+    test.each<[keyof ViewStateMethods, string]>([
       ['toggleVertical', 'vertical'],
       ['toggleInterval', 'interval'],
       ['toggleProgressBar', 'show-progress'],
-    ] as const)('%s method should toggle modifier class slider_%s', (method, modifier) => {
+    ])('%s method should toggle modifier class slider_%s', (method, modifier) => {
       expect(view.$elem.hasClass(`slider_${modifier}`)).toBe(false);
 
       view[method](true);
@@ -104,14 +120,14 @@ describe('View', () => {
       const contextMenuListenerSpy = jest.fn((event) => {
         eventResult = event.result;
       });
-      $controlContainer.on('contextmenu', contextMenuListenerSpy);
+      $controlContainer.on('contextmenu.controlContainer', contextMenuListenerSpy);
 
-      $controlContainer.trigger('contextmenu');
+      $controlContainer.trigger('contextmenu.controlContainer');
 
       expect(eventResult).toBe(false);
     });
 
-    describe('pointerdown event', () => {
+    describe('pointerdown DOM event & sliderPointerDown event that it causes', () => {
       let sliderPointerDownSpy: jest.Mock;
 
       beforeAll(() => {
@@ -120,13 +136,22 @@ describe('View', () => {
       });
 
       test('if e.button === 0 (LMB), pointerdown event should call preventDefault() & emit sliderPointerDown event', () => {
-        const pointerEvent = new MouseEvent('pointerdown', { button: 0 });
-        const preventDefaultSpy = jest.spyOn(pointerEvent, 'preventDefault');
-
-        controlContainerElem.dispatchEvent(pointerEvent);
+        const pointerDownEvent = new MouseEvent('pointerdown');
+        const preventDefaultSpy = jest.spyOn(pointerDownEvent, 'preventDefault');
+        Object.defineProperties(pointerDownEvent, {
+          pointerId: { value: 1 },
+          target: { value: view.$elem[0] },
+          offsetX: { value: 100 },
+          offsetY: { value: 0 },
+        });
+        controlContainerElem.dispatchEvent(pointerDownEvent);
 
         expect(preventDefaultSpy).toBeCalled();
-        expect(sliderPointerDownSpy).toBeCalled();
+        expect(sliderPointerDownSpy).toBeCalledWith({
+          target: view.$elem[0],
+          offsetX: 100,
+          offsetY: 0,
+        });
       });
 
       test('if e.button !== 0 (LMB), pointerdown event should NOT call preventDefault() & emit sliderPointerDown event', () => {
@@ -137,6 +162,26 @@ describe('View', () => {
 
         expect(preventDefaultSpy).not.toBeCalled();
         expect(sliderPointerDownSpy).not.toBeCalled();
+      });
+
+      test('should call console.error if pointerDown event is ocurred on controlContainer and there is no listeners attached to sliderPointerDown event', () => {
+        view = new View();
+        const pointerDownEvent = new MouseEvent('pointerdown');
+        Object.defineProperties(pointerDownEvent, {
+          pointerId: { value: 1 },
+          target: { value: view.controlContainerElem },
+          offsetX: { value: 42 },
+          offsetY: { value: 0 },
+        });
+        Object.defineProperty(view.controlContainerElem, 'setPointerCapture', { value: jest.fn() });
+        const loggerEmitError = jest.spyOn(Logger, 'emitError');
+        const emitError = new Error();
+        emitError.name = 'EmitError';
+        emitError.message = 'sliderPointerDown event is not registered. value = { target: [object HTMLDivElement], offsetX: 42, offsetY: 0 }';
+
+        view.controlContainerElem.dispatchEvent(pointerDownEvent);
+
+        expect(loggerEmitError).toBeCalledWith(emitError);
       });
     });
   });

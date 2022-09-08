@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-redeclare */
 type ValueOptions = {
   stepSize: number,
@@ -50,8 +51,13 @@ type SliderPointerDownData = {
 };
 
 type SetValueEventOptions = {
-  changeTipValue: boolean,
+  changeTipValue?: boolean,
   onlySaveValue?: boolean,
+  checkTipsOverlap?: boolean,
+};
+
+type ChangeIntervalEventOptions = {
+  checkTipsOverlap?: boolean,
 };
 
 interface Unsubscribable {
@@ -63,9 +69,13 @@ interface UnsubHTMLInputElement extends HTMLInputElement, Unsubscribable {}
 interface ValueHandler extends Unsubscribable {
   (value: number, options?: SetValueEventOptions): void;
 }
+
 interface StateHandler extends Unsubscribable {
-  (value: boolean): void;
+  (value: boolean, options?: ChangeIntervalEventOptions): void;
 }
+
+type Subscriber = UnsubHTMLInputElement | ValueHandler | StateHandler;
+
 interface SliderPointerDownHandler extends Unsubscribable {
   (value: SliderPointerDownData): void;
 }
@@ -74,17 +84,18 @@ interface ScaleValueSelectHandler extends Unsubscribable {
   (value: number): void;
 }
 
-type Subscriber = UnsubHTMLInputElement | ValueHandler | StateHandler;
+type ValueSubscriber = UnsubHTMLInputElement | ValueHandler | undefined;
+type StateSubscriber = UnsubHTMLInputElement | StateHandler | undefined;
 
 type ValueHandlers = {
-  [valueEvent in ValueEvent]?: Map<UnsubHTMLInputElement | ValueHandler | undefined, ValueHandler>;
+  [valueEvent in ValueEvent]?: Map<ValueSubscriber, ValueHandler>;
 };
 type StateHandlers = {
-  [stateEvent in StateEvent]?: Map<UnsubHTMLInputElement | StateHandler | undefined, StateHandler>;
+  [stateEvent in StateEvent]?: Map<StateSubscriber, StateHandler>;
 };
 type ViewHandlers = {
-  sliderPointerDown?: Map<undefined, (value: SliderPointerDownData) => void>;
-  scaleValueSelect?: Map<undefined, (data: number) => void>;
+  sliderPointerDown?: Map<undefined, SliderPointerDownHandler>;
+  scaleValueSelect?: Map<undefined, ScaleValueSelectHandler>;
 };
 
 type ValueOn = {
@@ -115,11 +126,10 @@ interface IEventEmitter {
   on(options: ValueOn): this;
   on(options: StateOn): this;
   on(options: ViewOn): this;
-  // on(options: ValueOn | StateOn | ViewOn): this;
 }
 
 type ValueEmit = { event: ValueEvent, value: number, options?: SetValueEventOptions };
-type StateEmit = { event: StateEvent, value: boolean };
+type StateEmit = { event: StateEvent, value: boolean, options?: ChangeIntervalEventOptions };
 type SliderPointerDownEmit = { event: SliderPointerDownEvent, value: SliderPointerDownData };
 type ScaleValueSelectEmit = { event: ScaleValueSelectEvent, value: number };
 type ViewEmit = SliderPointerDownEmit | ScaleValueSelectEmit;
@@ -127,7 +137,24 @@ type ViewEmit = SliderPointerDownEmit | ScaleValueSelectEmit;
 type ValueSubscribe = Required<Omit<ValueOn, 'handler'>>;
 type StateSubscribe = Required<Omit<StateOn, 'handler'>>;
 
-interface IPluginPublicStateMethods {
+type OnAction = {
+  options: ValueOn | StateOn | ViewOn,
+  type: 'on',
+};
+
+type EmitAction = {
+  options: ValueEmit | StateEmit | ViewEmit,
+  type: 'emit',
+};
+
+type SubscribeAction = {
+  options: ValueSubscribe | StateSubscribe,
+  type: 'subscribe',
+};
+
+type EventEmitterAction = OnAction | EmitAction | SubscribeAction;
+
+interface ModelStateMethods {
   setVerticalState(isVertical: boolean): void;
   setInterval(isInterval: boolean): void;
   setShowProgress(showProgressBar: boolean): void;
@@ -135,7 +162,7 @@ interface IPluginPublicStateMethods {
   setShowScale(showScale: boolean): void;
 }
 
-interface IPluginPublicValueMethods {
+interface ModelValueMethods {
   setValue1(value: number): void;
   setValue2(value: number): void;
   setStepSize(stepSize: number): void;
@@ -143,7 +170,7 @@ interface IPluginPublicValueMethods {
   setMaxValue(maxValue: number): void;
 }
 
-interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicValueMethods {
+interface PluginDataMethods {
   getOptions(): SliderOptions;
   subscribe(options: ValueSubscribe): void;
   subscribe(options: StateSubscribe): void;
@@ -151,13 +178,37 @@ interface IPluginPublicMethods extends IPluginPublicStateMethods, IPluginPublicV
   unsubscribe(subscriber: Subscriber): boolean;
 }
 
+interface ModelMethods extends ModelStateMethods, ModelValueMethods {}
+
+type ArgumentTypes<T> = T extends (...args: infer U) => infer R ? U : never;
+type ReplaceReturnType<T, TNewReturn> = (...a: ArgumentTypes<T>) => TNewReturn;
+
+type PluginStateMethods = {
+  [methodName in keyof ModelStateMethods]: ReplaceReturnType<
+    ModelStateMethods[methodName], JQuery
+  >;
+};
+
+type PluginValueMethods = {
+  [methodName in keyof ModelValueMethods]: ReplaceReturnType<
+    ModelValueMethods[methodName], JQuery
+  >;
+};
+
+interface PluginMethods extends PluginStateMethods, PluginValueMethods, PluginDataMethods {
+  destroySlider(): boolean;
+}
+
 interface IPluginFunction {
-  // eslint-disable-next-line no-use-before-define
   (options?: Partial<SliderOptions>): JQuery;
 }
 
-interface JQuery extends IPluginPublicMethods {
+interface JQuery extends PluginMethods {
   sliderPlugin: IPluginFunction;
+}
+
+interface IPresenter {
+  readonly view: IView;
 }
 
 type ViewValues = {
@@ -166,13 +217,16 @@ type ViewValues = {
   stepInPercents: number,
 };
 
-interface IModel extends IEventEmitter, IPluginPublicMethods {
+interface IModel extends IEventEmitter, ModelMethods {
   options: SliderOptions;
+  allowedValues: number[];
   allowedValuesCount: number;
   fractionalPrecision: number;
-  penultimateValue: number;
   viewValues: ViewValues;
-  publicMethods: IPluginPublicMethods;
+  publicValueMethods: ModelValueMethods;
+  publicStateMethods: ModelStateMethods;
+  publicDataMethods: PluginDataMethods;
+  createAllowedValuesArray(): number[];
   getIndexByValueNumber(valueNumber: 1 | 2): number;
   getIndexByValue(value: number, precision?: number): number;
   getValueByIndex(index: number): number;
@@ -184,9 +238,10 @@ interface IModel extends IEventEmitter, IPluginPublicMethods {
 
 type PositionAxis = 'left' | 'top';
 type SizeDimension = 'offsetWidth' | 'offsetHeight';
+type PositionDimension = 'offsetTop' | 'offsetLeft';
 
 interface ISubView extends IEventEmitter {
-  $elem: JQuery<HTMLElement>;
+  $elem: JQuery;
   removeView(): void;
 }
 
@@ -200,15 +255,23 @@ interface ITipView extends ISubView {
   setValue(value: number): void;
 }
 
-interface IView extends IEventEmitter {
-  $elem: JQuery<HTMLElement>;
-  $controlContainer: JQuery<HTMLElement>;
-  controlContainerElem: HTMLDivElement;
+interface ViewValueMethods {
+  setPosition(valueNumber: 1 | 2, position: number): void;
+  setThumbThickness(thickness: number): void;
+}
+
+interface ViewStateMethods {
   toggleVertical(isVertical: boolean): void;
   toggleInterval(isInterval: boolean): void;
   toggleProgressBar(showProgress: boolean): void;
-  setPosition(valueNumber: 1 | 2, position: number): void;
-  setThumbThickness(thickness: number): void;
+}
+
+interface ViewMethods extends ViewValueMethods, ViewStateMethods {}
+
+interface IView extends ViewMethods, IEventEmitter {
+  $elem: JQuery;
+  $controlContainer: JQuery;
+  controlContainerElem: HTMLDivElement;
 }
 
 type ViewType = (

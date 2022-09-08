@@ -1,93 +1,142 @@
+/* eslint-disable no-dupe-class-members */
+/* eslint-disable lines-between-class-members */
 import $ from 'jquery';
+
+import View from './View';
 import TrackView from './subviews/TrackView';
 import ThumbView from './subviews/ThumbView';
 import ScaleView from './subviews/ScaleView';
-import View from './View';
 import TipView from './subviews/TipView';
 
-type SubViewClass = (
-  | typeof TrackView
-  | typeof ThumbView
-  | typeof ScaleView
-  | typeof TipView
-);
+type SubViews = {
+  track: TrackView,
+  thumb1: ThumbView,
+  thumb2?: ThumbView,
+  tip1?: TipView,
+  tip2?: TipView,
+  tip3?: TipView,
+  scale?: ScaleView,
+};
 
-class Presenter {
-  private options: SliderOptions;
+type StateChangeHandler = {
+  stateChangeEvent: StateEvent,
+  stateChangeHandler: StateHandler,
+};
 
+type NumericBoundsChangeHandler = {
+  boundsChangeEvents: ValueEvent[],
+  boundsChangeHandler: (() => void),
+};
+
+type ValueChangeHandler = {
+  valueChangeEvents: ValueEvent[],
+  valueNumbers: [1, 2],
+  makeValueChangeHandler: (number: 1 | 2) => ValueHandler
+};
+
+class Presenter implements IPresenter {
   readonly view: IView;
 
-  private subViews: { [viewName: string]: InstanceType<SubViewClass> } = {};
+  private options: SliderOptions;
+
+  private subViews: SubViews = {
+    track: new TrackView(),
+    thumb1: new ThumbView(),
+  };
 
   private sizeDimension: SizeDimension = 'offsetWidth';
 
-  private positionDimension: 'offsetLeft' | 'offsetTop' = 'offsetLeft';
+  private positionDimension: PositionDimension = 'offsetLeft';
 
   private positionAxis: PositionAxis = 'left';
 
   private offset: 'offsetX' | 'offsetY' = 'offsetX';
 
-  private sliderResizeObserver: ResizeObserver | undefined;
+  private sliderResizeObserver?: ResizeObserver;
 
   private fixValue = this.model.fixValueToPrecision.bind(this.model);
 
   private tipHiddenClass = 'slider__tip_hidden';
 
+  private resizeObserverActive = false;
+
   constructor(
-    private readonly $pluginRootElem: JQuery<HTMLElement>,
+    private readonly $pluginRootElem: JQuery,
     private readonly model: IModel,
   ) {
     this.options = this.model.options;
-
-    const {
-      value1,
-      value2,
-      isVertical,
-      isInterval,
-      showProgressBar,
-    } = this.options;
-
     this.updateDimensionAndAxis();
     this.defineViewValues();
-    this.view = new View({ isVertical, isInterval, showProgressBar });
-    this.view.setThumbThickness(this.model.viewValues.stepInPercents);
-    this.view.on({ event: 'sliderPointerDown', handler: this.viewEventHandlers.sliderPointerDown });
+    this.view = this.createView();
     this.createInitialSubViews();
     this.insertSliderToContainer();
     this.bindModelEventListeners();
+    this.checkThatScaleAndResizeObserverIsNeeded();
+    this.passInitialValuesToSubViews(this.options.value1, this.options.value2);
+  }
+
+  private isTwoTips() {
+    return this.options.showTip && this.options.isInterval;
+  }
+
+  private checkThatScaleAndResizeObserverIsNeeded() {
     if (this.options.showScale) this.updateScale();
-    this.passInitialValuesToSubViews({
-      value1,
-      value2,
+    const needToActivateResizeObserverForTwoTips = this.isTwoTips() && !this.resizeObserverActive;
+    if (needToActivateResizeObserverForTwoTips) {
+      this.activateResizeObserver();
+    }
+  }
+
+  private createView(): View {
+    const view = new View({
+      isVertical: this.options.isVertical,
+      isInterval: this.options.isInterval,
+      showProgressBar: this.options.showProgressBar,
     });
+    view.setThumbThickness(this.model.viewValues.stepInPercents);
+    view.on({ event: 'sliderPointerDown', handler: this.viewEventHandlers.sliderPointerDown });
+    return view;
   }
 
   private bindModelEventListeners(): void {
-    const listeners = this.modelEventListeners;
-    this.model.on({ event: 'isVerticalChanged', handler: listeners.changeOrientation })
-      .on({ event: 'isIntervalChanged', handler: listeners.changeInterval })
-      .on({ event: 'value1Changed', handler: listeners.makeSetValueAndPosition(1) })
-      .on({ event: 'value2Changed', handler: listeners.makeSetValueAndPosition(2) })
-      .on({ event: 'showProgressChanged', handler: listeners.changeShowProgress })
-      .on({ event: 'showTipChanged', handler: listeners.changeShowTip })
-      .on({ event: 'showScaleChanged', handler: listeners.changeShowScale })
-      .on({ event: 'stepSizeChanged', handler: listeners.updateBounds })
-      .on({ event: 'minValueChanged', handler: listeners.updateBounds })
-      .on({ event: 'maxValueChanged', handler: listeners.updateBounds });
+    this.stateChangeHandlers.forEach(({ stateChangeEvent, stateChangeHandler }) => {
+      this.model.on({ event: stateChangeEvent, handler: stateChangeHandler });
+    });
+
+    const { boundsChangeEvents, boundsChangeHandler } = this.numericBoundsChangeHandler;
+    boundsChangeEvents.forEach((boundChangeEvent) => {
+      this.model.on({ event: boundChangeEvent, handler: boundsChangeHandler });
+    });
+
+    const { valueChangeEvents, valueNumbers, makeValueChangeHandler } = this.valueChangeHandler;
+    valueChangeEvents.forEach((valueChangeEvent, index) => {
+      this.model.on({
+        event: valueChangeEvent,
+        handler: makeValueChangeHandler(valueNumbers[index]),
+      });
+    });
   }
 
-  private initResizeObserver(): void {
+  private activateResizeObserver(): void {
     if (this.sliderResizeObserver === undefined) {
       this.sliderResizeObserver = new ResizeObserver(() => {
-        if (this.subViews.scale instanceof ScaleView) {
+        if (this.subViews.scale !== undefined) {
           this.subViews.scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
         }
+
+        if (this.options.showTip) this.showJointOrSeparateTips();
       });
     } else {
       this.sliderResizeObserver.unobserve(this.view.$elem[0]);
     }
 
     this.sliderResizeObserver.observe(this.view.$elem[0]);
+    this.resizeObserverActive = true;
+  }
+
+  private deactivateResizeObserver(): void {
+    this.sliderResizeObserver?.disconnect();
+    this.resizeObserverActive = false;
   }
 
   private updateDimensionAndAxis() {
@@ -104,7 +153,7 @@ class Presenter {
     }
   }
 
-  private passInitialValuesToSubViews({ value1, value2 }: { value1: number, value2: number }) {
+  private passInitialValuesToSubViews(value1: number, value2: number) {
     const position1 = this.getPositionByValue(value1);
     const position2 = this.getPositionByValue(value2);
     this.setPosition(1, position1);
@@ -116,19 +165,27 @@ class Presenter {
       if (this.options.showTip) {
         this.setTipValue({ number: 2, value: value2 });
       }
+      this.showJointOrSeparateTips();
+    }
+  }
+
+  private appendSubViewElementToControlContainer(subViewName: keyof SubViews) {
+    const subView = this.subViews[subViewName];
+    if (subView !== undefined) {
+      this.view.$controlContainer.append(subView.$elem);
     }
   }
 
   private createInitialSubViews() {
-    this.createSubView('track');
-    this.createSubView('thumb', 1);
+    this.appendSubViewElementToControlContainer('track');
+    this.appendSubViewElementToControlContainer('thumb1');
 
     if (this.options.showTip) {
       this.createSubView('tip', 1);
     }
 
     if (this.options.isInterval) {
-      this.createSubView('thumb', 2);
+      this.createSubView('thumb');
       if (this.options.showTip) {
         this.createSubView('tip', 2);
         this.createSubView('tip', 3);
@@ -140,47 +197,44 @@ class Presenter {
     }
   }
 
-  private createSubView(subViewName: ViewType, number?: 1 | 2 | 3): void {
-    const thumbOrTip = subViewName === 'thumb' || subViewName === 'tip';
-    let subViewFullName = subViewName;
-    if (thumbOrTip && number !== undefined) {
-      subViewFullName += number;
-    }
-
-    if (this.subViewExists(subViewFullName)) return;
-
+  private createSubView(subViewName: 'tip', number: 1 | 2 | 3): void;
+  private createSubView(subViewName: 'thumb'): void;
+  private createSubView(subViewName: 'scale'): void;
+  private createSubView(subViewName: 'tip' | 'thumb' | 'scale', number: 1 | 2 | 3 = 1): void {
     switch (subViewName) {
-      case 'thumb':
-        if (number !== 3) this.subViews[subViewFullName] = new ThumbView(number);
+      case 'tip': {
+        this.subViews[`tip${number}`] = new TipView(number);
+        this.appendSubViewElementToControlContainer(`tip${number}`);
         break;
-      case 'tip':
-        this.subViews[subViewFullName] = new TipView(number);
-        break;
-      default: {
-        const OtherSubView = subViewName === 'scale' ? ScaleView : TrackView;
-        this.subViews[subViewFullName] = new OtherSubView();
       }
-    }
-
-    if (subViewName === 'scale') {
-      this.view.$elem.append(this.renderSubView('scale'));
-      this.subViews.scale.on({ event: 'scaleValueSelect', handler: this.viewEventHandlers.scaleValueSelect });
-    } else {
-      this.view.$controlContainer.append(this.renderSubView(subViewFullName));
+      case 'thumb': {
+        this.subViews.thumb2 = new ThumbView(2);
+        this.appendSubViewElementToControlContainer('thumb2');
+        break;
+      }
+      default: {
+        this.subViews.scale = new ScaleView();
+        const scaleElem = this.renderSubView('scale');
+        if (scaleElem !== null) this.view.$elem.append(scaleElem);
+        this.subViews.scale.on({
+          event: 'scaleValueSelect',
+          handler: this.viewEventHandlers.scaleValueSelect,
+        });
+      }
     }
   }
 
-  // **************************************
-  // *
-  // * scale values creation methods start
-  // *
-  // **************************************
+  // #region scale values creation methods
   private updateScale(): void {
     const { scale } = this.subViews;
-    if (scale instanceof ScaleView) {
+    if (scale !== undefined) {
       this.createScaleValuesElements(scale);
       scale.insertScaleValueElements();
-      this.initResizeObserver();
+      if (this.resizeObserverActive) {
+        scale.optimizeValuesCount(this.positionAxis, this.sizeDimension);
+      } else {
+        this.activateResizeObserver();
+      }
     }
   }
 
@@ -191,65 +245,48 @@ class Presenter {
     const quotient = Math.round((allowedValuesCount / scaleSize) * 5);
     const lastElemIndex = allowedValuesCount - 1;
     const isEveryValueAllowed = [0, 1].includes(quotient);
-    const { stepInPercents } = this.model.viewValues;
-    scale.scaleValueElements.length = 0;
 
     if (isEveryValueAllowed) {
-      for (
-        let position = 0, index = 0;
-        position <= 100;
-        index += 1, position = stepInPercents * index
-      ) {
-        const value = this.model.getValueByIndex(index);
-        scale.scaleValueElements.push(this.makeNewScaleValueElement(value, position));
-      }
+      scale.scaleValueElements = this.getScaleValueElements(lastElemIndex);
     } else {
-      for (let index = 0; index <= lastElemIndex; index += quotient) {
-        scale.scaleValueElements.push(this.makeNewScaleValueElement(
-          this.model.getValueByIndex(index),
-          this.getPositionByIndex(index),
-        ));
-      }
-    }
-
-    const lastElemIsNotMaxValue = scale.scaleValueElements
-      .slice(-1)[0][0]
-      .style.getPropertyValue('--scale-block-position')
-      .trim() !== '100%';
-    if (lastElemIsNotMaxValue) {
-      scale.scaleValueElements.push(
-        this.makeNewScaleValueElement(
-          this.options.maxValue,
-          100,
-        ),
-      );
+      scale.scaleValueElements = this.getScaleValueElements(lastElemIndex, quotient);
     }
   }
 
-  private makeNewScaleValueElement = (value: number, position: number): JQuery<HTMLDivElement> => (
-    $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
+  private getScaleValueElements(lastElemIndex: number, quotient = 1): JQuery<HTMLDivElement>[] {
+    const scaleValueElements: JQuery<HTMLDivElement>[] = [];
+    for (let index = 0; index <= lastElemIndex; index += quotient) {
+      const value = this.model.getValueByIndex(index);
+      const position = this.getPositionByIndex(index);
+      scaleValueElements.push(this.makeNewScaleValueElement(value, position));
+    }
+    if (scaleValueElements.at(-1)?.text().trim() !== String(this.options.maxValue)) {
+      scaleValueElements.push(this.makeNewScaleValueElement(this.options.maxValue, 100));
+    }
+    return scaleValueElements;
+  }
+
+  private makeNewScaleValueElement(value: number, position: number): JQuery<HTMLDivElement> {
+    return $(`<div class="slider__scale-block" style="--scale-block-position: ${position}%">
       <span class="slider__scale-text">${this.fixValue(value)}</span>
-    </div>`)
-  );
-  // ***********************************
-  // *
-  // * scale values creation methods end
-  // *
-  // ***********************************
-
-  private subViewExists(subViewName: string): boolean {
-    return this.subViews[subViewName] !== undefined;
+    </div>`);
   }
+  // #endregion scale values creation methods
 
-  private removeSubView(subViewName: string): void {
-    if (this.subViewExists(subViewName)) {
-      this.subViews[subViewName].removeView();
+  private removeSubView(subViewName: keyof SubViews): void {
+    const subView = this.subViews[subViewName];
+    if (subView !== undefined) {
+      subView.removeView();
       delete this.subViews[subViewName];
     }
   }
 
-  private renderSubView(subViewName: string): JQuery<HTMLElement> {
-    return this.subViews[subViewName].$elem;
+  private renderSubView(subViewName: keyof SubViews): JQuery | null {
+    const subView = this.subViews[subViewName];
+    if (subView !== undefined) {
+      return subView.$elem;
+    }
+    return null;
   }
 
   private insertSliderToContainer(): void {
@@ -266,7 +303,8 @@ class Presenter {
   }
 
   private getPositionByIndex(index: number): number {
-    return this.model.viewValues.stepInPercents * index;
+    const position = this.model.viewValues.stepInPercents * index;
+    return position > 100 ? 100 : position;
   }
 
   private getValueByPosition(position: number): number {
@@ -275,103 +313,157 @@ class Presenter {
     return this.fixValue(this.model.getValueByIndex(index));
   }
 
-  private modelEventListeners = {
-    updateBounds: (): void => {
+  private stateChangeHandlers: StateChangeHandler[] = [
+    {
+      stateChangeEvent: 'isVerticalChanged',
+      stateChangeHandler: (isVertical: boolean): void => {
+        this.updateDimensionAndAxis();
+        this.view.toggleVertical(isVertical);
+        const resizeObserverIsNeeded = this.options.showScale || this.isTwoTips();
+        if (resizeObserverIsNeeded) {
+          this.activateResizeObserver();
+        }
+
+        if (this.options.isInterval) this.showJointOrSeparateTips();
+      },
+    },
+    {
+      stateChangeEvent: 'isIntervalChanged',
+      stateChangeHandler: (
+        isInterval: boolean,
+        options: ChangeIntervalEventOptions = { checkTipsOverlap: false },
+      ): void => {
+        if (isInterval) {
+          this.createSubView('thumb');
+          if (this.options.showTip) {
+            this.createSubView('tip', 2);
+            this.createSubView('tip', 3);
+            this.setTipValue({
+              number: 2,
+              value: this.options.value2,
+            });
+            if (!this.resizeObserverActive) {
+              this.activateResizeObserver();
+            }
+          }
+        } else {
+          this.removeSubView('thumb2');
+          this.removeSubView('tip2');
+          this.removeSubView('tip3');
+          const resizeObserverIsNotNeeded = !this.options.showScale && this.resizeObserverActive;
+          if (resizeObserverIsNotNeeded) {
+            this.deactivateResizeObserver();
+          }
+        }
+
+        if (options.checkTipsOverlap) this.showJointOrSeparateTips();
+        this.view.toggleInterval(isInterval);
+      },
+    },
+    {
+      stateChangeEvent: 'showProgressChanged',
+      stateChangeHandler: (showProgress: boolean): void => {
+        this.view.toggleProgressBar(showProgress);
+      },
+    },
+    {
+      stateChangeEvent: 'showTipChanged',
+      stateChangeHandler: (showTip: boolean): void => {
+        if (showTip) {
+          this.createSubView('tip', 1);
+          this.setTipValue({
+            number: 1,
+            value: this.options.value1,
+          });
+          if (this.options.isInterval) {
+            this.createSubView('tip', 2);
+            this.createSubView('tip', 3);
+            this.setTipValue({
+              number: 2,
+              value: this.options.value2,
+            });
+            this.setTipValue({
+              number: 3,
+              value: `${this.options.value1} – ${this.options.value2}`,
+            });
+            this.showJointOrSeparateTips();
+            if (!this.resizeObserverActive) {
+              this.activateResizeObserver();
+            }
+          }
+        } else {
+          this.removeSubView('tip1');
+          if (this.options.isInterval) {
+            this.removeSubView('tip2');
+            this.removeSubView('tip3');
+          }
+
+          const noScaleButResizeObserverIsActive = !this.options.showScale
+            && this.resizeObserverActive;
+          if (noScaleButResizeObserverIsActive) {
+            this.deactivateResizeObserver();
+          }
+        }
+      },
+    },
+    {
+      stateChangeEvent: 'showScaleChanged',
+      stateChangeHandler: (showScale: boolean): void => {
+        if (showScale) {
+          this.createSubView('scale');
+          this.updateScale();
+        } else {
+          this.removeSubView('scale');
+          const allowedToDeactivateResizeObserver = this.resizeObserverActive
+            && !this.isTwoTips();
+          if (allowedToDeactivateResizeObserver) {
+            this.deactivateResizeObserver();
+          }
+        }
+      },
+    },
+  ];
+
+  private numericBoundsChangeHandler: NumericBoundsChangeHandler = {
+    boundsChangeEvents: ['stepSizeChanged', 'minValueChanged', 'maxValueChanged'],
+    boundsChangeHandler: (): void => {
       this.defineViewValues();
       this.view.setThumbThickness(this.model.viewValues.stepInPercents);
       if (this.options.showScale) {
         this.updateScale();
       }
     },
+  };
 
-    changeOrientation: (isVertical: boolean): void => {
-      this.updateDimensionAndAxis();
-      this.view.toggleVertical(isVertical);
-      if (this.options.showScale && this.subViews.scale instanceof ScaleView) {
-        this.initResizeObserver();
-      }
-      this.showJointOrSeparateTips();
-    },
-
-    changeInterval: (isInterval: boolean): void => {
-      if (isInterval) {
-        this.createSubView('thumb', 2);
-        if (this.options.showTip) {
-          this.createSubView('tip', 2);
-          this.createSubView('tip', 3);
-          this.setTipValue({
-            number: 2,
-            value: this.options.value2,
-          });
+  private valueChangeHandler: ValueChangeHandler = {
+    valueChangeEvents: ['value1Changed', 'value2Changed'],
+    valueNumbers: [1, 2],
+    makeValueChangeHandler: (number: 1 | 2): ValueHandler => {
+      const setValueAndPosition: ValueHandler = (
+        value: number,
+        options: SetValueEventOptions = {},
+      ): void => {
+        const {
+          changeTipValue = true,
+          onlySaveValue = false,
+          checkTipsOverlap = true,
+        } = options;
+        const needToChangeTipValue = this.options.showTip && changeTipValue;
+        if (needToChangeTipValue) {
+          this.setTipValue({ number, value });
         }
-      } else {
-        this.removeSubView('thumb2');
-        this.removeSubView('tip2');
-        this.removeSubView('tip3');
-      }
 
-      this.showJointOrSeparateTips();
-      this.view.toggleInterval(isInterval);
-    },
-
-    makeSetValueAndPosition: (number: 1 | 2) => ((
-      value: number,
-      options?: SetValueEventOptions,
-    ): void => {
-      if (this.options.showTip && options?.changeTipValue) {
-        this.setTipValue({ number, value });
-      }
-
-      const position = this.getPositionByValue(value);
-      if (!options?.onlySaveValue) {
-        this.setPosition(number, position);
-      }
-
-      if (this.options.showTip) {
-        this.showJointOrSeparateTips();
-      }
-    }),
-
-    changeShowProgress: (showProgress: boolean): void => {
-      this.view.toggleProgressBar(showProgress);
-    },
-
-    changeShowTip: (showTip: boolean): void => {
-      if (showTip) {
-        this.createSubView('tip', 1);
-        this.setTipValue({
-          number: 1,
-          value: this.options.value1,
-        });
-        if (this.options.isInterval) {
-          this.createSubView('tip', 2);
-          this.createSubView('tip', 3);
-          this.setTipValue({
-            number: 2,
-            value: this.options.value2,
-          });
-          this.setTipValue({
-            number: 3,
-            value: `${this.options.value1} – ${this.options.value2}`,
-          });
+        if (!onlySaveValue) {
+          const position = this.getPositionByValue(value);
+          this.setPosition(number, position);
         }
-      } else {
-        this.removeSubView('tip1');
-        if (this.options.isInterval) {
-          this.removeSubView('tip2');
-          this.removeSubView('tip3');
-        }
-      }
-    },
 
-    changeShowScale: (showScale: boolean): void => {
-      if (showScale) {
-        this.createSubView('scale');
-        this.updateScale();
-      } else {
-        this.removeSubView('scale');
-        this.sliderResizeObserver?.disconnect();
-      }
+        const needToCheckTipsOverlap = this.options.showTip && checkTipsOverlap !== false;
+        if (needToCheckTipsOverlap) {
+          this.showJointOrSeparateTips();
+        }
+      };
+      return setValueAndPosition;
     },
   };
 
@@ -392,14 +484,15 @@ class Presenter {
       if (position > 100) return 100;
       return position;
     },
-  }
+  };
 
   private viewEventHandlers = {
     sliderPointerDown: (data: SliderPointerDownData): void => {
       const { target } = data;
       if (target.classList.contains('slider__thumb')) {
         const thumbNumber = Number(target.dataset.number);
-        if (thumbNumber === 1 || thumbNumber === 2) {
+        const thumbNumberIs1Or2 = thumbNumber === 1 || thumbNumber === 2;
+        if (thumbNumberIs1Or2) {
           this.saveCurrentThumbData(thumbNumber);
         }
       } else if (target === this.view.controlContainerElem) {
@@ -411,9 +504,11 @@ class Presenter {
         this.saveCurrentThumbData(closestThumb);
         const allowedPosition = this.findClosestAllowedPosition(position);
         const allowedValue = this.getValueByPosition(allowedPosition);
-
-        if (allowedPosition !== this.currentThumbData.currentPosition
-            && allowedValue !== this.currentThumbData.currentValue) {
+        const allowedToChangeThumbPosition = (
+          allowedPosition !== this.currentThumbData.currentPosition
+          && allowedValue !== this.currentThumbData.currentValue
+        );
+        if (allowedToChangeThumbPosition) {
           const isFirstThumbAwayFromSecondThumb = this.options.isInterval
             ? this.thumbChecks.isThumbKeepsDistance(allowedPosition)
             : true;
@@ -427,10 +522,17 @@ class Presenter {
         }
       }
 
-      this.view.controlContainerElem.addEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
-      this.view.controlContainerElem.addEventListener('pointerup', this.viewEventHandlers.sliderPointerUp, {
-        once: true,
-      });
+      this.view.controlContainerElem.addEventListener(
+        'pointermove',
+        this.viewEventHandlers.sliderPointerMove,
+      );
+      this.view.controlContainerElem.addEventListener(
+        'pointerup',
+        this.viewEventHandlers.sliderPointerUp,
+        {
+          once: true,
+        },
+      );
     },
 
     sliderPointerMove: (e: PointerEvent): void => {
@@ -441,8 +543,12 @@ class Presenter {
       const isThumbAwayFromOtherThumb = this.options.isInterval
         ? this.thumbChecks.isThumbKeepsDistance(newPosition)
         : true;
-      if (isThumbAwayFromOtherThumb && newPosition !== this.currentThumbData.currentPosition) {
-        const newValue = this.fixValue(this.getValueByPosition(newPosition));
+      const allowedToChangeThumbPosition = (
+        newPosition !== this.currentThumbData.currentPosition
+        && isThumbAwayFromOtherThumb
+      );
+      if (allowedToChangeThumbPosition) {
+        const newValue = this.getValueByPosition(newPosition);
         this.setPositionAndCurrentValue({
           number: thumbNumber,
           position: newPosition,
@@ -452,7 +558,10 @@ class Presenter {
     },
 
     sliderPointerUp: (): void => {
-      this.view.controlContainerElem.removeEventListener('pointermove', this.viewEventHandlers.sliderPointerMove);
+      this.view.controlContainerElem.removeEventListener(
+        'pointermove',
+        this.viewEventHandlers.sliderPointerMove,
+      );
     },
 
     scaleValueSelect: (value: number): void => {
@@ -470,7 +579,7 @@ class Presenter {
         });
       }
     },
-  }
+  };
 
   private currentThumbData: {
     thumbNumber: 1 | 2,
@@ -503,6 +612,7 @@ class Presenter {
       }
       return 100;
     }
+
     const step = this.model.viewValues.stepInPercents;
     return Math.round(position / step) * step;
   }
@@ -523,10 +633,13 @@ class Presenter {
     return position1Diff <= position2Diff ? 1 : 2;
   }
 
-  private areTipsOverlap() {
-    if (this.subViewExists('tip1') && this.subViewExists('tip2')) {
-      const [tip1Elem] = this.subViews.tip1.$elem;
-      const [tip2Elem] = this.subViews.tip2.$elem;
+  private areTipsOverlap(): boolean {
+    const { tip1 } = this.subViews;
+    const { tip2 } = this.subViews;
+    const bothTipsExists = tip1 !== undefined && tip2 !== undefined;
+    if (bothTipsExists) {
+      const [tip1Elem] = tip1.$elem;
+      const [tip2Elem] = tip2.$elem;
       const tip1Bound = tip1Elem[this.positionDimension] + tip1Elem[this.sizeDimension];
       const tip2Bound = tip2Elem[this.positionDimension];
       if (tip1Bound >= tip2Bound) return true;
@@ -536,23 +649,18 @@ class Presenter {
     return false;
   }
 
-  private setPositionAndCurrentValue(options: {
+  private setPositionAndCurrentValue({
+    number,
+    position,
+    value,
+  }: {
     number: 1 | 2,
     position: number,
     value: number,
   }): void {
-    const {
-      number,
-      position,
-      value,
-    } = options;
-
     this.currentThumbData.thumbNumber = number;
     this.setPosition(number, position);
     this.saveCurrentValue(number, value);
-    if (this.options.showTip) {
-      this.setTipValue({ number, value });
-    }
   }
 
   private setPosition(number: 1 | 2, position: number): void {
@@ -566,21 +674,22 @@ class Presenter {
     this.model.setValue(number, value, true);
   }
 
-  private setTipValue(options: { number: 1 | 2 | 3, value: number | string }): void {
-    const { number: tipNumber, value } = options;
-    const tipName: 'tip1' | 'tip2' | 'tip3' = `tip${tipNumber}`;
+  private setTipValue({
+    number: tipNumber,
+    value,
+  }: {
+    number: 1 | 2 | 3,
+    value: number | string,
+  }): void {
+    const tipName: `tip${'1' | '2' | '3'}` = `tip${tipNumber}`;
     const tip = this.subViews[tipName];
-    if (tip instanceof TipView) {
+    if (tip !== undefined) {
       tip.setValue(value);
-    }
-
-    if (this.options.isInterval && this.subViewExists('tip2')) {
-      this.showJointOrSeparateTips();
     }
   }
 
   private showJointOrSeparateTips() {
-    if (this.options.isInterval && this.options.showTip) {
+    if (this.isTwoTips()) {
       if (this.areTipsOverlap()) {
         this.showJointTip();
       } else {
@@ -588,7 +697,7 @@ class Presenter {
       }
     } else if (this.options.showTip) {
       const { tip1 } = this.subViews;
-      if (tip1 instanceof TipView) {
+      if (tip1 !== undefined) {
         tip1.$elem.removeClass(this.tipHiddenClass);
       }
     }
@@ -596,28 +705,29 @@ class Presenter {
 
   private showJointTip() {
     const { tip1, tip2, tip3 } = this.subViews;
-    if (tip3 instanceof TipView) {
+    const allThreeTipsExists = tip1 !== undefined && tip2 !== undefined && tip3 !== undefined;
+    if (allThreeTipsExists) {
       tip3.setValue(`${this.options.value1} – ${this.options.value2}`);
+      tip3.$elem.removeClass(this.tipHiddenClass);
+      tip1.$elem.addClass(this.tipHiddenClass);
+      tip2.$elem.addClass(this.tipHiddenClass);
     }
-
-    tip3.$elem.removeClass(this.tipHiddenClass);
-    tip1.$elem.addClass(this.tipHiddenClass);
-    tip2.$elem.addClass(this.tipHiddenClass);
   }
 
   private showSeparateTips() {
     const { tip1, tip2, tip3 } = this.subViews;
-    tip3.$elem.addClass(this.tipHiddenClass);
-    tip1.$elem.removeClass(this.tipHiddenClass);
-    tip2.$elem.removeClass(this.tipHiddenClass);
+    const allThreeTipsExists = tip1 !== undefined && tip2 !== undefined && tip3 !== undefined;
+    if (allThreeTipsExists) {
+      tip3.$elem.addClass(this.tipHiddenClass);
+      tip1.$elem.removeClass(this.tipHiddenClass);
+      tip2.$elem.removeClass(this.tipHiddenClass);
+    }
   }
 
   private defineViewValues(): void {
     const { minValue, maxValue, stepSize } = this.options;
     const totalSliderRange = maxValue - minValue;
     this.model.viewValues.stepInPercents = (stepSize / totalSliderRange) * 100;
-    this.model.allowedValuesCount = this.model.getAllowedValuesCount();
-    this.model.penultimateValue = this.model.getPenultimateValue();
     this.model.viewValues.penultimatePosition = this.getPenultimatePosition();
   }
 }
