@@ -51,7 +51,7 @@ Panel is a class for demonstrating dynamic customization of the plugin on a demo
 
 ### UML diagram of class structure
 Click on the image to go to the original and view it in full screen.
-[![UML class diagram](./class-diagram.drawio.svg)](https://github.com/riskoviv/slider/raw/experimental/class-diagram.drawio.svg)
+[![UML class diagram](./class-diagram.drawio.svg)](https://github.com/riskoviv/slider/raw/main/class-diagram.drawio.svg)
 
 ### The device of the mechanism of internal subscription to events and notifications about them
 Presenter can access all public properties and methods of other classes, including the `on` method (inherited from the EventEmitter class), which allows it to subscribe to events of these classes.
