@@ -1,4 +1,4 @@
-# Slider jQuery-плагин
+# Slider jQuery plugin
 [![readme in russian](https://img.shields.io/badge/lang-ru-green)](README.md)
 
 A customizable jQuery plugin that implements the functionality of a slider. It is written in TypeScript using MVP architecture and SCSS using CSS custom properties.
