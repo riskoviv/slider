@@ -40,4 +40,20 @@ $(() => {
     value1: 0,
   });
   window.panel4 = new Panel(window.slider4);
+
+  const $infoButton = $('.js-demo-page__info-button');
+  const $description = $('.js-demo-page__description');
+
+  const handleInfoButtonClick = () => {
+    $description.addClass('demo-page__description_shown');
+    $infoButton.addClass('demo-page__info-button_hidden');
+  };
+
+  const handleDescriptionClick = () => {
+    $description.removeClass('demo-page__description_shown');
+    $infoButton.removeClass('demo-page__info-button_hidden');
+  };
+
+  $infoButton.on('click', handleInfoButtonClick);
+  $description.on('click', handleDescriptionClick);
 });

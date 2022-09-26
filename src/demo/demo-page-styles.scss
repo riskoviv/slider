@@ -20,9 +20,57 @@ html, body {
   align-items: center;
   font-family: Arial;
 
+  &__title {
+    text-align: center;
+    padding: 0 5%;
+  }
+
+  &__info-button {
+    border-radius: 50%;
+    border: none;
+    width: 20px;
+    height: 20px;
+    display: none;
+
+    @media (max-height: 700px) {
+      display: block;
+    }
+
+    &_hidden {
+      visibility: hidden;
+    }
+  }
+
   &__description {
     min-width: 50%;
     max-width: 100ch;
+    padding: 0 5%;
+
+    @media (max-height: 700px) {
+      display: none;
+
+      &_shown {
+        display: block;
+        position: absolute;
+        top: 10%;
+        cursor: pointer;
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+        padding: 20px;
+
+        &::after {
+          position: absolute;
+          display: inline;
+          bottom: 5px;
+          left: 50%;
+          translate: -50%;
+          content: '(Click to hide description)';
+          font-style: italic;
+          font-size: small;
+        }
+      }
+    }
   }
 
   &__main-container {
@@ -34,6 +82,10 @@ html, body {
     max-height: 70vh;
     overflow-x: auto;
     column-gap: 2%;
+
+    @media (max-height: 700px) {
+      max-height: 80vh;
+    }
   }
 
   &__slider-container {
@@ -45,6 +97,10 @@ html, body {
     min-width: 540px;
     height: 100vh;
     max-height: 60vh;
+
+    @media (max-height: 700px) {
+      max-height: 75vh;
+    }
 
     > .slider {
       flex-basis: 85%;
